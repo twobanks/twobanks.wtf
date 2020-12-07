@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 module.exports = {
   siteMetadata: {
     title: `twobanks.wtf (?!)`,
@@ -6,7 +8,7 @@ module.exports = {
     siteUrl: `https://twobanks.wtf`,
   },
   plugins: [
-    'gatsby-plugin-eslint',
+    `gatsby-plugin-eslint`,
     `gatsby-plugin-styled-components`,
     `gatsby-plugin-react-helmet`,
     {
@@ -14,6 +16,14 @@ module.exports = {
       options: {
         name: `images`,
         path: `${__dirname}/src/images`,
+      },
+    },
+    {
+      resolve: "gatsby-source-strava",
+      options: {
+        stravaClientId: process.env.STRAVA_CLIENT_ID,
+        stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,
+        stravaToken: process.env.STRAVA_TOKEN,
       },
     },
     `gatsby-transformer-sharp`,
