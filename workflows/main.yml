@@ -1,0 +1,11 @@
+name: Trigger Netlify Build
+on:
+  schedule:
+    - cron: '* */3 * * *' # every 3 hours
+jobs:
+  build:
+    name: twostrava
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl request
+        run: curl -X POST -d {} https://api.netlify.com/build_hooks/5fceb279c2992525e9f06cdc
