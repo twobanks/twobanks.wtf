@@ -1,5 +1,11 @@
 require("dotenv").config()
 
+const {
+  STRAVA_CLIENT_ID,
+  STRAVA_CLIENT_SECRET,
+  STRAVA_TOKEN,
+} = process.env
+
 module.exports = {
   siteMetadata: {
     title: `twobanks.wtf (?!)`,
@@ -21,9 +27,9 @@ module.exports = {
     {
       resolve: "gatsby-source-strava",
       options: {
-        stravaClientId: process.env.STRAVA_CLIENT_ID,
-        stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,
-        stravaToken: process.env.STRAVA_TOKEN,
+        stravaClientId: STRAVA_CLIENT_ID,
+        stravaClientSecret: STRAVA_CLIENT_SECRET,
+        stravaToken: STRAVA_TOKEN,
       },
     },
     `gatsby-transformer-sharp`,
@@ -40,8 +46,5 @@ module.exports = {
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
       },
     },
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.dev/offline
-    // `gatsby-plugin-offline`,
   ],
 }

@@ -8,7 +8,8 @@ const ActivityTemplate = ({
 	data: {
 		stravaActivity: { activity },
 	},
-}) => (
+}) => {
+	return (
 		<Layout>
 			<SEO title={activity.name} />
 			<>
@@ -26,7 +27,7 @@ const ActivityTemplate = ({
 			<Link to="/">Voltar</Link>
 		</Layout>
 	)
-
+}
 export default ActivityTemplate
 
 export const ActivityPageQuery = graphql`
