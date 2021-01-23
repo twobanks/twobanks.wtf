@@ -2,11 +2,15 @@ import React from "react"
 import PropTypes from "prop-types"
 import GlobalStyles from "../../styles/global"
 
+import { LayoutWrapper } from './styled'
+
 const Layout = ({ children }) => {
   return (
     <>
       <GlobalStyles />
-      <main>{children}</main>
+      <LayoutWrapper>
+        <main>{children}</main>
+      </LayoutWrapper>
     </>
   )
 }

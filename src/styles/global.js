@@ -52,13 +52,21 @@ const GlobalStyles = createGlobalStyle`
 		box-sizing: border-box;
 	}
 	body {
-		background: #faf9f8;
+		
 		line-height: 1;
 		font-size: 100%;
 		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 	}
+	body.light {
+		--light: #f3f5f7;
+		--dark: #121517;
+	}
+	body.dark {
+		--light: #121517;
+		--dark: #f3f5f7;
+	}
 	img {
-	display: block;
+		display: block;
 		width: 100%;
 		height: auto;
 	}
