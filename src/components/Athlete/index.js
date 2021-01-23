@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useState, useEffect } from "react"
 import { graphql, useStaticQuery } from 'gatsby'
-import { Avatar, Container, Summit } from './styled'
+import { Avatar, Container, Summit, Menu } from './styled'
+import { Lightbulb as Light } from "@styled-icons/open-iconic/Lightbulb"
 
 const Athlete = ({ total }) => {
+      const [theme, setTheme] = useState(null)
+      const isDarkMode = theme === "dark"
+      useEffect(() => {
+            setTheme(window.__theme)
+            window.__onThemeChange = () => setTheme(window.__theme)
+      }, [])
       const data = useStaticQuery(graphql`
             query {
                   stravaAthlete(athlete: {id: {eq: 28981595}}) {
@@ -42,6 +49,15 @@ const Athlete = ({ total }) => {
                               </li>
                         </ul>
                   </div>
+                  <Menu
+                        title="Mudar o tema"
+                        onClick={() => {
+                              window.__setPreferredTheme(isDarkMode ? "light" : "dark")
+                        }}
+                        className={theme}
+                  >
+                        <Light />
+                  </Menu>
             </Container>
       )
 };

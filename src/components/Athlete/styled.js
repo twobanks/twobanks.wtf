@@ -22,12 +22,12 @@ export const Container = styled.section`
 			strong {
 				display: block;
 				font-size: 18px;
-				color: #000;
+				color: var(--dark);
 			}
 			span {
 				display: block;
 				margin-top: 4px;
-				color: #000;
+				color: var(--dark);
 				font-size: 16px;
 			}
 		}
@@ -37,6 +37,7 @@ export const Container = styled.section`
 		.title {
 			margin: 0;
 			position: relative;
+			color: var(--dark);
 		}
 	}
 	
@@ -53,4 +54,11 @@ export const Summit = styled.i`
 	height: 24px;
 	width: 24px;
 	background-image: url(${summit});
+`
+export const Menu = styled.span`
+	cursor: pointer;
+	height: 2rem;
+	width: 2rem;
+	color: var(--dark);
+
 `

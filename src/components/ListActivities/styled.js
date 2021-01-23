@@ -15,6 +15,6 @@ export const Activities = styled.section`
 export const Title = styled(Link)`
     text-decoration: none;
     font-weight: bold;
-    color: black;
+    color: var(--dark);
     font-size: 1.5rem;
 `

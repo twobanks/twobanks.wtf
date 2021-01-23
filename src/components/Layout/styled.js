@@ -1,5 +1,8 @@
 import styled from 'styled-components'
 
+export const LayoutWrapper = styled.section`
+    background-color: var(--light);
+`
 export const Title = styled.div`
     display: flex;
     height: 100vh;
@@ -9,7 +12,7 @@ export const Title = styled.div`
     align-items: center;
     justify-content: center;
     h1 {
-        color: #212a36;
+        color: var(--dark);
         font-size: 4rem;
         font-family: "Helvetica";
     }
