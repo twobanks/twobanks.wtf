@@ -17,13 +17,13 @@ const ActivitiesList = props => {
     const nextPage = `/page/${currentPage + 1}`
     return (
         <Layout>
-            <SEO title="Lista de Atividades - Teste" />
+            <SEO title="Home" />
             <Athlete total={totalCount} />
             <ActivitiesWrapper>
                 {activitiesList.map(
                     ({
                         node: {
-                            activity: { id, name, average_speed, distance, kudos_count, start_date, moving_time, total_elevation_gain, type },
+                            activity: { id, name, average_speed, distance, kudos_count, start_date_formatted, moving_time, suffer_score, total_elevation_gain, type },
                         },
                     }) => (
                         <ListActivities
@@ -33,8 +33,9 @@ const ActivitiesList = props => {
                             average_speed={average_speed}
                             distance={distance}
                             kudos_count={kudos_count}
-                            start_date={start_date}
+                            start_date_formatted={start_date_formatted}
                             moving_time={moving_time}
+                            suffer_score={suffer_score}
                             total_elevation_gain={total_elevation_gain}
                             type={type}
                         />
@@ -61,8 +62,10 @@ export const query = graphql`
 							average_speed
 							distance
 							kudos_count
-							start_date
+                            start_date
+							start_date_formatted: start_date(locale: "pt-br", formatString: "dddd, DD MMMM YYYY")
                             moving_time
+                            suffer_score
                             total_elevation_gain
                             type
 						}

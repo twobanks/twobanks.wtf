@@ -28,7 +28,7 @@ exports.createPages = ({ graphql, actions }) => {
 			})
 		})
 
-		const activitiesPerPage = 10
+		const activitiesPerPage = 5
 		const numPages = Math.ceil(activities.length / activitiesPerPage)
 
 		Array.from({ length: numPages }).forEach((_, index) => {

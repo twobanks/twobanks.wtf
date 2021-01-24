@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-import { Link } from "gatsby"
 
 export const Activities = styled.section`
     ol {
@@ -12,8 +11,7 @@ export const Activities = styled.section`
         }
     }
 `
-export const Title = styled(Link)`
-    text-decoration: none;
+export const Title = styled.h1`
     font-weight: bold;
     color: var(--dark);
     font-size: 1.5rem;
