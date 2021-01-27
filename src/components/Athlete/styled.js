@@ -10,12 +10,12 @@ export const Container = styled.section`
 		font-weight: bold;
 	}
 	ul {
-		flex: 1;
 		display: flex;
 		list-style: none;
 		margin-top: 10px;
 		li {
-			
+			display: flex;
+			flex-direction: column;
 			& + li {
 				margin-left: 20px;
 			}
@@ -33,6 +33,8 @@ export const Container = styled.section`
 		}
 	}
 	div {
+		display: flex;
+		flex-direction: column;
 		margin-left: 20px;
 		.title {
 			margin: 0;

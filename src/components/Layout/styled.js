@@ -2,6 +2,8 @@ import styled from 'styled-components'
 
 export const LayoutWrapper = styled.section`
     background-color: var(--light);
+    width: 60vw;
+    margin: 0 auto;
 `
 export const Title = styled.div`
     display: flex;

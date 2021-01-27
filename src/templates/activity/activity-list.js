@@ -4,7 +4,6 @@ import Layout from "../../components/Layout"
 import SEO from "../../components/seo"
 import ListActivities from '../../components/ListActivities'
 import Pagination from "../../components/Pagination"
-import { ActivitiesWrapper } from "../../components/ActivitiesWrapper/styled"
 import Athlete from '../../components/Athlete'
 
 const ActivitiesList = props => {
@@ -19,29 +18,27 @@ const ActivitiesList = props => {
         <Layout>
             <SEO title="Home" />
             <Athlete total={totalCount} />
-            <ActivitiesWrapper>
-                {activitiesList.map(
-                    ({
-                        node: {
-                            activity: { id, name, average_speed, distance, kudos_count, start_date_formatted, moving_time, suffer_score, total_elevation_gain, type },
-                        },
-                    }) => (
-                        <ListActivities
-                            key={id}
-                            id={id}
-                            name={name}
-                            average_speed={average_speed}
-                            distance={distance}
-                            kudos_count={kudos_count}
-                            start_date_formatted={start_date_formatted}
-                            moving_time={moving_time}
-                            suffer_score={suffer_score}
-                            total_elevation_gain={total_elevation_gain}
-                            type={type}
-                        />
-                    )
-                )}
-            </ActivitiesWrapper>
+            {activitiesList.map(
+                ({
+                    node: {
+                        activity: { id, name, average_speed, distance, kudos_count, start_date_formatted, moving_time, suffer_score, total_elevation_gain, type },
+                    },
+                }) => (
+                    <ListActivities
+                        key={id}
+                        id={id}
+                        name={name}
+                        average_speed={average_speed}
+                        distance={distance}
+                        kudos_count={kudos_count}
+                        start_date_formatted={start_date_formatted}
+                        moving_time={moving_time}
+                        suffer_score={suffer_score}
+                        total_elevation_gain={total_elevation_gain}
+                        type={type}
+                    />
+                )
+            )}
             <Pagination isFirst={isFirst} isLast={isLast} currentPage={currentPage} numPages={numPages} prevPage={prevPage} nextPage={nextPage} />
         </Layout>
     )

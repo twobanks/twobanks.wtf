@@ -45,7 +45,6 @@ const Athlete = ({ total }) => {
                               <li>
                                     <strong>Atividades</strong>
                                     <span>{total}</span>
-
                               </li>
                         </ul>
                   </div>
