@@ -1,5 +1,5 @@
-import Strava from '../Strava'
+import Strava from "../Strava";
 
-const Main = () => <Strava />
+const Main = () => <Strava />;
 
-export default Main
+export default Main;
