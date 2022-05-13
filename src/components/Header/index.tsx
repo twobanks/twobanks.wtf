@@ -2,6 +2,7 @@ import * as S from './styles'
 import { useState } from 'react'
 import Link from 'next/link'
 import { pages } from './mock'
+import { conversionPage } from '../../utils/functions/conversionPage'
 
 const Header = () => {
   const [hovered, setHovered] = useState('')
@@ -27,7 +28,7 @@ const Header = () => {
                           exit={{ opacity: 0 }}
                         />
                       )}
-                      {page}
+                      {conversionPage(page)}
                     </S.NavContainer>
                 </Link>
               </li>

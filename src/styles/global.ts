@@ -31,6 +31,7 @@ const GlobalStyles = createGlobalStyle`
     body {
       background-color: ${theme.colors.black};
       font-size: ${theme.font.sizes.s16};
+      color: ${theme.colors.white};
       font-weight: ${theme.font.light};
       font-family: ${theme.font.family.open};
       font-style: normal;
