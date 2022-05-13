@@ -1,4 +1,6 @@
-import { useActivities, useAthlete } from '../../api/strava';
+
+import { useActivities } from '../../hooks/useActivities';
+import { useAthlete } from '../../hooks/useAthlete';
 import * as S from './styles';
 
 const Strava = () => {

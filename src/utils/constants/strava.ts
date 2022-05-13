@@ -1,0 +1,1 @@
+export const CALL_REFRESH = `https://www.strava.com/oauth/token?client_id=${process.env.NEXT_PUBLIC_CLIENT_ID}&client_secret=${process.env.NEXT_PUBLIC_CLIENT_SECRET}&refresh_token=${process.env.NEXT_PUBLIC_REFRESH_TOKEN}&grant_type=refresh_token`
