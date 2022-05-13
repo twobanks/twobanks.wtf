@@ -27,5 +27,6 @@ export default {
     none: "transparent",
     white: "#FFFFFF",
     black: "#000000",
+    gray: '#212024',
   },
 } as const

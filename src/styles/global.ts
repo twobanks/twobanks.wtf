@@ -21,9 +21,18 @@ const GlobalStyles = createGlobalStyle`
     #__next {
       height: 100%;
     }
+    a {
+      text-decoration: none;
+      color: ${theme.colors.white};
+    }
+    li {
+      list-style: none;
+    }
     body {
       background-color: ${theme.colors.black};
-      color: ${theme.colors.white};
+      font-size: ${theme.font.sizes.s16};
+      font-weight: ${theme.font.light};
+      font-family: ${theme.font.family.open};
       font-style: normal;
       font-display: swap;
       overflow-x: hidden;
