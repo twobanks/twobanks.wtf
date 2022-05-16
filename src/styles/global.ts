@@ -23,15 +23,18 @@ const GlobalStyles = createGlobalStyle`
     }
     a {
       text-decoration: none;
-      color: ${theme.colors.white};
+      color: ${theme.colors.secondary};
     }
     li {
       list-style: none;
     }
+    em {
+      font-style: normal;
+    }
     body {
-      background-color: ${theme.colors.black};
+      background-color: ${theme.colors.background};
       font-size: ${theme.font.sizes.s16};
-      color: ${theme.colors.white};
+      color: ${theme.colors.secondary};
       font-weight: ${theme.font.light};
       font-family: ${theme.font.family.open};
       font-style: normal;

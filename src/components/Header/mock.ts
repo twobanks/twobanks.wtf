@@ -1,6 +1,6 @@
 export const pages = [
   'about',
-  'activities',
+  'lifestyle',
   'works',
   'idea',
 ]

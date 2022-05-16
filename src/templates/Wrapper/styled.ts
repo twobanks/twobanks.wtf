@@ -5,8 +5,10 @@ export const Wrapper = styled.main`
     position: relative;
     display: flex;
     flex-direction: column;
-    max-width: 110rem;
-    margin: 0 auto;
-    height: 100vh;
+
+
+    height: auto;
+    gap: 2rem;
+    padding: 0 2rem;
   `}
 `;

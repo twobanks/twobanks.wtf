@@ -2,11 +2,11 @@
 import { Main } from '../../components';
 import Wrapper from '../Wrapper';
 
-const Activities = () => (
+const LifeStyle = () => (
   <Wrapper>
-    Activities
+    LifeStyle
     <Main />
   </Wrapper>
 )
 
-export default Activities;
+export default LifeStyle;
