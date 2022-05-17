@@ -7,19 +7,11 @@ type AboutStyle = {
 }
 
 export const Content = styled.main`
-  ${({ theme }) => css`
-    display: flex;
-    flex-direction: column;
-    max-width: 92rem;
-		width: 100%;
-    margin: 0 auto;
-    h1 {
-      text-align: left;
-      font-size: ${theme.font.sizes.s48};
-      color: ${theme.colors.primary};
-      font-weight: ${theme.font.bold};
-    }
-  `}
+  display: flex;
+  flex-direction: column;
+  max-width: 92rem;
+  width: 100%;
+  margin: 0 auto;
 `
 
 export const About = styled.section`

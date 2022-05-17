@@ -1,29 +1,17 @@
 import { useEffect, useState } from 'react';
 
-export const userGit = () => {
-  const [user, setUser] = useState();
-  const callAthlete = `https://api.github.com/users/twobanks`
-
-  useEffect(() => {
-    fetch(callAthlete, {
-      headers: new Headers({
-        'User-agent': 'Mozilla/4.0 Custom User Agent'
-      })
-    })
-    .then(res => res.json())
-    .then(() => getUserGit())
-  }, [])
-
-  function getUserGit(){
-    fetch(callAthlete)
-    .then(response => response.json())
-    .then(data => setUser(data))
-  }
-  return user;
+type Repositories = {
+  default_branch: string;
+  name: string;
+  id: number;
+  language: 'TypeScript' | 'JavaScript';
+  updated_at: string;
+  description: string;
+  html_url: string;
 }
 
 export const userGitRepos = () => {
-  const [repos, setRepos] = useState();
+  const [repos, setRepos] = useState<Repositories[]>([]);
   const callRepos = `https://api.github.com/users/twobanks/repos`
 
   useEffect(() => {
