@@ -31,5 +31,7 @@ export default {
     secondary: "#8F9BA8",
     hover: '#212024',
     red: '#f0544f',
+    blue: '#2b7489',
+    yellow: '#f1e05a',
   },
 } as const

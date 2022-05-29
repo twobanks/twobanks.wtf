@@ -1,4 +1,6 @@
-import styled, { css } from "styled-components";
+import styled, { css, DefaultTheme } from "styled-components";
+import media from 'styled-media-query';
+import { motion } from 'framer-motion'
 
 type WorksStyle = {
   type?: 'TypeScript' | 'JavaScript';
@@ -17,38 +19,27 @@ export const WorkHeader = styled.div`
   gap: 2rem;
   border-radius: .8rem;
   align-items: center;
-  img {
-    width: 7.5rem;
-    height: 7.5rem;
-    border-radius: 50%;
-  }
   ul {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     width: 100%;
-    gap: 2rem 4rem;
+    ${media.lessThan("medium")`
+      grid-template-columns: repeat(1, 1fr);
+    `}
   }
 `
 
 const repoModifiers = {
-  ['TypeScript']: () => css`
-    background-color: #2b7489;
+  ['TypeScript']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.blue};
   `,
-  ['JavaScript']: () => css`
-    background-color: #f1e05a;
+  ['JavaScript']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.yellow};
   `
 }
 
 export const Repos = styled.li<WorksStyle>`
   ${({ theme, type }) => css`
-    border-radius: .8rem;
-    border: 0.1rem solid ${theme.colors.hover};
-    a {
-      display: flex;
-      flex-direction: column;
-      gap: .5rem;
-      padding: 2rem;
-    }
     strong {
       color: ${theme.colors.primary};
       font-size: ${theme.font.sizes.s18};
@@ -68,7 +59,7 @@ export const Repos = styled.li<WorksStyle>`
         height: 1rem;
         width: 1rem;
         border-radius: 50%;
-        ${type && repoModifiers[type]()}
+        ${type && repoModifiers[type](theme)}
       }
     }
     p {
@@ -76,4 +67,41 @@ export const Repos = styled.li<WorksStyle>`
       color: ${theme.colors.secondary};
     }
   `}
+`
+
+export const Title = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+export const AnimContainer = styled(motion.div)`
+  ${({ theme }) => css`
+    border: 0;
+    color: ${theme.colors.secondary};
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 2rem;
+    width: 100%;
+    height: 11rem;
+    opacity: 1;
+    transition: color 0.2s ease-in-out;
+    position: relative;
+  `}
+`
+
+export const AnimHovered = styled(motion.div)`
+  ${({theme}) => css`
+		position: absolute;
+		top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+		background-color: ${theme.colors.hover};
+		padding: 0;
+		border-radius: .8rem;
+		z-index: -1;
+	`}
 `

@@ -8,6 +8,7 @@ export const Footer = styled.footer`
     justify-content: center;
     padding: 2rem 0;
     bottom: 0;
+    left: 0;
     width: 100%;
   `}
 `

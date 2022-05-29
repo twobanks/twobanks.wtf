@@ -1,14 +1,10 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 export const Wrapper = styled.main`
-  ${({ theme }) => css`
-    position: relative;
-    display: flex;
-    flex-direction: column;
-
-
-    height: auto;
-    gap: 2rem;
-    padding: 0 2rem;
-  `}
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  gap: 2rem;
+  padding: 0 2rem 6rem 2rem;
 `;

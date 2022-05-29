@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import media from "styled-media-query";
 
 type AboutStyle = {
   image?: string;
@@ -57,7 +58,7 @@ export const Occupation = styled.strong`
 export const Stacks = styled.span`
 ${({ theme }) => css`
   display: flex;
-  width: 75ch;
+  width: 70%;
   font-size: ${theme.font.sizes.s12};
   line-height: 2rem;
   margin-top: 1rem;
@@ -122,6 +123,7 @@ export const Company = styled.div`
   ${({ theme }) => css`
     font-size: ${theme.font.sizes.s14};
     line-height: 2rem;
+    width: 95%;
     a {
       color: ${theme.colors.primary};
     }
@@ -130,6 +132,9 @@ export const Company = styled.div`
 
 export const ImageWrapper = styled.div`
   display: flex;
+  ${media.lessThan("medium")`
+    justify-content: center;
+  `}
 `
 
 export const Me = styled.div<AboutStyle>`
@@ -142,6 +147,10 @@ export const Me = styled.div<AboutStyle>`
     background-position: center;
     transition: all 0.2s ease-in-out;
     border-radius: 50%;
+    ${media.lessThan("medium")`
+      height: 25rem;
+      width: 25rem;
+    `}
   `}
 `
 
@@ -149,6 +158,10 @@ export const Bio = styled.div`
   display: flex;
   gap: 4rem;
   padding: 8rem 0;
+  ${media.lessThan("medium")`
+    flex-direction: column;
+    padding: 0 0 8rem 0;
+  `}
 `
 
 export const Academy = styled.li``

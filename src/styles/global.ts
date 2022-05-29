@@ -2,6 +2,19 @@ import { createGlobalStyle, css } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
   ${({ theme }) => css`
+    ::-webkit-scrollbar-track {
+      background-color: ${theme.colors.none};
+    }
+    ::-webkit-scrollbar {
+      width: 0.8rem;
+      height: 0.8rem;
+      background-color: ${theme.colors.none};
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 5rem;
+      background-color: ${theme.colors.hover};
+      opacity: 0.9;
+    }
     * {
       margin: 0;
       padding: 0;
