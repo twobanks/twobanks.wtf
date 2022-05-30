@@ -5,17 +5,8 @@ import { ReactNode, useState } from 'react';
 
 const iconRepo = '/img/repo.svg';
 
-/* default_branch: string;
-  name: string;
-  id: number;
-  language: string;
-  updated_at: string;
-  description: string;
-  html_url: string; */
-
 const Works = () => {
   const repositories = userGitRepos();
-  console.log("repos", repositories);
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index

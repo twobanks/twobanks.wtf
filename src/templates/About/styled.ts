@@ -62,6 +62,9 @@ ${({ theme }) => css`
   font-size: ${theme.font.sizes.s12};
   line-height: 2rem;
   margin-top: 1rem;
+  ${media.lessThan('medium')`
+    width: 100%;
+  `}
 `}
 `
 

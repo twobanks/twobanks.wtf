@@ -4,7 +4,6 @@ import Wrapper from '../Wrapper';
 
 const LifeStyle = () => (
   <Wrapper>
-    LifeStyle
     <Main />
   </Wrapper>
 )
