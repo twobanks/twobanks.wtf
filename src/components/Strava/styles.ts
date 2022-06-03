@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components'
+import Image from 'next/image';
 
 export const Wrapper = styled.main`
   ${({ theme }) => css`
@@ -14,9 +15,17 @@ export const Wrapper = styled.main`
           font-size: ${theme.font.sizes.s12};
           width: 50%;
         }
+        img {
+          display: flex;
+          max-width: 35rem;
+          width: 100%;
+          height: auto;
+        }
       }
     }
   `}
 `
 
-export const Map = styled.div``
+export const Map = styled(Image)`
+
+`
