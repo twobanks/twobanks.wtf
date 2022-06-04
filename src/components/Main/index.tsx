@@ -1,5 +1,4 @@
-import { Strava } from "../";
 
-const Main = () => <Strava />
+const Main = () => <>wtf?</>
 
 export default Main;
