@@ -1,12 +1,11 @@
 import Wrapper from '../Wrapper';
 import * as S from './styled'
-import { userGitRepos } from '../../hooks/useGit'
 import { ReactNode, useState } from 'react';
+import { Repositories } from '../../types/git';
 
 const iconRepo = '/img/repo.svg';
 
-const Works = () => {
-  const repositories = userGitRepos();
+const Works = ({ repositories } : { repositories: Repositories[] }) => {
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index

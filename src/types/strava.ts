@@ -84,3 +84,4 @@ export type Activity = {
   visibility: string;
   workout_type: number;
 }
+

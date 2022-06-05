@@ -1,10 +1,11 @@
 
-import { Main } from '../../components';
+import { Strava } from '../../components';
+import { Activity } from '../../types/strava';
 import Wrapper from '../Wrapper';
 
-const LifeStyle = () => (
+const LifeStyle = ({ activities }: { activities: Activity[] }) => (
   <Wrapper>
-    <Main />
+    <Strava activities={activities}/>
   </Wrapper>
 )
 

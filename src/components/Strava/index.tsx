@@ -1,14 +1,13 @@
 import { useCallback } from 'react';
 import { v4 as uuid} from 'uuid';
-import { useActivities } from '../../hooks/useActivities';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers  } from '../../utils/functions/conversionStrava'
+import { Activity } from '../../types/strava';
 
-const Strava = () => {
-  const activities = useActivities();
+const Strava = ({ activities }: { activities: Activity[] }) => {
   const handleMap = useCallback((polyline: string) => {
-    const polylineEncoded = encodeURIComponent(polyline)
-    const style = 'ckmi23ula94rm17rxmlpg00as'
+    let polylineEncoded = encodeURIComponent(polyline)
+    let style = 'ckmi23ula94rm17rxmlpg00as'
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+5ddb95(${polylineEncoded})/auto/500x300@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   },[])
 
