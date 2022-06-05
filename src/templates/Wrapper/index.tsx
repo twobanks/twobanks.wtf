@@ -1,4 +1,3 @@
-import { Footer } from '../../components';
 import * as S from './styled';
 
 type WrapperProps = {
@@ -8,7 +7,6 @@ type WrapperProps = {
 const Wrapper = ({children}: WrapperProps) => (
   <S.Wrapper>
     {children}
-    <Footer />
   </S.Wrapper>
 )
 
