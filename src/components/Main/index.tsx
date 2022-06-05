@@ -1,4 +1,5 @@
+import * as S from './styled';
 
-const Main = () => <>wtf?</>
+const Main = () => <S.Wrapper>wtf?</S.Wrapper>
 
 export default Main;
