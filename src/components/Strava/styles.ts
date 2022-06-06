@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components'
-import Image from 'next/image';
 
 export const Wrapper = styled.main`
   ${({ theme }) => css`
@@ -26,6 +25,3 @@ export const Wrapper = styled.main`
   `}
 `
 
-export const Map = styled(Image)`
-
-`

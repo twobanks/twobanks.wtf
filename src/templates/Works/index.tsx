@@ -1,11 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 import Wrapper from '../Wrapper';
 import * as S from './styled'
 import { ReactNode, useState } from 'react';
-import { Repositories } from '../../types/git';
+import { works } from './mock';
 
-const iconRepo = '/img/repo.svg';
-
-const Works = ({ repositories } : { repositories: Repositories[] }) => {
+const Works = () => {
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index
@@ -32,26 +31,26 @@ const Works = ({ repositories } : { repositories: Repositories[] }) => {
   return (
     <Wrapper>
       <S.Content>
-        <S.WorkHeader>
-          <ul>
-            {repositories?.map((item, index) => {
-              return (
-                <S.Repos key={item.name} type={item.language}>
-                  <a href={item.html_url}>
-                    <Animation index={String(index)}>
-                      <S.Title>
-                        <img src={iconRepo} alt=""/>
-                        <strong>{item.name}</strong>
-                      </S.Title>
-                      <span>{item.language}</span>
-                      {item.description && <p>{item.description}</p>}
-                    </Animation>
-                  </a>
-                </S.Repos>
-              )
-            })}
-          </ul>
-        </S.WorkHeader>
+        <h1>trampos</h1>
+        <ul>
+          {works?.map((item, index) => {
+            return (
+              <S.Work key={item.name}>
+                <a href={item.link}>
+                  <Animation index={String(index)}>
+                    <img src={item.image} alt={item.name} />
+                    <S.Title>
+                      <strong>{item.name}</strong>
+                      <ul>
+                        {item.language.map(language => <li key={language}>{language}</li>)}
+                      </ul>
+                    </S.Title>
+                  </Animation>
+                </a>
+              </S.Work>
+            )
+          })}
+        </ul>
       </S.Content>
     </Wrapper>
   )

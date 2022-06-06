@@ -8,7 +8,7 @@ const Header = () => {
   const [hovered, setHovered] = useState('')
   return(
     <S.Header>
-      <h1>twobanks</h1>
+      <S.Banks><Link href="/">twobanks</Link></S.Banks>
       <S.Nav>
           {pages.map(page => {
             const path = `/${page}`

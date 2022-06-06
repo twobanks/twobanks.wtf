@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useCallback } from 'react';
 import { v4 as uuid} from 'uuid';
 import * as S from './styles';

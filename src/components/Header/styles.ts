@@ -13,8 +13,20 @@ export const Header = styled.header`
     margin: 0 auto;
 		padding: 1rem 0;
 		position: relative;
-		h1 {
+	`}
+`
+
+export const Banks = styled.div`
+	${({theme }) => css`
+		a {
 			font-size: ${theme.font.sizes.s36};
+			font-family: ${theme.font.family.north};
+			color: ${theme.colors.secondary};
+			cursor: pointer;
+			transition: color 0.2s ease-in-out;
+			&:hover {
+				color: ${theme.colors.primary};
+			}
 		}
 	`}
 `
