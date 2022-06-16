@@ -5,11 +5,14 @@ export const Footer = styled.footer`
     background-color: ${theme.colors.background};
     position: fixed;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     padding: 2rem 0;
     bottom: 0;
     left: 0;
-    width: 100%;
+
+    max-width: 92rem;
+		width: 100%;
+    margin: 0 auto;
   `}
 `
 

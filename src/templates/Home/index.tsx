@@ -1,11 +1,7 @@
 
-import { NowPlaying } from '../../components';
+
 import Wrapper from '../Wrapper';
 
-const Home = () => (
-  <Wrapper>
-    <NowPlaying />
-  </Wrapper>
-)
+const Home = () => <Wrapper>Home</Wrapper>
 
 export default Home;
