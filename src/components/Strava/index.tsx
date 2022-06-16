@@ -4,6 +4,7 @@ import { v4 as uuid} from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers  } from '../../utils/functions/conversionStrava'
 import { Activity } from '../../types/strava';
+import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 
 const Strava = ({ activities }: { activities: Activity[] }) => {
   const handleMap = useCallback((polyline: string) => {
@@ -24,13 +25,19 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
         return (
           <li key={uuid()}>
             <a href={`https://www.strava.com/activities/${id}`}>
-              <img src={mapUrl} alt={name}  />
-              {type} <br/>
-              <span>Tempo de movimentação:</span> {boston}<br/>
-              <span>Distância:</span> {metersToKilometers(distance)} km<br/>
-              <span>{averageTitle}</span> {averageSpeed} km/h<br/>
-              <span>Freq. cardíaca média:</span> {average_heartrate.toFixed(0)}<br/>
-              <span>Elevação:</span> {total_elevation_gain.toFixed(0)} m<br/>
+              <S.MapWrapper>
+                <img src={mapUrl} alt={name}  />
+              </S.MapWrapper>
+              <S.TypeActivity>
+                <img src={conversionTypeActivities(type)} alt={type} />
+              </S.TypeActivity>
+              <S.ActivityData>
+                <div><span>Tempo de movimentação:</span> {boston}</div>
+                <div><span>Distância:</span> {metersToKilometers(distance)} km</div>
+                <div><span>{averageTitle}</span> {averageSpeed} km/h</div>
+                <div><span>Freq. cardíaca média:</span> {average_heartrate.toFixed(0)}</div>
+                <div><span>Elevação:</span> {total_elevation_gain.toFixed(0)} m</div>
+              </S.ActivityData>
             </a>
           </li>
         )
