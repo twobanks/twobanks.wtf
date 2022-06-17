@@ -15,10 +15,8 @@ const Playing = () => (
   </S.Icon>
 )
 
-const Loading = () => <S.Spinner />
-
 const NowPlaying = () => {
-  const { data } = useSWR<NowPlayingSong>('/api/spotify', fetcher,{ refreshInterval: DEBOUNCE_TIME,
+  const { data } = useSWR<NowPlayingSong>('/api/spotify', fetcher, { refreshInterval: DEBOUNCE_TIME,
     revalidateIfStale: false,
     revalidateOnFocus: false,
     revalidateOnReconnect: false
@@ -27,12 +25,12 @@ const NowPlaying = () => {
     <>
       {data?.isPlaying ? (
         <S.Wrapper>
-        <Playing />
+          <Playing />
           <Tooltip trigger='click' color="invert" content={<Song data={data} />}>
-            Ouvindo agora
+            <span>Ouvindo agora</span>
           </Tooltip>
         </S.Wrapper>
-        ) : <Loading />}
+        ) : null}
     </>
   );
 }

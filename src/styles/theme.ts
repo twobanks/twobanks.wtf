@@ -35,5 +35,6 @@ export default {
     red: '#f0544f',
     blue: '#2b7489',
     yellow: '#f1e05a',
+    spotify: '#1DB954',
   },
 } as const
