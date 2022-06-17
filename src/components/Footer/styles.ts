@@ -3,13 +3,19 @@ import styled, { css } from 'styled-components'
 export const Footer = styled.footer`
   ${({ theme }) => css`
     background-color: ${theme.colors.background};
-    position: fixed;
     display: flex;
-    justify-content: center;
-    padding: 2rem 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
+		align-items: center;
+		justify-content: space-between;
+		font-size: ${theme.font.sizes.s16};
+		color: ${theme.colors.secondary};
+		max-width: 92rem;
+		width: 100%;
+    margin: 0 auto;
+		padding: 1rem 0;
+    img {
+      height: 3rem;
+      width: 3rem;
+    }
   `}
 `
 
