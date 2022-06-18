@@ -1,17 +1,13 @@
-import * as S from './styles'
-import { social } from './mock'
-import { NowPlaying } from '../';
+/* eslint-disable @next/next/no-img-element */
+import * as S from './styled'
+import { Banks } from '../'
+import { Tooltip } from '@nextui-org/react';
 
 const Footer = () => (
   <S.Footer>
-    <NowPlaying />
-    <S.WrapperLinks>
-      {social.map(item => (
-        <S.Links key={item.id}>
-          <a href={item.link}>{item.name}</a>
-        </S.Links>
-      ))}
-    </S.WrapperLinks>
+    <Tooltip trigger='click' color="invert" content={<Banks />}>
+      <h2>twobanks</h2>
+    </Tooltip>
   </S.Footer>
 )
 

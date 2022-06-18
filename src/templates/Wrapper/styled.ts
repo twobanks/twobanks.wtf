@@ -4,7 +4,8 @@ export const Wrapper = styled.main`
   position: relative;
   display: flex;
   flex-direction: column;
-  height: auto;
+  justify-content: space-between;
+  height: 100%;
   gap: 2rem;
   padding: 0 2rem 6rem 2rem;
 `;

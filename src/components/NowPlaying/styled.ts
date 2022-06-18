@@ -3,7 +3,10 @@ import styled, { css } from "styled-components";
 export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
-    gap: 1rem;
+    align-items: center;
+    gap: 1.5rem;
+    border-top: .1rem solid ${theme.colors.hover};
+    padding-top: 1rem;
     span {
       cursor: pointer;
       font-size: ${theme.font.sizes.s16};
@@ -17,8 +20,8 @@ export const Icon = styled.div`
     position: relative;
     display: flex;
     justify-content: space-between;
-    width: 1.3rem;
-    height: 1.5rem;
+    width: 1.5rem;
+    height: 2rem;
     @keyframes bounce {
       10% {
         transform: scaleY(0.3);
@@ -54,4 +57,24 @@ export const Icon = styled.div`
   `}
 `
 
+export const Song = styled.a`
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    strong {
+      font-size: ${theme.font.sizes.s14};
+      color: ${theme.colors.primary};
+    }
+    span {
+      font-size: ${theme.font.sizes.s12};
+      color: ${theme.colors.secondary};
+    }
+    &:hover {
+      span, strong {
+        color: ${theme.colors.spotify};
+        transition: color 0.2s ease-in-out;
+      }
+    }
+  `}
+`
 
