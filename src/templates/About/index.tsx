@@ -6,6 +6,7 @@ import * as S from './styled'
 const About = () => (
   <Wrapper>
     <S.Content>
+      <h2>sobre mim</h2>
       <S.Bio>
         <S.ImageWrapper>
           <S.Me image={about.image} />
@@ -17,7 +18,7 @@ const About = () => (
         </S.About>
       </S.Bio>
       <S.Career>
-        <h2>Experiências</h2>
+        <h3>Experiências</h3>
         <ul>
           {about.career.map(item => {
             const { company, occupation, link, city, uf, current, durationInMonths, startDate, departureDate, stacks } = item;
@@ -37,7 +38,7 @@ const About = () => (
         </ul>
       </S.Career>
       <S.Career>
-        <h2>Formação acadêmica</h2>
+        <h3>Formação acadêmica</h3>
         <ul>
           {about.academy.map(item => {
             const { college, institution, period } = item;
@@ -56,7 +57,7 @@ const About = () => (
         </ul>
       </S.Career>
       <S.Career course>
-        <h2>Cursos</h2>
+        <h3>Cursos</h3>
         <ul>
           {about.course.map(item => {
             const { name, description, link } = item;

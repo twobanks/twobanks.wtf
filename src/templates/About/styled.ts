@@ -8,11 +8,30 @@ type AboutStyle = {
 }
 
 export const Content = styled.main`
-  display: flex;
-  flex-direction: column;
-  max-width: 92rem;
-  width: 100%;
-  margin: 0 auto;
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    max-width: 92rem;
+    width: 100%;
+    margin: 0 auto;
+    h2 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: ${theme.font.sizes.s36};
+      color: ${theme.colors.primary};
+      padding: 2rem 0;
+    }
+    h3 {
+      font-size: ${theme.font.sizes.s24};
+      color: ${theme.colors.primary};
+    }
+    ${media.lessThan("medium")`
+      h2 {
+        padding: 4rem 0;
+      }
+    `}
+  `}
 `
 
 export const About = styled.section`
@@ -148,18 +167,14 @@ export const Me = styled.div<AboutStyle>`
     background-image: url(${image});
     background-size: cover;
     background-position: center;
-    transition: all 0.2s ease-in-out;
-    border-radius: 50%;
-    ${media.lessThan("medium")`
-      height: 25rem;
-      width: 25rem;
-    `}
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   `}
 `
 
 export const Bio = styled.div`
   display: flex;
-  gap: 4rem;
+  flex-direction: row-reverse;
+  gap: 8rem;
   padding: 8rem 0;
   ${media.lessThan("medium")`
     flex-direction: column;

@@ -17,18 +17,13 @@ export const Header = styled.header`
 `
 
 export const Banks = styled.div`
-	${({theme }) => css`
-		a {
-			font-size: ${theme.font.sizes.s36};
-			font-family: ${theme.font.family.north};
-			color: ${theme.colors.secondary};
-			cursor: pointer;
-			transition: color 0.2s ease-in-out;
-			&:hover {
-				color: ${theme.colors.primary};
-			}
-		}
-	`}
+	img {
+		border-radius: 50%;
+		height: 6rem;
+		width: 6rem;
+		display: flex;
+	}
+
 `
 
 export const Nav = styled.ul`

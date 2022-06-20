@@ -6,6 +6,6 @@ export const Wrapper = styled.main`
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  gap: 2rem;
+  /* gap: 2rem; */
   padding: 0 2rem 6rem 2rem;
 `;
