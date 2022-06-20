@@ -7,6 +7,7 @@ const github = '/icon/github.svg'
 const linkedin = '/icon/linkedin.svg'
 const instagram = '/icon/instagram.svg'
 const spotify = '/icon/spotify.svg'
+const send = '/icon/send.svg'
 
 
 export const social = [
@@ -51,5 +52,11 @@ export const social = [
     name: 'spotify',
     link: 'https://open.spotify.com/user/twobanks',
     icon: spotify
+  },
+  {
+    id: uuid(),
+    name: 'fala',
+    link: 'mailto: twobanks@me.com',
+    icon: send
   },
 ]

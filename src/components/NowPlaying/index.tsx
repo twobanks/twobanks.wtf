@@ -3,8 +3,7 @@ import fetcher from '../../utils/lib/fetcher';
 import { NowPlayingSong } from '../../types/spotify';
 import * as S from './styled'
 import limitName from '../../utils/functions/limitName';
-const LIMIT_NAME_MUSIC = 25;
-const LIMIT_NAME_ARTIST = 30;
+const LIMIT_NAME = 25;
 const DEBOUNCE_TIME = 180000;
 
 const Playing = () => (
@@ -27,8 +26,8 @@ const NowPlaying = () => {
         <S.Wrapper>
           <Playing />
           <S.Song href={data?.songUrl}>
-            <strong>{limitName(data?.title, LIMIT_NAME_MUSIC)}</strong>
-            <span>{limitName(data?.artist, LIMIT_NAME_ARTIST)}</span>
+            <strong>{limitName(data?.title, LIMIT_NAME)}</strong>
+            <span>{limitName(data?.artist, LIMIT_NAME)}</span>
           </S.Song>
         </S.Wrapper>}
     </>
