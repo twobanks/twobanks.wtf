@@ -3,6 +3,7 @@ import Wrapper from '../Wrapper';
 import * as S from './styled'
 import { ReactNode, useState } from 'react';
 import { works } from './mock';
+import { conversionStack } from '../../utils/functions/conversionStack';
 
 const Works = () => {
   const Animation = (props: { index: string; children: ReactNode }) => {
@@ -31,7 +32,7 @@ const Works = () => {
   return (
     <Wrapper>
       <S.Content>
-        <h1>trampos</h1>
+        <h2>trampos</h2>
         <ul>
           {works?.map((item, index) => {
             return (
@@ -42,7 +43,7 @@ const Works = () => {
                     <S.Title>
                       <strong>{item.name}</strong>
                       <ul>
-                        {item.language.map(language => <li key={language}>{language}</li>)}
+                        {item.language.map(language => <S.Item key={language} stack={language}>{conversionStack(language)}</S.Item>)}
                       </ul>
                     </S.Title>
                   </Animation>

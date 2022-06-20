@@ -36,5 +36,12 @@ export default {
     blue: '#2b7489',
     yellow: '#f1e05a',
     spotify: '#1DB954',
+    stacks: {
+      typescript: '#3178C6',
+      javascript: '#F1E05A ',
+      next: 'linear-gradient(90deg,#ed6292 25%,#ed5760 87.5%)',
+      gatsby: '#A456F0',
+      styled: '#DB7093',
+    }
   },
 } as const

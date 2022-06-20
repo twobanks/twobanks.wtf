@@ -1,20 +1,35 @@
 import styled, { css } from "styled-components";
 import media from 'styled-media-query';
 import { motion } from 'framer-motion'
+import { STACKS } from "../../utils/enums/stack";
+
+type WorksStyle = {
+  stack: STACKS
+}
 
 export const Content = styled.main`
-  display: flex;
-  flex-direction: column;
-  max-width: 92rem;
-  width: 100%;
-  margin: 0 auto;
-  ul {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    ${media.lessThan("medium")`
-      grid-template-columns: repeat(1, 1fr);
-    `}
-  }
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    max-width: 92rem;
+    width: 100%;
+    margin: 0 auto;
+    ul {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      ${media.lessThan("medium")`
+        grid-template-columns: repeat(1, 1fr);
+      `}
+    }
+    h2 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: ${theme.font.sizes.s36};
+      color: ${theme.colors.primary};
+      padding: 2rem 0;
+    }
+  `}
 `
 
 export const Work = styled.li`
@@ -44,12 +59,28 @@ export const Title = styled.div`
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
-      li {
-        font-size: ${theme.font.sizes.s14};
-        background-color: ${theme.colors.hover};
-        padding: .5rem 1rem;
-        border-radius: .8rem;
-      }
+
+    }
+  `}
+`
+
+export const Item = styled.li<WorksStyle>`
+  ${({ theme, stack }) => css`
+    position: relative;
+    font-size: ${theme.font.sizes.s14};
+    background-color: ${theme.colors.hover};
+    padding: .5rem 1rem .5rem 3rem;
+    border-radius: .8rem;
+    &::after {
+      background: ${theme.colors.stacks[stack]};
+      border-radius: 50%;
+      content: "";
+      left: 1rem;
+      top: 1rem;
+      height: 1rem;
+      width: 1rem;
+      position: absolute;
+
     }
   `}
 `

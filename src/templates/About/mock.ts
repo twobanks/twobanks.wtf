@@ -2,7 +2,7 @@ const twobanks = '/img/twobanks.jpg';
 
 type Career = {
   occupation: string;
-  stacks: string;
+  stacks?: string;
   company: string;
   link: string;
   city: string;
@@ -10,7 +10,7 @@ type Career = {
   startDate: string;
   current: boolean;
   departureDate?: string;
-  durationInMonths: string;
+  durationInMonths?: string;
 }
 
 type Social = {
@@ -21,7 +21,7 @@ type Social = {
 }
 
 type About = {
-  bio: string;
+  bio?: string;
   image: string;
   career: Career[];
   social: Social[];
@@ -38,18 +38,28 @@ type About = {
 }
 
 export const about: About = {
-  bio: 'Meu nome é Thiago. Trabalho como Front-End Developer desde 2014 e atualmente sou Desenvolvedor no Harpoon. No meu tempo livre gosto de pedalar ou correr, assistir filmes e séries, ler livros, ouvir músicas e jogar vídeo game.',
   image: twobanks,
   career: [
+    {
+      occupation: 'Desenvolvedor Front-End',
+      stacks: 'TypeScript , Javascript (ES6), HTML/CSS, ReactJS',
+      company: 'Bornlogic',
+      link: 'https://www.bornlogic.com/',
+      city: 'São Paulo',
+      uf: 'SP',
+      startDate: 'jul de 2022',
+      current: true,
+    },
     {
       occupation: 'Desenvolvedor Front-End',
       stacks: 'TypeScript , Javascript (ES6), HTML/CSS, ReactJS, Hooks, NextJS, Jest, React Testing Libary, Styled Components, Material UI, Git, Git Flow, Yarn, Clean Code',
       company: 'Harpoon',
       link: 'https://harpoon.digital/',
       city: 'Uberlândia',
-      uf: 'Minas Gerais',
+      uf: 'MG',
       startDate: 'fev de 2021',
-      current: true,
+      current: false,
+      departureDate: 'jun de 2022',
       durationInMonths: '1 ano 4 meses',
     },
     {
@@ -58,9 +68,10 @@ export const about: About = {
       company: 'Bowe',
       link: 'https://bowe.com.br/',
       city: 'Uberlândia',
-      uf: 'Minas Gerais',
+      uf: 'MG',
       startDate: 'nov de 2020',
-      current: true,
+      current: false,
+      departureDate: 'jun de 2022',
       durationInMonths: '1 ano 7 meses',
     },
     {
@@ -69,7 +80,7 @@ export const about: About = {
       company: 'WebCorpore',
       link: 'https://webcorpore.com/',
       city: 'Uberlândia',
-      uf: 'Minas Gerais',
+      uf: 'MG',
       startDate: 'jun de 2014',
       current: false,
       departureDate: 'out de 2020',

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import styled, { css } from 'styled-components'
+import media from "styled-media-query";
 
 export const Header = styled.header`
 	${({theme}) => css`
@@ -13,6 +14,10 @@ export const Header = styled.header`
     margin: 0 auto;
 		padding: 1rem 0;
 		position: relative;
+		${media.lessThan("medium")`
+      flex-direction: column;
+			padding: 2rem 0;
+    `}
 	`}
 `
 
@@ -22,6 +27,7 @@ export const Banks = styled.div`
 		height: 6rem;
 		width: 6rem;
 		display: flex;
+		cursor: pointer;
 	}
 
 `

@@ -1,5 +1,6 @@
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
+import Image from 'next/image';
 
 type AboutStyle = {
   image?: string;
@@ -70,7 +71,7 @@ export const Occupation = styled.strong`
     display: flex;
     font-size: ${theme.font.sizes.s18};
     color: ${theme.colors.primary};
-    line-height: 3rem;
+    margin-bottom: 1rem;
   `}
 `
 
@@ -100,11 +101,11 @@ export const Career = styled.section<AboutStyle>`
     flex-direction: column;
     flew-wrap: wrap;
     gap: 4rem;
-    padding: 8rem 0;
+    padding: 4rem 0;
     h2 {
       font-size: ${theme.font.sizes.s28};
       color: ${theme.colors.primary};
-      line-height: 3rem;
+      margin-bottom: 1rem;
     }
     ul {
       ${course && css`
@@ -122,23 +123,23 @@ export const Career = styled.section<AboutStyle>`
 `
 
 export const Experience = styled.li<AboutStyle>`
-${({ theme, current }) => css`
-  position: relative;
-  padding: 0 2rem 2rem 4rem;
-  border-left: .025rem solid ${theme.colors.secondary};
-  outline: none;
-  &:after {
-    content: "";
-    position: absolute;
-    top: 25%;
-    left: -.8rem;
-    border-radius: 50%;
-    width: 1.5rem;
-    height: 1.5rem;
-    background-color: ${current ? theme.colors.primary : theme.colors.secondary};
-  }
-`}
+  ${({ theme, current }) => css`
+    position: relative;
+    padding: 0 2rem 2rem 4rem;
+    border-left: .025rem solid ${theme.colors.secondary};
+    outline: none;
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -.8rem;
+      border-radius: 50%;
+      width: 1.5rem;
+      height: 1.5rem;
+      background-color: ${current ? theme.colors.primary : theme.colors.secondary};
+    }
 
+  `}
 `
 
 export const Company = styled.div`
@@ -154,31 +155,38 @@ export const Company = styled.div`
 
 export const ImageWrapper = styled.div`
   display: flex;
+  height: 40rem;
+  width: 40rem;
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  overflow: hidden;
+  position: relative;
+  img {
+    width: 100%;
+    height: 100%:
+  }
+  ${media.lessThan("large")`
+    height: 35rem;
+    width: 35rem;
+  `}
   ${media.lessThan("medium")`
-    justify-content: center;
+    display: none;
   `}
 `
 
-export const Me = styled.div<AboutStyle>`
-  ${({ image }) => css`
-    display: flex;
-    height: 40rem;
-    width: 40rem;
-    background-image: url(${image});
-    background-size: cover;
-    background-position: center;
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  `}
-`
+
 
 export const Bio = styled.div`
   display: flex;
   flex-direction: row-reverse;
   gap: 8rem;
-  padding: 8rem 0;
+  padding: 4rem 0;
+  ${media.lessThan("large")`
+    gap: 4rem;
+  `}
   ${media.lessThan("medium")`
     flex-direction: column;
-    padding: 0 0 8rem 0;
+    padding: 0 0 4rem 0;
+    gap: 0;
   `}
 `
 
