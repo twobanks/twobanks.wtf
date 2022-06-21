@@ -1,7 +1,11 @@
 import styled, { css } from 'styled-components'
 
-export const Footer = styled.footer`
-  ${({ theme }) => css`
+type FooterStyle = {
+  status: boolean;
+}
+
+export const Footer = styled.footer<FooterStyle>`
+  ${({ theme, status }) => css`
     display: flex;
 		align-items: center;
     justify-content: center;
@@ -18,6 +22,9 @@ export const Footer = styled.footer`
       &:hover {
         color: ${theme.colors.primary};
       }
+      ${status && css`
+        color: ${theme.colors.primary};
+      `}
     }
   `}
 `

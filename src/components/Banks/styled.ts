@@ -1,12 +1,42 @@
 import styled, { css } from "styled-components";
 
-export const WrapperBanks = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  min-width: 20rem;
-  max-width: 25rem;
-  margin: 1rem;
+type BanksStyle = {
+  open: boolean;
+}
+
+export const overlayModifiers = {
+  default: () => css`
+    display: none;
+    transition: all 0.35s ease-out;
+  `,
+  open: () => css`
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    transition: all 0.35s ease-in;
+  `,
+};
+
+export const WrapperBanks = styled.div<BanksStyle>`
+  ${({ theme, open }) => css`
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    gap: .5rem;
+    min-width: 20rem;
+    max-width: 25rem;
+    z-index: 2;
+    margin-top: -20rem;
+    background-color: ${theme.colors.hover};
+    border-radius: .8rem;
+    padding: 2rem;
+    ${open && css`
+      display: flex;
+    `}
+  `}
 `
 
 export const WrapperLinks = styled.div`
@@ -46,3 +76,11 @@ export const AvatarWrapper = styled.div`
     border-radius: 50%;
   }
 `
+
+export const Overlay = styled.div<BanksStyle>`
+  ${({ open }) =>
+    css`
+      ${!open && overlayModifiers.default()};
+      ${open && overlayModifiers.open()};
+    `}
+`;

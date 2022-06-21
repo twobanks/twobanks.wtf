@@ -5,7 +5,7 @@ export const Wrapper = styled.div`
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    border-top: .1rem solid ${theme.colors.hover};
+    border-top: .1rem solid ${theme.colors.background};
     padding-top: 1rem;
     span {
       cursor: pointer;

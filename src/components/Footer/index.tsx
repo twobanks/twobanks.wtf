@@ -1,14 +1,16 @@
-/* eslint-disable @next/next/no-img-element */
 import * as S from './styled'
 import { Banks } from '../'
-import { Tooltip } from '@nextui-org/react';
+import { useState } from 'react';
 
-const Footer = () => (
-  <S.Footer>
-    <Tooltip trigger='click' color="invert" content={<Banks />}>
-      <h2>twobanks</h2>
-    </Tooltip>
-  </S.Footer>
-)
+const Footer = () => {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(prevState => !prevState);
+  return (
+    <S.Footer status={open}>
+      <h2 onClick={handleOpen}>twobanks</h2>
+      <Banks open={open} handleOpen={handleOpen} />
+    </S.Footer>
+  )
+}
 
 export default Footer
