@@ -6,23 +6,23 @@ export const Wrapper = styled.main`
     width: 100%;
     margin: 0 auto;
     ul {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-direction: column;
       li {
         display: flex;
+        padding: 2rem 0;
+        gap: 2rem;
         span {
           font-size: ${theme.font.sizes.s12};
-          width: 50%;
         }
       }
     }
   `}
 `
-
 export const MapWrapper = styled.div`
   img {
     display: flex;
-    max-width: 35rem;
+    max-width: 20rem;
     width: 100%;
     height: auto;
   }
@@ -38,5 +38,10 @@ export const TypeActivity = styled.div`
 
 export const ActivityData = styled.div`
     display: flex;
-    flex-direction: column;
+    gap: 4rem;
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
 `

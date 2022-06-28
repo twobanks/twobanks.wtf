@@ -7,18 +7,8 @@ import { pages } from './mock'
 import { conversionPage } from '../../utils/functions/conversionPage'
 const twobanks = '/img/twobanks.png';
 
-type TestProps = {
-  [key: string]: string[],
-  }
-
 const Header = () => {
   const [hovered, setHovered] = useState<string>('')
-
-  const subMenu: TestProps = {
-    'works': [ 'about', 'works', 'repo'],
-    'lifestyle': ['activities',  'musics', ],
-  };
-
   return(
     <S.Header>
       <S.Banks>
@@ -32,7 +22,7 @@ const Header = () => {
           const isHovered = hovered === page
           return(
             <li key={page}>
-              <Link href={page !== 'idea' ? '' : path} passHref>
+              <Link href={path} passHref>
                 <S.NavContainer
                     onHoverStart={() => setHovered(page)}
                     onHoverEnd={() => setHovered('')}
@@ -44,22 +34,6 @@ const Header = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                       />
-                    )}
-                    {page !== 'idea' && isHovered && (
-                      <S.DropDown
-                        layoutId="sub-menu"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1, transition: { duration: 1.5 }, }}
-                        exit={{ opacity: 0 }}
-                      >
-                        {subMenu[hovered]?.map((item) => {
-                          return (
-                            <li key={uuid()}>
-                              {item}
-                            </li>
-                          )
-                        })}
-                    </S.DropDown>
                     )}
                     {conversionPage(page)}
                   </S.NavContainer>

@@ -68,18 +68,3 @@ export const NavHovered = styled(motion.span)`
 	`}
 `
 
-export const DropDown = styled(motion.div)`
-	${({ theme }) => css`
-		position: absolute;
-		display: flex;
-		flex-direction: column;
-		top: 5.4rem;
-		left: 0;
-		padding: 2rem 1rem;
-		background-color: ${theme.colors.hover};
-		color: ${theme.colors.secondary};
-		border-radius: .8rem;
-		width: 100%;
-		gap: .5rem;
-	`}
-`;

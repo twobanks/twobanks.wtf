@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { v4 as uuid} from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers  } from '../../utils/functions/conversionStrava'
@@ -12,7 +12,6 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
     let style = 'ckmi23ula94rm17rxmlpg00as'
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+5ddb95(${polylineEncoded})/auto/500x300@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   },[])
-
   return(
     <S.Wrapper>
       <ul>
@@ -24,10 +23,10 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
         const averageSpeed = type !== 'Ride' ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
         return (
           <li key={uuid()}>
-            <a href={`https://www.strava.com/activities/${id}`}>
-              <S.MapWrapper>
+            <S.MapWrapper>
                 <img src={mapUrl} alt={name}  />
-              </S.MapWrapper>
+            </S.MapWrapper>
+            <a href={`https://www.strava.com/activities/${id}`}>
               <S.TypeActivity>
                 <img src={conversionTypeActivities(type)} alt={type} />
               </S.TypeActivity>
@@ -36,7 +35,7 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
                 <div><span>Distância:</span> {metersToKilometers(distance)} km</div>
                 <div><span>{averageTitle}</span> {averageSpeed} km/h</div>
                 <div><span>Freq. cardíaca média:</span> {average_heartrate.toFixed(0)}</div>
-                <div><span>Elevação:</span> {total_elevation_gain.toFixed(0)} m</div>
+                <div><span>Elevação:</span> <span>{total_elevation_gain.toFixed(0)} m</span></div>
               </S.ActivityData>
             </a>
           </li>

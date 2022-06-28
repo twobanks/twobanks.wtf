@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { motion } from "framer-motion"
 
 type BanksStyle = {
   open: boolean;
@@ -20,7 +21,7 @@ export const overlayModifiers = {
   `,
 };
 
-export const WrapperBanks = styled.div<BanksStyle>`
+export const WrapperBanks = styled(motion.div)<BanksStyle>`
   ${({ theme, open }) => css`
     position: absolute;
     display: none;
@@ -30,7 +31,7 @@ export const WrapperBanks = styled.div<BanksStyle>`
     max-width: 25rem;
     z-index: 2;
     margin-top: -20rem;
-    background-color: ${theme.colors.hover};
+    background-color: ${theme.colors.black};
     border-radius: .8rem;
     padding: 2rem;
     ${open && css`

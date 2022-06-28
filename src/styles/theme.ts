@@ -28,13 +28,14 @@ export default {
   },
   colors: {
     none: "transparent",
-    background: "#08070B",
+    background: "#1A181E",
     primary: "#F2F2F2",
     secondary: "#8F9BA8",
     hover: '#212024',
-    red: '#f0544f',
-    blue: '#2b7489',
-    yellow: '#f1e05a',
+    black: "#08070B",
+    red: '#F0544F',
+    blue: '#2B7489',
+    yellow: '#F1E05A',
     spotify: '#1DB954',
     stacks: {
       typescript: '#3178C6',

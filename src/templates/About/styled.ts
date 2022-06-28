@@ -120,6 +120,11 @@ export const Career = styled.section<AboutStyle>`
     }
     border-top: .1rem solid ${theme.colors.hover};
   `}
+  ${media.lessThan("medium")`
+    ul {
+      padding-left: 1rem;
+    }
+  `}
 `
 
 export const Experience = styled.li<AboutStyle>`
@@ -138,8 +143,15 @@ export const Experience = styled.li<AboutStyle>`
       height: 1.5rem;
       background-color: ${current ? theme.colors.primary : theme.colors.secondary};
     }
-
+    ${media.lessThan("medium")`
+      padding: 0 2rem 2rem 0;
+      border-left: .025rem solid ${theme.colors.none};
+      &:after {
+        display: none;
+      }
+    `}
   `}
+
 `
 
 export const Company = styled.div`

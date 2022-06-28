@@ -8,10 +8,17 @@ type BanksProps = {
   open: boolean;
   handleOpen: () => void;
 }
-
+const variants = {
+  open: { opacity: 1, transition: { duration: .5 } },
+  closed: { opacity: 0 },
+}
 const Banks = ({ open, handleOpen } : BanksProps) => (
   <>
-    <S.WrapperBanks open={open}>
+    <S.WrapperBanks
+      open={open}
+      animate={open ? "open" : "closed"}
+      variants={variants}
+    >
       <S.Header>
         <S.AvatarWrapper>
           <img src={me} alt="twobanks"/>
