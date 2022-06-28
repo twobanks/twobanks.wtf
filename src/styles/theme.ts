@@ -43,6 +43,13 @@ export default {
       next: 'linear-gradient(90deg,#ed6292 25%,#ed5760 87.5%)',
       gatsby: '#A456F0',
       styled: '#DB7093',
+    },
+    trainingZone: {
+      z1: '#9DE1E0',
+      z2: '#1DB954',
+      z3: '#ED8522',
+      z4: '#D42841',
+      z5: 'red',
     }
   },
 } as const
