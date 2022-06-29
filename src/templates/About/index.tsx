@@ -10,13 +10,12 @@ const About = () => (
       <h2>sobre mim</h2>
       <S.Bio>
         <S.ImageWrapper>
-          {/* <S.Me image={about.image} /> */}
           <Image src={about.image} alt="twobanks" layout='fill' objectFit='cover' />
         </S.ImageWrapper>
         <S.About>
          <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor Front-End, desde 2014.</p>
-         <p>Atualmente, atuo como Desenvolvedor Front-End,  no <a href="https://harpoon.digital/">Harpoon</a>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, NextJS, Styled Components ...</p>
-         <p>No meu tempo livre, aproveito momentos com a minha esposa Tefa <em>❤</em> e meu cachorro Brown 🐶, pratico trail run ou mountain bike, ouço rap/trap, viajo 🛸, procuro aprender sobre civilizações antigas e expandir meus conhecimentos sobre ReactJS e CSS, entre outras coisas que dispertem minha curiosidade e prazer em aprender, torço para o time do Cruzeiro, assisto NBA e jogo GTA.</p>
+         <p>Atualmente, atuo como Desenvolvedor Front-End,  na <a href="https://www.bornlogic.com/">Bornlogic</a>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
+         <p>No meu tempo livre, aproveito momentos com a minha esposa Tefa <em>❤</em> e meu cachorro Brown 🐶, pratico Trail Run e Mountain Bike, ouço bastante música (principalmente RAP), viajo 🛸, procuro aprender sobre civilizações antigas e expandir meus conhecimentos sobre ReactJS e CSS, entre outras coisas que dispertem minha curiosidade e prazer em aprender, torço para o time do Cruzeiro, assisto NBA e jogo GTA.</p>
         </S.About>
       </S.Bio>
       <S.Career>

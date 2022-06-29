@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
 import Image from 'next/image';
 
@@ -6,6 +6,19 @@ type AboutStyle = {
   image?: string;
   current?: boolean;
   course?: boolean;
+}
+
+const link = {
+  default: (theme: DefaultTheme) => css`
+    a {
+      color: ${theme.colors.primary};
+      font-weight: ${theme.font.bold};
+      transition: color 0.2s ease-in-out;
+      &:hover {
+        color: ${theme.colors.blue};
+      }
+    }
+  `
 }
 
 export const Content = styled.main`
@@ -42,9 +55,11 @@ export const About = styled.section`
     justify-content: center;
     flex: 1;
     gap: 1rem;
-    strong, a {
+    transition: color 0.2s ease-in-out;
+    strong {
       color: ${theme.colors.primary};
       font-weight: ${theme.font.bold};
+      transition: color 0.2s ease-in-out;
     }
     p {
       text-indent: 2rem;
@@ -63,6 +78,7 @@ export const About = styled.section`
         padding: .25rem 1.25rem;
       }
     }
+    ${link.default(theme)}
   `}
 `
 
@@ -112,9 +128,7 @@ export const Career = styled.section<AboutStyle>`
         display: flex;
         flex-direction: column;
         gap: 2rem;
-        a {
-          color: ${theme.colors.primary};
-        }
+        ${link.default(theme)}
       `}
       padding-left: 4rem;
     }
@@ -159,16 +173,14 @@ export const Company = styled.div`
     font-size: ${theme.font.sizes.s14};
     line-height: 2rem;
     width: 95%;
-    a {
-      color: ${theme.colors.primary};
-    }
+    ${link.default(theme)}
   `}
 `
 
 export const ImageWrapper = styled.div`
   display: flex;
-  height: 40rem;
-  width: 40rem;
+  height: 35rem;
+  width: 35rem;
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   overflow: hidden;
   position: relative;
@@ -176,10 +188,6 @@ export const ImageWrapper = styled.div`
     width: 100%;
     height: 100%:
   }
-  ${media.lessThan("large")`
-    height: 35rem;
-    width: 35rem;
-  `}
   ${media.lessThan("medium")`
     display: none;
   `}

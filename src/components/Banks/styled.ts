@@ -28,7 +28,7 @@ export const WrapperBanks = styled(motion.div)<BanksStyle>`
     flex-direction: column;
     gap: .5rem;
     min-width: 20rem;
-    max-width: 25rem;
+    max-width: 30rem;
     z-index: 2;
     margin-top: -20rem;
     background-color: ${theme.colors.black};

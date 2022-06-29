@@ -32,9 +32,9 @@ export default {
     primary: "#F2F2F2",
     secondary: "#8F9BA8",
     hover: '#212024',
-    black: "#08070B",
+    black: "#151418",
     red: '#F0544F',
-    blue: '#2B7489',
+    blue: '#9DE1E0',
     yellow: '#F1E05A',
     spotify: '#1DB954',
     stacks: {

@@ -1,38 +1,20 @@
 import styled, { css } from 'styled-components'
 import media from 'styled-media-query'
+import { motion } from 'framer-motion'
 
 type StravaStyles = {
   average?: number;
 }
 
 export const Wrapper = styled.main`
-  ${({ theme }) => css`
-    max-width: 92rem;
-    width: 100%;
-    margin: 0 auto;
-    ul {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      li {
-        display: flex;
-        gap: 2rem;
-        background: ${theme.colors.hover};
-        border-radius: .8rem;
-        span {
-          font-size: ${theme.font.sizes.s14};
-        }
-        ${media.lessThan("large")`
-          gap: 1rem;
-        `}
-        ${media.lessThan("medium")`
-          flex-direction: column;
-          gap: 0;
-        `}
-      }
-    }
-  `}
+  max-width: 92rem;
+  width: 100%;
+  margin: 0 auto;
+  ul {
+    display: flex;
+    flex-direction: column;
 
+  }
 `
 export const MapWrapper = styled.div`
   ${({ theme }) => css`
@@ -55,14 +37,19 @@ export const MapWrapper = styled.div`
 `
 
 export const TypeActivity = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  img {
+  ${({ theme }) => css`
     display: flex;
-    width: 2rem;
-    height: 2rem;
-  }
+    align-items: center;
+    gap: 1rem;
+    img {
+      display: flex;
+      width: 4rem;
+      height: 4rem;
+      background-color: ${theme.colors.black};
+      padding: 1rem;
+      border-radius: 0.8rem;
+    }
+  `}
 `
 
 export const ActivityData = styled.div`
@@ -106,25 +93,11 @@ export const HeaderActivity = styled.div`
   justify-content: space-between;
 `
 
-export const ButtonWrapper = styled.div`
+export const LinksWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    > div {
-      display: flex;
-      gap: 1rem;
-      button {
-        padding: .75rem 2rem;
-        background-color: ${theme.colors.background};
-        color: ${theme.colors.secondary};
-        border: 0;
-        outline: none;
-        border-radius: .8rem;
-        font-size: ${theme.font.sizes.s12};
-        font-weight: ${theme.font.light};
-      }
-    }
     a {
       font-size: ${theme.font.sizes.s14};
       color: ${theme.colors.secondary};
@@ -155,6 +128,48 @@ export const HeartRate = styled.div<StravaStyles>`
     `}
     ${average >= 198  && css`
       background-color: ${theme.colors.trainingZone.z5};
+    `}
+  `}
+`
+
+export const AnimContainer = styled(motion.li)`
+  ${({ theme }) => css`
+    position: relative;
+    opacity: 1;
+    border-bottom: 0.1rem solid ${theme.colors.hover};
+    &:hover {
+      border-bottom: 0.1rem solid ${theme.colors.none};
+    }
+  `}
+`
+
+export const AnimHovered = styled(motion.div)`
+  ${({theme}) => css`
+		position: absolute;
+		top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+		background-color: ${theme.colors.hover};
+		padding: 0;
+		border-radius: .8rem;
+		z-index: -1;
+	`}
+`
+
+export const Content = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    gap: 2rem;
+    span {
+      font-size: ${theme.font.sizes.s14};
+    }
+    ${media.lessThan("large")`
+      gap: 1rem;
+    `}
+    ${media.lessThan("medium")`
+      flex-direction: column;
+      gap: 0;
     `}
   `}
 `

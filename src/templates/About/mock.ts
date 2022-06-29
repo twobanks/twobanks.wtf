@@ -71,8 +71,8 @@ export const about: About = {
       uf: 'MG',
       startDate: 'nov de 2020',
       current: false,
-      departureDate: 'jun de 2022',
-      durationInMonths: '1 ano 7 meses',
+      departureDate: 'fev de 2021',
+      durationInMonths: '3 meses',
     },
     {
       occupation: 'Desenvolvedor Front-End',

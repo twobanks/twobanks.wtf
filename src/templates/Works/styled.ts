@@ -13,7 +13,7 @@ export const Content = styled.main`
     flex-direction: column;
     max-width: 92rem;
     width: 100%;
-    margin: 0 auto;
+    margin: 0 auto 4rem auto;
     ul {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -33,17 +33,22 @@ export const Content = styled.main`
 `
 
 export const Work = styled.li`
-  a {
-    display: flex;
-    flex-direction: column;
-    img {
+  ${({ theme }) => css`
+    a {
       display: flex;
-      width: 100%;
-      height: auto;
-      max-height: 22rem;
-      border-radius: .8rem;
+      flex-direction: column;
+      img {
+        display: flex;
+        width: 100%;
+        height: auto;
+        max-height: 22rem;
+        border-radius: .8rem;
+      }
     }
-  }
+    &:hover strong {
+      color: ${theme.colors.blue};
+    }
+  `}
 `
 
 export const Title = styled.div`
@@ -54,12 +59,12 @@ export const Title = styled.div`
     gap: 1rem;
     strong {
       color: ${theme.colors.primary};
+      transition: color 0.2s ease-in-out;
     }
     ul {
       display: flex;
       gap: 1rem;
       flex-wrap: wrap;
-
     }
   `}
 `
