@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components'
+import styled, { css, DefaultTheme } from 'styled-components'
 import media from 'styled-media-query'
 import { motion } from 'framer-motion'
 
@@ -81,6 +81,11 @@ export const ContentActivity = styled.div`
       font-weight: ${theme.font.bold};
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.primary};
+      transition: color 0.2s ease-in-out;
+      cursor: pointer;
+      &:hover {
+        color: ${theme.colors.blue};
+      }
     }
   `}
   ${media.lessThan("medium")`
@@ -89,13 +94,20 @@ export const ContentActivity = styled.div`
 `;
 
 export const HeaderActivity = styled.div`
-  display: flex;
-  justify-content: space-between;
-  a {
+  ${({ theme }) => css`
     display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+    justify-content: space-between;
+    a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      em {
+        color: ${theme.colors.secondary};
+        font-size: ${theme.font.sizes.s14};
+        font-weight: ${theme.font.light};
+      }
+    }
+  `}
 `
 
 export const LinksWrapper = styled.div`
@@ -110,9 +122,14 @@ export const LinksWrapper = styled.div`
       font-size: ${theme.font.sizes.s14};
       color: ${theme.colors.secondary};
       font-weight: ${theme.font.light};
+      transition: color 0.2s ease-in-out;
+      cursor: pointer;
       img {
         width: 1.5rem;
         height: 1.5rem;
+      }
+      &:hover {
+        color: ${theme.colors.blue};
       }
     }
   `}

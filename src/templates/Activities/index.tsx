@@ -9,16 +9,13 @@ type ActivitiesProps = {
   loading: boolean;
 }
 
-const Activities = ({ activities, loading }: ActivitiesProps) => {
-  console.log("loading", loading);
-  return (
-    <Wrapper>
-       <S.Content>
-        <h2>atividades</h2>
-        {loading ? 'loading' : <Strava activities={activities}/> }
-      </S.Content>
-    </Wrapper>
-  )
-}
+const Activities = ({ activities, loading }: ActivitiesProps) => (
+  <Wrapper>
+    <S.Content>
+      <h2>atividades</h2>
+      {loading ? 'loading' : <Strava activities={activities}/> }
+    </S.Content>
+  </Wrapper>
+)
 
 export default Activities;

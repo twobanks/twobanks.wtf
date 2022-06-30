@@ -6,9 +6,12 @@ import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilomete
 import { Activity } from '../../types/strava';
 import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
+import { useRouter } from 'next/router';
 const strava = '/icon/strava.svg'
+import geocoder from 'city-reverse-geocoder'
 
 const Strava = ({ activities }: { activities: Activity[] }) => {
+  const router = useRouter();
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index
@@ -35,6 +38,10 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
     const pathColor = theme.colors.trainingZone.z1.substring(1);
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+${pathColor}(${polylineEncoded})/auto/400x200@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   },[])
+  const handleActivity = (id: number) => {
+    router.push(`/activities/${id}`);
+  };
+
   return(
     <S.Wrapper>
       <ul>
@@ -49,35 +56,37 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
             month: '2-digit',
             day: '2-digit',
           });
+          const nearestCities = geocoder(activity?.start_latlng[0], activity?.start_latlng[1])
           return (
             <Animation key={uuid()} index={String(index)}>
-                <S.Content>
-                  <S.MapWrapper>
-                    <img src={mapUrl} alt={name} />
-                  </S.MapWrapper>
-                  <S.ContentActivity>
-                    <S.HeaderActivity>
-                      <a href={`https://www.strava.com/activities/${id}`}>
-                        <S.HeartRate average={Number(average_heartrate.toFixed(0))}/>
-                        {dateFormatted}
-                      </a>
-                      <S.TypeActivity>
-                        <img src={conversionTypeActivities(type)} alt={type} />
-                      </S.TypeActivity>
-                    </S.HeaderActivity>
-                    <S.ActivityData>
-                      <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
-                      <div><span>Duração</span> <strong>{movingTime}</strong></div>
-                      <div><span>{averageTitle}</span> <div><strong>{averageSpeed} </strong>km/h</div></div>
-                      <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
-                    </S.ActivityData>
-                    <S.LinksWrapper>
-                      <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={strava} alt="Strava" /></a>
-                      <a href="">+ ver mais</a>
-                    </S.LinksWrapper>
-                  </S.ContentActivity>
-                </S.Content>
-              </Animation>
+              <S.Content>
+                <S.MapWrapper>
+                  <img src={mapUrl} alt={name} />
+                </S.MapWrapper>
+                <S.ContentActivity>
+                  <S.HeaderActivity>
+                    <a onClick={() => handleActivity(id)}>
+                      <S.HeartRate average={Number(average_heartrate.toFixed(0))}/>
+                      {dateFormatted}
+                      <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
+                    </a>
+                    <S.TypeActivity>
+                      <img src={conversionTypeActivities(type)} alt={type} />
+                    </S.TypeActivity>
+                  </S.HeaderActivity>
+                  <S.ActivityData>
+                    <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
+                    <div><span>Duração</span> <strong>{movingTime}</strong></div>
+                    <div><span>{averageTitle}</span> <div><strong>{averageSpeed} </strong>km/h</div></div>
+                    <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
+                  </S.ActivityData>
+                  <S.LinksWrapper>
+                    <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={strava} alt="Strava" /></a>
+                    <a onClick={() => handleActivity(id)}>+ ver mais</a>
+                  </S.LinksWrapper>
+                </S.ContentActivity>
+              </S.Content>
+            </Animation>
           )
         })}
       </ul>
