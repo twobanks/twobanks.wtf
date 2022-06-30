@@ -3,7 +3,7 @@ export const conversionPage = (value: string) => {
     'about': 'sobre',
     'works': 'trampo',
     'idea': 'ideia',
-    'lifestyle': 'vivência'
+    'activities': 'vivência'
   }
   return labels[value];
 }

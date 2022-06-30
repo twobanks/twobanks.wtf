@@ -91,6 +91,11 @@ export const ContentActivity = styled.div`
 export const HeaderActivity = styled.div`
   display: flex;
   justify-content: space-between;
+  a {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
 `
 
 export const LinksWrapper = styled.div`
@@ -99,9 +104,16 @@ export const LinksWrapper = styled.div`
     justify-content: space-between;
     align-items: center;
     a {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
       font-size: ${theme.font.sizes.s14};
       color: ${theme.colors.secondary};
       font-weight: ${theme.font.light};
+      img {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
     }
   `}
 `;

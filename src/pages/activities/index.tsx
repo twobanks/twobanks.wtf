@@ -1,10 +1,10 @@
 import type { NextPage } from 'next'
 import { useEffect, useState } from 'react';
-import LifeStyle from '../templates/LifeStyle'
-import { Activity } from '../types/strava';
-import { CALL_REFRESH, CALL_ACTIVITIES } from '../utils/constants/strava';
+import Activities from '../../templates/Activities'
+import { Activity } from '../../types/strava';
+import { CALL_REFRESH, CALL_ACTIVITIES } from '../../utils/constants/strava';
 
-const LifeStylePage: NextPage = () => {
+const ActivitiesPage: NextPage = () => {
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -24,7 +24,7 @@ const LifeStylePage: NextPage = () => {
     .then(() => setLoading(false))
   }
 
-  return <LifeStyle activities={activities}/>
+  return <Activities activities={activities} loading={loading} />
 }
 
-export default LifeStylePage
+export default ActivitiesPage

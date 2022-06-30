@@ -6,6 +6,7 @@ import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilomete
 import { Activity } from '../../types/strava';
 import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
+const strava = '/icon/strava.svg'
 
 const Strava = ({ activities }: { activities: Activity[] }) => {
   const Animation = (props: { index: string; children: ReactNode }) => {
@@ -24,7 +25,6 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
             exit={{ opacity: 0 }}
           />
         )}
-
         {props.children}
       </S.AnimContainer>
     )
@@ -39,7 +39,6 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
     <S.Wrapper>
       <ul>
         {activities.map((activity, index) => {
-
           const { average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id, start_date_local } = activity;
           const mapUrl = handleMap(map.summary_polyline)
           const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
@@ -59,10 +58,10 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
                   <S.ContentActivity>
                     <S.HeaderActivity>
                       <a href={`https://www.strava.com/activities/${id}`}>
+                        <S.HeartRate average={Number(average_heartrate.toFixed(0))}/>
                         {dateFormatted}
                       </a>
                       <S.TypeActivity>
-                        <S.HeartRate average={Number(average_heartrate.toFixed(0))}/>
                         <img src={conversionTypeActivities(type)} alt={type} />
                       </S.TypeActivity>
                     </S.HeaderActivity>
@@ -73,7 +72,7 @@ const Strava = ({ activities }: { activities: Activity[] }) => {
                       <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
                     </S.ActivityData>
                     <S.LinksWrapper>
-                      <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava</a>
+                      <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={strava} alt="Strava" /></a>
                       <a href="">+ ver mais</a>
                     </S.LinksWrapper>
                   </S.ContentActivity>
