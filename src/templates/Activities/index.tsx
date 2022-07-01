@@ -1,15 +1,15 @@
 
 import { Strava } from '../../components';
-import { Activity } from '../../types/strava';
+import { Activities } from '../../types/strava';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
 
 type ActivitiesProps = {
-  activities: Activity[];
+  activities: Activities[];
   loading: boolean;
 }
 
-const Activities = ({ activities, loading }: ActivitiesProps) => (
+const ActivitiesTemplate = ({ activities, loading }: ActivitiesProps) => (
   <Wrapper>
     <S.Content>
       <h2>atividades</h2>
@@ -18,4 +18,4 @@ const Activities = ({ activities, loading }: ActivitiesProps) => (
   </Wrapper>
 )
 
-export default Activities;
+export default ActivitiesTemplate;

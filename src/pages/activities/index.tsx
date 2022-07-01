@@ -1,11 +1,11 @@
 import type { NextPage } from 'next'
 import { useEffect, useState } from 'react';
-import Activities from '../../templates/Activities'
-import { Activity } from '../../types/strava';
+import ActivitiesTemplate from '../../templates/Activities';
+import { Activities } from '../../types/strava';
 import { CALL_REFRESH, CALL_ACTIVITIES } from '../../utils/constants/strava';
 
 const ActivitiesPage: NextPage = () => {
-  const [activities, setActivities] = useState<Activity[]>([])
+  const [activities, setActivities] = useState<Activities[]>([])
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ const ActivitiesPage: NextPage = () => {
     .then(() => setLoading(false))
   }
 
-  return <Activities activities={activities} loading={loading} />
+  return <ActivitiesTemplate activities={activities} loading={loading} />
 }
 
 export default ActivitiesPage

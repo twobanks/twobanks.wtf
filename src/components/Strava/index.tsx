@@ -3,14 +3,14 @@ import { ReactNode, useCallback, useState } from 'react';
 import { v4 as uuid} from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers  } from '../../utils/functions/conversionStrava'
-import { Activity } from '../../types/strava';
+import { Activities } from '../../types/strava';
 import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
 import { useRouter } from 'next/router';
 const strava = '/icon/strava.svg'
 import geocoder from 'city-reverse-geocoder'
 
-const Strava = ({ activities }: { activities: Activity[] }) => {
+const Strava = ({ activities }: { activities: Activities[] }) => {
   const router = useRouter();
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')

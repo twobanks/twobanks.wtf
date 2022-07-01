@@ -2,13 +2,14 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import Activity from '../../templates/Activities/Details';
+import ActivityTemplate from '../../templates/Activities/Details';
+import { Activity } from '../../types/strava';
 import { CALL_REFRESH } from '../../utils/constants/strava';
 
 const ActivitiesPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [activity, setActivity] = useState(null)
+  const [activity, setActivity] = useState({})
 
   useEffect(() => {
     fetch(CALL_REFRESH, {
@@ -24,7 +25,7 @@ const ActivitiesPage: NextPage = () => {
     .then(data => setActivity(data))
   }
 
-  return <Activity activity={activity}/>
+  return <ActivityTemplate activity={activity}/>
 }
 
 export default ActivitiesPage
