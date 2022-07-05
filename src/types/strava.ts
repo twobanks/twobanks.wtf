@@ -203,3 +203,76 @@ export type Activity = {
     count: number;
   },
 }
+
+type DataStats = {
+  distance : number;
+  achievement_count : number;
+  count : number;
+  elapsed_time : number;
+  elevation_gain : number;
+  moving_time : number;
+}
+
+export type AthleteStats = {
+  biggest_climb_elevation_gain : number;
+  biggest_ride_distance : number;
+  recent_run_totals : DataStats;
+  ytd_run_totals : DataStats;
+  all_run_totals : DataStats;
+  recent_ride_totals : DataStats;
+  ytd_ride_totals : DataStats;
+  all_ride_totals : DataStats;
+}
+
+export const mockAthleteStats = {
+  biggest_climb_elevation_gain : 0,
+  biggest_ride_distance : 0,
+  recent_run_totals : {
+    distance : 0,
+    achievement_count : 0,
+    count : 0,
+    elapsed_time : 0,
+    elevation_gain : 0,
+    moving_time : 0,
+  },
+  ytd_run_totals : {
+    distance : 0,
+    achievement_count : 0,
+    count : 0,
+    elapsed_time : 0,
+    elevation_gain : 0,
+    moving_time : 0,
+  },
+  all_run_totals : {
+    distance : 0,
+    achievement_count : 0,
+    count : 0,
+    elapsed_time : 0,
+    elevation_gain : 0,
+    moving_time : 0,
+  },
+  recent_ride_totals : {
+    distance : 0,
+    achievement_count : 0,
+    count : 0,
+    elapsed_time : 0,
+    elevation_gain : 0,
+    moving_time : 0,
+  },
+  ytd_ride_totals : {
+    distance : 0,
+    achievement_count : 0,
+    count : 0,
+    elapsed_time : 0,
+    elevation_gain : 0,
+    moving_time : 0,
+  },
+  all_ride_totals : {
+    distance : 0,
+    achievement_count : 0,
+    count : 0,
+    elapsed_time : 0,
+    elevation_gain : 0,
+    moving_time : 0,
+  },
+}
