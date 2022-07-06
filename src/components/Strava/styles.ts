@@ -13,7 +13,6 @@ export const Wrapper = styled.main`
   ul {
     display: flex;
     flex-direction: column;
-
   }
 `
 export const MapWrapper = styled.div`
