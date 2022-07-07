@@ -64,6 +64,7 @@ export const ContentStats = styled.div`
     ul {
       display: flex;
       justify-content: space-between;
+      padding-top: 1rem;
       li {
         display: flex;
         flex-direction: column;
@@ -74,6 +75,15 @@ export const ContentStats = styled.div`
         strong {
           color: ${theme.colors.primary};
           font-size: ${theme.font.sizes.s18};
+        }
+        em {
+          font-size: ${theme.font.sizes.s12};
+          background-color: ${theme.colors.hover};
+          padding: .5rem 1rem;
+          border-radius: .8rem;
+          strong {
+            font-size: ${theme.font.sizes.s12};
+          }
         }
       }
     }
@@ -93,6 +103,7 @@ export const Tabs = styled.div`
 
 export const Tab = styled.div<ActivitiesStyle>`
   ${({ theme, active }) => css`
+    font-size: ${theme.font.sizes.s14};
     background-color: ${theme.colors.none};
     color: ${theme.colors.secondary};
     transition: color 0.2s ease-in-out;

@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { v4 as uuid} from 'uuid';
 import * as S from './styles'
 import { useState } from 'react'
 import Link from 'next/link'
