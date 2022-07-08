@@ -26,6 +26,8 @@ export default {
       s48: "4.8rem",
     },
   },
+  radius: '.8rem',
+  container: '102rem',
   colors: {
     none: "transparent",
     background: "#1A181E",

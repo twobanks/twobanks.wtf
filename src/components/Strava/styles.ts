@@ -7,13 +7,15 @@ type StravaStyles = {
 }
 
 export const Wrapper = styled.main`
-  max-width: 92rem;
-  width: 100%;
-  margin: 0 auto;
-  ul {
-    display: flex;
-    flex-direction: column;
-  }
+  ${({ theme }) => css`
+    max-width: ${theme.container};
+    width: 100%;
+    margin: 0 auto;
+    ul {
+      display: flex;
+      flex-direction: column;
+    }
+  `}
 `
 export const MapWrapper = styled.div`
   ${({ theme }) => css`

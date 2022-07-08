@@ -9,7 +9,7 @@ export const Footer = styled.footer<FooterStyle>`
     display: flex;
 		align-items: center;
     justify-content: center;
-		max-width: 92rem;
+		max-width: ${theme.container};
 		width: 100%;
     margin: 0 auto;
 		padding: 1rem 0;

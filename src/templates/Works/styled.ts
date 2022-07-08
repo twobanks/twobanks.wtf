@@ -11,7 +11,7 @@ export const Content = styled.main`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    max-width: 92rem;
+    max-width: ${theme.container};
     width: 100%;
     margin: 0 auto 4rem auto;
     ul {

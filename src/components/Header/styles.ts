@@ -9,7 +9,7 @@ export const Header = styled.header`
 		justify-content: space-between;
 		font-size: ${theme.font.sizes.s16};
 		color: ${theme.colors.secondary};
-		max-width: 92rem;
+		max-width: ${theme.container};
 		width: 100%;
     margin: 0 auto;
 		padding: 1rem 0;
