@@ -1,9 +1,10 @@
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
+import { motion } from 'framer-motion'
 
 type DetailsStyle = {
   open?: boolean;
-  direction?: 'row'| 'column' | string;
+  direction?: 'row' | 'column' | string;
 }
 
 export const Container = styled.section`
@@ -29,6 +30,7 @@ export const Container = styled.section`
 export const Header = styled.header`
   ${({ theme }) => css`
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 2rem 0;
     gap: 2rem;
@@ -36,23 +38,17 @@ export const Header = styled.header`
     border-radius: .8rem;
     border-bottom: .1rem solid ${theme.colors.hover};
     button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background-color: ${theme.colors.hover};
       outline: none;
       border: 0;
       color: ${theme.colors.secondary};
       font-size: ${theme.font.sizes.s14};
-      padding: .75rem;
+      height: 3rem;
+      width: 3rem;
       border-radius: .8rem;
-      /* margin-right: 1rem; */
-      cursor: pointer;
-      transition: color 0.2s ease-in-out;
-      &:hover {
-        color: ${theme.colors.primary};
-      }
-    }
-    span {
-      margin-right: .5rem;
-      font-size: ${theme.font.sizes.s16};
       cursor: pointer;
       transition: color 0.2s ease-in-out;
       &:hover {
@@ -60,12 +56,29 @@ export const Header = styled.header`
       }
     }
     strong {
-      margin-left: .5rem;
-      font-size: ${theme.font.sizes.s16};
+      font-size: ${theme.font.sizes.s24};
       color: ${theme.colors.blue};
     }
   `}
 `
+
+export const Title = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    p {
+      font-size: ${theme.font.sizes.s14}; 
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      img {
+        display: flex;
+        
+      }
+    }
+  `}
+`;
 
 export const Content = styled.div`
   ${({ theme }) => css`
@@ -79,6 +92,9 @@ export const ActivityData = styled.div`
   ${({ theme }) => css`
     display: flex;
     gap: 2rem;
+    border-bottom: .1rem solid ${theme.colors.hover};
+    padding: 2rem 0;
+    margin-bottom: 2rem;
     strong {
       color: ${theme.colors.primary};
       font-size: ${theme.font.sizes.s18};
@@ -93,18 +109,35 @@ export const ActivityData = styled.div`
 `
 
 export const ContentActivity = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  flex: 1;
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 2rem;
+    > div {
+      display: flex;
+      gap: 4rem;
+      border-bottom: .1rem solid ${theme.colors.hover};
+      padding-bottom: 2rem;
+      &:last-child {
+        border-bottom: .1rem solid ${theme.colors.none};
+      }
+    }
+    
+  `}
 `
 
 export const Activity = styled.div<DetailsStyle>`
-  ${({ direction = 'column' }) => css`
+  ${({ theme, direction = 'column' }) => css`
     display: flex;
     flex-direction: ${direction};
     ${direction === 'row' && css`
       align-items: center;
       gap: 1rem;
+      strong {
+        font-size: ${theme.font.sizes.s16};
+        font-weight: ${theme.font.light};
+      }
       img {
         display: flex;
         margin-top: 10%;
@@ -120,7 +153,7 @@ export const SegmentsWrapper = styled.div`
     h3 {
       padding: 2rem 0;
       color: ${theme.colors.secondary};
-      font-size: ${theme.font.sizes.s18};
+      font-size: ${theme.font.sizes.s24};
       strong {
         color: ${theme.colors.primary};
       }
@@ -128,14 +161,37 @@ export const SegmentsWrapper = styled.div`
   `}
 `
 
+export const HeaderElevation = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2rem;
+    span {
+      font-size: ${theme.font.sizes.s16};
+    }
+    div {
+      border-radius: .8rem;
+      background-color: ${theme.colors.hover};
+      padding: .5rem 1rem;
+    }
+  `}
+`;
+
+export const ContentElevation = styled.div`
+  flex: 1;
+`;
+
 export const SegmentContent = styled.ul`
   display: flex;
   flex-direction: column;
+  padding: 0;
 `
 
 export const ElevationWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
+    flex-direction: column;
     height: 20rem;
     width: 50%;
     background-color: ${theme.colors.black};
@@ -148,7 +204,7 @@ export const ElevationWrapper = styled.div`
 export const Segment = styled.li`
   ${({ theme }) => css`
     position: relative;
-    padding: 1rem 1rem 1rem 3rem;
+    padding: 2rem 1rem 2rem 3rem;
     border-bottom: .1rem solid ${theme.colors.hover};
     &:before {
       position: absolute;
@@ -171,4 +227,50 @@ export const MapWrapper = styled.div`
     width: 100%;
     background-color: ${theme.colors.black};
   `}
+`
+
+export const TypeActivity = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    img {
+      display: flex;
+      width: 4rem;
+      height: 4rem;
+      background-color: ${theme.colors.black};
+      padding: 1rem;
+      border-radius: 0.8rem;
+    }
+  `}
+`
+
+export const AnimContainer = styled(motion.div)`
+  ${({ theme }) => css`
+    border: 0;
+    color: ${theme.colors.secondary};
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    width: 100%;
+    height: auto;
+    opacity: 1;
+    transition: color 0.2s ease-in-out;
+    position: relative;
+  `}
+`
+
+export const AnimHovered = styled(motion.div)`
+  ${({ theme }) => css`
+		position: absolute;
+		top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+		background-color: ${theme.colors.hover};
+		padding: 0;
+		border-radius: .8rem;
+		z-index: -1;
+	`}
 `
