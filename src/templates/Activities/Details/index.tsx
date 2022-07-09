@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { v4 as uuid } from 'uuid';
 import Wrapper from '../../Wrapper'
 import * as S from './styled'
@@ -10,6 +11,9 @@ import geocoder from 'city-reverse-geocoder'
 const like = '/icon/like.svg';
 const bike = '/icon/iconBike.svg';
 const run = '/icon/iconRun.svg';
+const conquests = '/icon/conquests.svg';
+const backIcon = '/icon/back.svg';
+const clock = '/icon/clock.svg';
 
 const ActivityTemplate = ({ activity }: any) => {
   const [movingTime, setMovingTime] = useState<string>('');
@@ -59,7 +63,7 @@ const ActivityTemplate = ({ activity }: any) => {
         <S.Content>
           <S.Header>
             <S.Title>
-              <button type='button' onClick={() => back()}>{`<`}</button>
+              <button type='button' onClick={() => back()}><img src={backIcon} /></button>
               <div>
                 <strong> {activity?.name}</strong>
                 <p>
@@ -87,7 +91,7 @@ const ActivityTemplate = ({ activity }: any) => {
                 <S.Activity ><span>Calorias</span> <div><strong>{activity?.calories}</strong> kcal</div></S.Activity>
               </div>
               <div>
-                <S.Activity direction="row"><span><img src={typeActivity} alt="Ícone de Bicicleta" /></span>  <div><strong>{activity?.device_name}</strong></div></S.Activity>
+                <S.Activity direction="row"><span><img src={clock} alt="Ícone de Bicicleta" /></span>  <div><strong>{activity?.device_name}</strong></div></S.Activity>
                 <S.Activity direction="row"><span><img src={typeActivity} alt="Ícone de Bicicleta" /></span> <div><strong>{activity?.gear?.name}</strong></div></S.Activity>
               </div>
             </S.ContentActivity>
@@ -103,11 +107,14 @@ const ActivityTemplate = ({ activity }: any) => {
         <S.SegmentsWrapper>
           <h3><strong>{activity?.segment_efforts?.length}</strong> segmentos</h3>
           <S.SegmentContent>
-            {activity?.segment_efforts?.map((item: { name: string; }, index: number) => {
+            {activity?.segment_efforts?.map((item: { name: string; distance: number; moving_time: number; average_heartrate: number; pr_rank: number; }, index: number) => {
               return (
                 <Animation key={uuid()} index={String(index)}>
                   <S.Segment>
-                    {item.name}
+                    {item.pr_rank && (
+                      <img src={conquests} alt="Ícone de troféu" />
+                    )}
+                    <strong>{item.name}</strong> - {(item.distance / 1000).toFixed(2)} km - {item.average_heartrate.toFixed(0)} bpm
                   </S.Segment>
                 </Animation>
               )

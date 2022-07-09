@@ -51,6 +51,11 @@ export const Header = styled.header`
       border-radius: .8rem;
       cursor: pointer;
       transition: color 0.2s ease-in-out;
+      img {
+        display: flex;
+        height: 2.5rem;
+        width: 2.5rem;
+      }
       &:hover {
         color: ${theme.colors.primary};
       }
@@ -68,24 +73,23 @@ export const Title = styled.div`
     align-items: center;
     gap: 2rem;
     p {
-      font-size: ${theme.font.sizes.s14}; 
       display: flex;
-      gap: 0.5rem;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: ${theme.font.sizes.s14};
+      flex-wrap: no-wrap;
       img {
         display: flex;
-        
       }
     }
   `}
 `;
 
 export const Content = styled.div`
-  ${({ theme }) => css`
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  `}
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `
 
 export const ActivityData = styled.div`
@@ -123,7 +127,6 @@ export const ContentActivity = styled.div`
         border-bottom: .1rem solid ${theme.colors.none};
       }
     }
-    
   `}
 `
 
@@ -204,17 +207,16 @@ export const ElevationWrapper = styled.div`
 export const Segment = styled.li`
   ${({ theme }) => css`
     position: relative;
-    padding: 2rem 1rem 2rem 3rem;
+    padding: 2rem 2rem 2rem 4rem;
     border-bottom: .1rem solid ${theme.colors.hover};
-    &:before {
+    font-size: ${theme.font.sizes.s14};
+    img {
       position: absolute;
-      content: '';
-      height: 1rem;
-      width: 1rem;
-      left: 0;
-      top: calc(50% - 0.5rem);
-      border-radius: 50%;
-      background-color: ${theme.colors.hover};
+      left: 1rem;
+    }
+    strong {
+      color: ${theme.colors.primary};
+      font-size: ${theme.font.sizes.s16};
     }
   `}
 `
