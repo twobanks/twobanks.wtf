@@ -1,10 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
-import { v4 as uuid } from 'uuid';
 import Wrapper from '../../Wrapper'
 import * as S from './styled'
 import { useRouter } from 'next/router';
 import { metersPerSecondTokmPerHour, metersPerSecondToMinPerKm, metersToKilometers } from '../../../utils/functions/conversionStrava';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { conversionTypeActivities } from '../../../utils/functions/conversionTypeActivities';
 import geocoder from 'city-reverse-geocoder'
 
@@ -36,44 +35,32 @@ const ActivityTemplate = ({ activity }: any) => {
       setCities(geocoder(activity?.start_latlng[0], activity?.start_latlng[1]))
     }
   }, [activity])
-  const Animation = (props: { index: string; children: ReactNode }) => {
-    const [hovered, setHovered] = useState('')
-    const isHovered = hovered === props.index
-    return (
-      <S.AnimContainer
-        onHoverStart={() => setHovered(props.index)}
-        onHoverEnd={() => setHovered('')}
-      >
-        {isHovered && (
-          <S.AnimHovered
-            layoutId="listItem"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-        )}
-
-        {props.children}
-      </S.AnimContainer>
-    )
-  }
+  const amountConquests = activity?.segment_efforts?.filter((item: { pr_rank: number; }) => item.pr_rank !== null)
   return (
     <Wrapper>
       <S.Container>
         <S.Content>
           <S.Header>
             <S.Title>
-              <button type='button' onClick={() => back()}><img src={backIcon} /></button>
+              <button type='button' onClick={() => back()}><img src={backIcon} alt="Ícone referente a voltar"/></button>
               <div>
                 <strong> {activity?.name}</strong>
                 <p>
-                  <em>{`${cities[0].city}, ${cities[0].region}`}</em> - <em>{dateFormatted[0].toUpperCase() + dateFormatted.substring(1)}</em> - <em><img src={like} alt="Ícone de Like" /></em> <em>{activity?.kudos_count}</em>
+                  <em>{`${cities[0].city}, ${cities[0].region}`}</em> •
+                  <em>{dateFormatted[0].toUpperCase() + dateFormatted.substring(1)}</em> •
+                  <em><img src={like} alt="Ícone de Like" /></em> <em>{activity?.kudos_count}</em>
                 </p>
               </div>
             </S.Title>
-            <S.TypeActivity>
-              <img src={conversionTypeActivities(activity?.type)} alt={activity?.type} />
-            </S.TypeActivity>
+            <S.WrapperIcons>
+              <S.WrapperConquest>
+                <img src={conquests} alt="Ícone de troféu" />
+                <strong>{amountConquests?.length}</strong>
+              </S.WrapperConquest>
+              <S.TypeActivity>
+                <img src={conversionTypeActivities(activity?.type)} alt={activity?.type} />
+              </S.TypeActivity>
+            </S.WrapperIcons>
           </S.Header>
           <S.ActivityData>
             <S.ContentActivity>
@@ -87,6 +74,7 @@ const ActivityTemplate = ({ activity }: any) => {
                 <S.Activity><span>{maxTitle}</span> <div><strong>{maxSpeed} </strong>km/h</div></S.Activity>
               </div>
               <div>
+                <S.Activity><span>Elevação</span> <div><strong>{activity?.total_elevation_gain?.toFixed(0)} </strong>m</div></S.Activity>
                 <S.Activity><span>Freq. Média</span> <div><strong> {activity?.average_heartrate?.toFixed(0)}</strong> bpm </div></S.Activity>
                 <S.Activity ><span>Calorias</span> <div><strong>{activity?.calories}</strong> kcal</div></S.Activity>
               </div>
@@ -96,31 +84,11 @@ const ActivityTemplate = ({ activity }: any) => {
               </div>
             </S.ContentActivity>
             <S.ElevationWrapper>
-              <S.HeaderElevation>
-                <span>Elevação</span> <div><strong>{activity?.total_elevation_gain?.toFixed(0)} </strong>m</div>
-              </S.HeaderElevation>
               <S.ContentElevation />
             </S.ElevationWrapper>
           </S.ActivityData>
           <S.MapWrapper />
         </S.Content>
-        <S.SegmentsWrapper>
-          <h3><strong>{activity?.segment_efforts?.length}</strong> segmentos</h3>
-          <S.SegmentContent>
-            {activity?.segment_efforts?.map((item: { name: string; distance: number; moving_time: number; average_heartrate: number; pr_rank: number; }, index: number) => {
-              return (
-                <Animation key={uuid()} index={String(index)}>
-                  <S.Segment>
-                    {item.pr_rank && (
-                      <img src={conquests} alt="Ícone de troféu" />
-                    )}
-                    <strong>{item.name}</strong> - {(item.distance / 1000).toFixed(2)} km - {item.average_heartrate.toFixed(0)} bpm
-                  </S.Segment>
-                </Animation>
-              )
-            })}
-          </S.SegmentContent>
-        </S.SegmentsWrapper>
       </S.Container>
     </Wrapper>
   )

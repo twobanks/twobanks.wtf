@@ -56,6 +56,7 @@ export const TypeActivity = styled.div`
 export const ActivityData = styled.div`
   ${({ theme }) => css`
     display: flex;
+    flex-wrap: wrap;
     gap: 4rem;
     > div {
       display: flex;
@@ -114,7 +115,7 @@ export const HeaderActivity = styled.div`
 export const LinksWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     a {
       display: flex;

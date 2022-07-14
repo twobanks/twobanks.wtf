@@ -1,9 +1,7 @@
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
-import { motion } from 'framer-motion'
 
 type DetailsStyle = {
-  open?: boolean;
   direction?: 'row' | 'column' | string;
 }
 
@@ -64,6 +62,9 @@ export const Header = styled.header`
       font-size: ${theme.font.sizes.s24};
       color: ${theme.colors.blue};
     }
+  `}
+  ${media.lessThan('medium')`
+    flex-direction: column;
   `}
 `
 
@@ -149,21 +150,6 @@ export const Activity = styled.div<DetailsStyle>`
   `}
 `
 
-export const SegmentsWrapper = styled.div`
-  ${({ theme }) => css`
-    display: flex;
-    flex-direction: column;
-    h3 {
-      padding: 2rem 0;
-      color: ${theme.colors.secondary};
-      font-size: ${theme.font.sizes.s24};
-      strong {
-        color: ${theme.colors.primary};
-      }
-    }
-  `}
-`
-
 export const HeaderElevation = styled.div`
   ${({ theme }) => css`
     display: flex;
@@ -185,12 +171,6 @@ export const ContentElevation = styled.div`
   flex: 1;
 `;
 
-export const SegmentContent = styled.ul`
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-`
-
 export const ElevationWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
@@ -204,23 +184,6 @@ export const ElevationWrapper = styled.div`
   `}
 `
 
-export const Segment = styled.li`
-  ${({ theme }) => css`
-    position: relative;
-    padding: 2rem 2rem 2rem 4rem;
-    border-bottom: .1rem solid ${theme.colors.hover};
-    font-size: ${theme.font.sizes.s14};
-    img {
-      position: absolute;
-      left: 1rem;
-    }
-    strong {
-      color: ${theme.colors.primary};
-      font-size: ${theme.font.sizes.s16};
-    }
-  `}
-`
-
 export const MapWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
@@ -228,6 +191,28 @@ export const MapWrapper = styled.div`
     height: 50rem;
     width: 100%;
     background-color: ${theme.colors.black};
+  `}
+`
+
+export const WrapperIcons = styled.div`
+  display: flex;
+  gap: 1rem;
+`
+
+export const WrapperConquest = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: auto;
+    height: 4rem;
+    background-color: ${theme.colors.black};
+    padding: 1rem;
+    border-radius: 0.8rem;
+    strong {
+      font-size: ${theme.font.sizes.s18};
+      color: ${theme.colors.primary};
+    }
   `}
 `
 
@@ -245,34 +230,4 @@ export const TypeActivity = styled.div`
       border-radius: 0.8rem;
     }
   `}
-`
-
-export const AnimContainer = styled(motion.div)`
-  ${({ theme }) => css`
-    border: 0;
-    color: ${theme.colors.secondary};
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-    width: 100%;
-    height: auto;
-    opacity: 1;
-    transition: color 0.2s ease-in-out;
-    position: relative;
-  `}
-`
-
-export const AnimHovered = styled(motion.div)`
-  ${({ theme }) => css`
-		position: absolute;
-		top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-		background-color: ${theme.colors.hover};
-		padding: 0;
-		border-radius: .8rem;
-		z-index: -1;
-	`}
 `

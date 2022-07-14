@@ -3,7 +3,6 @@ import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import ActivityTemplate from '../../templates/Activities/Details';
-import { Activity } from '../../types/strava';
 import { CALL_REFRESH } from '../../utils/constants/strava';
 
 const ActivitiesPage: NextPage = () => {
@@ -12,12 +11,14 @@ const ActivitiesPage: NextPage = () => {
   const [activity, setActivity] = useState({})
 
   useEffect(() => {
-    fetch(CALL_REFRESH, {
-      method: 'POST'
-    })
-    .then(res => res.json())
-    .then(result => getActivity(result.access_token))
-  }, [])
+    if(id) {
+      fetch(CALL_REFRESH, {
+        method: 'POST'
+      })
+      .then(res => res.json())
+      .then(result => getActivity(result.access_token))
+    }
+  }, [id])
 
   function getActivity(access: string){
     fetch(`https://www.strava.com/api/v3/activities/${id}?access_token=` + access)
