@@ -1,6 +1,6 @@
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import * as S from '../styled';
-import theme from "../../styles/theme";
+import theme from "../../../styles/theme";
 import { ReactNode } from "react";
 
 type SkeletonWrapperProps = {
