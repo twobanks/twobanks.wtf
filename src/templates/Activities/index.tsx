@@ -10,10 +10,9 @@ const trail = '/icon/trail.svg';
 type ActivitiesProps = {
   activities: Activities[];
   athleteStats?: AthleteStats;
-  loading: boolean;
 }
 
-const ActivitiesTemplate = ({ activities, athleteStats, loading }: ActivitiesProps) => {
+const ActivitiesTemplate = ({ activities, athleteStats }: ActivitiesProps) => {
   const [typeRun, setTypeRun] = useState<string>('all_run_totals')
   const [typeRide, setTypeRide] = useState<string>('all_ride_totals')
   const date = new Date()
@@ -91,7 +90,7 @@ const ActivitiesTemplate = ({ activities, athleteStats, loading }: ActivitiesPro
           </S.ContainerStats>
         </S.Stats>
         <h3>últimas atividades</h3>
-        {loading ? 'loading' : <Strava activities={activities}/> }
+        <Strava activities={activities} />
       </S.Content>
     </Wrapper>
   )

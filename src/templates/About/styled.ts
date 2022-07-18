@@ -1,6 +1,5 @@
 import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
-import Image from 'next/image';
 
 type AboutStyle = {
   image?: string;
