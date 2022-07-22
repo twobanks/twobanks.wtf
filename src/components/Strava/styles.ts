@@ -11,6 +11,7 @@ export const Wrapper = styled.main`
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
+    padding-bottom: 3rem;
     ul {
       display: flex;
       flex-direction: column;
@@ -169,6 +170,9 @@ export const AnimContainer = styled(motion.li)`
     opacity: 1;
     border-bottom: 0.1rem solid ${theme.colors.hover};
     &:hover {
+      border-bottom: 0.1rem solid ${theme.colors.none};
+    }
+    &:last-child {
       border-bottom: 0.1rem solid ${theme.colors.none};
     }
   `}

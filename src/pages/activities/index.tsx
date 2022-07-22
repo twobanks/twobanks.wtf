@@ -8,9 +8,8 @@ import { CALL_REFRESH, CALL_ACTIVITIES, CALL_ATHLETE_STATS } from '../../utils/c
 const ActivitiesPage: NextPage = () => {
   const [activities, setActivities] = useState<Activities[]>([])
   const [athleteStats, setAthleteStats] = useState<AthleteStats>(mockAthleteStats)
-
-  const [loadingActivities, setLoadingActivities] = useState<boolean>(false);
-  const [loadingAthleteStats, setLoadingAthleteStats] = useState<boolean>(false);
+  const [loadingActivities, setLoadingActivities] = useState<boolean>(true);
+  const [loadingAthleteStats, setLoadingAthleteStats] = useState<boolean>(true);
 
   useEffect(() => {
     fetch(CALL_REFRESH, {
@@ -21,7 +20,6 @@ const ActivitiesPage: NextPage = () => {
   }, [])
 
   const getActivities = (access: string) => {
-    setLoadingActivities(true)
     fetch(CALL_ACTIVITIES + access)
       .then(res => res.json())
       .then(data => setActivities(data))
@@ -37,7 +35,6 @@ const ActivitiesPage: NextPage = () => {
   }, [])
 
   const getAthleteStats = (access: string) => {
-    setLoadingAthleteStats(true)
     fetch(CALL_ATHLETE_STATS + access)
       .then(res => res.json())
       .then(data => setAthleteStats(data))
