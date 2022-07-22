@@ -36,17 +36,8 @@ export const Stats = styled.section`
   ${({ theme }) => css`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    background-color: ${theme.colors.black};
-    padding: 2rem;
-    border-radius: .8rem;
-    margin: 0 1rem;
-    img {
-      height: 4.5rem;
-      width: 4.5rem;
-      padding: 1rem;
-      border-radius: .8rem;
-      background-color: ${theme.colors.hover};
-    }
+    gap: 2rem;
+    border-radius: ${theme.radius};
     ${media.lessThan("medium")`
       grid-template-columns: repeat(1, 1fr);
       gap: 4rem;
@@ -59,15 +50,17 @@ export const ContentStats = styled.div`
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 1rem;
-    padding: 0 2rem;
+    gap: 2rem;
+    padding: 2rem;
     ul {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 2rem;
       padding-top: 1rem;
       li {
         display: flex;
         flex-direction: column;
+        gap: .25rem;
         span {
           color: ${theme.colors.secondary};
           font-size: ${theme.font.sizes.s14};
@@ -77,13 +70,11 @@ export const ContentStats = styled.div`
           font-size: ${theme.font.sizes.s18};
         }
         em {
-          font-size: ${theme.font.sizes.s12};
           background-color: ${theme.colors.hover};
           padding: .5rem 1rem;
-          border-radius: .8rem;
-          strong {
-            font-size: ${theme.font.sizes.s12};
-          }
+          border-radius: ${theme.radius};
+          width: fit-content;
+
         }
       }
     }
@@ -91,14 +82,15 @@ export const ContentStats = styled.div`
 `
 
 export const ContainerStats = styled.div`
-  display: flex;
+  ${({ theme }) => css`
+    display: flex;
+    background-color: ${theme.colors.black};
+    border-radius: ${theme.radius};
+  `}
 `
 
 export const Tabs = styled.div`
-  ${({ theme }) => css`
-    display: flex;
-    border-bottom: 0.1rem solid ${theme.colors.hover};
-  `}
+  display: flex;
 `
 
 export const Tab = styled.div<ActivitiesStyle>`
@@ -116,5 +108,20 @@ export const Tab = styled.div<ActivitiesStyle>`
       border-bottom: .2rem solid ${theme.colors.secondary};
       color: ${theme.colors.primary};
     `}
+  `}
+`
+
+export const ImageWrapper = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    height: 32rem;
+    width: 21rem;
+    border-radius: ${theme.radius};
+    overflow: hidden;
+    position: relative;
+    img {
+      width: 100%;
+      height: 100%:
+    }
   `}
 `

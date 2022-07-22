@@ -41,7 +41,7 @@ const SkeletonActivities = () => {
     <SkeletonWrapper>
       <S.ContainerStats>
         <Skeleton height={40} width={250} />
-        <Skeleton height={150} />
+        <Skeleton height={300} />
       </S.ContainerStats>
       <S.ActivitiesList>
         <Skeleton height={40} width={300} />
