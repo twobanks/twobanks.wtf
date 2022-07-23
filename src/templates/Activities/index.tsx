@@ -31,30 +31,33 @@ const ActivitiesTemplate = ({ activities, athleteStats }: ActivitiesProps) => {
             </S.ImageWrapper>
             <S.ContentStats>
               <S.Tabs>
-                <S.Tab active={typeRun === 'all_run_totals'} onClick={() => setTypeRun('all_run_totals')}>Todas as corridas</S.Tab>
                 <S.Tab active={typeRun === 'recent_run_totals'} onClick={() => setTypeRun('recent_run_totals')}>Recentes</S.Tab>
                 <S.Tab active={typeRun === 'ytd_run_totals'} onClick={() => setTypeRun('ytd_run_totals')}>{yearActual}</S.Tab>
+                <S.Tab active={typeRun === 'all_run_totals'} onClick={() => setTypeRun('all_run_totals')}>Todas</S.Tab>
               </S.Tabs>
               <ul>
                 {typeRun === 'all_run_totals' && (
                   <>
-                    <li><em><strong>{athleteStats?.all_run_totals.count}</strong> atividades</em></li>
                     <li><span>Distância: </span> <div><strong>{metersToKilometers(Number(athleteStats?.all_run_totals.distance))}</strong> km</div></li>
                     <li><span>Elevação: </span> <div><strong>{athleteStats?.all_run_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
+                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.all_run_totals?.moving_time}</strong></div></li>
+                    <li><em><strong>{athleteStats?.all_run_totals.count}</strong> atividades</em></li>
                   </>
                 )}
                 {typeRun === 'recent_run_totals' && (
                   <>
-                    <li><em><strong>{athleteStats?.recent_run_totals.count}</strong> atividades</em></li>
                     <li><span>Distância:</span> <div><strong>{metersToKilometers(Number(athleteStats?.recent_run_totals.distance))}</strong> km</div></li>
                     <li><span>Elevação:</span> <div><strong>{athleteStats?.recent_run_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
+                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.recent_run_totals?.moving_time}</strong></div></li>
+                    <li><em><strong>{athleteStats?.recent_run_totals.count}</strong> atividades</em></li>
                   </>
                 )}
                 {typeRun === 'ytd_run_totals' && (
                   <>
-                    <li><em><strong>{athleteStats?.ytd_run_totals.count}</strong> atividades</em></li>
                     <li><span>Distância: </span> <div><strong>{metersToKilometers(Number(athleteStats?.ytd_run_totals.distance))}</strong> km</div></li>
                     <li><span>Elevação: </span> <div><strong>{athleteStats?.ytd_run_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
+                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.ytd_run_totals?.moving_time}</strong></div></li>
+                    <li><em><strong>{athleteStats?.ytd_run_totals.count}</strong> atividades</em></li>
                   </>
                 )}
               </ul>
@@ -66,30 +69,33 @@ const ActivitiesTemplate = ({ activities, athleteStats }: ActivitiesProps) => {
             </S.ImageWrapper>
             <S.ContentStats>
               <S.Tabs>
-                <S.Tab active={typeRide === 'all_ride_totals'} onClick={() => setTypeRide('all_ride_totals')}>Todas as pedaladas</S.Tab>
                 <S.Tab active={typeRide === 'recent_ride_totals'} onClick={() => setTypeRide('recent_ride_totals')}>Recentes</S.Tab>
                 <S.Tab active={typeRide === 'ytd_ride_totals'} onClick={() => setTypeRide('ytd_ride_totals')}>{yearActual}</S.Tab>
+                <S.Tab active={typeRide === 'all_ride_totals'} onClick={() => setTypeRide('all_ride_totals')}>Todas</S.Tab>
               </S.Tabs>
               <ul>
                 {typeRide === 'all_ride_totals' && (
                   <>
-                    <li><em><strong>{athleteStats?.all_ride_totals.count}</strong> atividades</em></li>
                     <li><span>Distância: </span><div><strong>{metersToKilometers(Number(athleteStats?.all_ride_totals.distance))}</strong> km</div></li>
                     <li><span>Elevação: </span><div><strong>{athleteStats?.all_ride_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
+                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.all_ride_totals?.moving_time}</strong></div></li>
+                    <li><em><strong>{athleteStats?.all_ride_totals.count}</strong> atividades</em></li>
                   </>
                 )}
                 {typeRide === 'recent_ride_totals' && (
                   <>
-                    <li><em><strong>{athleteStats?.recent_ride_totals.count}</strong> atividades</em></li>
                     <li><span>Distância: </span><div><strong>{metersToKilometers(Number(athleteStats?.recent_ride_totals.distance))}</strong> km</div></li>
                     <li><span>Elevação: </span><div><strong>{athleteStats?.recent_ride_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
+                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.recent_ride_totals?.moving_time}</strong></div></li>
+                    <li><em><strong>{athleteStats?.recent_ride_totals.count}</strong> atividades</em></li>
                   </>
                 )}
                 {typeRide === 'ytd_ride_totals' && (
                   <>
-                    <li><em><strong>{athleteStats?.ytd_ride_totals.count}</strong> atividades</em></li>
                     <li><span>Distância: </span><div><strong>{metersToKilometers(Number(athleteStats?.ytd_ride_totals.distance))}</strong> km</div></li>
                     <li><span>Elevação: </span><div><strong>{athleteStats?.ytd_ride_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
+                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.ytd_ride_totals?.moving_time}</strong></div></li>
+                    <li><em><strong>{athleteStats?.ytd_ride_totals.count}</strong> atividades</em></li>
                   </>
                 )}
               </ul>
