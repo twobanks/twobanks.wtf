@@ -4,6 +4,7 @@ import { ThemeProvider } from "styled-components";
 import GlobalStyles from "../styles/global";
 import theme from '../styles/theme';
 import 'react-loading-skeleton/dist/skeleton.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MyApp = ({ Component, pageProps }: AppProps) => (
   <>

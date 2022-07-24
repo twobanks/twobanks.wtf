@@ -1,4 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
+import mapboxgl from 'mapbox-gl';
+import polyline from '@mapbox/polyline'
 import Wrapper from '../../Wrapper'
 import * as S from './styled'
 import { useRouter } from 'next/router';
@@ -14,7 +16,83 @@ const conquests = '/icon/conquests.svg';
 const backIcon = '/icon/back.svg';
 const clock = '/icon/clock.svg';
 
+
+mapboxgl.accessToken = `${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}`
+
+type Polyline = {
+  type: string;
+  coordinates: number[][]
+}
+
+const mock: Polyline = {
+  type: 'LineString',
+  coordinates: [
+    [-122.483696, 37.833818],
+    [-122.483482, 37.833174],
+    [-122.483396, 37.8327],
+    [-122.483568, 37.832056],
+    [-122.48404, 37.831141],
+    [-122.48404, 37.830497],
+    [-122.483482, 37.82992],
+    [-122.483568, 37.829548],
+    [-122.48507, 37.829446],
+    [-122.4861, 37.828802],
+    [-122.486958, 37.82931],
+    [-122.487001, 37.830802],
+    [-122.487516, 37.831683],
+    [-122.488031, 37.832158],
+    [-122.488889, 37.832971],
+    [-122.489876, 37.832632],
+    [-122.490434, 37.832937],
+    [-122.49125, 37.832429],
+    [-122.491636, 37.832564],
+    [-122.492237, 37.833378],
+    [-122.493782, 37.833683]
+  ]
+}
+
 const ActivityTemplate = ({ activity }: any) => {
+  const [decodedPolyline, setDecodedPolyline] = useState<Polyline>(mock)
+  const [iniLat, setiniLat] = useState<[number, number]>([0,0]);
+  useEffect(() => {
+    if(activity?.map) {
+      setDecodedPolyline(polyline.toGeoJSON(activity?.map?.summary_polyline))
+    }
+  },[activity])
+  useEffect(() => {
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: iniLat,
+      zoom: 15
+    });
+    map.on('load', () => {
+      map.addSource('route', {
+        'type': 'geojson',
+        'data': {
+          'type': 'Feature',
+          'properties': {},
+          'geometry': {
+            'type': 'LineString',
+            'coordinates': decodedPolyline?.coordinates
+          }
+        }
+      });
+      map.addLayer({
+        'id': 'route',
+        'type': 'line',
+        'source': 'route',
+        'layout': {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        'paint': {
+          'line-color': '#888',
+          'line-width': 8
+        }
+      });
+    });
+  }, [])
   const [movingTime, setMovingTime] = useState<string>('');
   const [cities, setCities] = useState([{ city: '', region: '' }]);
   const typeActivity = activity?.type === 'Ride' ? bike : run;
@@ -33,6 +111,7 @@ const ActivityTemplate = ({ activity }: any) => {
   useEffect(() => {
     if (activity?.start_latlng?.length) {
       setCities(geocoder(activity?.start_latlng[0], activity?.start_latlng[1]))
+      setiniLat([activity?.start_latlng[0], activity?.start_latlng[1]])
     }
   }, [activity])
   const amountConquests = activity?.segment_efforts?.filter((item: { pr_rank: number; }) => item.pr_rank !== null)
@@ -87,7 +166,9 @@ const ActivityTemplate = ({ activity }: any) => {
               <S.ContentElevation />
             </S.ElevationWrapper>
           </S.ActivityData>
-          <S.MapWrapper />
+          <S.MapWrapper>
+            <div id="map" />
+          </S.MapWrapper>
         </S.Content>
       </S.Container>
     </Wrapper>
