@@ -27,18 +27,19 @@ type Polyline = {
 const mock: Polyline = {
   type: 'LineString',
   coordinates: [
-    [-48.01501,-19.76116],
+    [-48.01501, -19.76116],
   ]
 }
 
 const ActivityTemplate = ({ activity }: any) => {
+  console.log(activity)
   const [decodedPolyline, setDecodedPolyline] = useState<Polyline>(mock)
-  const [iniLat, setIniLat] = useState<any>([0,0]);
+  const [iniLat, setIniLat] = useState<any>([0, 0]);
   useEffect(() => {
-    if(activity?.map) {
+    if (activity?.map) {
       setDecodedPolyline(polyline.toGeoJSON(activity?.map?.summary_polyline))
     }
-  },[activity])
+  }, [activity])
 
   useEffect(() => {
     if (activity?.start_latlng?.length) {
@@ -107,7 +108,7 @@ const ActivityTemplate = ({ activity }: any) => {
         <S.Content>
           <S.Header>
             <S.Title>
-              <button type='button' onClick={() => back()}><img src={backIcon} alt="Ícone referente a voltar"/></button>
+              <button type='button' onClick={() => back()}><img src={backIcon} alt="Ícone referente a voltar" /></button>
               <div>
                 <strong> {activity?.name}</strong>
                 <p>
@@ -118,10 +119,12 @@ const ActivityTemplate = ({ activity }: any) => {
               </div>
             </S.Title>
             <S.WrapperIcons>
-              <S.WrapperConquest>
-                <img src={conquests} alt="Ícone de troféu" />
-                <strong>{amountConquests?.length}</strong>
-              </S.WrapperConquest>
+              {amountConquests?.length !== 0 && (
+                <S.WrapperConquest>
+                  <img src={conquests} alt="Ícone de troféu" />
+                  <strong>{amountConquests?.length}</strong>
+                </S.WrapperConquest>
+              )}
               <S.TypeActivity>
                 <img src={conversionTypeActivities(activity?.type)} alt={activity?.type} />
               </S.TypeActivity>

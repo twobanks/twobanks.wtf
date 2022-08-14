@@ -189,7 +189,7 @@ export const MapWrapper = styled.div`
     position: relative;
     display: flex;
     height: 100%;
-    height: 30em;
+    height: 60em;
     width: 100%;
     background-color: ${theme.colors.black};
     #map { position: absolute; top: 0; bottom: 0; width: 100%; }
