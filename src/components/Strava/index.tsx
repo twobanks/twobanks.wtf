@@ -7,11 +7,12 @@ import { Activities } from '../../types/strava';
 import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
 import { useRouter } from 'next/router';
-/* const strava = '/icon/strava.svg' */
+const strava = '/icon/strava.svg'
 const file = '/icon/file.svg'
 import geocoder from 'city-reverse-geocoder'
 
 const Strava = ({ activities }: { activities: Activities[] }) => {
+  console.log("activities", activities);
   const router = useRouter();
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
@@ -62,15 +63,15 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
             <Animation key={uuid()} index={String(index)}>
               <S.Content>
                 <S.MapWrapper>
-                  <img src={mapUrl} alt={name} />
+                  <img src={mapUrl} alt={`${name} map`} />
                 </S.MapWrapper>
                 <S.ContentActivity>
                   <S.HeaderActivity>
-                    <a onClick={() => handleActivity(id)}>
-                      <S.HeartRate average={Number(average_heartrate.toFixed(0))}/>
-                      {dateFormatted}
+                    <div>
+                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))}/>
+                      <h4>{name}</h4>
                       <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
-                    </a>
+                    </div>
                     <S.TypeActivity>
                       <img src={conversionTypeActivities(type)} alt={type} />
                     </S.TypeActivity>
@@ -82,8 +83,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                     <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
                   </S.ActivityData>
                   <S.LinksWrapper>
-                    {/* <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={strava} alt="Strava" /></a> */}
-                    <a onClick={() => handleActivity(id)}><img src={file} alt="Ícone de um documento" /> ver mais</a>
+                    <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={strava} alt="Strava" /></a>
                   </S.LinksWrapper>
                 </S.ContentActivity>
               </S.Content>

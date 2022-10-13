@@ -100,10 +100,15 @@ export const HeaderActivity = styled.div`
   ${({ theme }) => css`
     display: flex;
     justify-content: space-between;
-    a {
+    div {
       display: flex;
       align-items: center;
       gap: 1rem;
+      h4 {
+        font-weight: ${theme.font.bold};
+        font-size: ${theme.font.sizes.s16};
+        color: ${theme.colors.primary};
+      }
       em {
         color: ${theme.colors.secondary};
         font-size: ${theme.font.sizes.s14};
