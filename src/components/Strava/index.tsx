@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { v4 as uuid} from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers  } from '../../utils/functions/conversionStrava'
@@ -10,8 +10,9 @@ import { useRouter } from 'next/router';
 const strava = '/icon/strava.svg'
 const file = '/icon/file.svg'
 import geocoder from 'city-reverse-geocoder'
+import { CALL_REFRESH, CALL_ACTIVITIES, CALL_ATHLETE_STATS } from '../../utils/constants/strava';
 
-const Strava = ({ activities }: { activities: Activities[] }) => {
+const Strava = ({ activities, orientation }: { activities: Activities[], orientation: 'ROW' | 'GRID' }) => {
   console.log("activities", activities);
   const router = useRouter();
   const Animation = (props: { index: string; children: ReactNode }) => {
@@ -45,7 +46,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
   };
 
   return(
-    <S.Wrapper>
+    <S.Wrapper type={orientation}>
       <ul>
         {activities.map((activity, index) => {
           const { average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id, start_date_local } = activity;
@@ -61,14 +62,14 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
           const nearestCities = geocoder(activity?.start_latlng[0], activity?.start_latlng[1])
           return (
             <Animation key={uuid()} index={String(index)}>
-              <S.Content>
+              <S.Content type={orientation}>
                 <S.MapWrapper>
                   <img src={mapUrl} alt={`${name} map`} />
                 </S.MapWrapper>
-                <S.ContentActivity>
+                <S.ContentActivity type={orientation}>
                   <S.HeaderActivity>
                     <div>
-                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))}/>
+                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))} type={orientation} />
                       <h4>{name}</h4>
                       <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
                     </div>

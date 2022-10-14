@@ -18,92 +18,21 @@ type ActivitiesProps = {
 const ActivitiesTemplate = ({ activities, athleteStats }: ActivitiesProps) => {
   const [typeRun, setTypeRun] = useState<string>('all_run_totals')
   const [typeRide, setTypeRide] = useState<string>('all_ride_totals')
+  const [orientation, setOrientation] = useState<'ROW' | 'GRID'>('ROW');
   const date = new Date()
   const yearActual = date.getFullYear()
   return (
     <Wrapper>
       <S.Content>
         <h2>atividades</h2>
-        <S.Stats>
-          <S.ContainerStats>
-            <S.ImageWrapper>
-              <Image src={twobanks} alt="twobanks" layout='fill' objectFit='cover' />
-            </S.ImageWrapper>
-            <S.ContentStats>
-              <S.Tabs>
-                <S.Tab active={typeRun === 'recent_run_totals'} onClick={() => setTypeRun('recent_run_totals')}>Recentes</S.Tab>
-                <S.Tab active={typeRun === 'ytd_run_totals'} onClick={() => setTypeRun('ytd_run_totals')}>{yearActual}</S.Tab>
-                <S.Tab active={typeRun === 'all_run_totals'} onClick={() => setTypeRun('all_run_totals')}>Todas</S.Tab>
-              </S.Tabs>
-              <ul>
-                {typeRun === 'all_run_totals' && (
-                  <>
-                    <li><span>Distância: </span> <div><strong>{metersToKilometers(Number(athleteStats?.all_run_totals.distance))}</strong> km</div></li>
-                    <li><span>Elevação: </span> <div><strong>{athleteStats?.all_run_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
-                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.all_run_totals?.moving_time}</strong></div></li>
-                    <li><em><strong>{athleteStats?.all_run_totals.count}</strong> atividades</em></li>
-                  </>
-                )}
-                {typeRun === 'recent_run_totals' && (
-                  <>
-                    <li><span>Distância:</span> <div><strong>{metersToKilometers(Number(athleteStats?.recent_run_totals.distance))}</strong> km</div></li>
-                    <li><span>Elevação:</span> <div><strong>{athleteStats?.recent_run_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
-                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.recent_run_totals?.moving_time}</strong></div></li>
-                    <li><em><strong>{athleteStats?.recent_run_totals.count}</strong> atividades</em></li>
-                  </>
-                )}
-                {typeRun === 'ytd_run_totals' && (
-                  <>
-                    <li><span>Distância: </span> <div><strong>{metersToKilometers(Number(athleteStats?.ytd_run_totals.distance))}</strong> km</div></li>
-                    <li><span>Elevação: </span> <div><strong>{athleteStats?.ytd_run_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
-                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.ytd_run_totals?.moving_time}</strong></div></li>
-                    <li><em><strong>{athleteStats?.ytd_run_totals.count}</strong> atividades</em></li>
-                  </>
-                )}
-              </ul>
-            </S.ContentStats>
-          </S.ContainerStats>
-          <S.ContainerStats>
-            <S.ImageWrapper>
-              <Image src={mtb} alt="twobanks" layout='fill' objectFit='fill' />
-            </S.ImageWrapper>
-            <S.ContentStats>
-              <S.Tabs>
-                <S.Tab active={typeRide === 'recent_ride_totals'} onClick={() => setTypeRide('recent_ride_totals')}>Recentes</S.Tab>
-                <S.Tab active={typeRide === 'ytd_ride_totals'} onClick={() => setTypeRide('ytd_ride_totals')}>{yearActual}</S.Tab>
-                <S.Tab active={typeRide === 'all_ride_totals'} onClick={() => setTypeRide('all_ride_totals')}>Todas</S.Tab>
-              </S.Tabs>
-              <ul>
-                {typeRide === 'all_ride_totals' && (
-                  <>
-                    <li><span>Distância: </span><div><strong>{metersToKilometers(Number(athleteStats?.all_ride_totals.distance))}</strong> km</div></li>
-                    <li><span>Elevação: </span><div><strong>{athleteStats?.all_ride_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
-                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.all_ride_totals?.moving_time}</strong></div></li>
-                    <li><em><strong>{athleteStats?.all_ride_totals.count}</strong> atividades</em></li>
-                  </>
-                )}
-                {typeRide === 'recent_ride_totals' && (
-                  <>
-                    <li><span>Distância: </span><div><strong>{metersToKilometers(Number(athleteStats?.recent_ride_totals.distance))}</strong> km</div></li>
-                    <li><span>Elevação: </span><div><strong>{athleteStats?.recent_ride_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
-                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.recent_ride_totals?.moving_time}</strong></div></li>
-                    <li><em><strong>{athleteStats?.recent_ride_totals.count}</strong> atividades</em></li>
-                  </>
-                )}
-                {typeRide === 'ytd_ride_totals' && (
-                  <>
-                    <li><span>Distância: </span><div><strong>{metersToKilometers(Number(athleteStats?.ytd_ride_totals.distance))}</strong> km</div></li>
-                    <li><span>Elevação: </span><div><strong>{athleteStats?.ytd_ride_totals.elevation_gain?.toFixed(0)}</strong> m</div></li>
-                    <li><span>Tempo de movimentção: </span><div><strong>{athleteStats?.ytd_ride_totals?.moving_time}</strong></div></li>
-                    <li><em><strong>{athleteStats?.ytd_ride_totals.count}</strong> atividades</em></li>
-                  </>
-                )}
-              </ul>
-            </S.ContentStats>
-          </S.ContainerStats>
-        </S.Stats>
-        <h3>últimas atividades</h3>
-        <Strava activities={activities} />
+        <S.Header>
+          <h3>últimas atividades</h3>
+          <div>
+            <button onClick={() => setOrientation('ROW')}>ROW</button>
+            <button onClick={() => setOrientation('GRID')}>GRID</button>
+          </div>
+        </S.Header>
+        <Strava activities={activities} orientation={orientation}/>
       </S.Content>
     </Wrapper>
   )

@@ -4,17 +4,30 @@ import { motion } from 'framer-motion'
 
 type StravaStyles = {
   average?: number;
+  type?: 'GRID' | 'ROW';
 }
 
-export const Wrapper = styled.main`
-  ${({ theme }) => css`
+const viewModifiers = {
+  ['GRID']: css`
+    grid-template-columns: repeat(2, 1fr);
+  `,
+  ['ROW']: css`
+    grid-template-columns: repeat(1, 1fr);
+  `,
+}
+
+export const Wrapper = styled.main<StravaStyles>`
+  ${({ theme, type = 'GRID' }) => css`
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
     padding-bottom: 3rem;
     ul {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      ${viewModifiers[type]}
+      ${media.lessThan("medium")`
+        grid-template-columns: repeat(1, 1fr);
+      `}
     }
   `}
 `
@@ -29,6 +42,7 @@ export const MapWrapper = styled.div`
       max-width: 25rem;
       width: 100%;
       height: auto;
+      margin: 0 auto;
     }
   `}
   ${media.lessThan("medium")`
@@ -73,8 +87,8 @@ export const ActivityData = styled.div`
   `}
 `
 
-export const ContentActivity = styled.div`
-  ${({ theme }) => css`
+export const ContentActivity = styled.div<StravaStyles>`
+  ${({ theme, type = 'GRID' }) => css`
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -90,10 +104,14 @@ export const ContentActivity = styled.div`
         color: ${theme.colors.blue};
       }
     }
+    ${type === 'GRID' && css`
+      padding: 2rem;
+    `}
   `}
   ${media.lessThan("medium")`
     padding: 2rem;
   `}
+
 `;
 
 export const HeaderActivity = styled.div`
@@ -197,8 +215,8 @@ export const AnimHovered = styled(motion.div)`
 	`}
 `
 
-export const Content = styled.div`
-  ${({ theme }) => css`
+export const Content = styled.div<StravaStyles>`
+  ${({ theme, type = 'GRID' }) => css`
     display: flex;
     gap: 2rem;
     span {
@@ -208,6 +226,10 @@ export const Content = styled.div`
       gap: 1rem;
     `}
     ${media.lessThan("medium")`
+      flex-direction: column;
+      gap: 0;
+    `}
+    ${type === 'GRID' && css`
       flex-direction: column;
       gap: 0;
     `}

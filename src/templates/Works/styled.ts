@@ -25,8 +25,9 @@ export const Content = styled.main`
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: ${theme.font.sizes.s36};
-      color: ${theme.colors.primary};
+      font-size: calc(${theme.font.sizes.s32} * 2);
+      color: ${theme.colors.blue};
+      font-family: ${theme.font.family.poppins};
       padding: 2rem 0;
     }
   `}

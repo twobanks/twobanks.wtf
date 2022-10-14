@@ -21,8 +21,9 @@ export const Content = styled.main`
     }
     h2 {
       justify-content: center;
-      font-size: ${theme.font.sizes.s36};
-      color: ${theme.colors.primary};
+      font-size: calc(${theme.font.sizes.s32} * 2);
+      color: ${theme.colors.blue};
+      font-family: ${theme.font.family.poppins};
     }
     h3 {
       font-size: ${theme.font.sizes.s24};
@@ -53,7 +54,7 @@ export const ContentStats = styled.div`
     gap: 2rem;
     ul {
       display: flex;
-      flex-direction: column;
+      /* flex-direction: column; */
       gap: 2rem;
       padding-top: 1rem;
       li {
@@ -157,6 +158,12 @@ export const ImageWrapper = styled.div`
       min-height: 32rem;
       width: 21rem;
       margin: 0 auto;
-    `}    
+    `}
   `}
+`
+
+export const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `
