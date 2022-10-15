@@ -2,14 +2,12 @@ import type { NextPage } from 'next'
 import { useEffect, useState } from 'react';
 import SkeletonActivities from '../../components/Skeleton/SkeletonActivities';
 import ActivitiesTemplate from '../../templates/Activities';
-import { Activities, AthleteStats, mockAthleteStats } from '../../types/strava';
-import { CALL_REFRESH, CALL_ACTIVITIES, CALL_ATHLETE_STATS } from '../../utils/constants/strava';
+import { Activities } from '../../types/strava';
+import { CALL_REFRESH, CALL_ACTIVITIES } from '../../utils/constants/strava';
 
 const ActivitiesPage: NextPage = () => {
   const [activities, setActivities] = useState<Activities[]>([])
-  const [athleteStats, setAthleteStats] = useState<AthleteStats>(mockAthleteStats)
   const [loadingActivities, setLoadingActivities] = useState<boolean>(true);
-  const [loadingAthleteStats, setLoadingAthleteStats] = useState<boolean>(true);
 
   useEffect(() => {
     fetch(CALL_REFRESH, {
@@ -26,25 +24,11 @@ const ActivitiesPage: NextPage = () => {
       .then(() => setLoadingActivities(false))
   }
 
-  useEffect(() => {
-    fetch(CALL_REFRESH, {
-      method: 'POST'
-    })
-      .then(res => res.json())
-      .then(result => getAthleteStats(result.access_token))
-  }, [])
-
-  const getAthleteStats = (access: string) => {
-    fetch(CALL_ATHLETE_STATS + access)
-      .then(res => res.json())
-      .then(data => setAthleteStats(data))
-      .then(() => setLoadingAthleteStats(false))
-  }
-  if (loadingActivities || loadingAthleteStats) {
+  if (loadingActivities) {
     return <SkeletonActivities />
   }
 
-  return <ActivitiesTemplate activities={activities} athleteStats={athleteStats} />
+  return <ActivitiesTemplate activities={activities} />
 }
 
 export default ActivitiesPage

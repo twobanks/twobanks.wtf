@@ -1,38 +1,34 @@
-/* eslint-disable @next/next/no-img-element */
 import { useState } from 'react';
 import Image from 'next/image';
 import { Strava } from '../../components';
-import { Activities, AthleteStats } from '../../types/strava';
-import { metersToKilometers } from '../../utils/functions/conversionStrava';
+import { Activities } from '../../types/strava';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
 
-const twobanks = '/img/twobanks.jpg';
-const mtb = '/img/mtb.jpg';
+const row = '/icon/row.svg';
+const grid = '/icon/grid.svg';
 
 type ActivitiesProps = {
   activities: Activities[];
-  athleteStats?: AthleteStats;
 }
 
-const ActivitiesTemplate = ({ activities, athleteStats }: ActivitiesProps) => {
-  const [typeRun, setTypeRun] = useState<string>('all_run_totals')
-  const [typeRide, setTypeRide] = useState<string>('all_ride_totals')
+const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
   const [orientation, setOrientation] = useState<'ROW' | 'GRID'>('ROW');
-  const date = new Date()
-  const yearActual = date.getFullYear()
   return (
     <Wrapper>
       <S.Content>
         <h2>atividades</h2>
         <S.Header>
-          <h3>últimas atividades</h3>
-          <div>
-            <button onClick={() => setOrientation('ROW')}>ROW</button>
-            <button onClick={() => setOrientation('GRID')}>GRID</button>
-          </div>
+          <S.ButtonWrapper>
+            <S.Button onClick={() => setOrientation('GRID')} active={orientation === "GRID"}>
+              <Image src={grid} height={20} width={20} alt="Ícone referente a 2 colunas, representando a visão de grid na página" />
+            </S.Button>
+            <S.Button onClick={() => setOrientation('ROW')} active={orientation === "ROW"}>
+              <Image src={row} height={20} width={20} alt="Ícone referente a linha, representando a visão de linha na página" />
+            </S.Button>
+          </S.ButtonWrapper>
         </S.Header>
-        <Strava activities={activities} orientation={orientation}/>
+        <Strava activities={activities} orientation={orientation} />
       </S.Content>
     </Wrapper>
   )
