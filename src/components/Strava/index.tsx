@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import * as S from './styles';
-import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers  } from '../../utils/functions/conversionStrava'
+import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '../../utils/functions/conversionStrava'
 import { Activities } from '../../types/strava';
 import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
@@ -13,7 +13,6 @@ import geocoder from 'city-reverse-geocoder'
 import { CALL_REFRESH, CALL_ACTIVITIES, CALL_ATHLETE_STATS } from '../../utils/constants/strava';
 
 const Strava = ({ activities, orientation }: { activities: Activities[], orientation: 'ROW' | 'GRID' }) => {
-  console.log("activities", activities);
   const router = useRouter();
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
@@ -40,12 +39,12 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
     let style = 'ckmi23ula94rm17rxmlpg00as'
     const pathColor = theme.colors.trainingZone.z1.substring(1);
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+${pathColor}(${polylineEncoded})/auto/400x200@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
-  },[])
+  }, [])
   const handleActivity = (id: number) => {
     router.push(`/activities/${id}`);
   };
 
-  return(
+  return (
     <S.Wrapper type={orientation}>
       <ul>
         {activities.map((activity, index) => {
