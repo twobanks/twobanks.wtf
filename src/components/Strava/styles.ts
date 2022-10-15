@@ -37,6 +37,8 @@ export const MapWrapper = styled.div`
     border-radius: .8rem;
     padding: 2rem;
     margin: 1rem;
+    min-width: 29rem;
+    min-height: 16.5rem;
     img {
       display: flex;
       max-width: 25rem;
@@ -172,16 +174,16 @@ export const HeartRate = styled.div<StravaStyles>`
     ${average < 120 && css`
       background-color: ${theme.colors.trainingZone.z1};
     `}
-    ${average >= 120 && average < 159  && css`
+    ${average >= 120 && average < 159 && css`
       background-color: ${theme.colors.trainingZone.z2};
     `}
-    ${average >= 159 && average < 179  && css`
+    ${average >= 159 && average < 179 && css`
       background-color: ${theme.colors.trainingZone.z3};
     `}
-    ${average >= 179 && average < 198  && css`
+    ${average >= 179 && average < 198 && css`
       background-color: ${theme.colors.trainingZone.z4};
     `}
-    ${average >= 198  && css`
+    ${average >= 198 && css`
       background-color: ${theme.colors.trainingZone.z5};
     `}
   `}
@@ -202,7 +204,7 @@ export const AnimContainer = styled(motion.li)`
 `
 
 export const AnimHovered = styled(motion.div)`
-  ${({theme}) => css`
+  ${({ theme }) => css`
 		position: absolute;
 		top: 0;
     left: 0;
