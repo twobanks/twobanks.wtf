@@ -24,8 +24,6 @@ export const Header = styled.header`
 export const Banks = styled.div`
 	img {
 		border-radius: 50%;
-		height: 6rem;
-		width: 6rem;
 		display: flex;
 		cursor: pointer;
 	}

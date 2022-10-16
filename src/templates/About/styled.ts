@@ -179,8 +179,6 @@ export const Company = styled.div`
 
 export const ImageWrapper = styled.div`
   display: flex;
-  height: 35rem;
-  width: 35rem;
   border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
   overflow: hidden;
   position: relative;

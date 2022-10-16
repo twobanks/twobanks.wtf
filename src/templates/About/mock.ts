@@ -1,4 +1,4 @@
-const twobanks = '/img/twobanks.jpg';
+const twobanks = '/img/twobanks.webp';
 
 type Career = {
   occupation: string;

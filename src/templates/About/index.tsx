@@ -10,7 +10,7 @@ const About = () => (
       <h2>sobre mim</h2>
       <S.Bio>
         <S.ImageWrapper>
-          <Image src={about.image} alt="twobanks" layout='fill' objectFit='cover' />
+          <Image src={about.image} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={about.image} />
         </S.ImageWrapper>
         <S.About>
          <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor Front-End, desde 2014.</p>
