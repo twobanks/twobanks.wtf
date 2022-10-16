@@ -40,7 +40,7 @@ const Works = () => {
                 <a href={item.link}>
                   <Animation index={String(index)}>
                     <S.WrapperImage>
-                      <Image src={item.image} alt={item.name} layout="fill" placeholder="blur" blurDataURL={item.image} />
+                      <Image src={item.image} alt={item.name} height={180} width={280} placeholder="blur" blurDataURL={item.image} />
                     </S.WrapperImage>
                     <S.Title>
                       <strong>{item.name}</strong>
