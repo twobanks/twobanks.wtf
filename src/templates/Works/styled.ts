@@ -28,7 +28,7 @@ export const Content = styled.main`
       font-size: calc(${theme.font.sizes.s32} * 2);
       color: ${theme.colors.blue};
       font-family: ${theme.font.family.poppins};
-      padding: 2rem 0;
+      padding: 4rem 0 7rem 0;
     }
   `}
 `
@@ -47,7 +47,6 @@ export const Work = styled.li`
 
 export const WrapperImage = styled.div`
   position: relative;
-  height: 22rem;
   img {
     display: flex;
     width: 100%;
@@ -101,19 +100,21 @@ export const AnimContainer = styled(motion.div)`
     color: ${theme.colors.secondary};
     cursor: pointer;
     display: flex;
-    flex-direction: column;
-    gap: .5rem;
+    gap: 2rem;
     padding: 2rem;
     width: 100%;
     height: auto;
     opacity: 1;
     transition: color 0.2s ease-in-out;
     position: relative;
+    ${media.lessThan("medium")`
+      flex-direction: column;
+    `}
   `}
 `
 
 export const AnimHovered = styled(motion.div)`
-  ${({theme}) => css`
+  ${({ theme }) => css`
 		position: absolute;
 		top: 0;
     left: 0;
