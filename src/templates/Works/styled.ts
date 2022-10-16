@@ -38,19 +38,23 @@ export const Work = styled.li`
     a {
       display: flex;
       flex-direction: column;
-      img {
-        display: flex;
-        width: 100%;
-        height: auto;
-        max-height: 22rem;
-        border-radius: .8rem;
-      }
     }
     &:hover strong {
       color: ${theme.colors.blue};
     }
   `}
 `
+
+export const WrapperImage = styled.div`
+  position: relative;
+  height: 22rem;
+  img {
+    display: flex;
+    width: 100%;
+    height: auto;
+    border-radius: .8rem;
+  }
+`;
 
 export const Title = styled.div`
   ${({ theme }) => css`

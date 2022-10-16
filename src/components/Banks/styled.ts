@@ -49,10 +49,6 @@ export const WrapperLinks = styled.div`
 		color: ${theme.colors.secondary};
     a {
       display: flex;
-      img {
-        width: 1.75rem;
-        height: 1.75rem;
-      }
     }
   `}
 `
@@ -72,8 +68,6 @@ export const AvatarWrapper = styled.div`
   margin-top: -8rem;
   img {
     display: flex;
-    height: 6rem;
-    width: 6rem;
     border-radius: 50%;
   }
 `

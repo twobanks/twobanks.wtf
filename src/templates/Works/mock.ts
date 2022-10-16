@@ -1,9 +1,9 @@
 import { STACKS } from "../../utils/enums/stack"
 
-const harpoon = '/img/works/harpoon.png'
-const harpoonApp = '/img/works/harpoon-app.png'
-const bowe = '/img/works/bowe.png'
-const eqi = '/img/works/eqi.png'
+const harpoon = '/img/works/harpoon.webp'
+const harpoonApp = '/img/works/harpoon-app.webp'
+const bowe = '/img/works/bowe.webp'
+const eqi = '/img/works/eqi.webp'
 
 
 export const works = [

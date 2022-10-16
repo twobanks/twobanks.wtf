@@ -1,19 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
-import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '../../utils/functions/conversionStrava'
 import { Activities } from '../../types/strava';
 import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
-import { useRouter } from 'next/router';
 const strava = '/icon/strava.svg'
-const file = '/icon/file.svg'
 import geocoder from 'city-reverse-geocoder'
-import { CALL_REFRESH, CALL_ACTIVITIES, CALL_ATHLETE_STATS } from '../../utils/constants/strava';
 
 const Strava = ({ activities, orientation }: { activities: Activities[], orientation: 'ROW' | 'GRID' }) => {
-  const router = useRouter();
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index
@@ -40,24 +36,16 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
     const pathColor = theme.colors.trainingZone.z1.substring(1);
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+${pathColor}(${polylineEncoded})/auto/400x200@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   }, [])
-  const handleActivity = (id: number) => {
-    router.push(`/activities/${id}`);
-  };
 
   return (
     <S.Wrapper type={orientation}>
       <ul>
         {activities.map((activity, index) => {
-          const { average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id, start_date_local } = activity;
+          const { average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
           const mapUrl = handleMap(map.summary_polyline)
           const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
           const averageTitle = type !== 'Ride' ? 'Pace ' : 'Vel. Média ';
           const averageSpeed = type !== 'Ride' ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
-          const date = new Date(start_date_local);
-          const dateFormatted = date.toLocaleDateString('pt-BR', {
-            month: '2-digit',
-            day: '2-digit',
-          });
           const nearestCities = geocoder(activity?.start_latlng[0], activity?.start_latlng[1])
           return (
             <Animation key={uuid()} index={String(index)}>

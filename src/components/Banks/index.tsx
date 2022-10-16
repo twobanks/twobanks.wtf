@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
-const me = '/img/twobanks.png';
+import Image from 'next/image';
 import NowPlaying from '../NowPlaying';
 import { social } from './mock'
 import * as S from './styled'
+const me = '/img/twobanks.png';
 
 type BanksProps = {
   open: boolean;
@@ -21,10 +21,10 @@ const Banks = ({ open, handleOpen } : BanksProps) => (
     >
       <S.Header>
         <S.AvatarWrapper>
-          <img src={me} alt="twobanks"/>
+          <Image src={me} alt="twobanks" placeholder="blur" blurDataURL={me} height={60} width={60} />
         </S.AvatarWrapper>
         <S.WrapperLinks>
-          {social.map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"> <img src={item.icon} alt={item.name} /></a>)}
+          {social.map(item => <a key={item.id} href={item.link} target="_blank" rel="noreferrer"> <Image src={item.icon} alt={item.name} height={18} width={18} /></a>)}
         </S.WrapperLinks>
       </S.Header>
       <NowPlaying />

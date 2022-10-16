@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+import Image from 'next/image';
 import * as S from './styles'
 import { useState } from 'react'
 import Link from 'next/link'
@@ -12,7 +12,7 @@ const Header = () => {
     <S.Header>
       <S.Banks>
         <Link href="/" passHref>
-          <img src={twobanks} alt="twobanks" />
+          <Image src={twobanks} alt="twobanks" placeholder="blur" blurDataURL={twobanks} height={60} width={60} />
         </Link>
       </S.Banks>
       <S.Nav>

@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
+import { ReactNode, useState } from 'react';
+import Image from 'next/image';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
-import { ReactNode, useState } from 'react';
 import { works } from './mock';
 import { conversionStack } from '../../utils/functions/conversionStack';
 
@@ -39,7 +39,9 @@ const Works = () => {
               <S.Work key={item.name}>
                 <a href={item.link}>
                   <Animation index={String(index)}>
-                    <img src={item.image} alt={item.name} />
+                    <S.WrapperImage>
+                      <Image src={item.image} alt={item.name} layout="fill" placeholder="blur" blurDataURL={item.image} />
+                    </S.WrapperImage>
                     <S.Title>
                       <strong>{item.name}</strong>
                       <ul>
