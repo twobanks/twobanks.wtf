@@ -1,7 +1,7 @@
 export const conversionPage = (value: string) => {
   const labels: { [index: string]: string } = {
     'about': 'sobre',
-    'works': 'trampo',
+    'works': 'trampos',
     'idea': 'ideia',
     'activities': 'vivência'
   }
