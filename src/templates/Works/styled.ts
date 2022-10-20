@@ -7,7 +7,7 @@ type WorksStyle = {
   stack: STACKS
 }
 
-export const Content = styled.main`
+export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;

@@ -4,15 +4,11 @@ type ActivitiesStyle = {
   active?: boolean;
 }
 
-export const Wrapper = styled.section``;
-
-export const Content = styled.main`
+export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    max-width: ${theme.container};
     width: 100%;
-    margin: 0 auto;
     h2, h3 {
       display: flex;
       align-items: center;

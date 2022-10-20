@@ -8,7 +8,9 @@ type WrapperProps = {
 const Wrapper = ({children}: WrapperProps) => (
   <S.Wrapper>
     <Header/>
-    {children}
+    <S.Content>
+      {children}
+    </S.Content>
     <Footer />
   </S.Wrapper>
 )

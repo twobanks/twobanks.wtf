@@ -4,20 +4,29 @@ import media from "styled-media-query";
 
 export const Header = styled.header`
 	${({theme}) => css`
+		position: fixed;
+		width: 100vw;
+		background-color: ${theme.colors.background};
+		border-bottom: 0.1rem solid ${theme.colors.hover};
+		z-index: 2;
+	`}
+`
+
+export const Content = styled.div`
+	${({theme}) => css`
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		font-size: ${theme.font.sizes.s16};
 		color: ${theme.colors.secondary};
 		max-width: ${theme.container};
-		width: 100%;
-    margin: 0 auto;
+		width: 100vw;
+		margin: 0 auto;
 		padding: 1rem 0;
-		position: relative;
 		${media.lessThan("medium")`
-      flex-direction: column;
+			flex-direction: column;
 			padding: 2rem 0;
-    `}
+		`}
 	`}
 `
 
