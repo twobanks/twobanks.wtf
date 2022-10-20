@@ -26,7 +26,7 @@ const ActivitiesPage: NextPage = () => {
       .then(() => setLoadingActivities(false))
   }
 
-  if (!loadingActivities) {
+  if (loadingActivities) {
     return <SkeletonActivities />
   }
 
