@@ -55,14 +55,14 @@ export const MapWrapper = styled.div`
 `
 
 export const TypeActivity = styled.div`
-  ${({ theme }) => css`
+  ${({ theme}) => css`
     display: flex;
     align-items: center;
     gap: 1rem;
     img {
       display: flex;
-      width: 4rem;
-      height: 4rem;
+      width: 4.5rem;
+      height: 4.5rem;
       background-color: ${theme.colors.black};
       padding: 1rem;
       border-radius: 0.8rem;
@@ -166,8 +166,8 @@ export const LinksWrapper = styled.div`
 export const HeartRate = styled.div<StravaStyles>`
   ${({ theme, average = 0 }) => css`
     display: flex;
-    height: 1rem;
-    width: 1rem;
+    height: 2rem;
+    width: .7rem;
     border: 0;
     outline: none;
     border-radius: .8rem;
