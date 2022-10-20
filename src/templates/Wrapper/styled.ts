@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export const Wrapper = styled.main`
   position: relative;
@@ -6,5 +6,15 @@ export const Wrapper = styled.main`
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  padding: 0 2rem 6rem 2rem;
+  width: 100vw;
+`;
+
+export const Content = styled.section`
+  ${({ theme }) => css`
+    display: flex;
+    max-width: ${theme.container};
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 10rem;
+  `}
 `;
