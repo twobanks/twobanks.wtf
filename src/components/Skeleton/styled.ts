@@ -8,6 +8,8 @@ export const Wrapper = styled.div`
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
+    overflow: hidden;
+    height: 100vh;
   `}
 `
 
@@ -27,6 +29,7 @@ export const Header = styled.header`
     }
 		${media.lessThan("medium")`
       flex-direction: column;
+      gap: 2rem;
 			padding: 2rem 0;
     `}
 	`}
@@ -51,9 +54,14 @@ export const ActivitiesList = styled.div`
   margin-top: 4rem;
 `
 
-export const AcitivitiesItem = styled.div`
+export const ActivitiesItem = styled.div`
   display: flex;
-  gap: 2rem;  
+  gap: 2rem;
+  padding: 0 2rem;
+  ${media.lessThan("medium")`
+    flex-direction: column;
+    align-items: center;
+  `}
 `
 
 export const MapWrapper = styled.div``
@@ -63,6 +71,7 @@ export const InfoWrapper = styled.div`
   flex-direction: column;
   width: 100%;
   gap: 1rem;
+  padding: 0 2rem;
 `
 
 export const Title = styled.div`
@@ -79,6 +88,7 @@ export const ContentInfo = styled.div`
     display: flex;
     flex-direction: column;
   }
+
 `
 
 export const ButtonActivity = styled.div`
