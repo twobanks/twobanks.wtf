@@ -3,8 +3,8 @@ import SkeletonWrapper from "../SkeletonWrapper"
 import Skeleton from "react-loading-skeleton"
 
 const SkeletonActivities = () => {
-  const acitivitiesItem = () => (
-    <S.AcitivitiesItem>
+  const activitiesItem = () => (
+    <S.ActivitiesItem>
       <S.MapWrapper>
         <Skeleton height={150} width={300} />
       </S.MapWrapper>
@@ -35,19 +35,19 @@ const SkeletonActivities = () => {
           <Skeleton height={20} width={100} />
         </S.ButtonActivity>
       </S.InfoWrapper>
-    </S.AcitivitiesItem>
+    </S.ActivitiesItem>
   )
   return (
     <SkeletonWrapper>
       <S.ContainerStats>
         <Skeleton height={40} width={250} />
-        <Skeleton height={300} />
       </S.ContainerStats>
       <S.ActivitiesList>
-        <Skeleton height={40} width={300} />
-        {acitivitiesItem()}
-        {acitivitiesItem()}
-        {acitivitiesItem()}
+        {activitiesItem()}
+        {activitiesItem()}
+        {activitiesItem()}
+        {activitiesItem()}
+        {activitiesItem()}
       </S.ActivitiesList>
     </SkeletonWrapper>
   )
