@@ -56,13 +56,15 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
                 <S.ContentActivity type={orientation}>
                   <S.HeaderActivity>
                     <div>
-                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))} type={orientation} />
                       <h4>{name}</h4>
                       <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
                     </div>
-                    <S.TypeActivity>
-                      <img src={conversionTypeActivities(type)} alt={type} />
-                    </S.TypeActivity>
+                    <div>
+                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
+                      <S.TypeActivity>
+                        <img src={conversionTypeActivities(type)} alt={type} />
+                      </S.TypeActivity>
+                    </div>
                   </S.HeaderActivity>
                   <S.ActivityData>
                     <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
