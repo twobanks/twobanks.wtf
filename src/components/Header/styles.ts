@@ -7,7 +7,6 @@ export const Header = styled.header`
 		position: fixed;
 		width: 100vw;
 		background-color: ${theme.colors.background};
-		border-bottom: 0.1rem solid ${theme.colors.hover};
 		z-index: 2;
 	`}
 `
@@ -26,6 +25,7 @@ export const Content = styled.div`
 		${media.lessThan("medium")`
 			flex-direction: column;
 			padding: 2rem 0;
+			gap: 2rem;
 		`}
 	`}
 `

@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import media from 'styled-media-query';
 
 export const Wrapper = styled.main`
   position: relative;
@@ -16,5 +17,8 @@ export const Content = styled.section`
     width: 100%;
     margin: 0 auto;
     padding-top: 10rem;
+    ${media.lessThan('medium')`
+      padding: 20rem 2rem 0 2rem;
+    `}
   `}
 `;

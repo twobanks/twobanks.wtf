@@ -1,9 +1,13 @@
 
 import Wrapper from '../Wrapper';
+import { Title } from '../../components'
+import * as S from './styled'
 
 const Idea = () => (
   <Wrapper>
-    Idea
+    <S.Content>
+      <Title text='blog' page='idea' />
+    </S.Content>
   </Wrapper>
 )
 
