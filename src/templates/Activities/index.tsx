@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
-import { Strava } from '../../components';
+import { Strava, Title } from '../../components';
 import { Activities } from '../../types/strava';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
@@ -17,7 +17,7 @@ const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
   return (
     <Wrapper>
       <S.Content>
-        <h2>atividades</h2>
+        <Title text='atividades' page='activities' />
         <S.Header>
           <S.ButtonWrapper>
             <S.Button onClick={() => setOrientation('GRID')} active={orientation === "GRID"}>

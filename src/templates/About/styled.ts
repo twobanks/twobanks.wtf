@@ -24,24 +24,10 @@ export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    h2 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: calc(${theme.font.sizes.s32} * 2);
-      color: ${theme.colors.blue};
-      font-family: ${theme.font.family.poppins};
-      padding: 2rem 0;
-    }
     h3 {
       font-size: ${theme.font.sizes.s24};
       color: ${theme.colors.primary};
     }
-    ${media.lessThan("medium")`
-      h2 {
-        padding: 4rem 0;
-      }
-    `}
   `}
 `
 
@@ -114,7 +100,7 @@ export const Career = styled.section<AboutStyle>`
     flex-direction: column;
     flew-wrap: wrap;
     gap: 4rem;
-    padding: 4rem 0;
+    padding: 2rem;
     h2 {
       font-size: ${theme.font.sizes.s28};
       color: ${theme.colors.primary};
@@ -194,7 +180,7 @@ export const Bio = styled.div`
   display: flex;
   flex-direction: row-reverse;
   gap: 8rem;
-  padding: 4rem 0;
+  padding: 2rem;
   ${media.lessThan("large")`
     gap: 4rem;
   `}

@@ -35,10 +35,11 @@ export default {
     secondary: "#8F9BA8",
     hover: '#212024',
     black: "#151418",
-    red: '#F0544F',
+    red: '#F08784',
     blue: '#9DE1E0',
     yellow: '#F1E05A',
     spotify: '#1DB954',
+    green: '#54A671',
     stacks: {
       typescript: '#3178C6',
       javascript: '#F1E05A ',

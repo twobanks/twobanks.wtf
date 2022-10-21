@@ -21,15 +21,6 @@ export const Content = styled.div`
         grid-template-columns: repeat(1, 1fr);
       `}
     }
-    h2 {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: calc(${theme.font.sizes.s32} * 2);
-      color: ${theme.colors.blue};
-      font-family: ${theme.font.family.poppins};
-      padding: 4rem 0 7rem 0;
-    }
   `}
 `
 

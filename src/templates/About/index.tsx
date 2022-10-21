@@ -1,13 +1,13 @@
-
-import Image from 'next/image';
-import Wrapper from '../Wrapper';
+import { Title } from '../../components'
+import Image from 'next/image'
+import Wrapper from '../Wrapper'
 import { about } from './mock'
 import * as S from './styled'
 
 const About = () => (
   <Wrapper>
     <S.Content>
-      <h2>sobre mim</h2>
+      <Title text='sobre' page='about' />
       <S.Bio>
         <S.ImageWrapper>
           <Image src={about.image} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={about.image} />
