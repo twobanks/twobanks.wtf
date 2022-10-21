@@ -7,19 +7,19 @@ type TitleStyles = {
 
 const titleModifiers = {
   ['default']: (theme: DefaultTheme) => css`
-    color: ${theme.colors.blue};
+    color: ${theme.colors.secondary};
   `,
   ['about']: (theme: DefaultTheme) => css`
     color: ${theme.colors.yellow};
   `,
   ['works']: (theme: DefaultTheme) => css`
-    color: ${theme.colors.spotify};
+    color: ${theme.colors.blue};
   `,
   ['activities']: (theme: DefaultTheme) => css`
-    color: ${theme.colors.blue};
+    color: ${theme.colors.green};
   `,
   ['idea']: (theme: DefaultTheme) => css`
-    color: ${theme.colors.blue};
+    color: ${theme.colors.red};
   `,
 }
 

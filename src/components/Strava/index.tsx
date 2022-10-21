@@ -33,7 +33,7 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
   const handleMap = useCallback((polyline: string) => {
     let polylineEncoded = encodeURIComponent(polyline)
     let style = 'ckmi23ula94rm17rxmlpg00as'
-    const pathColor = theme.colors.trainingZone.z1.substring(1);
+    const pathColor = theme.colors.green.substring(1);
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+${pathColor}(${polylineEncoded})/auto/400x200@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   }, [])
 
