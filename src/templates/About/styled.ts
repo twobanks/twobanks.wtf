@@ -8,13 +8,13 @@ type AboutStyle = {
 }
 
 const link = {
-  default: (theme: DefaultTheme) => css`
+  default: (theme: DefaultTheme, current?: Boolean) => css`
     a {
-      color: ${theme.colors.primary};
+      color: ${current ? theme.colors.primary : theme.colors.secondary};
       font-weight: ${theme.font.bold};
       transition: color 0.2s ease-in-out;
       &:hover {
-        color: ${theme.colors.blue};
+        color: ${theme.colors.yellow};
       }
     }
   `
@@ -68,7 +68,7 @@ export const About = styled.section`
 export const Occupation = styled.strong`
   ${({ theme }) => css`
     display: flex;
-    font-size: ${theme.font.sizes.s18};
+    font-size: ${theme.font.sizes.s16};
     color: ${theme.colors.primary};
     margin-bottom: 1rem;
   `}
@@ -77,13 +77,10 @@ export const Occupation = styled.strong`
 export const Stacks = styled.span`
 ${({ theme }) => css`
   display: flex;
-  width: 70%;
+  width: 100%;
   font-size: ${theme.font.sizes.s12};
   line-height: 2rem;
   margin-top: 1rem;
-  ${media.lessThan('medium')`
-    width: 100%;
-  `}
 `}
 `
 
@@ -101,80 +98,48 @@ export const Career = styled.section<AboutStyle>`
     flew-wrap: wrap;
     gap: 4rem;
     padding: 2rem;
-    h2 {
-      font-size: ${theme.font.sizes.s28};
-      color: ${theme.colors.primary};
-      margin-bottom: 1rem;
-    }
     ul {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
       ${course && css`
         display: flex;
         flex-direction: column;
         gap: 2rem;
         ${link.default(theme)}
       `}
-      padding-left: 4rem;
     }
-    border-top: .1rem solid ${theme.colors.hover};
   `}
   ${media.lessThan("medium")`
-    ul {
-      padding-left: 1rem;
-    }
+    padding: 2rem 0;
   `}
 `
 
-export const Experience = styled.li<AboutStyle>`
+export const Company = styled.div<AboutStyle>`
   ${({ theme, current }) => css`
-    position: relative;
-    padding: 0 2rem 2rem 4rem;
-    border-left: .025rem solid ${theme.colors.secondary};
-    outline: none;
-    &:after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -.8rem;
-      border-radius: 50%;
-      width: 1.5rem;
-      height: 1.5rem;
-      background-color: ${current ? theme.colors.primary : theme.colors.secondary};
-    }
-    ${media.lessThan("medium")`
-      padding: 0 2rem 2rem 0;
-      border-left: .025rem solid ${theme.colors.none};
-      &:after {
-        display: none;
-      }
-    `}
-  `}
-
-`
-
-export const Company = styled.div`
-  ${({ theme }) => css`
     font-size: ${theme.font.sizes.s14};
     line-height: 2rem;
-    width: 95%;
-    ${link.default(theme)}
+    width: 100%;
+    ${link.default(theme, current)}
   `}
 `
 
 export const ImageWrapper = styled.div`
-  display: flex;
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  overflow: hidden;
-  position: relative;
-  img {
-    width: 100%;
-    height: 100%:
-  }
-  ${media.lessThan("medium")`
-    display: none;
+  ${({ theme }) => css`
+    display: flex;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    overflow: hidden;
+    position: relative;
+    background-color: ${theme.colors.black};
+    img {
+      width: 100%;
+      height: 100%:
+    }
+    ${media.lessThan("medium")`
+      display: none;
+    `}
   `}
 `
-
-
 
 export const Bio = styled.div`
   display: flex;
@@ -189,12 +154,5 @@ export const Bio = styled.div`
     padding: 0 0 4rem 0;
     gap: 0;
   `}
-`
-
-export const Academy = styled.li``
-
-export const Social = styled.ul`
-  display: flex;
-  gap: 2rem;
 `
 

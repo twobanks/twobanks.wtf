@@ -30,11 +30,6 @@ type About = {
     college: string;
     period: string;
   }[];
-  course: {
-    name: string;
-    link: string;
-    description: string;
-  }[];
 }
 
 export const about: About = {
@@ -75,7 +70,7 @@ export const about: About = {
       durationInMonths: '3 meses',
     },
     {
-      occupation: 'Desenvolvedor Front-End',
+      occupation: 'Desenvolvedor Web',
       stacks: 'PHP, HTML5, Javascript/jQuery, CSS3, Boostrap, Flexbox, Grid Layout, Git, Git Flow',
       company: 'WebCorpore',
       link: 'https://webcorpore.com/',
@@ -92,38 +87,6 @@ export const about: About = {
       institution: 'Instituto Federal do Triângulo Mineiro',
       college: 'Análise e Desenvolvimento de Sistemas, Tecnologia da Informação',
       period: '2012 - 2015',
-    },
-  ],
-  course: [
-    {
-      name: 'Curso React.js Ninja - React Completo',
-      link: 'https://www.udemy.com/course/curso-reactjs-ninja/',
-      description: 'O curso para se tornar um ninja em React, e todas as ferramentas do seu ecossistema!',
-    },
-    {
-      name: 'Curso JavaScript Ninja',
-      link: 'https://www.udemy.com/course/curso-javascript-ninja/',
-      description: 'O curso para aprender JavaScript DE VERDADE!',
-    },
-    {
-      name: 'Rocketseat',
-      link: 'https://www.rocketseat.com.br/',
-      description: 'Bootcamp GoStack Rocketseat',
-    },
-    {
-      name: 'React Avançado: Crie aplicações com NextJS, Strapi e mais',
-      link: 'https://www.udemy.com/course/react-avancado/',
-      description: 'Aprenda a criar um e-commerce real do zero, indo do backend ao frontend até o deploy para produçao!',
-    },
-    {
-      name: 'Aprenda NextJS, GraphQL/GraphCMS e Leaflet na prática!',
-      link: 'https://www.udemy.com/course/aprenda-nextjs-na-pratica/',
-      description: 'Crie um mapa totalmente interativo com um CMS integrado em poucas horas!',
-    },
-    {
-      name: 'Gatsby: Crie um site PWA com React, GraphQL e Netlify CMS',
-      link: 'https://www.udemy.com/course/gatsby-crie-um-site-pwa-com-react-graphql-e-netlify-cms/',
-      description: 'Crie e coloque no ar um site extremamente rápido, utilizando boas práticas e as ferramentas mais utilizadas no mercado.',
     },
   ],
   social: [
