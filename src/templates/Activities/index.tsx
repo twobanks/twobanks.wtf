@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import Image from 'next/image';
 import { Strava, Title } from '../../components';
 import { Activities } from '../../types/strava';
@@ -10,9 +10,11 @@ const grid = '/icon/grid.svg';
 
 type ActivitiesProps = {
   activities: Activities[];
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
 }
 
-const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
+const ActivitiesTemplate = ({ activities, page, setPage }: ActivitiesProps) => {
   const [orientation, setOrientation] = useState<'ROW' | 'GRID'>('ROW');
   return (
     <Wrapper>
@@ -29,6 +31,8 @@ const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
           </S.ButtonWrapper>
         </S.Header>
         <Strava activities={activities} orientation={orientation} />
+        <button disabled={page === 1} onClick={() => setPage(page--)}>voltar</button>
+        <button onClick={() => setPage(page++)}>próximo</button>
       </S.Content>
     </Wrapper>
   )
