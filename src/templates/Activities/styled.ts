@@ -2,6 +2,7 @@ import styled, { css } from "styled-components";
 
 type ActivitiesStyle = {
   active?: boolean;
+  disabled?: boolean;
 }
 
 export const Content = styled.div`
@@ -33,5 +34,33 @@ export const Button = styled.button<ActivitiesStyle>`
     padding: .6rem;
     border-radius: 0.8rem;
     cursor: pointer;
+  `}
+`;
+
+export const WrapperPagination = styled.div`
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const ButtonPage = styled.div<ActivitiesStyle>`
+  ${({ theme, disabled }) => css`
+    display: flex;
+    align-items: center;
+    border: 0;
+    outline: none;
+    padding: 1rem;
+    border-radius: 0.8rem;
+    background-color: ${disabled ? theme.colors.background : theme.colors.black};
+    cursor: ${disabled ? 'not-allowed' : 'pointer'};
+    ${disabled && css`
+      opacity: .3;
+    `}
+    img {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
   `}
 `;

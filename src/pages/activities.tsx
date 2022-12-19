@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 const ActivitiesPage: NextPage = () => {
   const { useActivities } = useStrava();
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const { data , loading } = useActivities(page);
   if (loading) return <SkeletonActivities />
   return (
