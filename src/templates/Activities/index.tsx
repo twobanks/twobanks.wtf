@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Dispatch, SetStateAction, useState } from 'react';
 import Image from 'next/image';
-import { Strava, Title } from '../../components';
+import { Strava } from '../../components';
 import { Activities } from '../../types/strava';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
@@ -22,9 +22,8 @@ type ActivitiesProps = {
 const ActivitiesTemplate = ({ activities, page, setPage }: ActivitiesProps) => {
   const [orientation, setOrientation] = useState<'ROW' | 'GRID'>('ROW');
   return (
-    <Wrapper>
+    <Wrapper page='activities'>
       <S.Content>
-        <Title text='atividades' page='activities' />
         <S.Header>
           <S.ButtonWrapper>
             <S.Button onClick={() => setOrientation('GRID')} active={orientation === "GRID"}>

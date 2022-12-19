@@ -37,11 +37,19 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+${pathColor}(${polylineEncoded})/auto/400x200@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   }, [])
 
+  const formatDate = (value: string) => {
+    let date = new Date(value);
+    let day = date.getDate();
+    let month = date.getMonth();
+    let year = date.getFullYear();
+    return day + "-" + month + "-" + year;
+  }
+
   return (
     <S.Wrapper type={orientation}>
       <ul>
         {activities?.map((activity, index) => {
-          const { average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
+          const { start_date, average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
           const mapUrl = handleMap(map.summary_polyline)
           const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
           const averageTitle = type !== 'Ride' ? 'Pace ' : 'Vel. Média ';
@@ -55,20 +63,20 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
                 </S.MapWrapper>
                 <S.ContentActivity type={orientation}>
                   <S.HeaderActivity>
-                    <div>
-                      <h4>{name}</h4>
+                    <S.DateAndCity>
+                      <div>
+                        <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
+                        <h4>{formatDate(start_date)}</h4>
+                      </div>
                       <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
-                    </div>
-                    <div>
-                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
-                      <S.TypeActivity>
-                        <img src={conversionTypeActivities(type)} alt={type} />
-                      </S.TypeActivity>
-                    </div>
+                    </S.DateAndCity>
+                    <S.TypeActivity>
+                      <img src={conversionTypeActivities(type)} alt={type} />
+                    </S.TypeActivity>
                   </S.HeaderActivity>
                   <S.ActivityData>
                     <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
-                    <div><span>Duração</span> <strong>{movingTime}</strong></div>
+                    <div><span>Tempo</span> <strong>{movingTime}</strong></div>
                     <div><span>{averageTitle}</span> <div><strong>{averageSpeed} </strong>km/h</div></div>
                     <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
                   </S.ActivityData>

@@ -8,6 +8,12 @@ export const Header = styled.header`
 		width: 100vw;
 		background-color: ${theme.colors.background};
 		z-index: 2;
+		${media.lessThan("medium")`
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			padding: 1rem 3rem;
+		`}
 	`}
 `
 
@@ -23,9 +29,8 @@ export const Content = styled.div`
 		margin: 0 auto;
 		padding: 1rem 0;
 		${media.lessThan("medium")`
-			flex-direction: column;
-			padding: 2rem 0;
-			gap: 2rem;
+			width: fit-content;
+			margin: 0;
 		`}
 	`}
 `
@@ -44,6 +49,9 @@ export const Nav = styled.ul`
 		border: 0;
 		position: relative;
 	}
+	${media.lessThan("medium")`
+		display: none;
+	`}
 `
 
 

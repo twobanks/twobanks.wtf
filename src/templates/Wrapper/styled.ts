@@ -16,9 +16,9 @@ export const Content = styled.section`
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
-    padding-top: 10rem;
+    padding-top: 17rem;
     ${media.lessThan('medium')`
-      padding: 20rem 2rem 0 2rem;
+      padding: 12rem 2rem 5rem 2rem;
     `}
   `}
 `;

@@ -1,5 +1,4 @@
 import { ReactNode, useState } from 'react';
-import { Title } from '../../components'
 import Image from 'next/image';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
@@ -31,9 +30,8 @@ const Works = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper page='works' >
       <S.Content>
-        <Title text='trampos' page='works' />
         <ul>
           {works?.map((item, index) => {
             return (

@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import media from "styled-media-query";
 
 type ActivitiesStyle = {
   active?: boolean;
@@ -17,6 +18,9 @@ export const Header = styled.div`
   justify-content: flex-end;
   align-items: center;
   padding: 0 2rem 0 0;
+  ${media.lessThan('medium')`
+    display: none;
+  `}
 `
 
 export const ButtonWrapper = styled.div`
@@ -43,6 +47,7 @@ export const WrapperPagination = styled.div`
   flex: 1;
   align-items: center;
   justify-content: center;
+  padding: 1rem 0;
 `;
 
 export const ButtonPage = styled.div<ActivitiesStyle>`

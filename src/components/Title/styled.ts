@@ -29,12 +29,11 @@ export const Wrapper = styled.h1<TitleStyles>`
     align-items: center;
     justify-content: center;
     font-family: ${theme.font.family.poppins};
-    font-size: calc(${theme.font.sizes.s32} * 2);
-    padding: 3rem 0;
+    font-size: ${theme.font.sizes.s48};
+    padding: 1rem 0;
     ${titleModifiers[page](theme)}
     ${media.lessThan('medium')`
-      font-size: ${theme.font.sizes.s48};
-      padding: 0 0 6rem 0;
+      font-size: ${theme.font.sizes.s28};
     `}
   `}
 `;

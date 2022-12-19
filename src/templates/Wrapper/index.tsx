@@ -3,11 +3,12 @@ import * as S from './styled';
 
 type WrapperProps = {
   children: React.ReactNode;
+  page?: 'about' | 'works' | 'activities' | 'idea' | 'default';
 }
 
-const Wrapper = ({children}: WrapperProps) => (
+const Wrapper = ({children, page}: WrapperProps) => (
   <S.Wrapper>
-    <Header/>
+    <Header page={page} />
     <S.Content>
       {children}
     </S.Content>
