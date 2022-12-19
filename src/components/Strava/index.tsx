@@ -40,7 +40,7 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
   return (
     <S.Wrapper type={orientation}>
       <ul>
-        {activities.map((activity, index) => {
+        {activities?.map((activity, index) => {
           const { average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
           const mapUrl = handleMap(map.summary_polyline)
           const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);

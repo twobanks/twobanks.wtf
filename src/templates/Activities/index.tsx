@@ -1,4 +1,5 @@
-import { useState } from 'react';
+/* eslint-disable @next/next/no-img-element */
+import { Dispatch, SetStateAction, useState } from 'react';
 import Image from 'next/image';
 import { Strava, Title } from '../../components';
 import { Activities } from '../../types/strava';
@@ -7,12 +8,18 @@ import * as S from './styled'
 
 const row = '/icon/row.svg';
 const grid = '/icon/grid.svg';
+const next = '/icon/next.svg';
+const prev = '/icon/prev.svg';
+
+const FIRST = 1;
 
 type ActivitiesProps = {
   activities: Activities[];
+  page: number;
+  setPage: Dispatch<SetStateAction<number>>;
 }
 
-const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
+const ActivitiesTemplate = ({ activities, page, setPage }: ActivitiesProps) => {
   const [orientation, setOrientation] = useState<'ROW' | 'GRID'>('ROW');
   return (
     <Wrapper>
@@ -29,6 +36,14 @@ const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
           </S.ButtonWrapper>
         </S.Header>
         <Strava activities={activities} orientation={orientation} />
+        <S.WrapperPagination>
+          <S.ButtonPage disabled={page === FIRST} onClick={() => setPage(page - FIRST)}>
+            <img src={prev} alt="Ícone referente a página anterior" />
+          </S.ButtonPage>
+          <S.ButtonPage onClick={() => {setPage(page + FIRST)}}>
+            <img src={next} alt="Ícone referente a próxima página" />
+          </S.ButtonPage>
+        </S.WrapperPagination>
       </S.Content>
     </Wrapper>
   )

@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 const ActivitiesPage: NextPage = () => {
   const { useActivities } = useStrava();
-  const [page, ___] = useState(1);
+  const [page, setPage] = useState<number>(1);
   const { data , loading } = useActivities(page);
   if (loading) return <SkeletonActivities />
   return (
@@ -17,7 +17,7 @@ const ActivitiesPage: NextPage = () => {
         title="vivência | twobanks"
         {...SEO}
       />
-      <ActivitiesTemplate activities={data}  />
+      <ActivitiesTemplate activities={data} page={page} setPage={setPage} />
     </>
   )
 }
