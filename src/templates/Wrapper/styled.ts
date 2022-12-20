@@ -18,7 +18,7 @@ export const Content = styled.section`
     margin: 0 auto;
     padding-top: 17rem;
     ${media.lessThan('medium')`
-      padding: 12rem 2rem 5rem 2rem;
+      padding: 12rem 2rem 7rem 2rem;
     `}
   `}
 `;
