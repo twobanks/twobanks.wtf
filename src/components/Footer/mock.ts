@@ -3,12 +3,12 @@ import { v4 as uuid} from 'uuid';
 const home = '/icon/animation/home.svg';
 const article = '/icon/animation/article.svg';
 const activities = '/icon/animation/activities.svg';
-const book = '/icon/animation/book.svg';
+const avatar = '/icon/animation/avatar.svg';
 const code = '/icon/animation/code.svg';
 const homeAnimated = '/icon/animation/home-animated.webp';
 const articleAnimated = '/icon/animation/article-animated.webp';
 const activitiesAnimated = '/icon/animation/activities-animated.webp';
-const bookAnimated = '/icon/animation/book-animated.webp';
+const avatarAnimated = '/icon/animation/avatar-animated.webp';
 const codeAnimated = '/icon/animation/code-animated.webp';
 
 type ItemsProps = {
@@ -31,8 +31,8 @@ export const menuItems: ItemsProps[] = [
     id: uuid(),
     name: 'sobre',
     url: '/about',
-    icon: book,
-    iconAnimated: bookAnimated,
+    icon: avatar,
+    iconAnimated: avatarAnimated,
   },
   {
     id: uuid(),
