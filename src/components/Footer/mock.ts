@@ -1,15 +1,5 @@
 import { v4 as uuid} from 'uuid';
-
-const home = '/icon/animation/home.svg';
-const article = '/icon/animation/article.svg';
-const activities = '/icon/animation/activities.svg';
-const avatar = '/icon/animation/avatar.svg';
-const code = '/icon/animation/code.svg';
-const homeAnimated = '/icon/animation/home-animated.webp';
-const articleAnimated = '/icon/animation/article-animated.webp';
-const activitiesAnimated = '/icon/animation/activities-animated.webp';
-const avatarAnimated = '/icon/animation/avatar-animated.webp';
-const codeAnimated = '/icon/animation/code-animated.webp';
+import images from '../../images';
 
 type ItemsProps = {
   id: string;
@@ -24,35 +14,35 @@ export const menuItems: ItemsProps[] = [
     id: uuid(),
     name: 'home',
     url: '/',
-    icon: home,
-    iconAnimated: homeAnimated,
+    icon: images.home,
+    iconAnimated: images.homeAnimated,
   },
   {
     id: uuid(),
     name: 'sobre',
     url: '/about',
-    icon: avatar,
-    iconAnimated: avatarAnimated,
+    icon: images.avatar,
+    iconAnimated: images.avatarAnimated,
   },
   {
     id: uuid(),
     name: 'atividades',
     url: '/activities',
-    icon: activities,
-    iconAnimated: activitiesAnimated,
+    icon: images.activities,
+    iconAnimated: images.activitiesAnimated,
   },
   {
     id: uuid(),
     name: 'trampos',
     url: '/works',
-    icon: code,
-    iconAnimated: codeAnimated,
+    icon: images.code,
+    iconAnimated: images.codeAnimated,
   },
   {
     id: uuid(),
     name: 'blog',
     url: '/idea',
-    icon: article,
-    iconAnimated: articleAnimated,
+    icon: images.article,
+    iconAnimated: images.articleAnimated,
   },
 ]
