@@ -31,13 +31,15 @@ export const ButtonWrapper = styled.div`
 export const Button = styled.button<ActivitiesStyle>`
   ${({ theme, active }) => css`
     outline: none;
-    width: fit-content;
-    height: fit-content;
     border: 0;
     background-color: ${active ? theme.colors.black : theme.colors.none};
-    padding: .6rem;
+    padding: 1rem;
     border-radius: 0.8rem;
     cursor: pointer;
+    img {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
   `}
 `;
 

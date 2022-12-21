@@ -14,8 +14,11 @@ const grid = '/icon/animation/grid.svg';
 const gridAnimated = '/icon/animation/grid-animated.webp';
 const row = '/icon/animation/row.svg';
 const rowAnimated = '/icon/animation/row-animated.webp';
+const work = '/icon/animation/work.svg';
+const workAnimated = '/icon/animation/work-animated.webp';
+
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  home, article, activities, avatar, code, homeAnimated, articleAnimated, activitiesAnimated, avatarAnimated, codeAnimated, arrow, arrowAnimated, grid, gridAnimated, row, rowAnimated
+  home, article, activities, avatar, code, homeAnimated, articleAnimated, activitiesAnimated, avatarAnimated, codeAnimated, arrow, arrowAnimated, grid, gridAnimated, row, rowAnimated, work, workAnimated
 }

@@ -17,7 +17,7 @@ type ActivitiesProps = {
 
 const ActivitiesTemplate = ({ activities, page, setPage }: ActivitiesProps) => {
   const [orientation, setOrientation] = useState<'ROW' | 'GRID'>('ROW');
-  const [hovered, setHovered] = useState<string>('');
+  const [hovered, setHovered] = useState<'NEXT' | 'PREV' | 'ROW' | 'GRID' | ''>('');
   return (
     <Wrapper page='activities'>
       <S.Content>
@@ -33,11 +33,11 @@ const ActivitiesTemplate = ({ activities, page, setPage }: ActivitiesProps) => {
         </S.Header>
         <Strava activities={activities} orientation={orientation} />
         <S.WrapperPagination>
-          <S.ButtonPage disabled={page === FIRST} onClick={() => setPage(page - FIRST)} onMouseEnter={() => setHovered('prev')} onMouseLeave={() => setHovered('')}>
-            <Icon src={hovered === 'prev' ? images.arrowAnimated : images.arrow} rotate alt="Ícone referente a página anterior" />
+          <S.ButtonPage disabled={page === FIRST} onClick={() => setPage(page - FIRST)} onMouseEnter={() => setHovered('PREV')} onMouseLeave={() => setHovered('')}>
+            <Icon src={hovered === 'PREV' ? images.arrowAnimated : images.arrow} rotate alt="Ícone referente a página anterior" />
           </S.ButtonPage>
-          <S.ButtonPage onClick={() => setPage(page + FIRST)} onMouseEnter={() => setHovered('next')} onMouseLeave={() => setHovered('')}>
-            <Icon src={hovered === 'next' ? images.arrowAnimated : images.arrow} alt="Ícone referente a próxima página" />
+          <S.ButtonPage onClick={() => setPage(page + FIRST)} onMouseEnter={() => setHovered('NEXT')} onMouseLeave={() => setHovered('')}>
+            <Icon src={hovered === 'NEXT' ? images.arrowAnimated : images.arrow} alt="Ícone referente a próxima página" />
           </S.ButtonPage>
         </S.WrapperPagination>
       </S.Content>

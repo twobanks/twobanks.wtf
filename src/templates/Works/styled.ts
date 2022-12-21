@@ -7,20 +7,23 @@ type WorksStyle = {
   stack: STACKS
 }
 
-export const Content = styled.div`
+export const Container = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
     max-width: ${theme.container};
     width: 100%;
-    margin: 0 auto 4rem auto;
+    margin: 4rem auto;
     ul {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      ${media.lessThan("medium")`
-        grid-template-columns: repeat(1, 1fr);
-      `}
     }
+    ${media.lessThan("medium")`
+      margin: 0 auto;
+      ul {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    `}
   `}
 `
 
@@ -46,7 +49,7 @@ export const WrapperImage = styled.div`
   }
 `;
 
-export const Title = styled.div`
+export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
@@ -61,6 +64,24 @@ export const Title = styled.div`
       gap: 1rem;
       flex-wrap: wrap;
     }
+    div {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      a {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        color: ${theme.colors.primary};
+        img {
+          height: 2rem;
+          width: 2rem;
+        }
+      }
+    }
+    em {
+      font-size: ${theme.font.sizes.s14};
+    }
   `}
 `
 
@@ -69,16 +90,16 @@ export const Item = styled.li<WorksStyle>`
     position: relative;
     font-size: ${theme.font.sizes.s14};
     background-color: ${theme.colors.hover};
-    padding: .5rem 1rem .5rem 3rem;
+    padding: .5rem 1rem .5rem 2.5rem;
     border-radius: .8rem;
     &::after {
       background: ${theme.colors.stacks[stack]};
       border-radius: 50%;
       content: "";
       left: 1rem;
-      top: 1rem;
-      height: 1rem;
-      width: 1rem;
+      top: 1.15rem;
+      height: .5rem;
+      width: .5rem;
       position: absolute;
 
     }

@@ -1,14 +1,13 @@
 import { ReactNode, useState } from 'react';
-import Image from 'next/image';
 import Wrapper from '../Wrapper';
 import * as S from './styled'
 import { works } from './mock';
 import { conversionStack } from '../../utils/functions/conversionStack';
 
 const Works = () => {
+  const [hovered, setHovered] = useState('')
   const Animation = (props: { index: string; children: ReactNode }) => {
-    const [hovered, setHovered] = useState('')
-    const isHovered = hovered === props.index
+    let isHovered = hovered === props.index
 
     return (
       <S.AnimContainer
@@ -31,29 +30,31 @@ const Works = () => {
 
   return (
     <Wrapper page='works' >
-      <S.Content>
+      <S.Container>
         <ul>
           {works?.map((item, index) => {
             return (
-              <S.Work key={item.name}>
-                <a href={item.link}>
-                  <Animation index={String(index)}>
-                    <S.WrapperImage>
-                      <Image src={item.image} alt={item.name} height={180} width={280} placeholder="blur" blurDataURL={item.image} />
-                    </S.WrapperImage>
-                    <S.Title>
+              <S.Work key={item.id}>
+                <Animation index={String(index)}>
+                  <S.Content>
+                    <a href={item.link}>
                       <strong>{item.name}</strong>
-                      <ul>
-                        {item.language.map(language => <S.Item key={language} stack={language}>{conversionStack(language)}</S.Item>)}
-                      </ul>
-                    </S.Title>
-                  </Animation>
-                </a>
+                    </a>
+                    <div>
+                      <a href={item.company.link}>
+                        {item.company.name}
+                      </a> • <em>{item.type}</em>
+                    </div>
+                    <ul>
+                      {item.language.map(language => <S.Item key={language} stack={language}>{conversionStack(language)}</S.Item>)}
+                    </ul>
+                  </S.Content>
+                </Animation>
               </S.Work>
             )
           })}
         </ul>
-      </S.Content>
+      </S.Container>
     </Wrapper>
   )
 }

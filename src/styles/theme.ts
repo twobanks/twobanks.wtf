@@ -42,6 +42,7 @@ export default {
     green: '#54A671',
     stacks: {
       typescript: '#3178C6',
+      react: '#6574ab',
       javascript: '#F1E05A ',
       next: 'linear-gradient(90deg,#ed6292 25%,#ed5760 87.5%)',
       gatsby: '#A456F0',

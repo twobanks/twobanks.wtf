@@ -4,4 +4,5 @@ export enum STACKS  {
   NEXT = 'next',
   GATSBY = 'gatsby',
   STYLED = 'styled',
+  REACT = 'react'
 }
