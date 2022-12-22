@@ -17,7 +17,7 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'Gerentes Digitais',
-    type: 'plataforma',
+    type: 'Plataforma',
     link: 'https://bornlogic.gerentesdigitais.com/',
     language: [STACKS.TYPESCRIPT, STACKS.REACT, STACKS.STYLED],
     company: {
@@ -28,7 +28,7 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'Harpoon',
-    type: 'plataform',
+    type: 'Plataform',
     link: 'https://app.harpoon.digital/',
     language: [STACKS.TYPESCRIPT, STACKS.NEXT, STACKS.STYLED],
     company: {
@@ -39,7 +39,7 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'Harpoon',
-    type: 'landing page',
+    type: 'Landing Page',
     link: 'https://harpoon.digital/',
     language: [STACKS.TYPESCRIPT, STACKS.NEXT, STACKS.STYLED],
     company: {
@@ -50,7 +50,7 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'Bowe',
-    type: 'landing page',
+    type: 'Landing page',
     link: 'https://bowe.com.br/',
     language: [STACKS.JAVASCRIPT, STACKS.GATSBY, STACKS.STYLED],
     company: {
@@ -61,7 +61,7 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'EQI Investimentos',
-    type: 'landing page',
+    type: 'Landing Page',
     link: 'https://eqi.com.br/',
     language: [STACKS.JAVASCRIPT, STACKS.GATSBY, STACKS.STYLED],
     company: {

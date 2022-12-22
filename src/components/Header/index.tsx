@@ -22,32 +22,34 @@ const Header = ({ page = 'default' }: HeaderProps) => {
               <Image src={avatar} alt="twobanks" placeholder="blur" blurDataURL={avatar} height={60} width={60} />
             </Link>
           </S.Banks>
-          <S.Nav>
-            {pages.map(page => {
-              const path = `/${page}`
-              const isHovered = hovered === page
-              return(
-                <li key={page}>
-                  <Link href={path} passHref>
-                    <S.NavContainer
-                        onHoverStart={() => setHovered(page)}
-                        onHoverEnd={() => setHovered('')}
-                      >
-                        {isHovered && (
-                          <S.NavHovered
-                            layoutId="nav"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                          />
-                        )}
-                        {conversionPage(page)}
-                      </S.NavContainer>
-                  </Link>
-                </li>
-              )
-            })}
-          </S.Nav>
+          {page !== 'default' && (
+            <S.Nav>
+              {pages.map(page => {
+                const path = `/${page}`
+                const isHovered = hovered === page
+                return(
+                  <li key={page}>
+                    <Link href={path} passHref>
+                      <S.NavContainer
+                          onHoverStart={() => setHovered(page)}
+                          onHoverEnd={() => setHovered('')}
+                        >
+                          {isHovered && (
+                            <S.NavHovered
+                              layoutId="nav"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            />
+                          )}
+                          {conversionPage(page)}
+                        </S.NavContainer>
+                    </Link>
+                  </li>
+                )
+              })}
+            </S.Nav>
+          )}
         </S.Content>
         <Title text={conversionTitlePage(page)} page={page} />
       </S.Header>

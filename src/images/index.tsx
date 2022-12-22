@@ -16,9 +16,34 @@ const row = '/icon/animation/row.svg';
 const rowAnimated = '/icon/animation/row-animated.webp';
 const work = '/icon/animation/work.svg';
 const workAnimated = '/icon/animation/work-animated.webp';
+const folder = '/icon/animation/folder.svg';
+const folderAnimated = '/icon/animation/folder-animated.webp';
+const folderActivity = '/icon/animation/folder-activity.svg';
+const folderActivityAnimated = '/icon/animation/folder-activity-animated.webp';
 
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  home, article, activities, avatar, code, homeAnimated, articleAnimated, activitiesAnimated, avatarAnimated, codeAnimated, arrow, arrowAnimated, grid, gridAnimated, row, rowAnimated, work, workAnimated
+  home,
+  article,
+  activities,
+  avatar,
+  code,
+  homeAnimated,
+  articleAnimated,
+  activitiesAnimated,
+  avatarAnimated,
+  codeAnimated,
+  arrow,
+  arrowAnimated,
+  grid,
+  gridAnimated,
+  row,
+  rowAnimated,
+  work,
+  workAnimated,
+  folder,
+  folderAnimated,
+  folderActivity,
+  folderActivityAnimated
 }

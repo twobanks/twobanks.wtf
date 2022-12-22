@@ -1,4 +1,4 @@
-export const pages = [
+export const pages: string[] = [
   'about',
   'activities',
   'works',
