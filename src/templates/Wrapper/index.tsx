@@ -3,7 +3,7 @@ import * as S from './styled';
 
 type WrapperProps = {
   children: React.ReactNode;
-  page?: 'about' | 'works' | 'activities' | 'idea' | 'default';
+  page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
 }
 
 const Wrapper = ({children, page}: WrapperProps) => (
@@ -12,7 +12,7 @@ const Wrapper = ({children, page}: WrapperProps) => (
     <S.Content>
       {children}
     </S.Content>
-    <Footer />
+    {page !== 'home' && <Footer />}
   </S.Wrapper>
 )
 

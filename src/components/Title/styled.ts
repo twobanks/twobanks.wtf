@@ -2,11 +2,11 @@ import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
 
 type TitleStyles = {
-  page: 'about' | 'works' | 'activities' | 'idea' | 'default';
+  page: 'about' | 'works' | 'activities' | 'idea' | 'home';
 }
 
 const titleModifiers = {
-  ['default']: (theme: DefaultTheme) => css`
+  ['home']: (theme: DefaultTheme) => css`
     color: ${theme.colors.secondary};
   `,
   ['about']: (theme: DefaultTheme) => css`

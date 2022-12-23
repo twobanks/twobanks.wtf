@@ -8,21 +8,21 @@ import { Title } from '../';
 const avatar = '/img/avatar.webp';
 
 type HeaderProps = {
-  page?: 'about' | 'works' | 'activities' | 'idea' | 'default';
+  page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
 }
 
-const Header = ({ page = 'default' }: HeaderProps) => {
+const Header = ({ page = 'home' }: HeaderProps) => {
   const [hovered, setHovered] = useState<string>('')
   return(
     <>
-      <S.Header>
-        <S.Content>
+      <S.Header page={page}>
+        <S.Content page={page}>
           <S.Banks>
             <Link href="/" passHref>
               <Image src={avatar} alt="twobanks" placeholder="blur" blurDataURL={avatar} height={60} width={60} />
             </Link>
           </S.Banks>
-          {page !== 'default' && (
+          {page !== 'home' && (
             <S.Nav>
               {pages.map(page => {
                 const path = `/${page}`

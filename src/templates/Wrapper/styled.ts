@@ -6,7 +6,6 @@ export const Wrapper = styled.main`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
   width: 100vw;
 `;
 
@@ -15,11 +14,11 @@ export const Content = styled.section`
     display: flex;
     max-width: ${theme.container};
     width: 100%;
-    height: 100%;
+    height: auto;
     margin: 0 auto;
     padding-top: 17rem;
     ${media.lessThan('medium')`
-      padding: 12rem 2rem 7rem 2rem;
+      padding: 15rem 2rem 7rem 2rem;
     `}
   `}
 `;

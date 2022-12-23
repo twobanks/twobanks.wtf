@@ -22,7 +22,7 @@ const Home = () => {
   }
 
   return (
-    <Wrapper>
+    <Wrapper page="home">
       <S.Content>
         {pages?.map(page => {
           const path = `/${page}`;

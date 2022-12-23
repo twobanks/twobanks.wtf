@@ -2,32 +2,38 @@ import { motion } from 'framer-motion'
 import styled, { css } from 'styled-components'
 import media from "styled-media-query";
 
-export const Header = styled.header`
-	${({theme}) => css`
+type HeaderProps = {
+	page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+}
+
+export const Header = styled.header<HeaderProps>`
+	${({ theme, page }) => css`
 		position: fixed;
 		width: 100vw;
 		background-color: ${theme.colors.background};
 		z-index: 2;
 		${media.lessThan("medium")`
 			display: flex;
-			justify-content: space-between;
+			justify-content: center;
+			${page !== 'home' && css` justify-content: space-between; `};
 			width: 100%;
 			padding: 1rem 3rem;
 		`}
 	`}
 `
 
-export const Content = styled.div`
-	${({theme}) => css`
+export const Content = styled.div<HeaderProps>`
+	${({ theme, page }) => css`
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: center;
 		font-size: ${theme.font.sizes.s16};
 		color: ${theme.colors.secondary};
 		max-width: ${theme.container};
 		width: 100vw;
 		margin: 0 auto;
-		padding: 1rem 0;
+		padding: 3rem 0 3rem 2rem;
+		${page !== 'home' && css` justify-content: space-between; `};
 		${media.lessThan("medium")`
 			width: fit-content;
 			margin: 0;
