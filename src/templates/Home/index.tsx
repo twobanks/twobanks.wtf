@@ -1,14 +1,15 @@
 
 import { useState } from 'react';
 import Wrapper from '../Wrapper';
-import { pages } from '../../components/Header/mock';
 import Link from 'next/link'
 import { conversionPage } from '../../utils/functions/conversionPage';
 import { Icon } from '../../components';
 import images from '../../images';
 import * as S from './styled';
+import { HomeProps } from '../../types/strapi';
 
-const Home = () => {
+const Home = ({ attributes }: HomeProps) => {
+  const { header } = attributes;
   const [hovered, setHovered] = useState<string>('');
   const icons = {
     ['default']: {
@@ -22,17 +23,17 @@ const Home = () => {
   }
 
   return (
-    <Wrapper page="home">
+    <Wrapper page="home" header={header}>
       <S.Content>
-        {pages?.map(page => {
-          const path = `/${page}`;
-          const isHovered = hovered === page;
-          const icon = page === 'activities' ? icons[page] : icons['default'];
+        {header.menu.map(page => {
+          const path = `/${page.url}`;
+          const isHovered = hovered === page.name;
+          const icon = page.name === 'activities' ? icons[page.name] : icons['default'];
           return(
-            <Link href={path} passHref key={page}>
-              <S.Item page={page} onMouseEnter={() => setHovered(page)} onMouseLeave={() => setHovered('')}>
+            <Link href={path} passHref key={page.url}>
+              <S.Item page={page.name} onMouseEnter={() => setHovered(page.name)} onMouseLeave={() => setHovered('')}>
                 <Icon src={isHovered ? icon.animation : icon.static} />
-                {conversionPage(page)}
+                {conversionPage(page.name)}
               </S.Item>
             </Link>
           )

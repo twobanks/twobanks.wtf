@@ -5,21 +5,25 @@ import Link from 'next/link'
 import { pages } from './mock'
 import { conversionPage, conversionTitlePage } from '../../utils/functions/conversionPage'
 import { Title } from '../';
+import { HeaderPropsStrapiProps } from '../../types/strapi';
+import { getImageUrl } from '../../utils/functions/getImageUrl';
 const avatar = '/img/avatar.webp';
 
 type HeaderProps = {
   page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+  header: HeaderPropsStrapiProps;
 }
 
-const Header = ({ page = 'home' }: HeaderProps) => {
+const Header = ({ page = 'home', header }: HeaderProps) => {
+  const { logo: { data: { attributes: image }} } = header;
   const [hovered, setHovered] = useState<string>('')
   return(
     <>
       <S.Header page={page}>
         <S.Content page={page}>
           <S.Banks>
-            <Link href="/" passHref>
-              <Image src={avatar} alt="twobanks" placeholder="blur" blurDataURL={avatar} height={60} width={60} />
+            <Link href="#" passHref>
+              <Image src={getImageUrl(image.url)} alt="twobanks" placeholder="blur" blurDataURL={getImageUrl(image.url)} height={60} width={60} />
             </Link>
           </S.Banks>
           {page !== 'home' && (
