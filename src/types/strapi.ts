@@ -12,13 +12,15 @@ export type HeaderPropsStrapiProps = {
   menu: NameAndUrl[]
 }
 
-export type FooterStrapiProps = {
-  menu: NameAndUrl[]
-}
-
 export type HomeProps = {
-  attributes: {
-    header: HeaderPropsStrapiProps,
-    footer: FooterStrapiProps,
+  data: {
+    attributes: {
+      header: HeaderPropsStrapiProps,
+      footer: {
+        menu: NameAndUrl[]
+      },
+    }
   }
 }
+
+

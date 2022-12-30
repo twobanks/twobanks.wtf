@@ -4,7 +4,7 @@ import { about } from './mock'
 import * as S from './styled'
 
 const About = () => (
-  <Wrapper page='about'>
+  <>
     <S.Content>
       <S.Bio>
         <S.ImageWrapper>
@@ -56,7 +56,7 @@ const About = () => (
         </ul>
       </S.Career>
     </S.Content>
-  </Wrapper>
+  </>
 )
 
 export default About;
