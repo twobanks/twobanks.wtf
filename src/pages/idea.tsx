@@ -15,7 +15,7 @@ const IdeaPage = ({ data }: HomeProps) => {
         title="idea | twobanks"
         {...SEO}
       />
-      <Wrapper page="home" header={attributes.header} >
+      <Wrapper page="idea" header={attributes.header} >
         <Idea />
       </Wrapper>
     </>
