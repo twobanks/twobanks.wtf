@@ -1,13 +1,12 @@
 import { ReactNode, useState } from 'react';
 import * as S from './styled'
-import { works } from './mock';
 import { conversionStack } from '../../utils/functions/conversionStack';
+import { Work } from '../../types/strapi';
 
-const Works = () => {
+const Works = ({ works }: Work) => {
   const [hovered, setHovered] = useState('')
   const Animation = (props: { index: string; children: ReactNode }) => {
     let isHovered = hovered === props.index
-
     return (
       <S.AnimContainer
         onHoverStart={() => setHovered(props.index)}
@@ -30,21 +29,22 @@ const Works = () => {
   return (
     <S.Container>
       <ul>
-        {works?.map((item, index) => {
+        {works.map((item, index) => {
+          const { name, name_company, stack, type, url_company, url_name } = item;
           return (
-            <S.Work key={item.id}>
+            <S.Work key={`work-${index}`}>
               <Animation index={String(index)}>
                 <S.Content>
-                  <a href={item.link}>
-                    <strong>{item.name}</strong>
+                  <a href={url_name}>
+                    <strong>{name}</strong>
                   </a>
                   <div>
-                    <a href={item.company.link}>
-                      {item.company.name}
-                    </a> • <em>{item.type}</em>
+                    <a href={url_company}>
+                      {name_company}
+                    </a> • <em>{type}</em>
                   </div>
                   <ul>
-                    {item.language.map(language => <S.Item key={language} stack={language}>{conversionStack(language)}</S.Item>)}
+                    {stack.map(language => <S.Item key={language.name} stack={language.name}>{conversionStack(language.name)}</S.Item>)}
                   </ul>
                 </S.Content>
               </Animation>

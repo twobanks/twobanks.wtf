@@ -23,7 +23,7 @@ const About = ({ sectionExperience, sectionAcademic, sectionAbout }: AboutProps)
           </S.About>
         </S.Bio>
         <S.Career>
-          <h3>{sectionExperience.title.title}</h3>
+          <h3>{sectionExperience.title}</h3>
           <ul>
             {sectionExperience.experiences.map(item => {
               const { role, name_company, url_company, city_company, period, stack } = item;
@@ -44,7 +44,7 @@ const About = ({ sectionExperience, sectionAcademic, sectionAbout }: AboutProps)
           </ul>
         </S.Career>
         <S.Career>
-          <h3>{sectionAcademic.title.title}</h3>
+          <h3>{sectionAcademic.title}</h3>
           <ul>
             {sectionAcademic.academic.map(item => {
               const { course, local, period } = item;

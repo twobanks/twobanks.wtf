@@ -1,3 +1,5 @@
+import { STACKS } from "../utils/enums/stack";
+
 type NameAndUrl = {
   url: string;
   name: string;
@@ -35,12 +37,8 @@ export type SectionAbout = {
   }
 }
 
-type Title = {
-  title: string;
-}
-
 export type SectionAcademic = {
-  title: Title;
+  title: string;
   academic: {
     local: string;
     course: string;
@@ -49,7 +47,7 @@ export type SectionAcademic = {
 }
 
 export type SectionExperience = {
-  title: Title;
+  title: string;
   experiences: {
     role: string;
     name_company: string;
@@ -67,5 +65,24 @@ export type AboutProps = {
       sectionAcademic: SectionAcademic;
       sectionExperience: SectionExperience;
     }
+  }
+}
+
+export type Work = {
+  works: {
+    name: string;
+    name_company: string;
+    url_company: string;
+    url_name: string;
+    type: string;
+    stack: {
+      name: STACKS;
+    }[]
+  }[]
+}
+
+export type WorkProps = {
+  data: {
+    attributes: Work;
   }
 }

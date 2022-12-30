@@ -4,11 +4,18 @@ import { NextSeo } from 'next-seo'
 import { SEO } from '../utils/constants/seo'
 import client from '../graphql/client'
 import GET_HOME from '../graphql/queries/getWrapper'
+import GET_WORKS from '../graphql/queries/getWorks'
 import Wrapper from '../templates/Wrapper'
-import { HomeProps } from '../types/strapi'
+import { HomeProps, WorkProps } from '../types/strapi'
 
-const WorksPage = ({ data }: HomeProps) => {
-  const { attributes } = data;
+type WorksPageProps = {
+  home: HomeProps;
+  work: WorkProps;
+}
+
+const WorksPage = ({ home, work }: WorksPageProps) => {
+  const { data: { attributes } } = home;
+  const { data: { attributes: { works } } } = work;
   return (
     <>
       <NextSeo
@@ -16,7 +23,7 @@ const WorksPage = ({ data }: HomeProps) => {
         {...SEO}
       />
       <Wrapper page="works" header={attributes.header} >
-        <Works />
+        <Works works={works} />
       </Wrapper>
     </>
   )
@@ -24,9 +31,11 @@ const WorksPage = ({ data }: HomeProps) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const { home } = await client.request(GET_HOME);
+  const { work } = await client.request(GET_WORKS);
   return {
     props: {
-      ...home,
+      home,
+      work
     }
   }
 }
