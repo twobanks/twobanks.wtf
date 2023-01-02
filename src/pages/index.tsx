@@ -15,8 +15,8 @@ const HomePage = ({ data }: HomeProps) => {
         title="twobanks"
         {...SEO}
       />
-      <Wrapper page="home" header={attributes.header} >
-        <Home body={attributes.header} />
+      <Wrapper page="home" infos={attributes.infos} >
+        <Home body={attributes.infos} />
       </Wrapper>
     </>
   )

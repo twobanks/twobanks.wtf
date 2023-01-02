@@ -10,11 +10,11 @@ import { getImageUrl } from '../../utils/functions/getImageUrl';
 
 type HeaderProps = {
   page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
-  header: HeaderPropsStrapiProps;
+  menu: HeaderPropsStrapiProps;
 }
 
-const Header = ({ page = 'home', header }: HeaderProps) => {
-  const { logo: { data: { attributes: image }} } = header;
+const Header = ({ page = 'home', menu }: HeaderProps) => {
+  const { logo: { data: { attributes: image }} } = menu;
   const [hovered, setHovered] = useState<string>('')
   return(
     <S.Header page={page}>
@@ -27,7 +27,7 @@ const Header = ({ page = 'home', header }: HeaderProps) => {
         {page !== 'home' && (
           <S.Nav>
             {pages.map(page => {
-              const path = page !== 'home' ? `/${page}` : '';
+              const path = page;
               const isHovered = hovered === page
               return(
                 <li key={page}>

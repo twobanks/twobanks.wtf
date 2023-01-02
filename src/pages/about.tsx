@@ -22,7 +22,7 @@ const AboutPage = ({ home, aboutData }: AboutPageProps) => {
       title="sobre | twobanks"
       {...SEO}
     />
-    <Wrapper page="about" header={attributes.header} >
+    <Wrapper page="about" infos={attributes.infos} >
       <About about={about} academic={academic} experiences={experiences}/>
     </Wrapper>
   </>

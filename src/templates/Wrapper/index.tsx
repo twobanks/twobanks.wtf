@@ -4,13 +4,13 @@ import * as S from './styled';
 
 type WrapperProps = {
   children: React.ReactNode;
-  header: HeaderPropsStrapiProps;
+  infos: HeaderPropsStrapiProps;
   page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
 }
 
-const Wrapper = ({ page, children, header }: WrapperProps) => (
+const Wrapper = ({ page, children, infos }: WrapperProps) => (
   <S.Wrapper>
-    <Header header={header} page={page} />
+    <Header menu={infos} page={page} />
     <S.Content>
       {children}
     </S.Content>

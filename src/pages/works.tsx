@@ -22,7 +22,7 @@ const WorksPage = ({ home, work }: WorksPageProps) => {
         title="trampos | twobanks"
         {...SEO}
       />
-      <Wrapper page="works" header={attributes.header} >
+      <Wrapper page="works" infos={attributes.infos} >
         <Works works={works} />
       </Wrapper>
     </>

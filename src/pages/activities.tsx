@@ -22,7 +22,7 @@ const ActivitiesPage = ({ data }: HomeProps) => {
         title="vivência | twobanks"
         {...SEO}
       />
-      <Wrapper page="activities" header={attributes.header} >
+      <Wrapper page="activities" infos={attributes.infos} >
         <ActivitiesTemplate activities={dataActivities} page={page} setPage={setPage} />
       </Wrapper>
     </>

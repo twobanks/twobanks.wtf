@@ -22,7 +22,7 @@ const Home = ({ body }: { body: HeaderPropsStrapiProps; }) => {
   return (
     <S.Content>
       {body.menu.map(page => {
-        const path = page.name !== 'default' ? `/${page.url}` : '';
+        const path = page.name;
         const isHovered = hovered === page.name;
         const icon = page.name === 'activities' ? icons[page.name] : icons['default'];
         return(

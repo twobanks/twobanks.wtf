@@ -8,7 +8,10 @@ type NameAndUrl = {
 export type HeaderPropsStrapiProps = {
   logo:  {
     data:  {
-      attributes: NameAndUrl
+      attributes: {
+        alternativeText: string;
+        url: string;
+      }
     }
   },
   menu: NameAndUrl[]
@@ -17,10 +20,17 @@ export type HeaderPropsStrapiProps = {
 export type HomeProps = {
   data: {
     attributes: {
-      header: HeaderPropsStrapiProps,
-      footer: {
-        menu: NameAndUrl[]
-      },
+      infos: {
+        logo: {
+          data: {
+            attributes: {
+              alternativeText: string;
+              url: string;
+            }
+          }
+        }
+        menu: NameAndUrl[];
+      }
     }
   }
 }

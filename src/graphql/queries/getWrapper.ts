@@ -1,23 +1,17 @@
 const GET_HOME = /* GraphQL */ `
-  query GET_HOME {
+  query QUERY_HOME {
     home {
       data {
         attributes {
-          header {
+          infos {
             logo {
               data {
                 attributes {
-                  name,
+                  alternativeText,
                   url
                 }
               }
             }
-            menu {
-              url,
-              name
-            }
-          }
-          footer {
             menu {
               url,
               name
