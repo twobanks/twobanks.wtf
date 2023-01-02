@@ -3,7 +3,7 @@ const GET_ABOUT = /* GraphQL */ `
     about {
       data {
         attributes {
-          sectionAbout {
+          about {
             description,
             image {
               data {
@@ -14,28 +14,24 @@ const GET_ABOUT = /* GraphQL */ `
               }
             }
           }
-          sectionAcademic {
-            title,
-            academic {
-              local,
-              course,
-              period
+          experiences {
+            role,
+            name_company,
+            url_company,
+            city_company,
+            period,
+            tech {
+              name
             }
           }
-          sectionExperience {
-            title,
-            experiences {
-              role,
-              name_company,
-              url_company,
-              city_company,
-              period,
-              stack
-            }
+          academic {
+            local,
+            course,
+            period
           }
         }
       }
     }
-  }
+}
 `
 export default GET_ABOUT;

@@ -10,12 +10,12 @@ import { HomeProps, AboutProps } from '../types/strapi'
 
 type AboutPageProps = {
   home: HomeProps;
-  about: AboutProps;
+  aboutData: AboutProps;
 }
 
-const AboutPage = ({ home, about }: AboutPageProps) => {
+const AboutPage = ({ home, aboutData }: AboutPageProps) => {
   const { data: { attributes } } = home;
-  const { data: { attributes: { sectionExperience, sectionAcademic, sectionAbout } } } = about;
+  const { data: { attributes: { experiences, academic, about } } } = aboutData;
   return (
   <>
     <NextSeo
@@ -23,7 +23,7 @@ const AboutPage = ({ home, about }: AboutPageProps) => {
       {...SEO}
     />
     <Wrapper page="about" header={attributes.header} >
-      <About sectionAbout={sectionAbout} sectionAcademic={sectionAcademic} sectionExperience={sectionExperience }/>
+      <About about={about} academic={academic} experiences={experiences}/>
     </Wrapper>
   </>
 )}
@@ -34,7 +34,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       home,
-      about
+      aboutData: about
     }
   }
 }

@@ -1,4 +1,5 @@
 import { ReactNode, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import * as S from './styled'
 import { conversionStack } from '../../utils/functions/conversionStack';
 import { Work } from '../../types/strapi';
@@ -30,7 +31,7 @@ const Works = ({ works }: Work) => {
     <S.Container>
       <ul>
         {works.map((item, index) => {
-          const { name, name_company, stack, type, url_company, url_name } = item;
+          const { name, name_company, tech, type, url_company, url_name } = item;
           return (
             <S.Work key={`work-${index}`}>
               <Animation index={String(index)}>
@@ -44,7 +45,7 @@ const Works = ({ works }: Work) => {
                     </a> • <em>{type}</em>
                   </div>
                   <ul>
-                    {stack.map(language => <S.Item key={language.name} stack={language.name}>{conversionStack(language.name)}</S.Item>)}
+                    {tech.map(language => <S.Item key={uuid()} stack={language.name}>{conversionStack(language.name)}</S.Item>)}
                   </ul>
                 </S.Content>
               </Animation>

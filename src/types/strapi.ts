@@ -38,32 +38,28 @@ export type SectionAbout = {
 }
 
 export type SectionAcademic = {
-  title: string;
-  academic: {
-    local: string;
-    course: string;
-    period: string;
-  }[]
+  local: string;
+  course: string;
+  period: string;
 }
 
 export type SectionExperience = {
-  title: string;
-  experiences: {
-    role: string;
-    name_company: string;
-    url_company: string;
-    city_company: string;
-    period: string;
-    stack: string;
+  role: string;
+  name_company: string;
+  url_company: string;
+  city_company: string;
+  period: string;
+  tech: {
+    name: STACKS;
   }[]
 }
 
 export type AboutProps = {
   data: {
     attributes: {
-      sectionAbout: SectionAbout;
-      sectionAcademic: SectionAcademic;
-      sectionExperience: SectionExperience;
+      about: SectionAbout;
+      academic: SectionAcademic;
+      experiences: SectionExperience[];
     }
   }
 }
@@ -75,7 +71,7 @@ export type Work = {
     url_company: string;
     url_name: string;
     type: string;
-    stack: {
+    tech: {
       name: STACKS;
     }[]
   }[]

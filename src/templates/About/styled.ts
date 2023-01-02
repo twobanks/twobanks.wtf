@@ -74,13 +74,19 @@ export const Occupation = styled.strong`
   `}
 `
 
-export const Stacks = styled.span`
+export const Stacks = styled.div`
 ${({ theme }) => css`
   display: flex;
-  width: 100%;
-  font-size: ${theme.font.sizes.s12};
-  line-height: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-top: 1rem;
+  span {
+    background-color: ${theme.colors.yellowTech};
+    padding: .25rem .75rem;
+    border-radius: ${theme.radius};
+    color: ${theme.colors.yellowFont};
+    font-size: ${theme.font.sizes.s14};
+  }
 `}
 `
 

@@ -1,16 +1,18 @@
 import Image from 'next/image'
+import { v4 as uuid } from 'uuid'
 import * as S from './styled'
 import { SectionAbout, SectionAcademic, SectionExperience } from '../../types/strapi'
 import { getImageUrl } from '../../utils/functions/getImageUrl';
+import { conversionStack } from '../../utils/functions/conversionStack';
 
 type AboutProps = {
-  sectionAbout: SectionAbout;
-  sectionAcademic: SectionAcademic;
-  sectionExperience: SectionExperience;
+  about: SectionAbout;
+  academic: SectionAcademic;
+  experiences: SectionExperience[];
 }
 
-const About = ({ sectionExperience, sectionAcademic, sectionAbout }: AboutProps) => {
-  const { image: { data: { attributes: { url } }}} = sectionAbout;
+const About = ({ experiences, academic, about }: AboutProps) => {
+  const { image: { data: { attributes: { url } }}} = about;
   return (
     <>
       <S.Content>
@@ -19,14 +21,14 @@ const About = ({ sectionExperience, sectionAcademic, sectionAbout }: AboutProps)
             <Image src={getImageUrl(url)} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={getImageUrl(url)} />
           </S.ImageWrapper>
           <S.About>
-            {sectionAbout.description}
+            {about.description}
           </S.About>
         </S.Bio>
         <S.Career>
-          <h3>{sectionExperience.title}</h3>
+          <h3>Experiências</h3>
           <ul>
-            {sectionExperience.experiences.map(item => {
-              const { role, name_company, url_company, city_company, period, stack } = item;
+            {experiences.map(item => {
+              const { role, name_company, url_company, city_company, period, tech } = item;
               const current = name_company === 'Bornlogic';
               return (
                 <li key={name_company}>
@@ -37,29 +39,26 @@ const About = ({ sectionExperience, sectionAcademic, sectionAbout }: AboutProps)
                     <S.Date>
                       {period}
                     </S.Date>
-                  <S.Stacks>{stack}</S.Stacks>
+                  <S.Stacks>
+                    {tech?.map(item => <span key={uuid()}>{conversionStack(item.name)}</span>)}
+                  </S.Stacks>
                 </li>
               )
             })}
           </ul>
         </S.Career>
         <S.Career>
-          <h3>{sectionAcademic.title}</h3>
+          <h3>Formação acadêmica</h3>
           <ul>
-            {sectionAcademic.academic.map(item => {
-              const { course, local, period } = item;
-              return (
-                <li key={period}>
-                  <S.Occupation>{local}</S.Occupation>
-                    <S.Company>
-                      {course}
-                    </S.Company>
-                    <S.Date>
-                      <span>{period}</span>
-                    </S.Date>
-                </li>
-              )
-            })}
+            <li>
+              <S.Occupation>{academic.local}</S.Occupation>
+                <S.Company>
+                  {academic.course}
+                </S.Company>
+                <S.Date>
+                  <span>{academic.period}</span>
+                </S.Date>
+            </li>
           </ul>
         </S.Career>
       </S.Content>

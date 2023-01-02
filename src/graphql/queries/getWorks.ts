@@ -9,7 +9,7 @@ const GET_WORKS = /* GraphQL */ `
             url_company,
             url_name,
             type,
-            stack {
+            tech {
               name
             }
           }
