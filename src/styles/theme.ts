@@ -1,3 +1,4 @@
+import { STACKS } from "../utils/enums/stack";
 
 
 export default {
@@ -38,15 +39,21 @@ export default {
     red: '#F08784',
     blue: '#9DE1E0',
     yellow: '#F1E05A',
+    yellowTech: '#2E2B12',
+    yellowFont: '#9B8D25',
     spotify: '#1DB954',
     green: '#54A671',
     stacks: {
-      typescript: '#3178C6',
-      react: '#6574ab',
-      javascript: '#F1E05A ',
-      next: 'linear-gradient(90deg,#ed6292 25%,#ed5760 87.5%)',
-      gatsby: '#A456F0',
-      styled: '#DB7093',
+      [STACKS.TYPESCRIPT]: '#3178C6',
+      [STACKS.REACT]: '#6574ab',
+      [STACKS.JAVASCRIPT]: '#F1E05A ',
+      [STACKS.NEXT]: 'linear-gradient(90deg,#ed6292 25%,#ed5760 87.5%)',
+      [STACKS.GATSBY]: '#A456F0',
+      [STACKS.STYLED]: '#DB7093',
+      [STACKS.HTML]: '#F25320',
+      [STACKS.REACT_TESTING]: '#CB2423',
+      [STACKS.JEST]: '#15C213',
+      [STACKS.PHP]: '#4B568C',
     },
     trainingZone: {
       z1: '#9DE1E0',

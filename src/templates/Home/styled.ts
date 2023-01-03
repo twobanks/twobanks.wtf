@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import media from "styled-media-query";
 
 type ItemProps = {
   page: string;
@@ -8,6 +9,9 @@ export const Content = styled.ul`
   position: relative;
   height: calc(100vh - 22rem);
   width: 100%;
+  ${media.lessThan("medium")`
+    display: none;
+  `}
 `;
 
 export const Item = styled.li<ItemProps>`
