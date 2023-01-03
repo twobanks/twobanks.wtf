@@ -18,7 +18,7 @@ const About = ({ experiences, academic, about }: AboutProps) => {
       <S.Content>
         <S.Bio>
           <S.ImageWrapper>
-            <Image src={getImageUrl(url)} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={getImageUrl(url)} />
+            <Image src={getImageUrl(url)} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={getImageUrl(url)} priority />
           </S.ImageWrapper>
           <S.About>
             {about.description}

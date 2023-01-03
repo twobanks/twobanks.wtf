@@ -21,7 +21,7 @@ const Header = ({ page = 'home', menu }: HeaderProps) => {
       <S.Content page={page}>
         <S.Banks page={page}>
           <Link href={`/`} passHref prefetch={false}>
-            <Image src={getImageUrl(image.url)} alt="twobanks" blurDataURL={getImageUrl(image.url)} layout="fill" />
+            <Image src={getImageUrl(image.url)} alt="twobanks" blurDataURL={getImageUrl(image.url)} layout="fill" priority />
           </Link>
         </S.Banks>
         {page !== 'home' && (
