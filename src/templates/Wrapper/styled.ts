@@ -15,10 +15,10 @@ export const Content = styled.section`
     max-width: ${theme.container};
     width: 100%;
     height: auto;
-    margin: 0 auto;
-    padding-top: 17rem;
+    margin: 20rem auto 0 auto;
     ${media.lessThan('medium')`
-      padding: 15rem 2rem 7rem 2rem;
+      padding: 1rem 2rem 7rem 2rem;
+      margin: 15rem auto 0 auto;
     `}
   `}
 `;

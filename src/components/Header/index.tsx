@@ -19,9 +19,9 @@ const Header = ({ page = 'home', menu }: HeaderProps) => {
   return(
     <S.Header page={page}>
       <S.Content page={page}>
-        <S.Banks>
+        <S.Banks page={page}>
           <Link href={`/`} passHref prefetch={false}>
-            <Image src={getImageUrl(image.url)} alt="twobanks" placeholder="blur" blurDataURL={getImageUrl(image.url)} height={60} width={60} />
+            <Image src={getImageUrl(image.url)} alt="twobanks" blurDataURL={getImageUrl(image.url)} layout="fill" />
           </Link>
         </S.Banks>
         {page !== 'home' && (

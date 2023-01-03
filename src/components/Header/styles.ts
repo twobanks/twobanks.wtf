@@ -17,7 +17,10 @@ export const Header = styled.header<HeaderProps>`
 			justify-content: center;
 			${page !== 'home' && css` justify-content: space-between; `};
 			width: 100%;
-			padding: 1rem 3rem;
+			padding: 1rem 2rem;
+			${page === 'home' && css`
+				height: calc(100vh - 6rem);
+			`}
 		`}
 	`}
 `
@@ -32,21 +35,48 @@ export const Content = styled.div<HeaderProps>`
 		max-width: ${theme.container};
 		width: 100vw;
 		margin: 0 auto;
-		padding: 3rem 0 3rem 2rem;
+		padding: 2rem 0 2rem 2rem;
 		${page !== 'home' && css` justify-content: space-between; `};
 		${media.lessThan("medium")`
 			width: fit-content;
 			margin: 0;
+			padding: 2rem 0;
 		`}
 	`}
 `
 
-export const Banks = styled.div`
-	img {
-		border-radius: 50%;
-		display: flex;
-		cursor: pointer;
-	}
+export const Banks = styled.div<HeaderProps>`
+	${({ page }) => css`
+		position: relative;
+		height: 7.5rem;
+		width: 7.5rem;
+		img {
+			border-radius: 50%;
+			display: flex;
+			cursor: pointer;
+		}
+		${page === 'home' && css`
+			${media.lessThan("medium")`
+				height: 27rem;
+				width: 27rem;
+				animation: morph 8s ease-in-out infinite;
+				border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+				box-shadow: 0 0.188rem 0.375rem var(--shadow);
+				transition: all 1s ease-in-out;
+				@keyframes morph {
+					0% {
+						border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+					}
+					50% {
+						border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+					}
+					100% {
+						border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+					}
+				}
+			`}
+		`}
+	`}
 `
 
 export const Nav = styled.ul`
