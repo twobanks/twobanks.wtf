@@ -55,12 +55,12 @@ export type Social = {
 export type Post = {
   author: {
     name: string;
-    picture: string;
+    image: string;
   };
   content: string;
-  coverImage: string;
   date: string;
   ogImage: { url: string; };
   slug: string;
   title: string;
+  description?: string;
 }

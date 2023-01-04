@@ -1,6 +1,6 @@
-import { About, Social, Works } from "../types/banks";
-import { STACKS } from "../utils/enums/stack";
-import images from '../images';
+import images from "../../src/images";
+import { About, Works, Social } from "../../src/types/banks";
+import { STACKS } from "../../src/utils/enums/stack";
 
 export const header = {
   avatar: images.logo,

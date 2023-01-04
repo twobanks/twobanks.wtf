@@ -3,7 +3,8 @@ import { useState } from 'react';
 import Link from 'next/link'
 import { Icon } from '../../components';
 import images from '../../images';
-import { header } from './../../data';
+import { header } from '../../../public/content';
+
 import * as S from './styled';
 
 const Home = () => {

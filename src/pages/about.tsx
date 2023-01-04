@@ -2,7 +2,7 @@ import { NextSeo } from 'next-seo'
 import About from '../templates/About'
 import { SEO } from '../utils/constants/seo'
 import Wrapper from '../templates/Wrapper'
-import { data } from '../data';
+import { data } from '../../public/content';
 
 const AboutPage = () => (
   <>

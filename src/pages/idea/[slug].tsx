@@ -1,5 +1,5 @@
-import { getPostBySlug, getAllPosts } from "../../utils/lib/blog/api"
-import markdownToHtml from "../../utils/lib/blog/markdownToHtml"
+import { getPostBySlug, getAllPosts } from "../api/idea";
+import markdownToHtml from "../../utils/functions/markdownToHtml";
 import { NextSeo } from "next-seo";
 import Wrapper from "../../templates/Wrapper";
 import { SEO } from "../../utils/constants/seo";
@@ -34,7 +34,6 @@ export async function getStaticProps({ params }: Params) {
     'author',
     'content',
     'ogImage',
-    'coverImage',
   ])
   const content = await markdownToHtml(post.content || '')
 

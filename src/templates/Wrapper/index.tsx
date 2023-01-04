@@ -1,5 +1,5 @@
 import { Footer, Header } from '../../components';
-import { header } from '../../data';
+import { header } from '../../../public/content';
 import * as S from './styled';
 
 type WrapperProps = {
