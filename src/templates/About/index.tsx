@@ -1,10 +1,9 @@
 import Image from 'next/image'
 import { v4 as uuid } from 'uuid'
 import * as S from './styled'
-import { AboutData } from '../../data/about';
+import { About } from '../../types/banks'
 
-const About = ({ data }: { data: AboutData}) => {
-  console.log("data", data);
+const About = ({ data }: { data: About }) => {
   const { about, experiences, academic } = data;
   return (
     <>

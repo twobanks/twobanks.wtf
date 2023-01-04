@@ -2,21 +2,18 @@ import Image from 'next/image';
 import * as S from './styles'
 import { useState } from 'react'
 import Link from 'next/link'
-import { pages } from './mock'
-import { conversionPage, conversionTitlePage } from '../../utils/functions/conversionPage'
+import { conversionTitlePage } from '../../utils/functions/conversionPage'
 import { Title } from '../';
-import { HeaderPropsStrapiProps } from '../../types/strapi';
-import { getImageUrl } from '../../utils/functions/getImageUrl';
-
-const avatar = '/img/avatar.webp';
+import { Header } from '../../types/banks';
 
 type HeaderProps = {
   page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
-  menu: string[];
+  header: Header;
 }
 
-const Header = ({ page = 'home', menu }: HeaderProps) => {
+const Header = ({ page = 'home', header }: HeaderProps) => {
   const [hovered, setHovered] = useState<string>('')
+  const { avatar, menu } = header;
   return(
     <S.Header page={page}>
       <S.Content page={page}>
@@ -28,28 +25,30 @@ const Header = ({ page = 'home', menu }: HeaderProps) => {
         {page !== 'home' && (
           <S.Nav>
             {menu.map(page => {
-              const path = page;
-              const isHovered = hovered === page
-              return(
-                <li key={page}>
-                  <Link href={path} passHref>
-                    <S.NavContainer
-                        onHoverStart={() => setHovered(page)}
-                        onHoverEnd={() => setHovered('')}
-                      >
-                        {isHovered && (
-                          <S.NavHovered
-                            layoutId="nav"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                          />
-                        )}
-                        {conversionPage(page)}
-                      </S.NavContainer>
-                  </Link>
-                </li>
-              )
+              const path = `/${page.url}`
+              const isHovered = hovered === page.name
+              if(page.name !== 'home') {
+                return(
+                  <li key={page.name}>
+                    <Link href={path} passHref>
+                      <S.NavContainer
+                          onHoverStart={() => setHovered(page.name)}
+                          onHoverEnd={() => setHovered('')}
+                        >
+                          {isHovered && (
+                            <S.NavHovered
+                              layoutId="nav"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            />
+                          )}
+                          {page.name}
+                        </S.NavContainer>
+                    </Link>
+                  </li>
+                )
+              }
             })}
           </S.Nav>
         )}

@@ -1,12 +1,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link'
-import { conversionPage } from '../../utils/functions/conversionPage';
 import { Icon } from '../../components';
 import images from '../../images';
-import { menu } from './../../data/menu';
+import { header } from './../../data';
 import * as S from './styled';
-
 
 const Home = () => {
   const [hovered, setHovered] = useState<string>('');
@@ -22,18 +20,20 @@ const Home = () => {
   }
   return (
     <S.Content>
-      {menu.map(page => {
-        const path = page;
-        const isHovered = hovered === page;
-        const icon = page === 'activities' ? icons[page] : icons['default'];
-        return(
-          <Link href={path} passHref key={page}>
-            <S.Item page={page} onMouseEnter={() => setHovered(page)} onMouseLeave={() => setHovered('')}>
-              <Icon src={isHovered ? icon.animation : icon.static} />
-              {conversionPage(page)}
-            </S.Item>
-          </Link>
-        )
+      {header.menu.map(page => {
+        const path = `/${page.url}`
+        const isHovered = hovered === page.name;
+        const icon = page.url === 'activities' ? icons[page.url] : icons['default'];
+        if(page.name !== 'home') {
+          return(
+            <Link href={path} passHref key={page.name}>
+              <S.Item page={page.url} onMouseEnter={() => setHovered(page.name)} onMouseLeave={() => setHovered('')}>
+                <Icon src={isHovered ? icon.animation : icon.static} />
+                {page.name}
+              </S.Item>
+            </Link>
+          )
+        }
       })}
     </S.Content>
   )

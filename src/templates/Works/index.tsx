@@ -2,9 +2,9 @@ import { ReactNode, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import * as S from './styled'
 import { conversionStack } from '../../utils/functions/conversionStack';
-import { WorkItems } from '../../data/works';
+import { Works } from '../../types/banks';
 
-const Works = ({ works }: { works: WorkItems[] }) => {
+const Works = ({ works }: { works: Works[] }) => {
   const [hovered, setHovered] = useState('')
   const Animation = (props: { index: string; children: ReactNode }) => {
     let isHovered = hovered === props.index

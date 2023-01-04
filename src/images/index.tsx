@@ -20,6 +20,15 @@ const folder = '/icon/animation/folder.svg';
 const folderAnimated = '/icon/animation/folder-animated.webp';
 const folderActivity = '/icon/animation/folder-activity.svg';
 const folderActivityAnimated = '/icon/animation/folder-activity-animated.webp';
+const strava = '/icon/strava.svg';
+const facebook = '/icon/facebook.svg';
+const twitter = '/icon/twitter.svg';
+const github = '/icon/github.svg';
+const linkedin = '/icon/linkedin.svg';
+const instagram = '/icon/instagram.svg';
+const spotify = '/icon/spotify.svg';
+const send = '/icon/send.svg';
+const banks = '/img/twobanks.png';
 
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -45,5 +54,14 @@ export default {
   folder,
   folderAnimated,
   folderActivity,
-  folderActivityAnimated
+  folderActivityAnimated,
+  strava,
+  facebook,
+  twitter,
+  github,
+  linkedin,
+  instagram,
+  spotify,
+  send,
+  banks
 }

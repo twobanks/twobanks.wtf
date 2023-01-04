@@ -3,16 +3,16 @@ import Icon from '../Icon';
 import * as S from './styled';
 import { useState } from 'react';
 import Link from 'next/link';
-import { menuItems } from './mock'
+import { Menu } from '../../types/banks';
 
-const Footer = () => {
+const Footer = ({ menu } : { menu: Menu[] }) => {
   const [hovered, setHovered] = useState<string>('');
   return (
     <S.Footer>
-      {menuItems.map(item => {
+      {menu.map((item, index) => {
         const isHovered = hovered === item.name;
         return (
-          <Link href={item.url} passHref key={item.id}>
+          <Link href={item.url} passHref key={`${item.name}-${index}`}>
             <li onMouseEnter={() => setHovered(item.name)} onMouseLeave={() => setHovered('')}>
               <Icon src={isHovered ? item.iconAnimated : item.icon} alt={item.name} />
             </li>

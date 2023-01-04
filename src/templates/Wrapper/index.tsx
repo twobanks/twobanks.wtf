@@ -1,5 +1,5 @@
 import { Footer, Header } from '../../components';
-import { menu } from '../../data/menu';
+import { header } from '../../data';
 import * as S from './styled';
 
 type WrapperProps = {
@@ -9,11 +9,11 @@ type WrapperProps = {
 
 const Wrapper = ({ page, children }: WrapperProps) => (
   <S.Wrapper>
-    <Header menu={menu} page={page} />
+    <Header header={header} page={page} />
     <S.Content>
       {children}
     </S.Content>
-    <Footer />
+    <Footer menu={header.menu} />
   </S.Wrapper>
 )
 

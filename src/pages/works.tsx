@@ -1,7 +1,7 @@
 import { NextSeo } from 'next-seo'
 import Works from '../templates/Works'
 import { SEO } from '../utils/constants/seo'
-import { works } from '../data/works'
+import { works } from '../data'
 import Wrapper from '../templates/Wrapper'
 
 const WorksPage = () => <>
