@@ -51,3 +51,16 @@ export type Social = {
   nickname?: string;
   icon?: string;
 }
+
+export type Post = {
+  author: {
+    name: string;
+    picture: string;
+  };
+  content: string;
+  coverImage: string;
+  date: string;
+  ogImage: { url: string; };
+  slug: string;
+  title: string;
+}

@@ -1,4 +1,4 @@
-import { About, Social, Works, Menu } from "../types/banks";
+import { About, Social, Works } from "../types/banks";
 import { STACKS } from "../utils/enums/stack";
 import images from '../images';
 
