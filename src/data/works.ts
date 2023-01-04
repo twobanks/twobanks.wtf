@@ -1,12 +1,12 @@
 import { v4 as uuid} from 'uuid';
-import { STACKS } from "../../utils/enums/stack"
+import { STACKS } from "../utils/enums/stack"
 
 export type WorkItems = {
   id: string;
   name: string;
   type: string;
   link: string;
-  language: STACKS[];
+  tech: STACKS[];
   company: {
     link: string;
     name: string;
@@ -19,7 +19,7 @@ export const works: WorkItems[] = [
     name: 'Gerentes Digitais',
     type: 'Plataforma',
     link: 'https://bornlogic.gerentesdigitais.com/',
-    language: [STACKS.TYPESCRIPT, STACKS.REACT, STACKS.STYLED],
+    tech: [STACKS.TYPESCRIPT, STACKS.JAVASCRIPT, STACKS.REACT, STACKS.STYLED],
     company: {
       link: 'https://www.bornlogic.com/',
       name: 'bornlogic',
@@ -28,9 +28,9 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'Harpoon',
-    type: 'Plataform',
+    type: 'Plataforma',
     link: 'https://app.harpoon.digital/',
-    language: [STACKS.TYPESCRIPT, STACKS.NEXT, STACKS.STYLED],
+    tech: [STACKS.TYPESCRIPT, STACKS.NEXT, STACKS.REACT_TESTING, STACKS.JEST, STACKS.STYLED],
     company: {
       link: 'https://bowe.com.br/',
       name: 'bowe',
@@ -41,7 +41,7 @@ export const works: WorkItems[] = [
     name: 'Harpoon',
     type: 'Landing Page',
     link: 'https://harpoon.digital/',
-    language: [STACKS.TYPESCRIPT, STACKS.NEXT, STACKS.STYLED],
+    tech: [STACKS.TYPESCRIPT, STACKS.NEXT, STACKS.REACT_TESTING, STACKS.JEST ,STACKS.STYLED],
     company: {
       link: 'https://bowe.com.br/',
       name: 'bowe',
@@ -50,9 +50,9 @@ export const works: WorkItems[] = [
   {
     id: uuid(),
     name: 'Bowe',
-    type: 'Landing page',
+    type: 'Landing Page',
     link: 'https://bowe.com.br/',
-    language: [STACKS.JAVASCRIPT, STACKS.GATSBY, STACKS.STYLED],
+    tech: [STACKS.JAVASCRIPT, STACKS.GATSBY, STACKS.STYLED],
     company: {
       link: 'https://bowe.com.br/',
       name: 'bowe',
@@ -63,7 +63,7 @@ export const works: WorkItems[] = [
     name: 'EQI Investimentos',
     type: 'Landing Page',
     link: 'https://eqi.com.br/',
-    language: [STACKS.JAVASCRIPT, STACKS.GATSBY, STACKS.STYLED],
+    tech: [STACKS.JAVASCRIPT, STACKS.GATSBY, STACKS.STYLED],
     company: {
       link: 'https://bowe.com.br/',
       name: 'bowe',

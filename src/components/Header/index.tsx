@@ -8,25 +8,26 @@ import { Title } from '../';
 import { HeaderPropsStrapiProps } from '../../types/strapi';
 import { getImageUrl } from '../../utils/functions/getImageUrl';
 
+const avatar = '/img/avatar.webp';
+
 type HeaderProps = {
   page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
-  menu: HeaderPropsStrapiProps;
+  menu: string[];
 }
 
 const Header = ({ page = 'home', menu }: HeaderProps) => {
-  const { logo: { data: { attributes: image }} } = menu;
   const [hovered, setHovered] = useState<string>('')
   return(
     <S.Header page={page}>
       <S.Content page={page}>
         <S.Banks page={page}>
           <Link href={`/`} passHref prefetch={false}>
-            <Image src={getImageUrl(image.url)} alt="twobanks" blurDataURL={getImageUrl(image.url)} layout="fill" priority />
+            <Image src={avatar} alt="twobanks" blurDataURL={avatar} layout="fill" priority />
           </Link>
         </S.Banks>
         {page !== 'home' && (
           <S.Nav>
-            {pages.map(page => {
+            {menu.map(page => {
               const path = page;
               const isHovered = hovered === page
               return(

@@ -1,24 +1,17 @@
 import Image from 'next/image'
 import { v4 as uuid } from 'uuid'
 import * as S from './styled'
-import { SectionAbout, SectionAcademic, SectionExperience } from '../../types/strapi'
-import { getImageUrl } from '../../utils/functions/getImageUrl';
-import { conversionStack } from '../../utils/functions/conversionStack';
+import { AboutData } from '../../data/about';
 
-type AboutProps = {
-  about: SectionAbout;
-  academic: SectionAcademic;
-  experiences: SectionExperience[];
-}
-
-const About = ({ experiences, academic, about }: AboutProps) => {
-  const { image: { data: { attributes: { url } }}} = about;
+const About = ({ data }: { data: AboutData}) => {
+  console.log("data", data);
+  const { about, experiences, academic } = data;
   return (
     <>
       <S.Content>
         <S.Bio>
           <S.ImageWrapper>
-            <Image src={getImageUrl(url)} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={getImageUrl(url)} priority />
+            <Image src={about.image} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={about.image} priority />
           </S.ImageWrapper>
           <S.About>
             {about.description}
@@ -28,19 +21,16 @@ const About = ({ experiences, academic, about }: AboutProps) => {
           <h3>Experiências</h3>
           <ul>
             {experiences.map(item => {
-              const { role, name_company, url_company, city_company, period, tech } = item;
-              const current = name_company === 'Bornlogic';
+              const { current, role, name_company, url_company, city_company, period, tech } = item;
               return (
                 <li key={name_company}>
                   <S.Occupation>{role}</S.Occupation>
                     <S.Company current={current}>
                       <a href={url_company}>{name_company}</a> - <em>{city_company}</em>
                     </S.Company>
-                    <S.Date>
-                      {period}
-                    </S.Date>
+                    <S.Date>{period}</S.Date>
                   <S.Stacks>
-                    {tech?.map(item => <span key={uuid()}>{conversionStack(item.name)}</span>)}
+                    {tech?.map(item => <span key={uuid()}>{item}</span>)}
                   </S.Stacks>
                 </li>
               )
