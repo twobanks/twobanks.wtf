@@ -29,6 +29,8 @@ const instagram = '/icon/instagram.svg';
 const spotify = '/icon/spotify.svg';
 const send = '/icon/send.svg';
 const banks = '/img/twobanks.png';
+const twobanks = '/img/twobanks.webp';
+const logo = '/img/avatar.webp';
 
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -63,5 +65,7 @@ export default {
   instagram,
   spotify,
   send,
-  banks
+  banks,
+  twobanks,
+  logo
 }

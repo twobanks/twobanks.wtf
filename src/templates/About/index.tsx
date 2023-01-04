@@ -2,18 +2,21 @@ import Image from 'next/image'
 import { v4 as uuid } from 'uuid'
 import * as S from './styled'
 import { About } from '../../types/banks'
+import images from '../../images';
 
 const About = ({ data }: { data: About }) => {
-  const { about, experiences, academic } = data;
+  const { experiences, academic } = data;
   return (
     <>
       <S.Content>
         <S.Bio>
           <S.ImageWrapper>
-            <Image src={about.image} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={about.image} priority />
+            <Image src={images.twobanks} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={images.twobanks} priority />
           </S.ImageWrapper>
           <S.About>
-            {about.description}
+            <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor Front-End, desde 2014.</p>
+            <p>Atualmente, atuo como Desenvolvedor Front-End,  na <a href="https://www.bornlogic.com/">Bornlogic</a>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
+            <p>No meu tempo livre, aproveito momentos com a minha esposa Tefa <em>❤</em> e meu cachorro Brown 🐶, pratico Trail Running e Mountain Bike, ouço bastante música (principalmente RAP), viajo 🛸, procuro aprender sobre povos antigos e expandir meus conhecimentos sobre ReactJS e CSS, entre outras coisas que dispertem minha curiosidade e prazer em aprender, torço para o time do Cruzeiro, assisto NBA e jogo GTA.</p>
           </S.About>
         </S.Bio>
         <S.Career>

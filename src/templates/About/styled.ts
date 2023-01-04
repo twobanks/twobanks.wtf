@@ -1,6 +1,5 @@
 import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
-import ReactMarkdown from 'react-markdown'
 
 type AboutStyle = {
   image?: string;
@@ -32,7 +31,7 @@ export const Content = styled.div`
   `}
 `
 
-export const About = styled(ReactMarkdown)`
+export const About = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;

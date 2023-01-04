@@ -23,11 +23,6 @@ export type Works = {
   }
 }
 
-type AboutData = {
-  description: string;
-  image: string;
-};
-
 type Experiences = {
   current: boolean,
   role: string;
@@ -46,7 +41,6 @@ type Academic = {
 
 
 export type About = {
-  about: AboutData,
   experiences: Experiences[],
   academic: Academic;
 }

@@ -2,11 +2,8 @@ import { About, Social, Works, Menu } from "../types/banks";
 import { STACKS } from "../utils/enums/stack";
 import images from '../images';
 
-const twobanks = '/img/twobanks.webp';
-const avatar = '/img/avatar.webp';
-
 export const header = {
-  avatar: avatar,
+  avatar: images.logo,
   menu: [
     {
       name: 'home',
@@ -42,10 +39,6 @@ export const header = {
 }
 
 export const data: About = {
-  about: {
-    description: 'Eaêêê! Meu nome é **Thiago**, moro em Uberaba/MG e trabalho como Desenvolvedor Front-End, desde 2014. Atualmente, atuo como Desenvolvedor Front-End, na [Bornlogic](https://www.bornlogic.com/), onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ... No meu tempo livre, aproveito momentos com a minha esposa Tefa ❤ e meu cachorro Brown 🐶, pratico Trail Running e Mountain Bike, ouço bastante música (principalmente RAP), viajo 🛸, procuro aprender sobre povos antigos e expandir meus conhecimentos sobre ReactJS e CSS, entre outras coisas que dispertem minha curiosidade e prazer em aprender, torço para o time do Cruzeiro, assisto NBA e jogo GTA.',
-    image: twobanks,
-  },
   experiences: [
     {
       current: true,
