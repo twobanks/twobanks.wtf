@@ -4,10 +4,9 @@ import { v4 as uuid } from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '../../utils/functions/conversionStrava'
 import { Activities } from '../../types/strava';
-import { conversionTypeActivities } from '../../utils/functions/conversionTypeActivities';
 import theme from '../../styles/theme';
-const strava = '/icon/strava.svg'
 import geocoder from 'city-reverse-geocoder'
+import images from '../../images';
 
 const Strava = ({ activities, orientation }: { activities: Activities[], orientation: 'ROW' | 'GRID' }) => {
   const Animation = (props: { index: string; children: ReactNode }) => {
@@ -45,6 +44,12 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
     return day + "-" + month + "-" + year;
   }
 
+  const iconActivity = {
+    ['Ride']: images.bike,
+    ['Run']: images.trail,
+    ['Walk']: images.walking
+  }
+
   return (
     <S.Wrapper type={orientation}>
       <ul>
@@ -71,7 +76,7 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
                       <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
                     </S.DateAndCity>
                     <S.TypeActivity>
-                      <img src={conversionTypeActivities(type)} alt={type} />
+                      <img src={iconActivity[type]} alt={type} />
                     </S.TypeActivity>
                   </S.HeaderActivity>
                   <S.ActivityData>
@@ -81,7 +86,7 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
                     <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
                   </S.ActivityData>
                   <S.LinksWrapper>
-                    <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={strava} alt="Strava" /></a>
+                    <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={images.strava} alt="Strava" /></a>
                   </S.LinksWrapper>
                 </S.ContentActivity>
               </S.Content>

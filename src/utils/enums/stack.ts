@@ -5,7 +5,7 @@ export enum STACKS  {
   GATSBY = 'GatsbyJS',
   STYLED = 'Styled_Components',
   REACT = 'ReactJS',
-  REACT_TESTING = 'React_Testing_Library',
+  REACT_TESTING = 'React Testing Library',
   JEST = 'Jest',
   PHP = 'PHP',
   HTML = 'HTML_CSS',

@@ -77,7 +77,7 @@ export type Activities = {
   total_elevation_gain: number;
   total_photo_count: number;
   trainer: boolean;
-  type: string;
+  type: 'Ride' | 'Run' | 'Walk';
   upload_id: number;
   upload_id_str: string;
   utc_offset: number;

@@ -1,8 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { v4 as uuid } from 'uuid';
-import * as S from './styled'
-import { conversionStack } from '../../utils/functions/conversionStack';
 import { Works } from '../../types/banks';
+import * as S from './styled'
 
 const Works = ({ works }: { works: Works[] }) => {
   const [hovered, setHovered] = useState('')
@@ -45,7 +44,7 @@ const Works = ({ works }: { works: Works[] }) => {
                     </a> • <em>{type}</em>
                   </div>
                   <ul>
-                    {tech.map(language => <S.Item key={uuid()} stack={language}>{conversionStack(language)}</S.Item>)}
+                    {tech.map(language => <S.Item key={uuid()} stack={language}>{language}</S.Item>)}
                   </ul>
                 </S.Content>
               </Animation>
