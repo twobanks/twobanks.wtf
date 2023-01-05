@@ -1,32 +1,70 @@
 import { motion } from 'framer-motion'
-import styled, { css } from 'styled-components'
+import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
 type HeaderProps = {
 	page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
 }
 
+const banksModifiers = {
+	animated: (theme: DefaultTheme) => css`
+		background-size: 100%;
+		animation: morph 5s ease-in-out infinite;
+		border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+		box-shadow: 0 1.188rem 1.375rem ${theme.colors.black};
+		transition: all 1.5s ease-in-out;
+		@keyframes morph {
+			0% {
+				border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+			}
+			50% {
+				border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+			}
+			100% {
+				border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+			}
+		}
+	`,
+  ['home']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.secondary};
+  `,
+  ['about']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.yellow};
+  `,
+  ['works']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.blue};
+  `,
+  ['activities']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.green};
+  `,
+  ['idea']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.red};
+  `,
+}
+
 export const Header = styled.header<HeaderProps>`
 	${({ theme, page }) => css`
 		position: fixed;
 		width: 100vw;
-		background-color: ${theme.colors.background};
 		z-index: 2;
+		background-color: ${theme.colors.background};
+		${page === 'home' && css`
+			position: relative;
+		`}
 		${media.lessThan("medium")`
 			display: flex;
-			justify-content: center;
-			${page !== 'home' && css` justify-content: space-between; `};
+			justify-content: space-between;
 			width: 100%;
 			padding: 1rem 2rem;
 			${page === 'home' && css`
-				height: calc(100vh - 6rem);
+				display: none;
 			`}
 		`}
 	`}
 `
 
-export const Content = styled.div<HeaderProps>`
-	${({ theme, page }) => css`
+export const Content = styled.div`
+	${({ theme }) => css`
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -36,7 +74,7 @@ export const Content = styled.div<HeaderProps>`
 		width: 100vw;
 		margin: 0 auto;
 		padding: 2rem 0 2rem 2rem;
-		${page !== 'home' && css` justify-content: space-between; `};
+		justify-content: space-between;
 		${media.lessThan("medium")`
 			width: fit-content;
 			margin: 0;
@@ -46,36 +84,17 @@ export const Content = styled.div<HeaderProps>`
 `
 
 export const Banks = styled.div<HeaderProps>`
-	${({ page }) => css`
+	${({ theme, page = 'home' }) => css`
 		position: relative;
-		height: 7.5rem;
-		width: 7.5rem;
-		img {
-			border-radius: 50%;
-			display: flex;
-			cursor: pointer;
+		height: 6rem;
+		width: 6rem;
+		background-color: ${theme.colors.hover};
+		cursor: pointer;
+		${banksModifiers.animated(theme)}
+		&:hover {
+			transition: all .9s ease-in-out;
+			${banksModifiers[page](theme)}
 		}
-		${page === 'home' && css`
-			${media.lessThan("medium")`
-				height: 27rem;
-				width: 27rem;
-				animation: morph 8s ease-in-out infinite;
-				border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-				box-shadow: 0 0.188rem 0.375rem var(--shadow);
-				transition: all 1s ease-in-out;
-				@keyframes morph {
-					0% {
-						border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-					}
-					50% {
-						border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-					}
-					100% {
-						border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-					}
-				}
-			`}
-		`}
 	`}
 `
 

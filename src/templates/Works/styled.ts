@@ -13,7 +13,7 @@ export const Container = styled.div`
     flex-direction: column;
     max-width: ${theme.container};
     width: 100%;
-    margin: 4rem auto;
+    margin: 2rem auto;
     ul {
       display: grid;
       grid-template-columns: repeat(2, 1fr);

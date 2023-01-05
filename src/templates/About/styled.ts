@@ -107,7 +107,7 @@ export const Career = styled.section<AboutStyle>`
     ul {
       display: flex;
       flex-direction: column;
-      gap: 2rem;
+      gap: 4rem;
       ${course && css`
         display: flex;
         flex-direction: column;
