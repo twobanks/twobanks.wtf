@@ -1,33 +1,21 @@
-import styled, { css, DefaultTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 import media from 'styled-media-query'
 import { motion } from 'framer-motion'
 
 type StravaStyles = {
   average?: number;
-  type?: 'GRID' | 'ROW';
-}
-
-const viewModifiers = {
-  ['GRID']: css`
-    grid-template-columns: repeat(2, 1fr);
-  `,
-  ['ROW']: css`
-    grid-template-columns: repeat(1, 1fr);
-  `,
 }
 
 export const Wrapper = styled.main<StravaStyles>`
-  ${({ theme, type = 'GRID' }) => css`
+  ${({ theme }) => css`
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
-    ul {
-      display: grid;
-      ${viewModifiers[type]}
-      ${media.lessThan("medium")`
-        grid-template-columns: repeat(1, 1fr);
-      `}
-    }
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    ${media.lessThan("medium")`
+      grid-template-columns: repeat(1, 1fr);
+    `}
   `}
 `
 export const MapWrapper = styled.div`
@@ -43,11 +31,6 @@ export const MapWrapper = styled.div`
       max-width: 25rem;
       width: 100%;
       height: auto;
-      margin: 0 auto;
-    }
-  `}
-  ${media.lessThan("medium")`
-    img {
       margin: 0 auto;
     }
   `}
@@ -91,12 +74,12 @@ export const ActivityData = styled.div`
   `}
 `
 
-export const ContentActivity = styled.div<StravaStyles>`
-  ${({ theme, type = 'GRID' }) => css`
+export const ContentActivity = styled.div`
+  ${({ theme }) => css`
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding: 2rem 2rem 2rem 0;
+    padding: 2rem;
     flex: 1;
     a {
       font-weight: ${theme.font.bold};
@@ -108,12 +91,6 @@ export const ContentActivity = styled.div<StravaStyles>`
         color: ${theme.colors.blue};
       }
     }
-    ${type === 'GRID' && css`
-      padding: 2rem;
-    `}
-  `}
-  ${media.lessThan("medium")`
-    padding: 2rem;
   `}
 `;
 
@@ -141,7 +118,7 @@ export const LinksWrapper = styled.div`
         height: 1.5rem;
       }
       &:hover {
-        color: ${theme.colors.blue};
+        color: ${theme.colors.green};
       }
     }
   `}
@@ -174,17 +151,8 @@ export const HeartRate = styled.div<StravaStyles>`
 `
 
 export const AnimContainer = styled(motion.li)`
-  ${({ theme }) => css`
-    position: relative;
-    opacity: 1;
-    border-bottom: 0.1rem solid ${theme.colors.hover};
-    &:hover {
-      border-bottom: 0.1rem solid ${theme.colors.none};
-    }
-    &:last-child {
-      border-bottom: 0.1rem solid ${theme.colors.none};
-    }
-  `}
+  position: relative;
+  opacity: 1;
 `
 
 export const AnimHovered = styled(motion.div)`
@@ -201,22 +169,9 @@ export const AnimHovered = styled(motion.div)`
 	`}
 `
 
-export const Content = styled.div<StravaStyles>`
-  ${({ type = 'GRID' }) => css`
-    display: flex;
-    gap: 2rem;
-    ${media.lessThan("large")`
-      gap: 1rem;
-    `}
-    ${media.lessThan("medium")`
-      flex-direction: column;
-      gap: 0;
-    `}
-    ${type === 'GRID' && css`
-      flex-direction: column;
-      gap: 0;
-    `}
-  `}
+export const Content = styled.div`
+  display: flex;
+  flex-direction: column;
 `
 
 export const DateAndCity = styled.div`

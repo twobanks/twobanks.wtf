@@ -6,12 +6,6 @@ export const header = {
   avatar: images.logo,
   menu: [
     {
-      name: 'home',
-      url: '',
-      icon: images.home,
-      iconAnimated: images.homeAnimated,
-    },
-    {
       name: 'sobre',
       url: 'about',
       icon: images.avatar,
@@ -35,6 +29,12 @@ export const header = {
       icon: images.article,
       iconAnimated: images.articleAnimated,
     },
+    {
+      name: 'home',
+      url: '/',
+      icon: images.logo,
+      iconAnimated: images.logo,
+    },
   ]
 }
 
@@ -47,7 +47,7 @@ export const data: About = {
       url_company: 'https://www.bornlogic.com/',
       city_company: 'São Paulo, SP',
       period: 'jul de 2022 - até o momento',
-      tech: ['TypeScript','JavaScript(ES6)', 'HTML5/CSS3', 'ReactJS', 'styled-components'],
+      tech: [STACKS.TYPESCRIPT, STACKS.JAVASCRIPT, STACKS.HTML, STACKS.REACT, STACKS.STYLED],
     },
     {
       current: false,
@@ -56,7 +56,7 @@ export const data: About = {
       url_company: 'https://harpoon.digital/',
       city_company: 'Uberlândia, MG',
       period: 'fev de 2021 - jun de 2022 - 1 ano 4 meses',
-      tech: ['TypeScript','JavaScript(ES6)', 'HTML5/CSS3', 'ReactJS', 'NextJS', 'Jest', 'React Testing Library', 'styled-components'],
+      tech: [STACKS.TYPESCRIPT, STACKS.JAVASCRIPT, STACKS.HTML, STACKS.REACT, STACKS.NEXT, STACKS.JEST, STACKS.REACT_TESTING, STACKS.STYLED],
     },
     {
       current: false,
@@ -65,7 +65,7 @@ export const data: About = {
       url_company: 'https://bowe.com.br/',
       city_company: 'Uberlândia, MG',
       period: 'nov de 2020 - fev de 2021 - 3 meses',
-      tech: ['TypeScript','JavaScript(ES6)', 'HTML5/CSS3', 'ReactJS', 'NextJS', 'GatsbyJS', 'Jest', 'React Testing Library', 'styled-components'],
+      tech: [STACKS.JAVASCRIPT, STACKS.HTML, STACKS.REACT, STACKS.NEXT, STACKS.GATSBY, STACKS.JEST, STACKS.REACT_TESTING, STACKS.STYLED],
     },
     {
       current: false,
@@ -74,7 +74,7 @@ export const data: About = {
       url_company: 'https://webcorpore.com/',
       city_company: 'Uberlândia, MG',
       period: 'jun de 2014 - out de 2020 - 6 anos 5 meses',
-      tech: ['PHP', 'HTML5/CSS3', 'JavaScript(ES6)'],
+      tech: [STACKS.PHP, STACKS.HTML, STACKS.JAVASCRIPT],
     },
   ],
   academic: {

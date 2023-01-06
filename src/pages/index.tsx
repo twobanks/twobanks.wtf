@@ -10,7 +10,7 @@ const HomePage = () => (
       {...SEO}
     />
     <Wrapper page="home" >
-      <Home />
+     {/*  <Home /> */}
     </Wrapper>
   </>
 )

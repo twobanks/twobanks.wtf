@@ -93,7 +93,7 @@ export const Item = styled.li<WorksStyle>`
     padding: .5rem 1rem .5rem 2.5rem;
     border-radius: .8rem;
     &::after {
-      background: ${theme.colors.stacks[stack]};
+      background-color: ${theme.colors.stacks[stack]};
       border-radius: 50%;
       content: "";
       left: 1rem;

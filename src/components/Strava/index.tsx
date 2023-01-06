@@ -8,7 +8,7 @@ import theme from '../../styles/theme';
 import geocoder from 'city-reverse-geocoder'
 import images from '../../images';
 
-const Strava = ({ activities, orientation }: { activities: Activities[], orientation: 'ROW' | 'GRID' }) => {
+const Strava = ({ activities }: { activities: Activities[] }) => {
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index
@@ -51,49 +51,47 @@ const Strava = ({ activities, orientation }: { activities: Activities[], orienta
   }
 
   return (
-    <S.Wrapper type={orientation}>
-      <ul>
-        {activities?.map((activity, index) => {
-          const { start_date, average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
-          const mapUrl = handleMap(map.summary_polyline)
-          const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
-          const averageTitle = type !== 'Ride' ? 'Pace ' : 'Vel. Média ';
-          const averageSpeed = type !== 'Ride' ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
-          const nearestCities = geocoder(activity?.start_latlng[0], activity?.start_latlng[1])
-          return (
-            <Animation key={uuid()} index={String(index)}>
-              <S.Content type={orientation}>
-                <S.MapWrapper>
-                  <img src={mapUrl} alt={`${name} map`} />
-                </S.MapWrapper>
-                <S.ContentActivity type={orientation}>
-                  <S.HeaderActivity>
-                    <S.DateAndCity>
-                      <div>
-                        <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
-                        <h4>{formatDate(start_date)}</h4>
-                      </div>
-                      <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
-                    </S.DateAndCity>
-                    <S.TypeActivity>
-                      <img src={iconActivity[type]} alt={type} />
-                    </S.TypeActivity>
-                  </S.HeaderActivity>
-                  <S.ActivityData>
-                    <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
-                    <div><span>Tempo</span> <strong>{movingTime}</strong></div>
-                    <div><span>{averageTitle}</span> <div><strong>{averageSpeed} </strong>km/h</div></div>
-                    <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
-                  </S.ActivityData>
-                  <S.LinksWrapper>
-                    <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={images.strava} alt="Strava" /></a>
-                  </S.LinksWrapper>
-                </S.ContentActivity>
-              </S.Content>
-            </Animation>
-          )
-        })}
-      </ul>
+    <S.Wrapper>
+      {activities?.map((activity, index) => {
+        const { start_date, average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
+        const mapUrl = handleMap(map.summary_polyline)
+        const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
+        const averageTitle = type !== 'Ride' ? 'Pace ' : 'Vel. Média ';
+        const averageSpeed = type !== 'Ride' ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
+        const nearestCities = geocoder(activity?.start_latlng[0], activity?.start_latlng[1])
+        return (
+          <Animation key={uuid()} index={String(index)}>
+            <S.Content>
+              <S.MapWrapper>
+                <img src={mapUrl} alt={`${name} map`} />
+              </S.MapWrapper>
+              <S.ContentActivity>
+                <S.HeaderActivity>
+                  <S.DateAndCity>
+                    <div>
+                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
+                      <h4>{formatDate(start_date)}</h4>
+                    </div>
+                    <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
+                  </S.DateAndCity>
+                  <S.TypeActivity>
+                    <img src={iconActivity[type]} alt={type} />
+                  </S.TypeActivity>
+                </S.HeaderActivity>
+                <S.ActivityData>
+                  <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
+                  <div><span>Tempo</span> <strong>{movingTime}</strong></div>
+                  <div><span>{averageTitle}</span> <div><strong>{averageSpeed} </strong>km/h</div></div>
+                  <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
+                </S.ActivityData>
+                <S.LinksWrapper>
+                  <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={images.strava} alt="Strava" /></a>
+                </S.LinksWrapper>
+              </S.ContentActivity>
+            </S.Content>
+          </Animation>
+        )
+      })}
     </S.Wrapper>
   )
 }

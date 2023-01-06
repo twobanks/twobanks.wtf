@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import media from "styled-media-query";
 
 export const Content = styled.div`
   ${({ theme }) => css`
@@ -9,5 +10,8 @@ export const Content = styled.div`
     font-size: calc(${theme.font.sizes.s48} * 2);
     font-family: ${theme.font.family.north};
     color: ${theme.colors.secondary};
+    ${media.lessThan('medium')`
+      font-size: calc(${theme.font.sizes.s48} * 1.5);
+    `}
   `}
 `;

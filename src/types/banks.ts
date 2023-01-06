@@ -30,7 +30,7 @@ type Experiences = {
   url_company: string;
   city_company: string;
   period: string;
-  tech: string[],
+  tech: STACKS[],
 }
 
 type Academic = {

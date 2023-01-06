@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components'
 import media from 'styled-media-query';
 
+type FooterProps = {
+  avatar?: boolean;
+}
+
 export const Footer = styled.div`
   ${({ theme }) => css`
     display: none;
@@ -14,6 +18,13 @@ export const Footer = styled.div`
       height: 6rem;
       background-color: ${theme.colors.black};
       justify-content: space-around;
+    `}
+  `}
+`
+
+export const Item = styled.li<FooterProps>`
+  ${({ theme, avatar }) => css`
+    ${media.lessThan('medium')`
       img {
         background-color: ${theme.colors.background};
         height: 4rem;
@@ -21,10 +32,14 @@ export const Footer = styled.div`
         cursor: pointer;
         padding: .75rem;
         border-radius: ${theme.radius};
+        ${avatar && css`
+          padding: 0;
+          border-radius: 100%;
+        `}
         &:hover {
           background-color: ${theme.colors.hover};
         }
       }
     `}
   `}
-`
+`;
