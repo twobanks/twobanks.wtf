@@ -32,6 +32,7 @@ const GlobalStyles = createGlobalStyle`
       &::after {
         box-sizing: inherit;
       }
+      cursor: none !important;
     }
     html {
       font-size: 62.5%;
