@@ -1,27 +1,34 @@
-import SkeletonActivities from '../components/Skeleton/SkeletonActivities';
 import ActivitiesTemplate from '../templates/Activities';
 import { NextSeo } from 'next-seo'
 import { SEO } from '../utils/constants/seo'
-import { useStrava } from '../utils/hooks/strava';
-import { useState } from 'react';
 import Wrapper from '../templates/Wrapper';
+import { getActivities } from '../utils/lib/strava';
+import { Activities } from '../types/strava';
 
-const ActivitiesPage = () => {
-  const { useActivities } = useStrava();
-  const [page, setPage] = useState<number>(1);
-  const { data, loading } = useActivities(page);
-  if (loading) return <SkeletonActivities />
-  return (
-    <>
-      <NextSeo
-        title="vivência | twobanks"
-        {...SEO}
-      />
-      <Wrapper page="activities">
-        <ActivitiesTemplate activities={data} page={page} setPage={setPage} />
-      </Wrapper>
-    </>
-  )
+type ActivitiesProps = {
+  activities: Activities[];
 }
+
+const ActivitiesPage = ({ activities }: ActivitiesProps) => (
+  <>
+    <NextSeo
+      title="vivência | twobanks"
+      {...SEO}
+    />
+    <Wrapper page="activities">
+      <ActivitiesTemplate activities={activities} />
+    </Wrapper>
+  </>
+)
+
+export const getStaticProps = async () => {
+  const activities = await getActivities();
+  return {
+    props: {
+      activities,
+    },
+    revalidate: 3600,
+  };
+};
 
 export default ActivitiesPage
