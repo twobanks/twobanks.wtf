@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
@@ -48,9 +47,6 @@ export const Header = styled.header<HeaderProps>`
 		width: 100vw;
 		z-index: 2;
 		background-color: ${theme.colors.background};
-		${page === 'home' && css`
-			position: relative;
-		`}
 		${media.lessThan("medium")`
 			display: flex;
 			justify-content: space-between;
@@ -98,43 +94,7 @@ export const Banks = styled.div<HeaderProps>`
 	`}
 `
 
-export const Nav = styled.ul`
-	display: inline-flex;
-	li {
-		border: 0;
-		position: relative;
-	}
-	${media.lessThan("medium")`
-		display: none;
-	`}
-`
-
-
-export const NavContainer = styled(motion.span)`
-	${({theme}) => css`
-		color: ${theme.colors.secondary};
-		cursor: pointer;
-		display: inline-block;
-		font-size: ${theme.font.sizes.s16};
-		padding: 2rem;
-		text-decoration: none;
-		transition: color 0.2s ease-in-out;
-		&:hover {
-			color: ${theme.colors.primary};
-		}
-	`}
-`
-
-export const NavHovered = styled(motion.span)`
-	${({theme}) => css`
-		position: absolute;
-		top: 1.2rem;
-		left: 0;
-		right: 0;
-		background-color: ${theme.colors.hover};
-		padding: 2rem;
-		border-radius: .8rem;
-		z-index: -1;
-	`}
-`
-
+export const MenuWrapper = styled.div`
+	position: absolute;
+	right: 0;
+`;

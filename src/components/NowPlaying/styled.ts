@@ -4,9 +4,9 @@ export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 2rem;
     border-top: .1rem solid ${theme.colors.background};
-    padding-top: 1rem;
+    padding: 2rem;
     span {
       cursor: pointer;
       font-size: ${theme.font.sizes.s16};

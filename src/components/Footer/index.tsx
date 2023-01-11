@@ -13,7 +13,7 @@ const Footer = ({ menu } : { menu: Menu[] }) => {
         const isHovered = hovered === item.name;
         return (
           <Link href={item.url} passHref key={`${item.name}-${index}`}>
-            <S.Item avatar={item.name === 'home'} onMouseEnter={() => setHovered(item.name)} onMouseLeave={() => setHovered('')}>
+            <S.Item onMouseEnter={() => setHovered(item.name)} onMouseLeave={() => setHovered('')}>
               <Icon src={isHovered ? item.iconAnimated : item.icon} alt={item.name} />
             </S.Item>
           </Link>

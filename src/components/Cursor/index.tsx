@@ -19,8 +19,8 @@ const Cursor = ({ page }: CursorProps) => {
   return (
     <S.Wrapper>
       <svg
-        width={25}
-        height={25}
+        width={18}
+        height={18}
         viewBox="0 0 50 50"
         style={{
           position: "absolute",

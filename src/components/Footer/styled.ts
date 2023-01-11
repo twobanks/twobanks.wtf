@@ -1,11 +1,7 @@
 import styled, { css } from 'styled-components'
 import media from 'styled-media-query';
 
-type FooterProps = {
-  avatar?: boolean;
-}
-
-export const Footer = styled.div`
+export const Footer = styled.footer`
   ${({ theme }) => css`
     display: none;
     ${media.lessThan('medium')`
@@ -22,8 +18,8 @@ export const Footer = styled.div`
   `}
 `
 
-export const Item = styled.li<FooterProps>`
-  ${({ theme, avatar }) => css`
+export const Item = styled.div`
+  ${({ theme }) => css`
     ${media.lessThan('medium')`
       img {
         background-color: ${theme.colors.background};
@@ -32,10 +28,6 @@ export const Item = styled.li<FooterProps>`
         cursor: pointer;
         padding: .75rem;
         border-radius: ${theme.radius};
-        ${avatar && css`
-          padding: 0;
-          border-radius: 100%;
-        `}
         &:hover {
           background-color: ${theme.colors.hover};
         }

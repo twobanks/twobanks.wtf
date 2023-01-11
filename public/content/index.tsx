@@ -6,6 +6,12 @@ export const header = {
   avatar: images.logo,
   menu: [
     {
+      name: 'home',
+      url: '/',
+      icon: images.home,
+      iconAnimated: images.homeAnimated,
+    },
+    {
       name: 'sobre',
       url: 'about',
       icon: images.avatar,
@@ -28,12 +34,6 @@ export const header = {
       url: 'idea',
       icon: images.article,
       iconAnimated: images.articleAnimated,
-    },
-    {
-      name: 'home',
-      url: '/',
-      icon: images.logo,
-      iconAnimated: images.logo,
     },
   ]
 }
