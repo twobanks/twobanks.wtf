@@ -120,3 +120,24 @@ export const Overlay = styled.div<NavProps>`
     `}
   `}
 `;
+
+export const SocialWrapper = styled.div`
+    ${({ theme }) => css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: .1rem solid ${theme.colors.hover};
+      padding: 2rem 1rem 1rem 1rem;
+      margin-top: 2rem;
+      img {
+        height: 2.25rem;
+        width: 2.25rem;
+        opacity: .6;
+        transition: color 0.2s ease-in-out;
+        border-radius: 0;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    `}
+`;

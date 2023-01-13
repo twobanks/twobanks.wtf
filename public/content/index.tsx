@@ -163,11 +163,17 @@ export const social: Social[] = [
     icon: images.twitter
   },
   {
+    name: 'discord',
+    link: 'https://discord.com/users/535889118282907678',
+    nickname: 'twobanks#5730',
+    icon: images.discord
+  },
+  /* {
     name: 'facebook',
     link: 'https://www.facebook.com/twobanks/',
     nickname: 'twobanks',
     icon: images.facebook
-  },
+  }, */
   {
     name: 'strava',
     link: 'https://www.strava.com/athletes/twobanks',
@@ -175,23 +181,9 @@ export const social: Social[] = [
     icon: images.strava
   },
   {
-    name: 'last.fm',
-    link: 'https://www.last.fm/pt/user/banksthiago',
-    nickname: 'banksthiago',
-  },
-  {
     name: 'spotify',
     link: 'https://open.spotify.com/user/twobanks',
     nickname: 'twobanks',
     icon: images.spotify
-  },
-  {
-    name: 'psn',
-    nickname: 'twobanks_',
-  },
-  {
-    name: 'steam',
-    link: 'https://steamcommunity.com/id/twobanks',
-    nickname: 'twobanks',
   },
 ];

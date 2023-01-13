@@ -4,6 +4,7 @@ import { Header } from '../../types/banks';
 import Link from 'next/link';
 import Icon from '../Icon';
 import NowPlaying from '../NowPlaying';
+import { social } from '../../../public/content';
 
 const Menu = ({ header }: { header: Header; }) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -41,6 +42,13 @@ const Menu = ({ header }: { header: Header; }) => {
         })}
       </S.Nav>
       <NowPlaying />
+      <S.SocialWrapper>
+        {social.map(item => (
+          <a href={item.link} key={item.name} target="_blank" rel="noreferrer">
+            <Icon src={item.icon} alt={item.name} />
+          </a>
+        ))}
+      </S.SocialWrapper>
     </S.Content>
   )
   return (

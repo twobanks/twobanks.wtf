@@ -3,11 +3,24 @@ import styled, { css } from "styled-components";
 export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 2rem;
+    h2 {
+      padding-left: 1rem;
+      font-size: ${theme.font.sizes.s16};
+      color: ${theme.colors.secondary};
+    }
+  `}
+`;
+
+export const Content = styled.div`
+  ${({ theme }) => css`
+    display: flex;
     align-items: center;
     gap: 2rem;
     background-color: ${theme.colors.black};
     padding: 1rem;
-    margin-top: 1rem;
     border-radius: ${theme.radius};
     span {
       cursor: pointer;

@@ -21,16 +21,17 @@ const NowPlaying = () => {
     revalidateOnReconnect: false
   });
   return (
-    <>
+    <S.Wrapper>
+      <h2>O que estou ouvindo?</h2>
       {data?.isPlaying &&
-        <S.Wrapper>
+        <S.Content>
           <Playing />
           <S.Song href={data?.songUrl}>
             <strong>{limitName(data?.title, LIMIT_NAME)}</strong>
             <span>{limitName(data?.artist, LIMIT_NAME)}</span>
           </S.Song>
-        </S.Wrapper>}
-    </>
+        </S.Content>}
+    </S.Wrapper>
   );
 }
 
