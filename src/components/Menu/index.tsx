@@ -44,10 +44,17 @@ const Menu = ({ header }: { header: Header; }) => {
     </S.Content>
   )
   return (
-    <S.Wrapper>
-      <button onClick={() => setOpen(prevState => !prevState)}>menu</button>
-      {open && renderBody()}
-    </S.Wrapper>
+    <>
+      <S.Wrapper>
+        <S.IconNavWrapper onClick={() => setOpen(prevState => !prevState)} open={open}>
+          <span />
+          <span />
+          <span />
+        </S.IconNavWrapper>
+        {open && renderBody()}
+      </S.Wrapper>
+      <S.Overlay onClick={() => setOpen(prevState => !prevState)} open={open} />
+    </>
   )
 }
 

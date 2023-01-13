@@ -5,8 +5,10 @@ export const Wrapper = styled.div`
     display: flex;
     align-items: center;
     gap: 2rem;
-    border-top: .1rem solid ${theme.colors.background};
-    padding: 2rem;
+    background-color: ${theme.colors.black};
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: ${theme.radius};
     span {
       cursor: pointer;
       font-size: ${theme.font.sizes.s16};
@@ -63,7 +65,7 @@ export const Song = styled.a`
     flex-direction: column;
     strong {
       font-size: ${theme.font.sizes.s14};
-      color: ${theme.colors.primary};
+      color: ${theme.colors.secondary};
     }
     span {
       font-size: ${theme.font.sizes.s12};

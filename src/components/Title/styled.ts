@@ -38,6 +38,7 @@ export const Wrapper = styled.h1<TitleStyles>`
       font-size: ${theme.font.sizes.s28};
       width: 100%;
       justify-content: flex-end;
+      padding: 2rem 0;
     `}
   `}
 `;

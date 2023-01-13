@@ -2,18 +2,20 @@ import { motion } from 'framer-motion'
 import styled, { css } from 'styled-components'
 import media from "styled-media-query";
 
+type NavProps = {
+  open?: boolean;
+}
+
 export const Wrapper = styled.nav`
-  ${({ theme }) => css`
-    position: relative;
-    button {
-      background-color: ${theme.colors.hover};
-      border: 0;
-      outline: none;
-      padding: 1rem 2rem;
-      color: ${theme.colors.secondary};
-      text-transform: uppercase;
-      border-radius: ${theme.radius};
-    }
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 5;
+  img {
+    border-radius: 100%;
+  }
+  ${media.lessThan("medium")`
+    display: none;
   `}
 `;
 
@@ -22,7 +24,7 @@ export const Content = styled(motion.div)`
     position: absolute;
     display: flex;
     flex-direction: column;
-    background-color: ${theme.colors.black};
+    background-color: ${theme.colors.background};
     right: 0;
     top: 4rem;
     padding: 1rem;
@@ -30,16 +32,21 @@ export const Content = styled(motion.div)`
     border-radius: ${theme.radius};
     color: ${theme.colors.secondary};
 		font-size: ${theme.font.sizes.s16};
+    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
     z-index: -2;
   `}
 `;
 
 export const Nav = styled.ul`
-	display: flex;
-  flex-direction: column;
-	${media.lessThan("medium")`
-		display: none;
-	`}
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    border-bottom: .1rem solid ${theme.colors.hover};
+    padding-bottom: 1rem;
+    ${media.lessThan("medium")`
+      display: none;
+    `}
+  `}
 `;
 
 export const NavContainer = styled(motion.li)`
@@ -48,8 +55,8 @@ export const NavContainer = styled(motion.li)`
     display: flex;
     align-items: center;
     flex: 1;
-    gap: 2rem;
-		padding: 2rem;
+    gap: 1rem;
+		padding: 1rem;
 		transition: color 0.2s ease-in-out;
     img {
       height: 2.5rem;
@@ -64,12 +71,52 @@ export const NavContainer = styled(motion.li)`
 export const NavHovered = styled(motion.div)`
 	${({theme}) => css`
 		position: absolute;
-		top: 1.2rem;
+		top: 0;
 		left: 0;
 		right: 0;
-		background-color: ${theme.colors.hover};
-		padding: 2rem;
+    bottom: 0;
+		background-color: ${theme.colors.black};
 		border-radius: ${theme.radius};
 		z-index: -1;
 	`}
 `
+
+export const IconNavWrapper = styled.div<NavProps>`
+    ${({ theme, open }) => css`
+      display: flex;
+      align-items: center;
+      justify-content: justify-around;
+      gap: .5rem;
+      transform: rotate(45deg);
+      transition: color 0.2s ease-in-out;
+      span {
+        height: 2.5rem;
+        width: .3rem;
+        border-radius: .3rem;
+        background-color: ${theme.colors.secondary};
+        :nth-child(1), :nth-child(3) {
+          height: 1.5rem;
+          ${open && css`
+            opacity: .5;
+          `}
+        }
+      }
+    `}
+`;
+
+export const Overlay = styled.div<NavProps>`
+  ${({ theme, open }) => css`
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 4;
+    ${open && css`
+      display: block;
+      background-color: ${theme.colors.black};
+      opacity: .95;
+    `}
+  `}
+`;

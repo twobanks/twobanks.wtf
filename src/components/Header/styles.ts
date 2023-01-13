@@ -69,7 +69,7 @@ export const Content = styled.div`
 		max-width: ${theme.container};
 		width: 100vw;
 		margin: 0 auto;
-		padding: 2rem 0 2rem 2rem;
+		padding: 2rem;
 		justify-content: space-between;
 		${media.lessThan("medium")`
 			width: fit-content;
