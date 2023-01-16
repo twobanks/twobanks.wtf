@@ -28,7 +28,7 @@ export const Content = styled(motion.div)`
     right: 0;
     top: 4rem;
     padding: 1rem;
-    width: 27rem;
+    width: 30rem;
     border-radius: ${theme.radius};
     color: ${theme.colors.secondary};
 		font-size: ${theme.font.sizes.s16};

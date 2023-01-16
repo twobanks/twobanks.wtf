@@ -1,5 +1,40 @@
 import styled, { css } from "styled-components";
 
+type PlayingProps = {
+  active?: boolean;
+}
+
+const animate = {
+  bounce: () => css`
+    @keyframes bounce {
+      10% {
+        transform: scaleY(0.3);
+      }
+      30% {
+        transform: scaleY(1);
+      }
+      60% {
+        transform: scaleY(0.5);
+      }
+      80% {
+        transform: scaleY(0.75);
+      }
+      100% {
+        transform: scaleY(0.6);
+      }
+    }
+  `,
+  loading: () => css`
+    @keyframes loading {
+      0%, 80%, 100% {
+        transform: scale(0);
+      } 40% {
+        transform: scale(1.0);
+      }
+    }
+  `,
+}
+
 export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
@@ -30,34 +65,18 @@ export const Content = styled.div`
   `}
 `;
 
-export const Icon = styled.div`
-  ${({ theme }) => css`
+export const Icon = styled.div<PlayingProps>`
+  ${({ theme, active }) => css`
     position: relative;
     display: flex;
     justify-content: space-between;
     width: 1.5rem;
     height: 2rem;
-    @keyframes bounce {
-      10% {
-        transform: scaleY(0.3);
-      }
-      30% {
-        transform: scaleY(1);
-      }
-      60% {
-        transform: scaleY(0.5);
-      }
-      80% {
-        transform: scaleY(0.75);
-      }
-      100% {
-        transform: scaleY(0.6);
-      }
-    }
+    ${animate.bounce()}
     span {
       width: .3rem;
       height: 100%;
-      background-color: ${theme.colors.spotify};
+      background-color: ${active ? theme.colors.spotify : theme.colors.yellowTech};
       border-radius: .3rem;
       transform-origin: bottom;
       animation: bounce 2.2s ease infinite alternate;
@@ -93,3 +112,28 @@ export const Song = styled.a`
   `}
 `
 
+export const WrapperLoading = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.4rem;
+    width: 100%;
+    ${animate.loading()}
+    gap: 1rem;
+    span {
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+      background-color: ${theme.colors.spotify};
+      opacity: .6;
+      animation: loading 1.4s infinite ease-in-out both;
+    }
+    span:nth-of-type(2) {
+      animation-delay: -0.32s;
+    }
+    span:nth-of-type(3) {
+      animation-delay: -0.16s;
+    }
+  `}
+`;
