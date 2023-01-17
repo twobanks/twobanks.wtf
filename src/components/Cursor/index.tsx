@@ -1,6 +1,8 @@
+import { useContext } from "react";
 import theme from "../../styles/theme";
 import useMousePosition from "../../utils/hooks/useMousePosition";
 import * as S from './styled';
+import { MouseContext } from "../../utils/context/mouse-context";
 
 type CursorProps = {
   page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
@@ -16,11 +18,13 @@ const cursorTypes = {
 
 const Cursor = ({ page }: CursorProps) => {
   const { clientX, clientY } = useMousePosition();
+  const { cursorType } = useContext(MouseContext);
+  let cursorHovered = cursorType === 'hovered' ? 48 : 18;
   return (
     <S.Wrapper>
       <svg
-        width={18}
-        height={18}
+        width={cursorHovered}
+        height={cursorHovered}
         viewBox="0 0 50 50"
         style={{
           position: "absolute",

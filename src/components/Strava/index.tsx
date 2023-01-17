@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useContext, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import * as S from './styles';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '../../utils/functions/conversionStrava'
@@ -7,8 +7,11 @@ import { Activities } from '../../types/strava';
 import theme from '../../styles/theme';
 import geocoder from 'city-reverse-geocoder'
 import images from '../../images';
+import { MouseContext } from '../../utils/context/mouse-context';
+
 
 const Strava = ({ activities }: { activities: Activities[] }) => {
+  const { cursorChangeHandler } = useContext(MouseContext);
   const Animation = (props: { index: string; children: ReactNode }) => {
     const [hovered, setHovered] = useState('')
     const isHovered = hovered === props.index
@@ -85,7 +88,12 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                   <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
                 </S.ActivityData>
                 <S.LinksWrapper>
-                  <a href={`https://www.strava.com/activities/${id}`}>visualizar no Strava <img src={images.strava} alt="Strava" /></a>
+                  <a href={`https://www.strava.com/activities/${id}`}
+                    onMouseEnter={() => cursorChangeHandler("hovered")}
+                    onMouseLeave={() => cursorChangeHandler("")}
+                  >
+                    visualizar no Strava <img src={images.strava} alt="Strava" />
+                  </a>
                 </S.LinksWrapper>
               </S.ContentActivity>
             </S.Content>
