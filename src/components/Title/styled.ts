@@ -29,7 +29,7 @@ export const Wrapper = styled.h1<TitleStyles>`
     align-items: center;
     font-family: ${theme.font.family.poppins};
     font-size: ${theme.font.sizes.s48};
-    padding: 2rem;
+    padding: ${theme.spacing.s2};
     max-width: 102rem;
     width: 100vw;
     margin: 0 auto;
@@ -38,7 +38,7 @@ export const Wrapper = styled.h1<TitleStyles>`
       font-size: ${theme.font.sizes.s28};
       width: 100%;
       justify-content: flex-end;
-      padding: 2rem 0;
+      padding: ${theme.spacing.s2} 0;
     `}
   `}
 `;

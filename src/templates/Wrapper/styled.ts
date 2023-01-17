@@ -26,7 +26,7 @@ export const Content = styled.section<WrapperProps>`
       height: 100%;
     `}
     ${media.lessThan('medium')`
-      padding: 1rem 2rem 7rem 2rem;
+      padding: ${theme.spacing.s1} ${theme.spacing.s2} 7rem ${theme.spacing.s2};
       margin: 12rem auto 0 auto;
       ${page === 'home' && css`
         margin: 0 auto;

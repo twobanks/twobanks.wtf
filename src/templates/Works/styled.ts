@@ -13,7 +13,7 @@ export const Container = styled.div`
     flex-direction: column;
     max-width: ${theme.container};
     width: 100%;
-    margin: 2rem auto;
+    margin: ${theme.spacing.s2} auto;
     ul {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -40,28 +40,30 @@ export const Work = styled.li`
 `
 
 export const WrapperImage = styled.div`
-  position: relative;
-  img {
-    display: flex;
-    width: 100%;
-    height: auto;
-    border-radius: .8rem;
-  }
+  ${({ theme }) => css`
+    position: relative;
+    img {
+      display: flex;
+      width: 100%;
+      height: auto;
+      border-radius: ${theme.radius};
+    }
+  `}
 `;
 
 export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    margin-top: 1rem;
-    gap: 1rem;
+    margin-top: ${theme.spacing.s1};
+    gap: ${theme.spacing.s1};
     strong {
       color: ${theme.colors.primary};
-      transition: color 0.2s ease-in-out;
+      transition: ${theme.transition.color};
     }
     ul {
       display: flex;
-      gap: 1rem;
+      gap: ${theme.spacing.s1};
       flex-wrap: wrap;
     }
     div {
@@ -90,13 +92,13 @@ export const Item = styled.li<WorksStyle>`
     position: relative;
     font-size: ${theme.font.sizes.s14};
     background-color: ${theme.colors.hover};
-    padding: .5rem 1rem .5rem 2.5rem;
-    border-radius: .8rem;
+    padding: .5rem ${theme.spacing.s1} .5rem 2.5rem;
+    border-radius: ${theme.radius};
     &::after {
       background-color: ${theme.colors.stacks[stack]};
       border-radius: 50%;
       content: "";
-      left: 1rem;
+      left: ${theme.spacing.s1};
       top: 1.15rem;
       height: .5rem;
       width: .5rem;
@@ -112,12 +114,12 @@ export const AnimContainer = styled(motion.div)`
     color: ${theme.colors.secondary};
     cursor: pointer;
     display: flex;
-    gap: 2rem;
-    padding: 2rem;
+    gap: ${theme.spacing.s2};
+    padding: ${theme.spacing.s2};
     width: 100%;
     height: auto;
     opacity: 1;
-    transition: color 0.2s ease-in-out;
+    transition: ${theme.transition.color};
     position: relative;
     ${media.lessThan("medium")`
       flex-direction: column;
@@ -134,7 +136,7 @@ export const AnimHovered = styled(motion.div)`
     bottom: 0;
 		background-color: ${theme.colors.hover};
 		padding: 0;
-		border-radius: .8rem;
+		border-radius: ${theme.radius};
 		z-index: -1;
 	`}
 `

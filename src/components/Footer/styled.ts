@@ -10,7 +10,7 @@ export const Footer = styled.footer`
       width: 100vw;
       display: flex;
       align-items: center;
-      padding: 0 2rem;
+      padding: 0 ${theme.spacing.s2};
       height: 6rem;
       background-color: ${theme.colors.black};
       justify-content: space-around;

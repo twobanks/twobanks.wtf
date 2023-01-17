@@ -12,7 +12,7 @@ const link = {
     a {
       color: ${current ? theme.colors.primary : theme.colors.secondary};
       font-weight: ${theme.font.bold};
-      transition: color 0.2s ease-in-out;
+      transition: ${theme.transition.color};
       &:hover {
         color: ${theme.colors.yellow};
       }
@@ -37,29 +37,19 @@ export const About = styled.div`
     flex-direction: column;
     justify-content: center;
     flex: 1;
-    gap: 1rem;
-    transition: color 0.2s ease-in-out;
+    gap: ${theme.spacing.s1};
+    transition: ${theme.transition.color};
+    line-height: ${theme.font.sizes.s28};
     strong {
       color: ${theme.colors.primary};
       font-weight: ${theme.font.bold};
-      transition: color 0.2s ease-in-out;
+      transition: ${theme.transition.color};
     }
     p {
-      text-indent: 2rem;
+      text-indent: ${theme.spacing.s2};
     }
     em {
       color: ${theme.colors.red};
-    }
-    ul {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      background-color: ${theme.colors.hover};
-      padding: 2rem 0;
-      border-radius: .8rem;
-      li {
-        padding: .25rem 1.25rem;
-      }
     }
     ${link.default(theme)}
   `}
@@ -70,19 +60,19 @@ export const Occupation = styled.strong`
     display: flex;
     font-size: ${theme.font.sizes.s16};
     color: ${theme.colors.primary};
-    margin-bottom: 1rem;
+    margin-bottom: ${theme.spacing.s1};
   `}
 `
 
 export const Stacks = styled.div`
 ${({ theme }) => css`
   display: flex;
-  gap: 1rem;
+  gap: ${theme.spacing.s1};
   flex-wrap: wrap;
-  margin-top: 1rem;
+  margin-top: ${theme.spacing.s1};
   span {
     background-color: ${theme.colors.yellowTech};
-    padding: .25rem .75rem;
+    padding: calc(${theme.spacing.s1} / 2) ${theme.spacing.s1};
     border-radius: ${theme.radius};
     color: ${theme.colors.yellowFont};
     font-size: ${theme.font.sizes.s14};
@@ -93,7 +83,7 @@ ${({ theme }) => css`
 export const Date = styled.div`
   ${({ theme }) => css`
     font-size: ${theme.font.sizes.s14};
-    line-height: 2rem;
+    line-height: ${theme.spacing.s2};
   `}
 `
 
@@ -102,29 +92,29 @@ export const Career = styled.section<AboutStyle>`
     display: flex;
     flex-direction: column;
     flew-wrap: wrap;
-    gap: 4rem;
-    padding: 2rem;
+    gap: ${theme.spacing.s2};
+    padding: ${theme.spacing.s2};
     ul {
       display: flex;
       flex-direction: column;
-      gap: 4rem;
+      gap: ${theme.spacing.s4};
       ${course && css`
         display: flex;
         flex-direction: column;
-        gap: 2rem;
+        gap: ${theme.spacing.s2};
         ${link.default(theme)}
       `}
     }
-  `}
-  ${media.lessThan("medium")`
-    padding: 2rem 0;
+    ${media.lessThan("medium")`
+      padding: ${theme.spacing.s2} 0;
+    `}
   `}
 `
 
 export const Company = styled.div<AboutStyle>`
   ${({ theme, current }) => css`
     font-size: ${theme.font.sizes.s14};
-    line-height: 2rem;
+    line-height: ${theme.spacing.s2};
     width: 100%;
     ${link.default(theme, current)}
   `}
@@ -148,17 +138,19 @@ export const ImageWrapper = styled.div`
 `
 
 export const Bio = styled.div`
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 8rem;
-  padding: 2rem;
-  ${media.lessThan("large")`
-    gap: 4rem;
-  `}
-  ${media.lessThan("medium")`
-    flex-direction: column;
-    padding: 0 0 4rem 0;
-    gap: 0;
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: row-reverse;
+    gap: ${theme.spacing.s8};
+    padding: ${theme.spacing.s2};
+    ${media.lessThan("large")`
+      gap: ${theme.spacing.s4};
+    `}
+    ${media.lessThan("medium")`
+      flex-direction: column;
+      gap: 0;
+      padding: 0 0 ${theme.spacing.s4} 0;
+    `}
   `}
 `
 

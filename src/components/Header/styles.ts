@@ -51,7 +51,7 @@ export const Header = styled.header<HeaderProps>`
 			display: flex;
 			justify-content: space-between;
 			width: 100%;
-			padding: 1rem 2rem;
+			padding: ${theme.spacing.s1} ${theme.spacing.s2};
 			${page === 'home' && css`
 				display: none;
 			`}
@@ -69,12 +69,12 @@ export const Content = styled.div`
 		max-width: ${theme.container};
 		width: 100vw;
 		margin: 0 auto;
-		padding: 2rem;
+		padding: ${theme.spacing.s2};
 		justify-content: space-between;
 		${media.lessThan("medium")`
 			width: fit-content;
 			margin: 0;
-			padding: 2rem 0;
+			padding: ${theme.spacing.s2} 0;
 		`}
 	`}
 `

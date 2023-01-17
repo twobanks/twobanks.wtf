@@ -26,8 +26,8 @@ export const Content = styled(motion.div)`
     flex-direction: column;
     background-color: ${theme.colors.background};
     right: 0;
-    top: 4rem;
-    padding: 1rem;
+    top: ${theme.spacing.s4};
+    padding: ${theme.spacing.s1};
     width: 30rem;
     border-radius: ${theme.radius};
     color: ${theme.colors.secondary};
@@ -42,7 +42,7 @@ export const Nav = styled.ul`
     display: flex;
     flex-direction: column;
     border-bottom: .1rem solid ${theme.colors.hover};
-    padding-bottom: 1rem;
+    padding-bottom: ${theme.spacing.s1};
     ${media.lessThan("medium")`
       display: none;
     `}
@@ -55,9 +55,9 @@ export const NavContainer = styled(motion.li)`
     display: flex;
     align-items: center;
     flex: 1;
-    gap: 1rem;
-		padding: 1rem;
-		transition: color 0.2s ease-in-out;
+    gap: ${theme.spacing.s1};
+		padding: ${theme.spacing.s1};
+		transition: ${theme.transition.color};
     img {
       height: 2.5rem;
       width: 2.5rem;
@@ -88,7 +88,7 @@ export const IconNavWrapper = styled.div<NavProps>`
       justify-content: justify-around;
       gap: .5rem;
       transform: rotate(45deg);
-      transition: color 0.2s ease-in-out;
+      transition: ${theme.transition.color};
       span {
         height: 2.5rem;
         width: .3rem;
@@ -127,13 +127,13 @@ export const SocialWrapper = styled.div`
       align-items: center;
       justify-content: space-between;
       border-top: .1rem solid ${theme.colors.hover};
-      padding: 2rem 1rem 1rem 1rem;
-      margin-top: 2rem;
+      padding: ${theme.spacing.s2} ${theme.spacing.s1} ${theme.spacing.s1} ${theme.spacing.s1};
+      margin-top: ${theme.spacing.s2};
       img {
         height: 2.25rem;
         width: 2.25rem;
         opacity: .6;
-        transition: color 0.2s ease-in-out;
+        transition: ${theme.transition.color};
         border-radius: 0;
         &:hover {
           opacity: 1;

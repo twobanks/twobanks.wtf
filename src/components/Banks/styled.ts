@@ -32,8 +32,8 @@ export const WrapperBanks = styled(motion.div)<BanksStyle>`
     z-index: 2;
     margin-top: -20rem;
     background-color: ${theme.colors.black};
-    border-radius: .8rem;
-    padding: 2rem;
+    border-radius: ${theme.radius};
+    padding: ${theme.spacing.s2};
     ${open && css`
       display: flex;
     `}
@@ -54,12 +54,14 @@ export const WrapperLinks = styled.div`
 `
 
 export const Header = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding-bottom: 1rem;
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: ${theme.spacing.s1};
+    padding-bottom: ${theme.spacing.s1};
+  `}
 `
 
 export const AvatarWrapper = styled.div`

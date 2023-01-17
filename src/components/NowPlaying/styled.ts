@@ -39,10 +39,10 @@ export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    padding-top: 2rem;
+    gap: ${theme.spacing.s1};
+    padding-top: ${theme.spacing.s2};
     h2 {
-      padding-left: 1rem;
+      padding-left: ${theme.spacing.s1};
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.secondary};
     }
@@ -53,9 +53,9 @@ export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: ${theme.spacing.s2};
     background-color: ${theme.colors.black};
-    padding: 1rem;
+    padding: ${theme.spacing.s1};
     border-radius: ${theme.radius};
     span {
       cursor: pointer;
@@ -120,7 +120,7 @@ export const WrapperLoading = styled.div`
     height: 1.4rem;
     width: 100%;
     ${animate.loading()}
-    gap: 1rem;
+    gap: ${theme.spacing.s2};
     span {
       height: 1rem;
       width: 1rem;

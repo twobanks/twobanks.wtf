@@ -13,8 +13,7 @@ const About = ({ data }: { data: About }) => {
           <Image src={images.twobanks} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={images.twobanks} priority />
         </S.ImageWrapper>
         <S.About>
-          <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor Front-End, desde 2014.</p>
-          <p>Atualmente, atuo como Desenvolvedor Front-End,  na <a href="https://www.bornlogic.com/">Bornlogic</a>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
+          <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor, desde 2014. Atualmente, atuo como Desenvolvedor Front-End,  na <a href="https://www.bornlogic.com/">Bornlogic</a>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
           <p>No meu tempo livre, aproveito momentos com a minha esposa Tefa <em>❤</em> e meu cachorro Brown 🐶, pratico Trail Running e Mountain Bike, gosto de descobrir novos estilos musicais, também gosto de aprender sobre povos antigos  🛸, astronomia 🪐 e expandir meus conhecimentos sobre JavaScript e CSS.</p>
         </S.About>
       </S.Bio>

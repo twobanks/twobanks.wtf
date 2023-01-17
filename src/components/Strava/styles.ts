@@ -21,9 +21,9 @@ export const Wrapper = styled.main<StravaStyles>`
 export const MapWrapper = styled.div`
   ${({ theme }) => css`
     background-color: ${theme.colors.black};
-    border-radius: .8rem;
-    padding: 2rem;
-    margin: 1rem;
+    border-radius: ${theme.radius};
+    padding: ${theme.spacing.s2};
+    margin: ${theme.spacing.s1};
     min-width: 29rem;
     min-height: 16.5rem;
     img {
@@ -40,14 +40,14 @@ export const TypeActivity = styled.div`
   ${({ theme}) => css`
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: ${theme.spacing.s1};
     img {
       display: flex;
       width: 4rem;
       height: 4rem;
       background-color: ${theme.colors.black};
-      padding: 1rem;
-      border-radius: 0.8rem;
+      padding: ${theme.spacing.s1};
+      border-radius: ${theme.radius};
     }
   `}
 `
@@ -56,7 +56,7 @@ export const ActivityData = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-wrap: wrap;
-    gap: 4rem;
+    gap: ${theme.spacing.s4};
     > div {
       display: flex;
       flex-direction: column;
@@ -78,14 +78,14 @@ export const ContentActivity = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 2rem;
+    gap: ${theme.spacing.s2};
+    padding: ${theme.spacing.s2};
     flex: 1;
     a {
       font-weight: ${theme.font.bold};
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.primary};
-      transition: color 0.2s ease-in-out;
+      transition: ${theme.transition.color};
       cursor: pointer;
       &:hover {
         color: ${theme.colors.blue};
@@ -111,7 +111,7 @@ export const LinksWrapper = styled.div`
       font-size: ${theme.font.sizes.s14};
       color: ${theme.colors.secondary};
       font-weight: ${theme.font.light};
-      transition: color 0.2s ease-in-out;
+      transition: ${theme.transition.color};
       cursor: pointer;
       img {
         width: 1.5rem;
@@ -131,7 +131,7 @@ export const HeartRate = styled.div<StravaStyles>`
     width: .40rem;
     border: 0;
     outline: none;
-    border-radius: .8rem;
+    border-radius: ${theme.radius};
     ${average < 120 && css`
       background-color: ${theme.colors.trainingZone.z1};
     `}
@@ -164,7 +164,7 @@ export const AnimHovered = styled(motion.div)`
     bottom: 0;
 		background-color: ${theme.colors.hover};
 		padding: 0;
-		border-radius: .8rem;
+		border-radius: ${theme.radius};
 		z-index: -1;
 	`}
 `
@@ -182,7 +182,7 @@ export const DateAndCity = styled.div`
     div {
       display: flex;
       align-items:center;
-      gap: 1rem;
+      gap: ${theme.spacing.s1};
     }
     h4 {
       font-weight: ${theme.font.bold};

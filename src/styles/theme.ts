@@ -27,8 +27,17 @@ export default {
       s48: "4.8rem",
     },
   },
+  transition: {
+    color: 'color 0.2s ease-in-out',
+  },
   radius: '.8rem',
   container: '102rem',
+  spacing: {
+    s1: "1rem",
+    s2: "2rem",
+    s4: "4rem",
+    s8: "8rem",
+  },
   colors: {
     none: "transparent",
     background: "#1A181E",
