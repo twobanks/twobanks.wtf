@@ -1,6 +1,6 @@
 ---
-title: 'Learn How to Pre-render Pages Using Static Generation with Next.js'
-description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Praesent elementum facilisis leo vel fringilla est ullamcorper eget. At imperdiet dui accumsan sit amet nulla facilities morbi tempus.'
+title: 'Spotify'
+description: 'Mostre o que você está ouvindo.'
 date: '2023-01-04T05:35:07.322Z'
 author:
   name: twobanks

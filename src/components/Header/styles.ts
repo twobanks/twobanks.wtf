@@ -2,7 +2,7 @@ import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
 type HeaderProps = {
-	page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+	page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
 const banksModifiers = {
@@ -36,7 +36,7 @@ const banksModifiers = {
   ['activities']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.green};
   `,
-  ['idea']: (theme: DefaultTheme) => css`
+  ['snippets']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.red};
   `,
 }

@@ -2,7 +2,7 @@ import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
 
 type TitleStyles = {
-  page: 'about' | 'works' | 'activities' | 'idea' | 'home';
+  page: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
 const titleModifiers = {
@@ -18,7 +18,7 @@ const titleModifiers = {
   ['activities']: (theme: DefaultTheme) => css`
     color: ${theme.colors.green};
   `,
-  ['idea']: (theme: DefaultTheme) => css`
+  ['snippets']: (theme: DefaultTheme) => css`
     color: ${theme.colors.red};
   `,
 }

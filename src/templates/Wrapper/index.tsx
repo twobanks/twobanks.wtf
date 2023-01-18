@@ -4,7 +4,7 @@ import * as S from './styled';
 
 type WrapperProps = {
   children: React.ReactNode;
-  page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
 const Wrapper = ({ page, children }: WrapperProps) => (

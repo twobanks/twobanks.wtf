@@ -39,7 +39,7 @@ export const About = styled.div`
     flex: 1;
     gap: ${theme.spacing.s1};
     transition: ${theme.transition.color};
-    line-height: ${theme.font.sizes.s28};
+    line-height: ${theme.font.sizes.s24};
     strong {
       color: ${theme.colors.primary};
       font-weight: ${theme.font.bold};

@@ -1,19 +1,19 @@
-import { getPostBySlug, getAllPosts } from "../api/idea";
+import { getPostBySlug, getAllPosts } from "../api/snippets";
 import markdownToHtml from "../../utils/functions/markdownToHtml";
 import { NextSeo } from "next-seo";
 import Wrapper from "../../templates/Wrapper";
 import { SEO } from "../../utils/constants/seo";
 import { Post } from "../../types/banks";
-import PostBody from "../../templates/Idea/PostBody";
+import PostBody from "../../templates/Snippets/PostBody";
 
 export default function Posts({ post }: { post: Post }) {
   return (
     <>
       <NextSeo
-        title="idea | twobanks"
+        title="code snippets | twobanks"
         {...SEO}
       />
-      <Wrapper page="idea">
+      <Wrapper page="snippets">
         <PostBody post={post} />
       </Wrapper>
     </>

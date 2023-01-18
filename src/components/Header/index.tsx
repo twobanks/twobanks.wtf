@@ -5,7 +5,7 @@ import { Title, Menu } from '../';
 import { Header } from '../../types/banks';
 
 type HeaderProps = {
-  page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
   header: Header;
 }
 

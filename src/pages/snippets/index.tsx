@@ -1,18 +1,18 @@
 import { NextSeo } from 'next-seo'
-import Idea from '../../templates/Idea'
+import Snippets from '../../templates/Snippets'
 import { SEO } from '../../utils/constants/seo'
 import Wrapper from '../../templates/Wrapper'
-import { getAllPosts } from '../api/idea'
+import { getAllPosts } from '../api/snippets'
 import { Post } from '../../types/banks'
 
-const IdeaPage = ({ allPosts }: { allPosts: Post[] }) => (
+const SnippetsPage = ({ allPosts }: { allPosts: Post[] }) => (
   <>
     <NextSeo
-      title="idea | twobanks"
+      title="code snippets | twobanks"
       {...SEO}
     />
-    <Wrapper page="idea">
-      <Idea allPosts={allPosts} />
+    <Wrapper page="snippets">
+      <Snippets allPosts={allPosts} />
     </Wrapper>
   </>
 )
@@ -31,4 +31,4 @@ export const getStaticProps = async () => {
   }
 }
 
-export default IdeaPage
+export default SnippetsPage

@@ -30,8 +30,8 @@ export const header = {
       iconAnimated: images.codeAnimated,
     },
     {
-      name: 'ideia',
-      url: 'idea',
+      name: 'code snippets',
+      url: 'snippets',
       icon: images.article,
       iconAnimated: images.articleAnimated,
     },

@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import media from 'styled-media-query';
 
 type WrapperProps = {
-  page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
 export const Wrapper = styled.main`
