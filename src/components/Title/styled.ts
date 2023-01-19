@@ -30,14 +30,14 @@ export const Wrapper = styled.h1<TitleStyles>`
     font-family: ${theme.font.family.poppins};
     font-size: ${theme.font.sizes.s48};
     padding: ${theme.spacing.s2};
-    max-width: 102rem;
+    max-width: ${theme.container};
     width: 100vw;
     margin: 0 auto;
     ${titleModifiers[page](theme)}
     ${media.lessThan('medium')`
+      justify-content: flex-end;
       font-size: ${theme.font.sizes.s28};
       width: 100%;
-      justify-content: flex-end;
       padding: ${theme.spacing.s2} 0;
     `}
   `}
