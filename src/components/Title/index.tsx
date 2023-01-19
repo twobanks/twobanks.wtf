@@ -2,7 +2,7 @@ import * as S from './styled'
 
 type Title = {
   text?: string;
-  page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
 const Title = ({ text, page = 'home' }: Title) => (

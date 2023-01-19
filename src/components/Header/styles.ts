@@ -2,7 +2,7 @@ import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
 type HeaderProps = {
-	page?: 'about' | 'works' | 'activities' | 'idea' | 'home';
+	page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
 const banksModifiers = {
@@ -36,7 +36,7 @@ const banksModifiers = {
   ['activities']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.green};
   `,
-  ['idea']: (theme: DefaultTheme) => css`
+  ['snippets']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.red};
   `,
 }
@@ -45,11 +45,13 @@ export const Header = styled.header<HeaderProps>`
 	${({ theme, page }) => css`
 		position: fixed;
 		width: 100vw;
+		height: ${theme.spacing.s20};
 		z-index: 2;
 		background-color: ${theme.colors.background};
 		${media.lessThan("medium")`
 			display: flex;
 			justify-content: space-between;
+			height: ${theme.spacing.s10};
 			width: 100%;
 			padding: ${theme.spacing.s1} ${theme.spacing.s2};
 			${page === 'home' && css`
@@ -67,7 +69,6 @@ export const Content = styled.div`
 		font-size: ${theme.font.sizes.s16};
 		color: ${theme.colors.secondary};
 		max-width: ${theme.container};
-		width: 100vw;
 		margin: 0 auto;
 		padding: ${theme.spacing.s2};
 		justify-content: space-between;

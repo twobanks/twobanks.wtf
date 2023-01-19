@@ -37,6 +37,8 @@ export default {
     s2: "2rem",
     s4: "4rem",
     s8: "8rem",
+    s10: "10rem",
+    s20: "20rem"
   },
   colors: {
     none: "transparent",

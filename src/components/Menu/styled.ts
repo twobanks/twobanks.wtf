@@ -58,6 +58,7 @@ export const NavContainer = styled(motion.li)`
     gap: ${theme.spacing.s1};
 		padding: ${theme.spacing.s1};
 		transition: ${theme.transition.color};
+    cursor: pointer;
     img {
       height: 2.5rem;
       width: 2.5rem;
@@ -89,6 +90,7 @@ export const IconNavWrapper = styled.div<NavProps>`
       gap: .5rem;
       transform: rotate(45deg);
       transition: ${theme.transition.color};
+      cursor: pointer;
       span {
         height: 2.5rem;
         width: .3rem;

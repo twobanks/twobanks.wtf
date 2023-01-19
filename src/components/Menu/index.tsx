@@ -1,16 +1,14 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import * as S from './styled';
 import { Header } from '../../types/banks';
 import Link from 'next/link';
 import Icon from '../Icon';
 import NowPlaying from '../NowPlaying';
 import { social } from '../../../public/content';
-import { MouseContext } from '../../utils/context/mouse-context';
 
 const Menu = ({ header }: { header: Header; }) => {
   const [open, setOpen] = useState<boolean>(false);
   const [hovered, setHovered] = useState<string>('');
-  const { cursorChangeHandler } = useContext(MouseContext);
   const { menu } = header;
   const renderBody = () => (
     <S.Content
@@ -25,14 +23,8 @@ const Menu = ({ header }: { header: Header; }) => {
           return (
             <Link href={path} passHref key={page.name}>
               <S.NavContainer
-                onMouseEnter={() => {
-                  setHovered(page.name);
-                  cursorChangeHandler("hovered");
-                }}
-                onMouseLeave={() => {
-                  setHovered('');
-                  cursorChangeHandler("");
-                }}
+                onMouseEnter={() => setHovered(page.name)}
+                onMouseLeave={() => setHovered('')}
               >
                 {isHovered && (
                   <S.NavHovered
@@ -61,7 +53,7 @@ const Menu = ({ header }: { header: Header; }) => {
   )
   return (
     <>
-      <S.Wrapper onMouseEnter={() => cursorChangeHandler("hovered")} onMouseLeave={() => cursorChangeHandler("")}>
+      <S.Wrapper>
         <S.IconNavWrapper onClick={() => setOpen(prevState => !prevState)} open={open}>
           <span />
           <span />
