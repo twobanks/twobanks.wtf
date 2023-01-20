@@ -64,7 +64,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
           <Animation key={uuid()} index={String(index)}>
             <S.Content>
               <S.MapWrapper>
-                <Image src={mapUrl} alt={`${name} map`} fill blurDataURL={mapUrl} priority quality={100}/>
+                <Image src={mapUrl} alt={`${name} map`} fill sizes="100%" blurDataURL={mapUrl} priority quality={100} />
               </S.MapWrapper>
               <S.ContentActivity>
                 <S.HeaderActivity>

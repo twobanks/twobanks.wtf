@@ -11,7 +11,7 @@ const About = ({ data }: { data: About }) => {
     <S.Content>
       <S.Bio>
         <S.ImageWrapper>
-          <Image src={images.twobanks} alt="twobanks" fill blurDataURL={images.twobanks} priority quality={100} />
+          <Image src={images.twobanks} alt="twobanks" fill sizes="100%" blurDataURL={images.twobanks} priority quality={100} />
         </S.ImageWrapper>
         <S.About>
           <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor, desde 2014. Atualmente, atuo como Desenvolvedor Front-End,  na <Link href="https://www.bornlogic.com/" target="_blank" rel="noreferrer">Bornlogic</Link>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
