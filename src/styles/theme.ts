@@ -16,6 +16,8 @@ export default {
       s14: "1.4rem",
       s16: "1.6rem",
       s18: "1.8rem",
+      s20: "2rem",
+      s22: "2.2rem",
       s24: "2.4rem",
       s28: "2.8rem",
       s32: "3.2rem",

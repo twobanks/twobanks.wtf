@@ -81,16 +81,6 @@ export const ContentActivity = styled.div`
     gap: ${theme.spacing.s2};
     padding: ${theme.spacing.s2};
     flex: 1;
-    a {
-      font-weight: ${theme.font.bold};
-      font-size: ${theme.font.sizes.s16};
-      color: ${theme.colors.primary};
-      transition: ${theme.transition.color};
-      cursor: pointer;
-      &:hover {
-        color: ${theme.colors.blue};
-      }
-    }
   `}
 `;
 
@@ -110,7 +100,6 @@ export const LinksWrapper = styled.div`
       gap: .5rem;
       font-size: ${theme.font.sizes.s14};
       color: ${theme.colors.secondary};
-      font-weight: ${theme.font.light};
       transition: ${theme.transition.color};
       cursor: pointer;
       img {
