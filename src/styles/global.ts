@@ -2,13 +2,6 @@ import { createGlobalStyle, css } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
   ${({ theme }) => css`
-    @font-face {
-      font-family: 'old_north';
-      src: local(''), url('/fonts/OldNorth-Regular.otf') format('embedded-opentype'), url('/fonts/OldNorth-Regular.woff2') format('woff2'), url('/fonts/OldNorth-Regular.woff') format('woff');
-      font-weight: 400;
-      font-style: normal;
-      font-display:swap;
-    }
     ::-webkit-scrollbar-track {
       background-color: ${theme.colors.none};
     }
