@@ -26,14 +26,14 @@ export const header = {
     {
       name: 'trampos',
       url: 'works',
-      icon: images.code,
-      iconAnimated: images.codeAnimated,
+      icon: images.work,
+      iconAnimated: images.workAnimated,
     },
     {
       name: 'code snippets',
       url: 'snippets',
-      icon: images.article,
-      iconAnimated: images.articleAnimated,
+      icon: images.code,
+      iconAnimated: images.codeAnimated,
     },
   ]
 }
