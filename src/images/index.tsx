@@ -35,6 +35,7 @@ const bike = '/icon/bike.svg';
 const trail = '/icon/trail.svg';
 const walking = '/icon/walking.svg';
 const discord = '/icon/discord.svg';
+const me = '/img/twobanks.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -74,5 +75,6 @@ export default {
   bike,
   trail,
   walking,
-  discord
+  discord,
+  me
 }
