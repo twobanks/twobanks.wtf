@@ -46,3 +46,5 @@ Create a `.env` file similar to [`.env.example`](https://github.com/twobanks/two
 - [SWR](https://swr.vercel.app/) - *hooks for data fetching*
 - [ESLint](https://eslint.org/) - *for code linting*
 - [Prettier](https://prettier.io/) - *for code formatting*
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/project?template=https://github.com/twobanks/twobanks.wtf/tree/VDM&project-name=twobanks.wtf&repository-name=twobanks.wtf)
