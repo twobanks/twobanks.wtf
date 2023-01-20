@@ -9,7 +9,7 @@ What's up!! <img src="https://raw.githubusercontent.com/kaueMarques/kaueMarques/
 
 - `public/*` - Static assets including, texts, icons and images.
 - `src/*` - All source.
-- `src/components/*` - All components used: `Banks`, `Footer`, `Header`, `Icon`, `Menu`, `NowPlaying`, `Strava`, `Title`..
+- `src/components/*` - All components used: `Footer`, `Header`, `Menu`, `NowPlaying`, `Strava`, `Title`..
 - `src/images` - File with import of all images.
 - `src/pages/*` - All other static pages.
 - `src/pages/about` - Static pages about me.
