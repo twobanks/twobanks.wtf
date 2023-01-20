@@ -1,12 +1,17 @@
-import { getPostBySlug, getAllPosts } from "../api/snippets";
-import markdownToHtml from "../../utils/functions/markdownToHtml";
+import { serialize } from 'next-mdx-remote/serialize'
+import fs from 'fs'
+import path, { join } from 'path'
+import matter from 'gray-matter'
 import { NextSeo } from "next-seo";
 import Wrapper from "../../templates/Wrapper";
 import { SEO } from "../../utils/constants/seo";
-import { Post } from "../../types/banks";
-import PostBody from "../../templates/Snippets/PostBody";
+import PostBody from '../../templates/Snippets/PostBody';
+import { MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { DataPost, StaticProps } from '../../types/banks';
 
-export default function Posts({ post }: { post: Post }) {
+const postsDirectory = join(process.cwd(), 'public/posts')
+
+export default function Posts({ data, mdxSource }: { data: DataPost, mdxSource: MDXRemoteSerializeResult}) {
   return (
     <>
       <NextSeo
@@ -14,50 +19,33 @@ export default function Posts({ post }: { post: Post }) {
         {...SEO}
       />
       <Wrapper page="snippets">
-        <PostBody post={post} />
+        <PostBody data={data} mdxSource={mdxSource} />
       </Wrapper>
     </>
   )
 }
 
-type Params = {
-  params: {
-    slug: string
-  }
-}
-
-export async function getStaticProps({ params }: Params) {
-  const post = getPostBySlug(params.slug, [
-    'title',
-    'date',
-    'slug',
-    'author',
-    'content',
-    'ogImage',
-  ])
-  const content = await markdownToHtml(post.content || '')
-
+export const getStaticProps = async ({ params: { slug } }: StaticProps) => {
+  const markdownWithMeta = fs.readFileSync(path.join(postsDirectory, slug + '.mdx'), 'utf-8')
+  const { data, content } = matter(markdownWithMeta)
+  const mdxSource = await serialize(content)
   return {
     props: {
-      post: {
-        ...post,
-        content,
-      },
-    },
+      data,
+      mdxSource
+    }
   }
 }
 
-export async function getStaticPaths() {
-  const posts = getAllPosts(['slug'])
-
+export const getStaticPaths = async () => {
+  const files = fs.readdirSync(path.join(postsDirectory))
+  const paths = files.map(filename => ({
+    params: {
+      slug: filename.replace('.mdx', '')
+    }
+  }))
   return {
-    paths: posts.map((post) => {
-      return {
-        params: {
-          slug: post.slug,
-        },
-      }
-    }),
-    fallback: false,
+    paths,
+    fallback: false
   }
 }
