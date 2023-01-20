@@ -12,7 +12,7 @@ type ActivitiesProps = {
 const ActivitiesPage = ({ activities }: ActivitiesProps) => (
   <>
     <NextSeo
-      title="vivência | twobanks"
+      title="atividades | twobanks"
       {...SEO}
     />
     <Wrapper page="activities">

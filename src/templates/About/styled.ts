@@ -1,5 +1,6 @@
 import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
+import { banksModifiers } from "../../components/Header/styles";
 
 type AboutStyle = {
   image?: string;
@@ -122,14 +123,15 @@ export const Company = styled.div<AboutStyle>`
 
 export const ImageWrapper = styled.div`
   ${({ theme }) => css`
-    display: flex;
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    overflow: hidden;
     position: relative;
+    display: flex;
+    overflow: hidden;
     background-color: ${theme.colors.black};
+    width: 35rem;
+    height: 35rem;
+    ${banksModifiers.animated(theme)}
     img {
-      width: 100%;
-      height: 100%:
+      object-fit: cover;
     }
     ${media.lessThan("medium")`
       display: none;

@@ -1,5 +1,5 @@
 
-import Icon from '../Icon';
+import Image from 'next/image';
 import * as S from './styled';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -17,7 +17,7 @@ const Footer = ({ menu } : { menu: Menu[] }) => {
               onMouseEnter={() => setHovered(item.name)}
               onMouseLeave={() => setHovered('')}
             >
-              <Icon src={isHovered ? item.iconAnimated : item.icon} alt={item.name} />
+              <Image src={isHovered ? item.iconAnimated : item.icon} alt={item.name} height={40} width={40} blurDataURL={isHovered ? item.iconAnimated : item.icon} priority quality={100}/>
             </S.Item>
           </Link>
         )

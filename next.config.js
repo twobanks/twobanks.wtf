@@ -1,5 +1,6 @@
 module.exports = {
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'api.mapbox.com'],
+
   },
 };

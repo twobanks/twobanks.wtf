@@ -5,7 +5,7 @@ type HeaderProps = {
 	page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
 }
 
-const banksModifiers = {
+export const banksModifiers = {
 	animated: (theme: DefaultTheme) => css`
 		background-size: 100%;
 		animation: morph 5s ease-in-out infinite;

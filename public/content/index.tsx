@@ -7,7 +7,7 @@ export const header = {
   menu: [
     {
       name: 'home',
-      url: '/',
+      url: '',
       icon: images.home,
       iconAnimated: images.homeAnimated,
     },
@@ -18,7 +18,7 @@ export const header = {
       iconAnimated: images.avatarAnimated,
     },
     {
-      name: 'vivência',
+      name: 'atividades',
       url: 'activities',
       icon: images.activities,
       iconAnimated: images.activitiesAnimated,

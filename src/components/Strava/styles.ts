@@ -20,6 +20,7 @@ export const Wrapper = styled.main<StravaStyles>`
 `
 export const MapWrapper = styled.div`
   ${({ theme }) => css`
+    position: relative;
     background-color: ${theme.colors.black};
     border-radius: ${theme.radius};
     padding: ${theme.spacing.s2};
@@ -41,10 +42,8 @@ export const TypeActivity = styled.div`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.s1};
+    position: relative;
     img {
-      display: flex;
-      width: 4rem;
-      height: 4rem;
       background-color: ${theme.colors.black};
       padding: ${theme.spacing.s1};
       border-radius: ${theme.radius};
@@ -102,10 +101,7 @@ export const LinksWrapper = styled.div`
       color: ${theme.colors.secondary};
       transition: ${theme.transition.color};
       cursor: pointer;
-      img {
-        width: 1.5rem;
-        height: 1.5rem;
-      }
+      position: relative;
       &:hover {
         color: ${theme.colors.green};
       }

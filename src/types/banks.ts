@@ -3,8 +3,8 @@ import { STACKS } from "../utils/enums/stack";
 export type Menu = {
   name: string;
   url: string;
-  icon?: string;
-  iconAnimated?: string;
+  icon: string;
+  iconAnimated: string;
 }
 
 export type Header = {
@@ -49,7 +49,7 @@ export type Social = {
   name: string;
   link: string;
   nickname?: string;
-  icon?: string;
+  icon: string;
 }
 
 export type Post = {

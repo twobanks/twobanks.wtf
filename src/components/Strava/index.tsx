@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { ReactNode, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import * as S from './styles';
@@ -8,6 +7,7 @@ import theme from '../../styles/theme';
 import geocoder from 'city-reverse-geocoder'
 import images from '../../images';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Strava = ({ activities }: { activities: Activities[] }) => {
   const Animation = (props: { index: string; children: ReactNode }) => {
@@ -64,7 +64,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
           <Animation key={uuid()} index={String(index)}>
             <S.Content>
               <S.MapWrapper>
-                <img src={mapUrl} alt={`${name} map`} />
+                <Image src={mapUrl} alt={`${name} map`} fill blurDataURL={mapUrl} priority quality={100}/>
               </S.MapWrapper>
               <S.ContentActivity>
                 <S.HeaderActivity>
@@ -76,7 +76,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                     <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
                   </S.DateAndCity>
                   <S.TypeActivity>
-                    <img src={iconActivity[type]} alt={type} />
+                    <Image src={iconActivity[type]} alt={type} height={40} width={40} blurDataURL={iconActivity[type]} priority quality={100} />
                   </S.TypeActivity>
                 </S.HeaderActivity>
                 <S.ActivityData>
@@ -87,7 +87,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                 </S.ActivityData>
                 <S.LinksWrapper>
                   <Link href={`https://www.strava.com/activities/${id}`} target="_blank" rel="noreferrer" passHref>
-                    visualizar no Strava <img src={images.strava} alt="Strava" />
+                    visualizar no Strava <Image src={images.strava} alt="Strava" height={15} width={15} blurDataURL={images.strava} priority quality={100} />
                   </Link>
                 </S.LinksWrapper>
               </S.ContentActivity>

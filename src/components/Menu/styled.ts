@@ -124,22 +124,20 @@ export const Overlay = styled.div<NavProps>`
 `;
 
 export const SocialWrapper = styled.div`
-    ${({ theme }) => css`
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: .1rem solid ${theme.colors.hover};
-      padding: ${theme.spacing.s2} ${theme.spacing.s1} ${theme.spacing.s1} ${theme.spacing.s1};
-      margin-top: ${theme.spacing.s2};
-      img {
-        height: 2.25rem;
-        width: 2.25rem;
-        opacity: .6;
-        transition: ${theme.transition.color};
-        border-radius: 0;
-        &:hover {
-          opacity: 1;
-        }
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: .1rem solid ${theme.colors.hover};
+    padding: ${theme.spacing.s2} ${theme.spacing.s1} ${theme.spacing.s1} ${theme.spacing.s1};
+    margin-top: ${theme.spacing.s2};
+    img {
+      opacity: .6;
+      transition: ${theme.transition.color};
+      border-radius: 0;
+      &:hover {
+        opacity: 1;
       }
-    `}
+    }
+  `}
 `;

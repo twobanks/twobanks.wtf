@@ -21,10 +21,9 @@ export const Footer = styled.footer`
 export const Item = styled.div`
   ${({ theme }) => css`
     ${media.lessThan('medium')`
+      position: relative;
       img {
         background-color: ${theme.colors.background};
-        height: 4rem;
-        width: 4rem;
         cursor: pointer;
         padding: .75rem;
         border-radius: ${theme.radius};

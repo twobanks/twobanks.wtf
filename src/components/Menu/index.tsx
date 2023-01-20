@@ -2,7 +2,7 @@ import { useState } from 'react';
 import * as S from './styled';
 import { Header } from '../../types/banks';
 import Link from 'next/link';
-import Icon from '../Icon';
+import Image from 'next/image';
 import NowPlaying from '../NowPlaying';
 import { social } from '../../../public/content';
 
@@ -34,7 +34,7 @@ const Menu = ({ header }: { header: Header; }) => {
                     exit={{ opacity: 0 }}
                   />
                 )}
-                <Icon src={isHovered ? page.iconAnimated : page.icon} alt={page.name} />
+                <Image src={isHovered ? page.iconAnimated : page.icon} alt={page.name} height={25} width={25} blurDataURL={isHovered ? page.iconAnimated : page.icon} priority quality={100}/>
                 {page.name}
               </S.NavContainer>
             </Link>
@@ -45,7 +45,7 @@ const Menu = ({ header }: { header: Header; }) => {
       <S.SocialWrapper>
         {social.map(item => (
           <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
-            <Icon src={item.icon} alt={item.name} />
+            <Image src={item.icon} alt={item.name} height={22.5} width={22.5} blurDataURL={item.icon} priority quality={100}/>
           </Link>
         ))}
       </S.SocialWrapper>

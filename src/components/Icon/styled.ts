@@ -1,10 +1,11 @@
 import styled, { css } from "styled-components";
+import Image from "next/image";
 
 type ImageProps = {
   rotate?: boolean;
 }
 
-export const Image = styled.img<ImageProps>`
+export const IconWrapper = styled(Image)<ImageProps>`
   ${({ rotate }) => css`
     ${rotate && `
       transform: rotate(180deg);

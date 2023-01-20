@@ -4,7 +4,7 @@ import * as S from './styled';
 
 const Home = () => (
   <S.Content>
-    <Image src={images.me} alt="twobanks" height={165} width={610} />
+    <Image src={images.me} blurDataURL={images.me} alt="twobanks" quality={100} fill priority />
   </S.Content>
 )
 
