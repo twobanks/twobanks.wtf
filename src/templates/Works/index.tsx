@@ -1,4 +1,5 @@
 import { ReactNode, useState } from 'react';
+import Link from 'next/link';
 import { v4 as uuid } from 'uuid';
 import { Works } from '../../types/banks';
 import * as S from './styled'
@@ -35,13 +36,13 @@ const Works = ({ works }: { works: Works[] }) => {
             <S.Work key={`work-${index}`}>
               <Animation index={String(index)}>
                 <S.Content>
-                  <a href={link}>
+                  <Link href={link} target="_blank" rel="noreferrer">
                     <strong>{name}</strong>
-                  </a>
+                  </Link>
                   <div>
-                    <a href={company.link}>
+                    <Link href={company.link} target="_blank" rel="noreferrer">
                       {company.name}
-                    </a> • <em>{type}</em>
+                    </Link> • <em>{type}</em>
                   </div>
                   <ul>
                     {tech.map(language => <S.Item key={uuid()} stack={language}>{language}</S.Item>)}

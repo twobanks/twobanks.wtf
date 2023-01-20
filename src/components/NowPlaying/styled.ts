@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styled, { css } from "styled-components";
 
 type PlayingProps = {
@@ -91,10 +92,11 @@ export const Icon = styled.div<PlayingProps>`
   `}
 `
 
-export const Song = styled.a`
+export const Song = styled(Link)`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
+    transition: ${theme.transition};
     strong {
       font-size: ${theme.font.sizes.s14};
       color: ${theme.colors.secondary};
@@ -106,7 +108,6 @@ export const Song = styled.a`
     &:hover {
       span, strong {
         color: ${theme.colors.spotify};
-        transition: color 0.2s ease-in-out;
       }
     }
   `}

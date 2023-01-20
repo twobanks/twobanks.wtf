@@ -47,7 +47,7 @@ export type About = {
 
 export type Social = {
   name: string;
-  link?: string;
+  link: string;
   nickname?: string;
   icon?: string;
 }

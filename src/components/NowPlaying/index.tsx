@@ -36,8 +36,7 @@ const NowPlaying = () => {
           <>
             <Playing active={Boolean(data?.isPlaying)} />
             {data?.isPlaying ? (
-              <S.Song href={data?.songUrl}
-              >
+              <S.Song href={data?.songUrl} target="_blank" rel="noreferrer" passHref>
                 <strong>{limitName(data?.title, LIMIT_NAME)}</strong>
                 <span>{limitName(data?.artist, LIMIT_NAME)}</span>
               </S.Song>

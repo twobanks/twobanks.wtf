@@ -44,9 +44,9 @@ const Menu = ({ header }: { header: Header; }) => {
       <NowPlaying />
       <S.SocialWrapper>
         {social.map(item => (
-          <a href={item.link} key={item.name} target="_blank" rel="noreferrer">
+          <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
             <Icon src={item.icon} alt={item.name} />
-          </a>
+          </Link>
         ))}
       </S.SocialWrapper>
     </S.Content>

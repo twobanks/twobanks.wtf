@@ -7,6 +7,7 @@ import { Activities } from '../../types/strava';
 import theme from '../../styles/theme';
 import geocoder from 'city-reverse-geocoder'
 import images from '../../images';
+import Link from 'next/link';
 
 const Strava = ({ activities }: { activities: Activities[] }) => {
   const Animation = (props: { index: string; children: ReactNode }) => {
@@ -85,9 +86,9 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                   <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
                 </S.ActivityData>
                 <S.LinksWrapper>
-                  <a href={`https://www.strava.com/activities/${id}`}>
+                  <Link href={`https://www.strava.com/activities/${id}`} target="_blank" rel="noreferrer" passHref>
                     visualizar no Strava <img src={images.strava} alt="Strava" />
-                  </a>
+                  </Link>
                 </S.LinksWrapper>
               </S.ContentActivity>
             </S.Content>

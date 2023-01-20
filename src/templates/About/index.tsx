@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import * as S from './styled'
 import { About } from '../../types/banks'
 import images from '../../images';
+import Link from 'next/link';
 
 const About = ({ data }: { data: About }) => {
   const { experiences, academic } = data;
@@ -13,7 +14,7 @@ const About = ({ data }: { data: About }) => {
           <Image src={images.twobanks} alt="twobanks" height={350} width={350} objectFit="cover" placeholder="blur" blurDataURL={images.twobanks} priority />
         </S.ImageWrapper>
         <S.About>
-          <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor, desde 2014. Atualmente, atuo como Desenvolvedor Front-End,  na <a href="https://www.bornlogic.com/">Bornlogic</a>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
+          <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor, desde 2014. Atualmente, atuo como Desenvolvedor Front-End,  na <Link href="https://www.bornlogic.com/" target="_blank" rel="noreferrer">Bornlogic</Link>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
           <p>No meu tempo livre, aproveito momentos com a minha esposa Tefa <em>❤</em> e meu cachorro Brown 🐶, pratico Trail Running e Mountain Bike, gosto de descobrir novos estilos musicais, também gosto de aprender sobre povos antigos  🛸, astronomia 🪐 e expandir meus conhecimentos sobre JavaScript e CSS.</p>
         </S.About>
       </S.Bio>
@@ -26,7 +27,7 @@ const About = ({ data }: { data: About }) => {
               <li key={name_company}>
                 <S.Occupation>{role}</S.Occupation>
                   <S.Company current={current}>
-                    <a href={url_company}>{name_company}</a> - <em>{city_company}</em>
+                    <Link href={url_company} target="_blank" rel="noreferrer">{name_company}</Link> - <em>{city_company}</em>
                   </S.Company>
                   <S.Date>{period}</S.Date>
                 <S.Stacks>

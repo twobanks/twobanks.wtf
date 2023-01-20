@@ -168,12 +168,6 @@ export const social: Social[] = [
     nickname: 'twobanks#5730',
     icon: images.discord
   },
-  /* {
-    name: 'facebook',
-    link: 'https://www.facebook.com/twobanks/',
-    nickname: 'twobanks',
-    icon: images.facebook
-  }, */
   {
     name: 'strava',
     link: 'https://www.strava.com/athletes/twobanks',
