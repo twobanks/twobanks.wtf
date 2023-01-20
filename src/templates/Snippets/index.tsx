@@ -4,7 +4,7 @@ import * as S from './styled'
 import { Post } from '../../types/banks';
 import { useState, ReactNode } from 'react';
 
-const Snippets = ({ allPosts }: { allPosts: Post[] }) => {
+const Snippets = ({ posts }: { posts: Post[] }) => {
   const [hovered, setHovered] = useState<string>('');
   const Animation = (props: { index: string; children: ReactNode }) => {
     let isHovered = hovered === props.index
@@ -28,17 +28,17 @@ const Snippets = ({ allPosts }: { allPosts: Post[] }) => {
   }
   return (
     <S.Content>
-      {allPosts.map(item => (
+      {posts.map(post => (
         <Link
-          key={`item-${item.slug}`}
-          as={`/snippets/${item.slug}`}
+          key={`post-${post.slug}`}
+          as={`/snippets/${post.slug}`}
           href="/snippets/[slug]"
           passHref
         >
-          <Animation  index={item.slug}>
+          <Animation index={post.slug}>
             <S.Item>
-              <strong>{item.title}</strong>
-              <span>{item.description}</span>
+              <strong>{post.data.title}</strong>
+              <span>{post.data.description}</span>
             </S.Item>
           </Animation>
         </Link>

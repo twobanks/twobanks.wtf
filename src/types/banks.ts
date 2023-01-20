@@ -52,7 +52,7 @@ export type Social = {
   icon: string;
 }
 
-export type Post = {
+export type DataPost = {
   author: {
     name: string;
     image: string;
@@ -60,7 +60,17 @@ export type Post = {
   content: string;
   date: string;
   ogImage: { url: string; };
-  slug: string;
   title: string;
   description?: string;
+};
+
+export type Post = {
+  data: DataPost;
+  slug: string;
+}
+
+export type StaticProps = {
+  params: {
+    slug: string;
+  }
 }

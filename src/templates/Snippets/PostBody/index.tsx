@@ -1,13 +1,13 @@
-import { Post } from "../../../types/banks";
+import { MDXRemote, MDXRemoteSerializeResult } from "next-mdx-remote";
+import SyntaxHighlighter from 'react-syntax-highlighter'
 import * as S from '../styled';
+import { DataPost } from "../../../types/banks";
 
-const PostBody = ({ post }: { post: Post }) => {
-  return (
-    <S.Content>
-      <h2>{post.title}</h2>
-      <div dangerouslySetInnerHTML={{ __html: post.content }} />
-    </S.Content>
-  )
-}
+const PostBody = ({ data, mdxSource }: { data: DataPost, mdxSource: MDXRemoteSerializeResult }) => (
+  <S.Content>
+    <h2>{data.title}</h2>
+    <MDXRemote {...mdxSource} components={{ SyntaxHighlighter }} />
+  </S.Content>
+)
 
 export default PostBody;
