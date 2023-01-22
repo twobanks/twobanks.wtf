@@ -37,14 +37,6 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
     return `https://api.mapbox.com/styles/v1/twobanks/${style}/static/path+${pathColor}(${polylineEncoded})/auto/400x200@2x?access_token=${process.env.NEXT_PUBLIC_MAPBOX_TOKEN}&logo=false&attribution=false`
   }, [])
 
-  const formatDate = (value: string) => {
-    let date = new Date(value);
-    let day = date.getDate();
-    let month = date.getMonth();
-    let year = date.getFullYear();
-    return day + "-" + month + "-" + year;
-  }
-
   const iconActivity = {
     ['Ride']: images.bike,
     ['Run']: images.trail,
@@ -55,6 +47,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
     <S.Wrapper>
       {activities?.map((activity, index) => {
         const { start_date, average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
+        const date = new Date(start_date).toLocaleDateString("pt-BR");
         const mapUrl = handleMap(map.summary_polyline)
         const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
         const averageTitle = type !== 'Ride' ? 'Pace ' : 'Vel. Média ';
@@ -71,7 +64,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                   <S.DateAndCity>
                     <div>
                       <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
-                      <h4>{formatDate(start_date)}</h4>
+                      <h4>{date}</h4>
                     </div>
                     <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
                   </S.DateAndCity>
