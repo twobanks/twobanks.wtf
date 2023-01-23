@@ -16,18 +16,12 @@ const Playing = ({ active } : { active: boolean }) => (
 )
 
 const NowPlaying = () => {
-  const { data, error  } = useSWR<NowPlayingSong>('/api/spotify', fetcher, {
-    refreshInterval: DEBOUNCE_TIME,
-    revalidateIfStale: false,
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false
-  });
-  const loading = !error && !data;
+  const { data, error, isLoading } = useSWR<NowPlayingSong>('/api/now-playing', fetcher);
   return (
     <S.Wrapper>
       <h2>O que estou ouvindo?</h2>
       <S.Content>
-        {loading ? (
+        {isLoading || error ? (
           <S.WrapperLoading>
             <span />
             <span />
