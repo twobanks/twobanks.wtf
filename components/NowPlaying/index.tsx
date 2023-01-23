@@ -5,7 +5,6 @@ import limitName from '@/utils/functions/limitName';
 import * as S from './styled'
 
 const LIMIT_NAME = 25;
-const DEBOUNCE_TIME = 180000;
 
 const Playing = ({ active } : { active: boolean }) => (
   <S.Icon active={active}>

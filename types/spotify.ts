@@ -45,3 +45,14 @@ export type Song = {
     }
   }
 }
+
+export type Artist = {
+  name: string,
+  external_urls: {
+    spotify: string,
+  },
+  genres: string[],
+  images: {
+    url: string,
+  }[],
+}
