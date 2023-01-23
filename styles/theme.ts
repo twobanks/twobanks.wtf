@@ -3,11 +3,6 @@ import { STACKS } from "@/utils/enums/stack";
 
 export default {
   font: {
-    family: {
-      open: "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif",
-      poppins:
-        "Poppins, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
-    },
     light: 400,
     normal: 500,
     bold: 600,

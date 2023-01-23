@@ -9,7 +9,7 @@ const HomePage = () => (
       title="twobanks"
       {...SEO}
     />
-    <Wrapper page="home" >
+    <Wrapper page="home">
       <Home />
     </Wrapper>
   </>

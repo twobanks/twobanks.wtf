@@ -27,7 +27,6 @@ export const Wrapper = styled.h1<TitleStyles>`
   ${({ theme, page }) => css`
     display: flex;
     align-items: center;
-    font-family: ${theme.font.family.poppins};
     font-size: ${theme.font.sizes.s48};
     padding: ${theme.spacing.s2};
     max-width: ${theme.container};
