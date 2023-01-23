@@ -8,18 +8,17 @@ What's up!! <img src="https://raw.githubusercontent.com/kaueMarques/kaueMarques/
 ## Overview
 
 - `public/*` - Static assets including, texts, icons and images.
-- `src/*` - All source.
-- `src/components/*` - All components used: `Footer`, `Header`, `Menu`, `NowPlaying`, `Strava`, `Title`..
-- `src/images` - File with import of all images.
-- `src/pages/*` - All other static pages.
-- `src/pages/about` - Static pages about me.
-- `src/pages/activities` - Page with activities loaded on strava.
-- `src/pages/works` - Static page with used projects and stacks.
-- `src/pages/snippets/*` - Static pre-rendered snippets pages.
-- `src/styles/*` - Global styles and theme.
-- `src/templates/*` - The different page layouts.
-- `src/types/*` - Types created.
-- `src/utils/*` - A collection of helpful utilities or code for external services.
+- `components/*` - All components used: `Footer`, `Header`, `Menu`, `NowPlaying`, `Strava`, `Title`..
+- `images/*` - File with import of all images.
+- `pages/*` - All other static pages.
+- `pages/about` - Static pages about me.
+- `pages/activities` - Page with activities loaded on strava.
+- `pages/works` - Static page with used projects and stacks.
+- `pages/snippets/*` - Static pre-rendered snippets pages.
+- `styles/*` - Global styles and theme.
+- `templates/*` - The different page layouts.
+- `types/*` - Types created.
+- `utils/*` - A collection of helpful utilities or code for external services.
 
 
 ## Running Locally
