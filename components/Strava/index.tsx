@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '@/utils/functions/conversionStrava'
 import { Activities } from '@/types/strava';
 import theme from '@/styles/theme';
-import images from '@/images';
+import images from '@/public';
 import * as S from './styles';
 
 const Strava = ({ activities }: { activities: Activities[] }) => {

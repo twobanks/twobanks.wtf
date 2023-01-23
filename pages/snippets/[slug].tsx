@@ -4,9 +4,9 @@ import fs from 'fs'
 import path, { join } from 'path'
 import matter from 'gray-matter'
 import { NextSeo } from "next-seo";
-import Wrapper from "@/templates/Wrapper";
+import Wrapper from "@/layouts/Wrapper";
 import { SEO } from "@/utils/constants/seo";
-import PostBody from '@/templates/Snippets/PostBody';
+import PostBody from '@/layouts/Snippets/PostBody';
 import { DataPost, StaticProps } from '@/types/banks';
 
 const postsDirectory = join(process.cwd(), 'public/posts')

@@ -1,4 +1,4 @@
-import images from "@/images";
+import images from "@/public";
 import { About, Works, Social } from "@/types/banks";
 import { STACKS } from "@/utils/enums/stack";
 

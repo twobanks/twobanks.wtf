@@ -1,7 +1,7 @@
 import { NextSeo } from 'next-seo'
-import Home from '@/templates/Home'
+import Home from '@/layouts/Home'
 import { SEO } from '@/utils/constants/seo'
-import Wrapper from '@/templates/Wrapper'
+import Wrapper from '@/layouts/Wrapper'
 
 const HomePage = () => (
   <>

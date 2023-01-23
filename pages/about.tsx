@@ -1,6 +1,6 @@
 import { NextSeo } from 'next-seo'
-import About from '@/templates/About'
-import Wrapper from '@/templates/Wrapper'
+import About from '@/layouts/About'
+import Wrapper from '@/layouts/Wrapper'
 import { data } from '@/public/content';
 import { SEO } from '@/utils/constants/seo'
 

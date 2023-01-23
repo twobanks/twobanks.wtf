@@ -3,9 +3,9 @@ import fs from 'fs'
 import path, { join } from 'path'
 import matter from 'gray-matter'
 import { Post } from '@/types/banks'
-import Snippets from '@/templates/Snippets'
+import Snippets from '@/layouts/Snippets'
 import { SEO } from '@/utils/constants/seo'
-import Wrapper from '@/templates/Wrapper'
+import Wrapper from '@/layouts/Wrapper'
 
 const postsDirectory = join(process.cwd(), 'public/posts')
 

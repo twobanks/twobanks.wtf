@@ -1,7 +1,7 @@
 import { NextSeo } from 'next-seo'
-import ActivitiesTemplate from '@/templates/Activities';
+import ActivitiesTemplate from '@/layouts/Activities';
 import { SEO } from '@/utils/constants/seo'
-import Wrapper from '@/templates/Wrapper';
+import Wrapper from '@/layouts/Wrapper';
 import { getActivities } from '@/utils/lib/strava';
 import { Activities } from '@/types/strava';
 

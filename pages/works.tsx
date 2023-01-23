@@ -1,8 +1,8 @@
 import { NextSeo } from 'next-seo'
-import Works from '@/templates/Works'
+import Works from '@/layouts/Works'
 import { SEO } from '@/utils/constants/seo'
 import { works } from '@/public/content'
-import Wrapper from '@/templates/Wrapper'
+import Wrapper from '@/layouts/Wrapper'
 
 const WorksPage = () => <>
   <NextSeo

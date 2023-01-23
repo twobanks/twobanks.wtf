@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import images from '@/images';
+import images from '@/public';
 import * as S from './styled';
 
 const Home = () => (

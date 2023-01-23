@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link';
 import { v4 as uuid } from 'uuid'
 import { About } from '@/types/banks'
-import images from '@/images';
+import images from '@/public';
 import * as S from './styled'
 
 const About = ({ data }: { data: About }) => {
