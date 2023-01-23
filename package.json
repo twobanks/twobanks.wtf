@@ -13,7 +13,7 @@
     "@next/font": "13.1.4",
     "@next/mdx": "^13.1.4",
     "city-reverse-geocoder": "^0.0.1",
-    "framer-motion": "^8.5.2",
+    "framer-motion": "^6.3.3",
     "gray-matter": "^4.0.3",
     "mapbox-gl": "^2.12.0",
     "next": "13.1.4",
