@@ -8,11 +8,11 @@ What's up!! <img src="https://raw.githubusercontent.com/kaueMarques/kaueMarques/
 ## Overview
 
 - `public/*` - Static assets including, texts, icons and images.
-- `components/*` - All components used: `Footer`, `Header`, `Menu`, `NowPlaying`, `Strava`, `Title`..
-- `images/*` - File with import of all images.
+- `components/*` - All components used: `Footer`, `Header`, `Menu`, `ListeningNow`, `Strava`, `Title`, `TopTracks`
 - `pages/*` - All other static pages.
 - `pages/about` - Static pages about me.
 - `pages/activities` - Page with activities loaded on strava.
+- `pages/listening` - Static page with used songs spotify.
 - `pages/works` - Static page with used projects and stacks.
 - `pages/snippets/*` - Static pre-rendered snippets pages.
 - `styles/*` - Global styles and theme.

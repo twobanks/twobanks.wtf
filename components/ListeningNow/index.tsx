@@ -13,22 +13,32 @@ const Playing = ({ active } : { active: boolean }) => (
 )
 
 const ListeningNow = () => {
-  const { data } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
+  const { data, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
   return (
-    <S.Wrapper>
-      {data?.isPlaying && (
-        <S.Content href={data.url} target="_blank" rel="noreferrer" passHref>
-          <S.ImageWrapper>
-            <Image src={data.image} alt={`${data.artist}-${data.music}`} fill sizes="100%" blurDataURL={data.image} priority quality={100} />
-          </S.ImageWrapper>
-          <S.SongWrapper>
-            <Playing active={Boolean(data.isPlaying)} />
-            <S.Song>
-              <span>{data.music}</span>
-              <span>{data.artist}</span>
-            </S.Song>
-          </S.SongWrapper>
-        </S.Content>
+    <S.Wrapper visible={data?.isPlaying}>
+      {isLoading ? (
+        <S.WrapperLoading>
+          <span />
+          <span />
+          <span />
+        </S.WrapperLoading>
+      ): (
+        <>
+          {data?.isPlaying && (
+            <S.Content href={data.url} target="_blank" rel="noreferrer" passHref>
+              <S.ImageWrapper>
+                <Image src={data.image} alt={`${data.artist}-${data.music}`} fill sizes="100%" blurDataURL={data.image} priority quality={100} />
+              </S.ImageWrapper>
+              <S.SongWrapper>
+                <Playing active={Boolean(data.isPlaying)} />
+                <S.Song>
+                  <span>{data.music}</span>
+                  <span>{data.artist}</span>
+                </S.Song>
+              </S.SongWrapper>
+            </S.Content>
+          )}
+        </>
       )}
     </S.Wrapper>
   );

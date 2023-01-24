@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 
 type PlayingProps = {
   active?: boolean;
+  visible?: boolean;
 }
 
 const animate = {
@@ -36,13 +37,12 @@ const animate = {
   `,
 }
 
-export const Wrapper = styled.div`
-  ${({ theme }) => css`
-    display: flex;
+export const Wrapper = styled.div<PlayingProps>`
+  ${({ visible }) => css`
+    display: ${visible ? 'flex' : 'none'};
     flex-direction: column;
     width: 100%;
     height: fit-content;
-    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
   `}
 `;
 
@@ -52,6 +52,7 @@ export const Content = styled(Link)`
     flex-direction: column;
     gap: ${theme.spacing.s4};
     background-color: ${theme.colors.hover};
+    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
     padding: ${theme.spacing.s2};
     border-radius: ${theme.radius};
     span {
@@ -123,5 +124,31 @@ export const SongWrapper = styled.div`
     align-items: center;
     gap: ${theme.spacing.s2};
     padding-left: ${theme.spacing.s1};
+  `}
+`;
+
+export const WrapperLoading = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20rem;
+    width: 100%;
+    ${animate.loading()}
+    gap: ${theme.spacing.s2};
+    span {
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+      background-color: ${theme.colors.spotify};
+      opacity: .6;
+      animation: loading 1.4s infinite ease-in-out both;
+    }
+    span:nth-of-type(2) {
+      animation-delay: -0.32s;
+    }
+    span:nth-of-type(3) {
+      animation-delay: -0.16s;
+    }
   `}
 `;
