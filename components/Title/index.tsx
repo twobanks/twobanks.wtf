@@ -1,8 +1,9 @@
+import { Pages } from '@/types/banks';
 import * as S from './styled'
 
 type Title = {
   text?: string;
-  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
+  page?: Pages;
 }
 
 const Title = ({ text, page = 'home' }: Title) => (

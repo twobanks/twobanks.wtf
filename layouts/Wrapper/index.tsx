@@ -1,10 +1,11 @@
 import { Footer, Header } from '@/components';
 import { header } from '@/public/content';
 import * as S from './styled';
+import { Pages } from '@/types/banks';
 
 type WrapperProps = {
   children: React.ReactNode;
-  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
+  page?: Pages;
 }
 
 const Wrapper = ({ page, children }: WrapperProps) => (

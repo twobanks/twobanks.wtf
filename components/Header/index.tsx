@@ -1,11 +1,11 @@
 import * as S from './styles'
 import Link from 'next/link'
 import { conversionTitlePage } from '@/utils/functions/conversionPage'
-import { Header } from '@/types/banks';
+import { Header, Pages } from '@/types/banks';
 import { Title, Menu } from '@/components';
 
 type HeaderProps = {
-  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
+  page?: Pages;
   header: Header;
 }
 

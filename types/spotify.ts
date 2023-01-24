@@ -1,10 +1,8 @@
 export type NowPlayingSong = {
-  album: string;
-  albumImageUrl: string;
-  artist: string;
   isPlaying: boolean;
-  songUrl: string;
-  title: string;
+  artist: string;
+  music: string;
+  url: string;
 };
 
 export type Track = {
@@ -15,44 +13,22 @@ export type Track = {
   external_urls: {
     spotify: string;
   };
+  album: {
+    images: {
+      url: string,
+    }[];
+  }
 };
 
 export type TopTracks = {
   tracks: {
-    songUrl: string;
+    url: string;
     artist: string;
-    title: string;
+    music: string;
   }[];
 };
 
 export type Song = {
-  is_playing: boolean,
-  item: {
-    title: string,
-    name: string,
-    artists: {
-      name: string;
-    }[],
-    album: {
-      name: string,
-      images: {
-        url: string,
-      }[],
-    },
-    albumImageUrl: string,
-    external_urls: {
-      spotify: string,
-    }
-  }
-}
-
-export type Artist = {
-  name: string,
-  external_urls: {
-    spotify: string,
-  },
-  genres: string[],
-  images: {
-    url: string,
-  }[],
+  is_playing: boolean;
+  item: Track;
 }

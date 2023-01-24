@@ -3,7 +3,8 @@ export const conversionTitlePage = (value: string) => {
     'about': 'sobre',
     'works': 'trampos',
     'snippets': 'code snippets',
-    'activities': 'atividades'
+    'activities': 'atividades',
+    'listening': 'listening now'
   }
   return labels[value];
 }

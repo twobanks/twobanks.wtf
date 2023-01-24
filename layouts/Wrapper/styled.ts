@@ -1,8 +1,9 @@
+import { Pages } from "@/types/banks";
 import styled, { css } from "styled-components";
 import media from 'styled-media-query';
 
 type WrapperProps = {
-  page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
+  page?: Pages;
 }
 
 export const Wrapper = styled.main`

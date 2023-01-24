@@ -1,8 +1,9 @@
+import { Pages } from "@/types/banks";
 import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
 
 type TitleStyles = {
-  page: 'about' | 'works' | 'activities' | 'snippets' | 'home';
+  page: Pages;
 }
 
 const titleModifiers = {
@@ -20,6 +21,9 @@ const titleModifiers = {
   `,
   ['snippets']: (theme: DefaultTheme) => css`
     color: ${theme.colors.red};
+  `,
+  ['listening']: (theme: DefaultTheme) => css`
+    color: ${theme.colors.spotify};
   `,
 }
 

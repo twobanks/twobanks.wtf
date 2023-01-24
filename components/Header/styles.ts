@@ -1,8 +1,9 @@
+import { Pages } from '@/types/banks';
 import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
 type HeaderProps = {
-	page?: 'about' | 'works' | 'activities' | 'snippets' | 'home';
+	page?: Pages;
 }
 
 export const banksModifiers = {
@@ -38,6 +39,9 @@ export const banksModifiers = {
   `,
   ['snippets']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.red};
+  `,
+  ['listening']: (theme: DefaultTheme) => css`
+    background-color: ${theme.colors.spotify};
   `,
 }
 

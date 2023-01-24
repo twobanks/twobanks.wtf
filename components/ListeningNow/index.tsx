@@ -14,8 +14,8 @@ const Playing = ({ active } : { active: boolean }) => (
   </S.Icon>
 )
 
-const NowPlaying = () => {
-  const { data, error, isLoading } = useSWR<NowPlayingSong>('/api/now-playing', fetcher);
+const ListeningNow = () => {
+  const { data, error, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
   return (
     <S.Wrapper>
       <h2>O que estou ouvindo?</h2>
@@ -30,8 +30,8 @@ const NowPlaying = () => {
           <>
             <Playing active={Boolean(data?.isPlaying)} />
             {data?.isPlaying ? (
-              <S.Song href={data?.songUrl} target="_blank" rel="noreferrer" passHref>
-                <strong>{limitName(data?.title, LIMIT_NAME)}</strong>
+              <S.Song href={data?.url} target="_blank" rel="noreferrer" passHref>
+                <strong>{limitName(data?.music, LIMIT_NAME)}</strong>
                 <span>{limitName(data?.artist, LIMIT_NAME)}</span>
               </S.Song>
             ) : <>em silêncio!</>}
@@ -42,4 +42,4 @@ const NowPlaying = () => {
   );
 }
 
-export default NowPlaying
+export default ListeningNow

@@ -74,3 +74,5 @@ export type StaticProps = {
     slug: string;
   }
 }
+
+export type Pages = 'about' | 'works' | 'activities' | 'snippets' | 'home' | 'listening';

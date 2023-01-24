@@ -1,21 +1,20 @@
 
-
-
 import { getTopTracks } from '@/utils/lib/spotify';
 import { Track } from '@/types/spotify';
 
 export const config = {
-  runtime: 'experimental-edge'
+  runtime: 'edge'
 };
 
 export default async function handler() {
-    const response = await getTopTracks();
-    const { items } = await response.json();
+    let response = await getTopTracks();
+    let { items } = await response.json();
   
-    const tracks = items.slice(0, 10).map((track: Track) => ({
+    let tracks = items.slice(0, 10).map((track: Track) => ({
       artist: track.artists.map((artist: { name: string; }) => artist.name).join(', '),
-      songUrl: track.external_urls.spotify,
-      title: track.name
+      url: track.external_urls.spotify,
+      music: track.name,
+      images: track.album.images[0].url,
     }));
   
     return new Response(JSON.stringify({ tracks }), {

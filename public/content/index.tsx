@@ -24,6 +24,12 @@ export const header = {
       iconAnimated: images.activitiesAnimated,
     },
     {
+      name: 'listening',
+      url: 'listening',
+      icon: images.work,
+      iconAnimated: images.workAnimated,
+    },
+    {
       name: 'trampos',
       url: 'works',
       icon: images.work,

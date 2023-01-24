@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { NowPlaying } from '@/components';
+import { ListeningNow } from '@/components';
 import { Header } from '@/types/banks';
 import { social } from '@/public/content';
 import * as S from './styled';
@@ -41,7 +41,7 @@ const Menu = ({ header }: { header: Header; }) => {
           )
         })}
       </S.Nav>
-      <NowPlaying />
+      <ListeningNow />
       <S.SocialWrapper>
         {social.map(item => (
           <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>

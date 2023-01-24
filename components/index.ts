@@ -1,6 +1,6 @@
 export { default as Footer} from './Footer'
 export { default as Header} from './Header'
 export { default as Strava} from './Strava'
-export { default as NowPlaying} from './NowPlaying'
+export { default as ListeningNow} from './ListeningNow'
 export { default as Title} from './Title'
 export { default as Menu } from './Menu'

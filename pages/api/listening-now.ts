@@ -3,11 +3,11 @@ import { getNowPlaying } from '@/utils/lib/spotify';
 import { Song } from '@/types/spotify';
 
 export const config = {
-  runtime: 'experimental-edge'
+  runtime: 'edge'
 };
 
 export default async function handler() {
-  const response = await getNowPlaying();
+  let response = await getNowPlaying();
 
   if (response.status === 204 || response.status > 400) {
     return new Response(JSON.stringify({ isPlaying: false }), {
@@ -18,7 +18,7 @@ export default async function handler() {
     });
   }
 
-  const song: Song = await response.json();
+  let song: Song = await response.json();
 
   if (song.item === null) {
     return new Response(JSON.stringify({ isPlaying: false }), {
@@ -29,22 +29,15 @@ export default async function handler() {
     });
   }
 
-  const isPlaying = song.is_playing;
-  const title = song.item.name;
-  const artist = song.item.artists.map((_artist: { name: string; }) => _artist.name).join(', ');
-  const album = song.item.album.name;
-  const albumImageUrl = song.item.album.images[0].url;
-  const songUrl = song.item.external_urls.spotify;
+  let listeningNow = {
+    name: song.item.name,
+    isPlaying: song.is_playing,
+    artist: song.item.artists.map((_artist: { name: string; }) => _artist.name).join(', '),
+    url: song.item.external_urls.spotify,
+    image: song.item.album.images[0].url,
+  }
 
-  return new Response(
-    JSON.stringify({
-      album,
-      albumImageUrl,
-      artist,
-      isPlaying,
-      songUrl,
-      title
-    }),
+  return new Response(JSON.stringify({ listeningNow }),
     {
       status: 200,
       headers: {
