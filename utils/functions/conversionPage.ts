@@ -4,7 +4,7 @@ export const conversionTitlePage = (value: string) => {
     'works': 'trampos',
     'snippets': 'code snippets',
     'activities': 'atividades',
-    'listening': 'listening now'
+    'listening': '...ouvindo!'
   }
   return labels[value];
 }

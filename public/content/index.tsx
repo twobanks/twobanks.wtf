@@ -26,8 +26,8 @@ export const header = {
     {
       name: 'listening',
       url: 'listening',
-      icon: images.work,
-      iconAnimated: images.workAnimated,
+      icon: images.play,
+      iconAnimated: images.playAnimated,
     },
     {
       name: 'trampos',

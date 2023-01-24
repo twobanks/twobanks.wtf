@@ -40,23 +40,19 @@ export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    gap: ${theme.spacing.s1};
-    padding-top: ${theme.spacing.s2};
-    h2 {
-      padding-left: ${theme.spacing.s1};
-      font-size: ${theme.font.sizes.s16};
-      color: ${theme.colors.secondary};
-    }
+    width: 100%;
+    height: fit-content;
+    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
   `}
 `;
 
-export const Content = styled.div`
+export const Content = styled(Link)`
   ${({ theme }) => css`
     display: flex;
-    align-items: center;
-    gap: ${theme.spacing.s2};
-    background-color: ${theme.colors.black};
-    padding: ${theme.spacing.s1};
+    flex-direction: column;
+    gap: ${theme.spacing.s4};
+    background-color: ${theme.colors.hover};
+    padding: ${theme.spacing.s2};
     border-radius: ${theme.radius};
     span {
       cursor: pointer;
@@ -92,49 +88,40 @@ export const Icon = styled.div<PlayingProps>`
   `}
 `
 
-export const Song = styled(Link)`
+export const Song = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    transition: ${theme.transition};
-    strong {
-      font-size: ${theme.font.sizes.s14};
-      color: ${theme.colors.secondary};
-    }
     span {
-      font-size: ${theme.font.sizes.s12};
-      color: ${theme.colors.secondary};
-    }
-    &:hover {
-      span, strong {
-        color: ${theme.colors.spotify};
+      font-size: ${theme.font.sizes.s18};
+      color: ${theme.colors.primary};
+      line-height: ${theme.font.sizes.s22};
+      :nth-of-type(2) {
+        font-size: ${theme.font.sizes.s14};
+        color: ${theme.colors.secondary};
       }
     }
   `}
 `
 
-export const WrapperLoading = styled.div`
+export const ImageWrapper = styled.div`
+  ${({ theme }) => css`
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 40rem;
+    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
+    img {
+      border-radius: ${theme.radius};
+    }
+  `}
+`;
+
+export const SongWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 1.4rem;
-    width: 100%;
-    ${animate.loading()}
     gap: ${theme.spacing.s2};
-    span {
-      height: 1rem;
-      width: 1rem;
-      border-radius: 50%;
-      background-color: ${theme.colors.spotify};
-      opacity: .6;
-      animation: loading 1.4s infinite ease-in-out both;
-    }
-    span:nth-of-type(2) {
-      animation-delay: -0.32s;
-    }
-    span:nth-of-type(3) {
-      animation-delay: -0.16s;
-    }
+    padding-left: ${theme.spacing.s1};
   `}
 `;

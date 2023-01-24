@@ -7,9 +7,8 @@ export const Wrapper = styled.ul`
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 0 ${theme.spacing.s2};
     li div {
-      padding: ${theme.spacing.s1};
+      padding: calc(${theme.spacing.s1} / 1.5) ${theme.spacing.s1};
       a {
         display: flex;
         align-items: center;

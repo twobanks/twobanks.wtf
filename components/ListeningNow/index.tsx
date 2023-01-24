@@ -1,10 +1,8 @@
 import useSWR from 'swr';
+import Image from 'next/image';
 import { NowPlayingSong } from '@/types/spotify';
 import fetcher from '@/utils/lib/fetcher';
-import limitName from '@/utils/functions/limitName';
 import * as S from './styled'
-
-const LIMIT_NAME = 25;
 
 const Playing = ({ active } : { active: boolean }) => (
   <S.Icon active={active}>
@@ -15,29 +13,23 @@ const Playing = ({ active } : { active: boolean }) => (
 )
 
 const ListeningNow = () => {
-  const { data, error, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
+  const { data } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
   return (
     <S.Wrapper>
-      <h2>O que estou ouvindo?</h2>
-      <S.Content>
-        {isLoading || error ? (
-          <S.WrapperLoading>
-            <span />
-            <span />
-            <span />
-          </S.WrapperLoading>
-        ) : (
-          <>
-            <Playing active={Boolean(data?.isPlaying)} />
-            {data?.isPlaying ? (
-              <S.Song href={data?.url} target="_blank" rel="noreferrer" passHref>
-                <strong>{limitName(data?.music, LIMIT_NAME)}</strong>
-                <span>{limitName(data?.artist, LIMIT_NAME)}</span>
-              </S.Song>
-            ) : <>em silêncio!</>}
-          </>
-        )}
-      </S.Content>
+      {data?.isPlaying && (
+        <S.Content href={data.url} target="_blank" rel="noreferrer" passHref>
+          <S.ImageWrapper>
+            <Image src={data.image} alt={`${data.artist}-${data.music}`} fill sizes="100%" blurDataURL={data.image} priority quality={100} />
+          </S.ImageWrapper>
+          <S.SongWrapper>
+            <Playing active={Boolean(data.isPlaying)} />
+            <S.Song>
+              <span>{data.music}</span>
+              <span>{data.artist}</span>
+            </S.Song>
+          </S.SongWrapper>
+        </S.Content>
+      )}
     </S.Wrapper>
   );
 }

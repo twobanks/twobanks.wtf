@@ -3,6 +3,7 @@ export type NowPlayingSong = {
   artist: string;
   music: string;
   url: string;
+  image: string;
 };
 
 export type Track = {

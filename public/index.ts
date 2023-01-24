@@ -20,6 +20,8 @@ const folder = '/icon/animation/folder.svg';
 const folderAnimated = '/icon/animation/folder-animated.webp';
 const folderActivity = '/icon/animation/folder-activity.svg';
 const folderActivityAnimated = '/icon/animation/folder-activity-animated.webp';
+const play = '/icon/animation/play.svg';
+const playAnimated = '/icon/animation/play-animated.webp';
 const strava = '/icon/strava.svg';
 const facebook = '/icon/facebook.svg';
 const twitter = '/icon/twitter.svg';
@@ -76,5 +78,7 @@ export default {
   trail,
   walking,
   discord,
-  me
+  me,
+  play,
+  playAnimated
 }

@@ -29,15 +29,15 @@ export default async function handler() {
     });
   }
 
-  let listeningNow = {
-    name: song.item.name,
+  let listening = {
+    music: song.item.name,
     isPlaying: song.is_playing,
     artist: song.item.artists.map((_artist: { name: string; }) => _artist.name).join(', '),
     url: song.item.external_urls.spotify,
     image: song.item.album.images[0].url,
   }
 
-  return new Response(JSON.stringify({ listeningNow }),
+  return new Response(JSON.stringify({ ...listening }),
     {
       status: 200,
       headers: {

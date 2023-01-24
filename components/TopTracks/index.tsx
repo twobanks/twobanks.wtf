@@ -9,9 +9,7 @@ const TopTracks = () => {
   const { data } = useSWR<TopTracks>(`/api/top-tracks`, fetcher);
   const [hovered, setHovered] = useState<string>('');
   const Animation = (props: { index: string; children: ReactNode }) => {
-    console.log("props", props);
     let isHovered = hovered === props.index
-    console.log("isHovered", isHovered);
     return (
       <S.AnimContainer
         onHoverStart={() => setHovered(props.index)}

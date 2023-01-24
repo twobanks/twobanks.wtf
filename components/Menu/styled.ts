@@ -128,9 +128,7 @@ export const SocialWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-top: .1rem solid ${theme.colors.hover};
     padding: ${theme.spacing.s2} ${theme.spacing.s1} ${theme.spacing.s1} ${theme.spacing.s1};
-    margin-top: ${theme.spacing.s2};
     img {
       opacity: .6;
       transition: ${theme.transition.color};
