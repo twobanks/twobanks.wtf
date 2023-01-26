@@ -17,7 +17,7 @@ const Footer = ({ menu } : { menu: Menu[] }) => {
               onMouseEnter={() => setHovered(item.name)}
               onMouseLeave={() => setHovered('')}
             >
-              <Image src={isHovered ? item.iconAnimated : item.icon} alt={item.name} height={40} width={40} blurDataURL={isHovered ? item.iconAnimated : item.icon} priority quality={100}/>
+              <Image src={isHovered ? item.iconAnimated : item.icon} alt={item.name} placeholder='blur' height={40} width={40} blurDataURL={isHovered ? item.iconAnimated : item.icon} priority quality={100}/>
             </S.Item>
           </Link>
         )

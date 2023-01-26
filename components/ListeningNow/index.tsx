@@ -27,7 +27,7 @@ const ListeningNow = () => {
           {data?.isPlaying && (
             <S.Content href={data.url} target="_blank" rel="noreferrer" passHref>
               <S.ImageWrapper>
-                <Image src={data.image} alt={`${data.artist}-${data.music}`} fill sizes="100%" blurDataURL={data.image} priority quality={100} />
+                <Image src={data.image} alt={`${data.artist}-${data.music}`} placeholder='blur' fill sizes="100%" blurDataURL={data.image} priority quality={100} />
               </S.ImageWrapper>
               <S.SongWrapper>
                 <Playing active={Boolean(data.isPlaying)} />

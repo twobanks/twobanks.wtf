@@ -57,7 +57,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
           <Animation key={uuid()} index={String(index)}>
             <S.Content>
               <S.MapWrapper>
-                <Image src={mapUrl} alt={`${name} map`} fill sizes="100%" blurDataURL={mapUrl} priority quality={100} />
+                <Image src={mapUrl} alt={`${name} map`} placeholder='blur' fill sizes="100%" blurDataURL={mapUrl} priority quality={100} />
               </S.MapWrapper>
               <S.ContentActivity>
                 <S.HeaderActivity>
@@ -69,7 +69,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
                     <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
                   </S.DateAndCity>
                   <S.TypeActivity>
-                    <Image src={iconActivity[type]} alt={type} height={40} width={40} blurDataURL={iconActivity[type]} priority quality={100} />
+                    <Image src={iconActivity[type]} alt={type} placeholder='blur' height={40} width={40} blurDataURL={iconActivity[type]} priority quality={100} />
                   </S.TypeActivity>
                 </S.HeaderActivity>
                 <S.ActivityData>

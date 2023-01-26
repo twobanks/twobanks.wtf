@@ -43,7 +43,7 @@ const Menu = ({ header }: { header: Header; }) => {
       <S.SocialWrapper>
         {social.map(item => (
           <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
-            <Image src={item.icon} alt={item.name} height={22.5} width={22.5} blurDataURL={item.icon} priority quality={100}/>
+            <Image src={item.icon} alt={item.name} placeholder='blur' height={22.5} width={22.5} blurDataURL={item.icon} priority quality={100}/>
           </Link>
         ))}
       </S.SocialWrapper>
