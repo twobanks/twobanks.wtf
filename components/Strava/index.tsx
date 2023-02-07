@@ -1,7 +1,6 @@
 import { ReactNode, useCallback, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import geocoder from 'city-reverse-geocoder'
-import Link from 'next/link';
 import Image from 'next/image';
 import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '@/utils/functions/conversionStrava'
 import { Activities } from '@/types/strava';
@@ -53,36 +52,28 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
         const averageTitle = type !== 'Ride' ? 'Pace ' : 'Vel. Média ';
         const averageSpeed = type !== 'Ride' ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
         const nearestCities = geocoder(activity?.start_latlng[0], activity?.start_latlng[1])
+        console.log("nearestCities", nearestCities);
         return (
           <Animation key={uuid()} index={String(index)}>
             <S.Content>
-              <S.MapWrapper>
+              {/* <S.MapWrapper>
                 <Image src={mapUrl} alt={`${name} map`} placeholder='blur' fill sizes="100%" blurDataURL={mapUrl} priority quality={100} />
-              </S.MapWrapper>
+              </S.MapWrapper> */}
               <S.ContentActivity>
                 <S.HeaderActivity>
                   <S.DateAndCity>
-                    <div>
-                      <S.HeartRate average={Number(average_heartrate?.toFixed(0))} />
-                      <h4>{date}</h4>
-                    </div>
-                    <em>{`${nearestCities[0].city}, ${nearestCities[0].region}`}</em>
+                    <S.TypeActivity>
+                      <Image src={iconActivity[type]} alt={type} placeholder='blur' height={20} width={20} blurDataURL={iconActivity[type]} priority quality={100} />
+                    </S.TypeActivity>
+                    <strong>{date}</strong><em>- {`${nearestCities[0].city}, ${nearestCities[0].region_code}`}</em>
                   </S.DateAndCity>
-                  <S.TypeActivity>
-                    <Image src={iconActivity[type]} alt={type} placeholder='blur' height={40} width={40} blurDataURL={iconActivity[type]} priority quality={100} />
-                  </S.TypeActivity>
                 </S.HeaderActivity>
                 <S.ActivityData>
-                  <div><span>Distância</span> <div><strong>{metersToKilometers(distance)}</strong> km</div></div>
-                  <div><span>Tempo</span> <strong>{movingTime}</strong></div>
-                  <div><span>{averageTitle}</span> <div><strong>{averageSpeed} </strong>km/h</div></div>
-                  <div><span>Elevação</span> <div><strong>{total_elevation_gain.toFixed(0)} </strong>m</div></div>
+                  <div><span>Distância</span> <div><em>{metersToKilometers(distance)}</em> km</div></div>
+                  <div><span>Tempo</span> <em>{movingTime}</em></div>
+                  <div><span>{averageTitle}</span> <div><em>{averageSpeed} </em>km/h</div></div>
+                  <div><span>Elevação</span> <div><em>{total_elevation_gain.toFixed(0)} </em>m</div></div>
                 </S.ActivityData>
-                <S.LinksWrapper>
-                  <Link href={`https://www.strava.com/activities/${id}`} target="_blank" rel="noreferrer" passHref>
-                    visualizar no Strava <Image src={images.strava} alt="Strava" height={15} width={15} blurDataURL={images.strava} priority quality={100} />
-                  </Link>
-                </S.LinksWrapper>
               </S.ContentActivity>
             </S.Content>
           </Animation>
