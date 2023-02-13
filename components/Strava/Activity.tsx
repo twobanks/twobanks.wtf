@@ -1,6 +1,6 @@
 const Activity = ({ activity } : any) => {
   return (
-      <>Teste</>
+      <>teste</>
   )
 }
 
