@@ -134,6 +134,7 @@ export const AnimHovered = styled(motion.div)`
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 `
 
 export const DateAndCity = styled.div`

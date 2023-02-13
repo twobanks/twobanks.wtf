@@ -2,6 +2,7 @@ import { Activities } from "@/types/strava";
 
 const TOKEN_ENDPOINT = "https://www.strava.com/oauth/token";
 const CALL_ATHLETE = `https://www.strava.com/api/v3/athletes/28981595`;
+const ACTIVITY_ENDPOINT = "https://www.strava.com/api/v3/";
 
 const getAccessToken = async () => {
   const body = JSON.stringify({
@@ -33,4 +34,13 @@ export const getActivities = async () => {
   const activities = json.filter((activity: Activities) => activity.visibility === "everyone");
 
   return activities;
+};
+
+export const getActivity = async (id: number) => {
+  const { access_token: accessToken } = await getAccessToken();
+  const response = await fetch(
+    `${ACTIVITY_ENDPOINT}/activities/${id}?access_token=${accessToken}`
+  );
+  const activity = await response.json();
+  return activity;
 };
