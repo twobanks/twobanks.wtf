@@ -1,3 +1,5 @@
+import { ACTIVITY } from "@/utils/enums/strava";
+
 export type Athlete = {
   badge_type_id: number;
   bio: string;
@@ -20,6 +22,8 @@ export type Athlete = {
   username: string;
   weight: number;
 }
+
+/* export type TypeActivity = keyof ACTIVITY; */
 
 export type Activities = {
   achievement_count: number;
@@ -77,14 +81,13 @@ export type Activities = {
   total_elevation_gain: number;
   total_photo_count: number;
   trainer: boolean;
-  type: 'Ride' | 'Run' | 'Walk';
+  type: ACTIVITY;
   upload_id: number;
   upload_id_str: string;
   utc_offset: number;
   visibility: string;
   workout_type: number;
 }
-
 
 export type Activity = {
   athlete: {

@@ -36,6 +36,7 @@ const logo = '/img/avatar.webp';
 const bike = '/icon/bike.svg';
 const trail = '/icon/trail.svg';
 const walking = '/icon/walking.svg';
+const workout = '/icon/workout.svg';
 const discord = '/icon/discord.svg';
 const me = '/img/twobanks.svg';
 
@@ -80,5 +81,6 @@ export default {
   discord,
   me,
   play,
-  playAnimated
+  playAnimated,
+  workout
 }
