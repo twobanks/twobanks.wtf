@@ -39,6 +39,8 @@ const walking = '/icon/walking.svg';
 const workout = '/icon/workout.svg';
 const discord = '/icon/discord.svg';
 const me = '/img/twobanks.svg';
+const new_me = '/img/lettering.svg';
+const persona = '/img/persona.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -82,5 +84,7 @@ export default {
   me,
   play,
   playAnimated,
-  workout
+  workout,
+  new_me,
+  persona
 }

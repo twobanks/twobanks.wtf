@@ -126,11 +126,14 @@ export const ImageWrapper = styled.div`
     position: relative;
     display: flex;
     overflow: hidden;
-    background-color: ${theme.colors.black};
+    background-color: ${theme.colors.hover};
     width: 35rem;
     height: 35rem;
-    ${banksModifiers.animated(theme)}
+    background-size: 100%;
+		border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+		box-shadow: 0 1.188rem 1.375rem ${theme.colors.black};
     img {
+      padding: ${theme.spacing.s2} 0;
       object-fit: cover;
     }
     ${media.lessThan("medium")`

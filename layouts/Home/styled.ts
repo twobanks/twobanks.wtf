@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import media from "styled-media-query";
 import images from '@/public';
 
@@ -13,7 +13,7 @@ export const TwoBanks = styled.div`
   display: flex;
   height: 25rem;
   width: 70%;
-  background-image: url(${images.me});
+  background-image: url(${images.new_me});
   background-position: center;
   background-size: 100%;
   background-repeat: no-repeat;
