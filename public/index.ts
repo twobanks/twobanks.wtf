@@ -41,6 +41,9 @@ const discord = '/icon/discord.svg';
 const me = '/img/twobanks.svg';
 const new_me = '/img/lettering.svg';
 const persona = '/img/persona.svg';
+const bocaina = '/img/bocaina.png';
+const odisseia = '/img/odisseia.webp';
+const lamission = '/img/lamission.png';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -86,5 +89,8 @@ export default {
   playAnimated,
   workout,
   new_me,
-  persona
+  persona,
+  bocaina,
+  odisseia,
+  lamission
 }

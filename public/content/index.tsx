@@ -1,5 +1,5 @@
 import images from "@/public";
-import { About, Works, Social } from "@/types/banks";
+import { About, Works, Social, Challenges } from "@/types/banks";
 import { STACKS } from "@/utils/enums/stack";
 
 export const header = {
@@ -187,3 +187,30 @@ export const social: Social[] = [
     icon: images.spotify
   },
 ];
+
+export const challenges:Challenges[] = [
+  {
+    name: 'Bocaina ParkTrail',
+    date: new Date('05/04/2024'),
+    distance: '45km',
+    image: images.bocaina,
+    local: 'Araxá-MG',
+    url: 'https://www.instagram.com/bocainapark/'
+  },
+  {
+    name: 'Odisseia Ultra Trail Run',
+    date: [new Date('06/01/2024'), new Date('06/02/2024')],
+    distance: '21km - 21km',
+    image: images.odisseia,
+    local: 'Urubici-SC',
+    url: 'https://www.instagram.com/odisseiaultratrailrun/'
+  },
+  {
+    name: 'La Missión',
+    date: [new Date('08/15/2024'), new Date('08/18/2024')],
+    distance: '55km',
+    image: images.lamission,
+    local: 'Passa Quatro-MG',
+    url: 'https://www.instagram.com/lamisionbrasil/'
+  },
+]
