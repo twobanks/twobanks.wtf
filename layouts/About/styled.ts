@@ -1,11 +1,10 @@
 import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
-import { banksModifiers } from "@/components/Header/styles";
 
 type AboutStyle = {
   image?: string;
-  current?: boolean;
-  course?: boolean;
+  $current?: boolean;
+  $course?: boolean;
 }
 
 const link = {
@@ -89,7 +88,7 @@ export const Date = styled.div`
 `
 
 export const Career = styled.section<AboutStyle>`
-  ${({ theme, course }) => css`
+  ${({ theme, $course }) => css`
     display: flex;
     flex-direction: column;
     flew-wrap: wrap;
@@ -99,7 +98,7 @@ export const Career = styled.section<AboutStyle>`
       display: flex;
       flex-direction: column;
       gap: ${theme.spacing.s4};
-      ${course && css`
+      ${$course && css`
         display: flex;
         flex-direction: column;
         gap: ${theme.spacing.s2};
@@ -113,11 +112,11 @@ export const Career = styled.section<AboutStyle>`
 `
 
 export const Company = styled.div<AboutStyle>`
-  ${({ theme, current }) => css`
+  ${({ theme, $current }) => css`
     font-size: ${theme.font.sizes.s14};
     line-height: ${theme.spacing.s2};
     width: 100%;
-    ${link.default(theme, current)}
+    ${link.default(theme, $current)}
   `}
 `
 

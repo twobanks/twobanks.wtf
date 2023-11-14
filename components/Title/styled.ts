@@ -3,7 +3,7 @@ import styled, { css, DefaultTheme } from "styled-components";
 import media from "styled-media-query";
 
 type TitleStyles = {
-  page: Pages;
+  $page: Pages;
 }
 
 const titleModifiers = {
@@ -28,7 +28,7 @@ const titleModifiers = {
 }
 
 export const Wrapper = styled.h1<TitleStyles>`
-  ${({ theme, page }) => css`
+  ${({ theme, $page }) => css`
     display: flex;
     align-items: center;
     font-size: ${theme.font.sizes.s48};
@@ -36,7 +36,7 @@ export const Wrapper = styled.h1<TitleStyles>`
     max-width: ${theme.container};
     width: 100vw;
     margin: 0 auto;
-    ${titleModifiers[page](theme)}
+    ${titleModifiers[$page](theme)}
     ${media.lessThan('medium')`
       justify-content: flex-end;
       font-size: ${theme.font.sizes.s28};

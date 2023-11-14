@@ -3,7 +3,7 @@ import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
 type HeaderProps = {
-	page?: Pages;
+	$page?: Pages;
 }
 
 export const banksModifiers = {
@@ -46,11 +46,8 @@ export const banksModifiers = {
 }
 
 export const Header = styled.header<HeaderProps>`
-	${({ theme, page }) => css`
-		position: fixed;
+	${({ theme, $page }) => css`
 		width: 100vw;
-		height: ${theme.spacing.s20};
-		z-index: 2;
 		background-color: ${theme.colors.background};
 		${media.lessThan("medium")`
 			display: flex;
@@ -58,7 +55,7 @@ export const Header = styled.header<HeaderProps>`
 			height: ${theme.spacing.s10};
 			width: 100%;
 			padding: ${theme.spacing.s1} ${theme.spacing.s2};
-			${page === 'home' && css`
+			${$page === 'home' && css`
 				display: none;
 			`}
 		`}
@@ -85,21 +82,15 @@ export const Content = styled.div`
 `
 
 export const Banks = styled.div<HeaderProps>`
-	${({ theme, page = 'home' }) => css`
-		position: relative;
-		height: 6rem;
-		width: 6rem;
+	${({ theme, $page = 'home' }) => css`
+		height: 5rem;
+		width: 5rem;
 		background-color: ${theme.colors.hover};
 		cursor: pointer;
 		${banksModifiers.animated(theme)}
 		&:hover {
 			transition: all .9s ease-in-out;
-			${banksModifiers[page](theme)}
+			${banksModifiers[$page](theme)}
 		}
 	`}
 `
-
-export const MenuWrapper = styled.div`
-	position: absolute;
-	right: 0;
-`;

@@ -2,8 +2,8 @@ import Link from "next/link";
 import styled, { css } from "styled-components";
 
 type PlayingProps = {
-  active?: boolean;
-  visible?: boolean;
+  $active?: boolean;
+  $visible?: boolean;
 }
 
 const animate = {
@@ -38,8 +38,8 @@ const animate = {
 }
 
 export const Wrapper = styled.div<PlayingProps>`
-  ${({ visible }) => css`
-    display: ${visible ? 'flex' : 'none'};
+  ${({ $visible }) => css`
+    display: ${$visible ? 'flex' : 'none'};
     flex-direction: column;
     width: 100%;
     height: fit-content;
@@ -64,7 +64,7 @@ export const Content = styled(Link)`
 `;
 
 export const Icon = styled.div<PlayingProps>`
-  ${({ theme, active }) => css`
+  ${({ theme, $active }) => css`
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -74,7 +74,7 @@ export const Icon = styled.div<PlayingProps>`
     span {
       width: .3rem;
       height: 100%;
-      background-color: ${active ? theme.colors.spotify : theme.colors.yellowTech};
+      background-color: ${$active ? theme.colors.spotify : theme.colors.yellowTech};
       border-radius: .3rem;
       transform-origin: bottom;
       animation: bounce 2.2s ease infinite alternate;

@@ -10,10 +10,10 @@ type HeaderProps = {
 }
 
 const Header = ({ page = 'home', header }: HeaderProps) => (
-  <S.Header page={page}>
+  <S.Header $page={page}>
     <S.Content>
       <Link href={`/`} passHref prefetch={false}>
-        <S.Banks page={page} />
+        <S.Banks $page={page} />
       </Link>
       <Menu header={header} />
     </S.Content>

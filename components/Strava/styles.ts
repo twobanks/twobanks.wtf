@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components'
 import media from 'styled-media-query'
-import { motion } from 'framer-motion'
 
 type StravaStyles = {
   average?: number;
@@ -107,28 +106,6 @@ export const HeartRate = styled.div<StravaStyles>`
       background-color: ${theme.colors.trainingZone.z5};
     `}
   `}
-`
-
-export const AnimContainer = styled(motion.li)`
-  ${({ theme }) => css`
-    position: relative;
-    opacity: 1;
-    border-bottom: .1rem solid ${theme.colors.hover};
-  `}
-`
-
-export const AnimHovered = styled(motion.div)`
-  ${({ theme }) => css`
-		position: absolute;
-		top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-		background-color: ${theme.colors.hover};
-		padding: 0;
-		border-radius: ${theme.radius};
-		z-index: -1;
-	`}
 `
 
 export const Content = styled.div`

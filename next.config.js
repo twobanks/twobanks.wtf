@@ -2,7 +2,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['localhost', 'api.mapbox.com', 'i.scdn.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'localhost',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.mapbox.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.scdn.co',
+        pathname: '**',
+      },
+    ],
   },
   reactStrictMode: true,
   compiler: {
