@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
 
@@ -31,7 +30,7 @@ export const Item  = styled.div`
   `}
 `;
 
-export const AnimContainer = styled(motion.div)`
+export const AnimContainer = styled.div`
   ${({ theme }) => css`
     border: 0;
     color: ${theme.colors.secondary};
@@ -50,7 +49,7 @@ export const AnimContainer = styled(motion.div)`
   `}
 `
 
-export const AnimHovered = styled(motion.div)`
+export const AnimHovered = styled.div`
   ${({ theme }) => css`
 		position: absolute;
 		top: 0;

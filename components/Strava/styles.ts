@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components'
 import media from 'styled-media-query'
-import { motion } from 'framer-motion'
 
 type StravaStyles = {
   average?: number;
@@ -109,7 +108,7 @@ export const HeartRate = styled.div<StravaStyles>`
   `}
 `
 
-export const AnimContainer = styled(motion.li)`
+export const AnimContainer = styled.li`
   ${({ theme }) => css`
     position: relative;
     opacity: 1;
@@ -117,7 +116,7 @@ export const AnimContainer = styled(motion.li)`
   `}
 `
 
-export const AnimHovered = styled(motion.div)`
+export const AnimHovered = styled.div`
   ${({ theme }) => css`
 		position: absolute;
 		top: 0;

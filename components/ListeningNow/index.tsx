@@ -5,7 +5,7 @@ import fetcher from '@/utils/lib/fetcher';
 import * as S from './styled'
 
 const Playing = ({ active } : { active: boolean }) => (
-  <S.Icon active={active}>
+  <S.Icon $active={active}>
     <span />
     <span />
     <span />
@@ -15,7 +15,7 @@ const Playing = ({ active } : { active: boolean }) => (
 const ListeningNow = () => {
   const { data, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
   return (
-    <S.Wrapper visible={data?.isPlaying}>
+    <S.Wrapper $visible={Boolean(data?.isPlaying)}>
       {isLoading ? (
         <S.WrapperLoading>
           <span />

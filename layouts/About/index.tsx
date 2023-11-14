@@ -26,7 +26,7 @@ const About = ({ data }: { data: About }) => {
             return (
               <li key={name_company}>
                 <S.Occupation>{role}</S.Occupation>
-                  <S.Company current={current}>
+                  <S.Company $current={current}>
                     <Link href={url_company} target="_blank" rel="noreferrer">{name_company}</Link> - <em>{city_company}</em>
                   </S.Company>
                   <S.Date>{period}</S.Date>

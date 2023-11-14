@@ -3,7 +3,7 @@ import styled, { DefaultTheme, css } from 'styled-components'
 import media from "styled-media-query";
 
 type HeaderProps = {
-	page?: Pages;
+	$page?: Pages;
 }
 
 export const banksModifiers = {
@@ -46,7 +46,7 @@ export const banksModifiers = {
 }
 
 export const Header = styled.header<HeaderProps>`
-	${({ theme, page }) => css`
+	${({ theme, $page }) => css`
 		position: fixed;
 		width: 100vw;
 		height: ${theme.spacing.s20};
@@ -58,7 +58,7 @@ export const Header = styled.header<HeaderProps>`
 			height: ${theme.spacing.s10};
 			width: 100%;
 			padding: ${theme.spacing.s1} ${theme.spacing.s2};
-			${page === 'home' && css`
+			${$page === 'home' && css`
 				display: none;
 			`}
 		`}
@@ -85,7 +85,7 @@ export const Content = styled.div`
 `
 
 export const Banks = styled.div<HeaderProps>`
-	${({ theme, page = 'home' }) => css`
+	${({ theme, $page = 'home' }) => css`
 		position: relative;
 		height: 6rem;
 		width: 6rem;
@@ -94,7 +94,7 @@ export const Banks = styled.div<HeaderProps>`
 		${banksModifiers.animated(theme)}
 		&:hover {
 			transition: all .9s ease-in-out;
-			${banksModifiers[page](theme)}
+			${banksModifiers[$page](theme)}
 		}
 	`}
 `

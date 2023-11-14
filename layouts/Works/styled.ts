@@ -1,10 +1,9 @@
 import styled, { css } from "styled-components";
 import media from 'styled-media-query';
-import { motion } from 'framer-motion'
 import { STACKS } from "@/utils/enums/stack";
 
 type WorksStyle = {
-  stack: STACKS
+  $stack: STACKS
 }
 
 export const Container = styled.div`
@@ -88,14 +87,14 @@ export const Content = styled.div`
 `
 
 export const Item = styled.li<WorksStyle>`
-  ${({ theme, stack }) => css`
+  ${({ theme, $stack }) => css`
     position: relative;
     font-size: ${theme.font.sizes.s14};
     background-color: ${theme.colors.hover};
     padding: .5rem ${theme.spacing.s1} .5rem 2.5rem;
     border-radius: ${theme.radius};
     &::after {
-      background-color: ${theme.colors.stacks[stack]};
+      background-color: ${theme.colors.stacks[$stack]};
       border-radius: 50%;
       content: "";
       left: ${theme.spacing.s1};
@@ -108,7 +107,7 @@ export const Item = styled.li<WorksStyle>`
   `}
 `
 
-export const AnimContainer = styled(motion.div)`
+export const AnimContainer = styled.div`
   ${({ theme }) => css`
     border: 0;
     color: ${theme.colors.secondary};
@@ -127,7 +126,7 @@ export const AnimContainer = styled(motion.div)`
   `}
 `
 
-export const AnimHovered = styled(motion.div)`
+export const AnimHovered = styled.div`
   ${({ theme }) => css`
 		position: absolute;
 		top: 0;

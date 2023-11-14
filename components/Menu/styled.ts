@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import styled, { css } from 'styled-components'
 import media from "styled-media-query";
 
@@ -19,7 +18,7 @@ export const Wrapper = styled.nav`
   `}
 `;
 
-export const Content = styled(motion.div)`
+export const Content = styled.div`
   ${({ theme }) => css`
     position: absolute;
     display: flex;
@@ -49,7 +48,7 @@ export const Nav = styled.ul`
   `}
 `;
 
-export const NavContainer = styled(motion.li)`
+export const NavContainer = styled.li`
 	${({ theme }) => css`
     position: relative;
     display: flex;
@@ -69,7 +68,7 @@ export const NavContainer = styled(motion.li)`
 	`}
 `
 
-export const NavHovered = styled(motion.div)`
+export const NavHovered = styled.div`
 	${({theme}) => css`
 		position: absolute;
 		top: 0;
@@ -83,27 +82,27 @@ export const NavHovered = styled(motion.div)`
 `
 
 export const IconNavWrapper = styled.div<NavProps>`
-    ${({ theme, open }) => css`
-      display: flex;
-      align-items: center;
-      justify-content: justify-around;
-      gap: .5rem;
-      transform: rotate(45deg);
-      transition: ${theme.transition.color};
-      cursor: pointer;
-      span {
-        height: 2.5rem;
-        width: .3rem;
-        border-radius: .3rem;
-        background-color: ${theme.colors.secondary};
-        :nth-child(1), :nth-child(3) {
-          height: 1.5rem;
-          ${open && css`
-            opacity: .5;
-          `}
-        }
+  ${({ theme, open }) => css`
+    display: flex;
+    align-items: center;
+    justify-content: justify-around;
+    gap: .5rem;
+    transform: rotate(45deg);
+    transition: ${theme.transition.color};
+    cursor: pointer;
+    span {
+      height: 2.5rem;
+      width: .3rem;
+      border-radius: .3rem;
+      background-color: ${theme.colors.secondary};
+      :nth-child(1), :nth-child(3) {
+        height: 1.5rem;
+        ${open && css`
+          opacity: .5;
+        `}
       }
-    `}
+    }
+  `}
 `;
 
 export const Overlay = styled.div<NavProps>`

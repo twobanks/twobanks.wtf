@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import styled, { css } from "styled-components";
 import media from "styled-media-query";
 
@@ -41,7 +40,7 @@ export const Wrapper = styled.ul`
   `}
 `;
 
-export const AnimContainer = styled(motion.div)`
+export const AnimContainer = styled.div`
   position: relative;
   display: flex;
   width: 100%;
@@ -50,7 +49,7 @@ export const AnimContainer = styled(motion.div)`
   opacity: 1;
 `
 
-export const AnimHovered = styled(motion.div)`
+export const AnimHovered = styled.div`
   ${({ theme }) => css`
 		position: absolute;
 		top: 0;
