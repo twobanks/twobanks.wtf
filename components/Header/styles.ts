@@ -47,10 +47,7 @@ export const banksModifiers = {
 
 export const Header = styled.header<HeaderProps>`
 	${({ theme, $page }) => css`
-		position: fixed;
 		width: 100vw;
-		height: ${theme.spacing.s20};
-		z-index: 2;
 		background-color: ${theme.colors.background};
 		${media.lessThan("medium")`
 			display: flex;
@@ -86,9 +83,8 @@ export const Content = styled.div`
 
 export const Banks = styled.div<HeaderProps>`
 	${({ theme, $page = 'home' }) => css`
-		position: relative;
-		height: 6rem;
-		width: 6rem;
+		height: 5rem;
+		width: 5rem;
 		background-color: ${theme.colors.hover};
 		cursor: pointer;
 		${banksModifiers.animated(theme)}
@@ -98,8 +94,3 @@ export const Banks = styled.div<HeaderProps>`
 		}
 	`}
 `
-
-export const MenuWrapper = styled.div`
-	position: absolute;
-	right: 0;
-`;

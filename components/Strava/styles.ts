@@ -108,28 +108,6 @@ export const HeartRate = styled.div<StravaStyles>`
   `}
 `
 
-export const AnimContainer = styled.li`
-  ${({ theme }) => css`
-    position: relative;
-    opacity: 1;
-    border-bottom: .1rem solid ${theme.colors.hover};
-  `}
-`
-
-export const AnimHovered = styled.div`
-  ${({ theme }) => css`
-		position: absolute;
-		top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-		background-color: ${theme.colors.hover};
-		padding: 0;
-		border-radius: ${theme.radius};
-		z-index: -1;
-	`}
-`
-
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
