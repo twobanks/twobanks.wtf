@@ -1,22 +1,21 @@
 import styled, { css } from 'styled-components'
-import media from "styled-media-query";
 
 export const Wrapper = styled.nav`
   position: relative;
   display: flex;
   align-items: center;
-  ${media.lessThan("medium")`
+  @media (max-width: 768px) {
     display: none;
-  `}
+  }
 `;
 
 export const Nav = styled.ul`
   ${({ theme }) => css`
     display: flex;
     gap: ${theme.spacing.s2};
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       display: none;
-    `}
+    }
   `}
 `;
 

@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import media from 'styled-media-query';
 import { STACKS } from "@/utils/enums/stack";
 
 type WorksStyle = {
@@ -17,12 +16,12 @@ export const Container = styled.div`
       display: grid;
       grid-template-columns: repeat(2, 1fr);
     }
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       margin: 0 auto;
       ul {
         grid-template-columns: repeat(1, 1fr);
       }
-    `}
+    }
   `}
 `
 

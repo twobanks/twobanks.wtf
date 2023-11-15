@@ -41,7 +41,6 @@ Create a `.env` file similar to [`.env.example`](https://github.com/twobanks/two
 - [NextJS](https://nextjs.org/) - *framework react*
 - [Vercel](https://vercel.com/) - *deploy*
 - [styled-component](https://styled-components.com/) - *CSS for styling React component*
-- [styled-media-query](https://github.com/morajabi/styled-media-query) - *@media for styled-components*
 - [SWR](https://swr.vercel.app/) - *hooks for data fetching*
 - [ESLint](https://eslint.org/) - *for code linting*
 - [Prettier](https://prettier.io/) - *for code formatting*

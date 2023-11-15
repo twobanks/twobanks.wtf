@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components'
-import media from 'styled-media-query'
 
 type StravaStyles = {
   average?: number;
@@ -13,9 +12,9 @@ export const Wrapper = styled.main<StravaStyles>`
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     padding: ${theme.spacing.s2};
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       padding: 0;
-    `}
+    }
   `}
 `
 export const MapWrapper = styled.div`

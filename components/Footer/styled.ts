@@ -1,10 +1,9 @@
 import styled, { css } from 'styled-components'
-import media from 'styled-media-query';
 
 export const Footer = styled.footer`
   ${({ theme }) => css`
     display: none;
-    ${media.lessThan('medium')`
+    @media (max-width: 768px) {
       position: fixed;
       bottom: 0;
       width: 100vw;
@@ -14,13 +13,13 @@ export const Footer = styled.footer`
       height: 6rem;
       background-color: ${theme.colors.black};
       justify-content: space-around;
-    `}
+    }
   `}
 `
 
 export const Item = styled.div`
   ${({ theme }) => css`
-    ${media.lessThan('medium')`
+    @media (max-width: 768px) {
       position: relative;
       img {
         background-color: ${theme.colors.background};
@@ -31,6 +30,6 @@ export const Item = styled.div`
           background-color: ${theme.colors.hover};
         }
       }
-    `}
+    }
   `}
 `;

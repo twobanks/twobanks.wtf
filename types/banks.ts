@@ -12,6 +12,15 @@ export type Header = {
   menu: Menu[];
 }
 
+export type Challenges = {
+  name: string;
+  local: string;
+  distance: string;
+  date: string;
+  url: string;
+  image: string;
+}
+
 export type Works = {
   name: string;
   type: string;

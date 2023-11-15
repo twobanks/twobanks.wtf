@@ -1,8 +1,6 @@
-import Image from 'next/image'
 import Link from 'next/link';
 import { v4 as uuid } from 'uuid'
 import { About } from '@/types/banks'
-import images from '@/public';
 import * as S from './styled'
 
 const About = ({ data }: { data: About }) => {
@@ -10,9 +8,6 @@ const About = ({ data }: { data: About }) => {
   return (
     <S.Content>
       <S.Bio>
-        <S.ImageWrapper>
-          <Image src={images.persona} alt="twobanks" placeholder='blur' blurDataURL={images.twobanks} sizes="100%" fill priority quality={100} />
-        </S.ImageWrapper>
         <S.About>
           <p>Eaêêê!  Meu nome é <strong>Thiago</strong>, moro em Uberaba/MG e trabalho como Desenvolvedor, desde 2014. Atualmente, atuo como Desenvolvedor Front-End,  na <Link href="https://www.bornlogic.com/" target="_blank" rel="noreferrer">Bornlogic</Link>, onde, diariamente, desenvolvo utilizando as seguintes tecnologias: TypeScript, ReactJS, Styled Components ...</p>
           <p>No meu tempo livre, aproveito momentos com a minha esposa Tefa <em>❤</em> e meu cachorro Brown 🐶, pratico Trail Running e Mountain Bike, gosto de descobrir novos estilos musicais, também gosto de aprender sobre povos antigos  🛸, astronomia 🪐 e expandir meus conhecimentos sobre JavaScript e CSS.</p>

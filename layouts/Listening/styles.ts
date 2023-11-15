@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import media from "styled-media-query";
 
 export const Wrapper = styled.div`
   ${({ theme }) => css`
@@ -7,9 +6,9 @@ export const Wrapper = styled.div`
     gap: ${theme.spacing.s8};
     width: 100%;
     padding-top: ${theme.spacing.s2};
-    ${media.lessThan('medium')`
+    @media (max-width: 768px) {
       flex-direction: column;
       gap: ${theme.spacing.s4};
-    `}
+    }
   `}
 `;
