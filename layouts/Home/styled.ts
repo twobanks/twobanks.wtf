@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import media from "styled-media-query";
 import images from '@/public';
 
 export const Content = styled.div`
@@ -17,8 +16,8 @@ export const TwoBanks = styled.div`
   background-position: center;
   background-size: 100%;
   background-repeat: no-repeat;
-  ${media.lessThan("medium")`
+  @media (max-width: 768px) {
     height: 15rem;
     width: 100%;
-  `}
+  }
 `;

@@ -1,6 +1,5 @@
 import { Pages } from "@/types/banks";
 import styled, { css } from "styled-components";
-import media from 'styled-media-query';
 
 type WrapperProps = {
   $page?: Pages;
@@ -10,8 +9,9 @@ export const Wrapper = styled.main`
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
 `;
 
 export const Content = styled.section<WrapperProps>`
@@ -24,8 +24,8 @@ export const Content = styled.section<WrapperProps>`
     ${$page === 'home' && css`
       height: 100%;
     `}
-    ${media.lessThan('medium')`
+    @media (max-width: 768px) {
       padding: ${theme.spacing.s1} ${theme.spacing.s2} ${theme.spacing.s8} ${theme.spacing.s2};
-    `}
+    }
   `}
 `;

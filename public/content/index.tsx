@@ -191,7 +191,7 @@ export const social: Social[] = [
 export const challenges:Challenges[] = [
   {
     name: 'Bocaina ParkTrail',
-    date: new Date('05/04/2024'),
+    date: '04 de maio',
     distance: '45km',
     image: images.bocaina,
     local: 'Araxá-MG',
@@ -199,7 +199,7 @@ export const challenges:Challenges[] = [
   },
   {
     name: 'Odisseia Ultra Trail Run',
-    date: [new Date('06/01/2024'), new Date('06/02/2024')],
+    date: '01 e 02 de junho',
     distance: '21km - 21km',
     image: images.odisseia,
     local: 'Urubici-SC',
@@ -207,7 +207,7 @@ export const challenges:Challenges[] = [
   },
   {
     name: 'La Missión',
-    date: [new Date('08/15/2024'), new Date('08/18/2024')],
+    date: '15 a 18 de agosto',
     distance: '55km',
     image: images.lamission,
     local: 'Passa Quatro-MG',

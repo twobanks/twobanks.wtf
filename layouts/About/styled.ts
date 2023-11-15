@@ -1,5 +1,4 @@
 import styled, { css, DefaultTheme } from "styled-components";
-import media from "styled-media-query";
 
 type AboutStyle = {
   image?: string;
@@ -105,9 +104,9 @@ export const Career = styled.section<AboutStyle>`
         ${link.default(theme)}
       `}
     }
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       padding: ${theme.spacing.s2} 0;
-    `}
+    }
   `}
 `
 
@@ -135,9 +134,9 @@ export const ImageWrapper = styled.div`
       padding: ${theme.spacing.s2} 0;
       object-fit: cover;
     }
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       display: none;
-    `}
+    }
   `}
 `
 
@@ -147,14 +146,14 @@ export const Bio = styled.div`
     flex-direction: row-reverse;
     gap: ${theme.spacing.s8};
     padding: ${theme.spacing.s2};
-    ${media.lessThan("large")`
-      gap: ${theme.spacing.s4};
-    `}
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       flex-direction: column;
       gap: 0;
       padding: 0 0 ${theme.spacing.s4} 0;
-    `}
+    }
+    @media (max-width: 1440px) {
+      gap: ${theme.spacing.s4};
+    }
   `}
 `
 

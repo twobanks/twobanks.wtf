@@ -1,6 +1,5 @@
 import { Pages } from "@/types/banks";
 import styled, { css, DefaultTheme } from "styled-components";
-import media from "styled-media-query";
 
 type TitleStyles = {
   $page: Pages;
@@ -37,11 +36,11 @@ export const Wrapper = styled.h1<TitleStyles>`
     width: 100vw;
     margin: 0 auto;
     ${titleModifiers[$page](theme)}
-    ${media.lessThan('medium')`
+    @media (max-width: 768px) {
       justify-content: flex-end;
       font-size: ${theme.font.sizes.s28};
       width: 100%;
       padding: ${theme.spacing.s2} 0;
-    `}
+    }
   `}
 `;

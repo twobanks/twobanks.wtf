@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import media from "styled-media-query";
 
 export const Content = styled.div`
   ${({ theme }) => css`
@@ -7,9 +6,9 @@ export const Content = styled.div`
     flex-direction: column;
     width: 100%;
     padding: ${theme.spacing.s2};
-    ${media.lessThan("medium")`
+    @media (max-width: 768px) {
       padding: ${theme.spacing.s1} 0;
-    `}
+    }
   `}
 `
 

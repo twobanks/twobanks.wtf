@@ -16,7 +16,7 @@ export type Challenges = {
   name: string;
   local: string;
   distance: string;
-  date: Date | Date[];
+  date: string;
   url: string;
   image: string;
 }

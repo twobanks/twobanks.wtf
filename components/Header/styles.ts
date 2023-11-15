@@ -1,6 +1,5 @@
 import { Pages } from '@/types/banks';
 import styled, { DefaultTheme, css } from 'styled-components'
-import media from "styled-media-query";
 
 type HeaderProps = {
 	$page?: Pages;
@@ -47,18 +46,17 @@ export const banksModifiers = {
 
 export const Header = styled.header<HeaderProps>`
 	${({ theme, $page }) => css`
-		width: 100vw;
+		width: 100%;
 		background-color: ${theme.colors.background};
-		${media.lessThan("medium")`
-			display: flex;
+    @media (max-width: 768px) {
+      display: flex;
 			justify-content: space-between;
 			height: ${theme.spacing.s10};
-			width: 100%;
 			padding: ${theme.spacing.s1} ${theme.spacing.s2};
 			${$page === 'home' && css`
 				display: none;
 			`}
-		`}
+    }
 	`}
 `
 
@@ -73,11 +71,11 @@ export const Content = styled.div`
 		margin: 0 auto;
 		padding: ${theme.spacing.s2};
 		justify-content: space-between;
-		${media.lessThan("medium")`
-			width: fit-content;
+    @media (max-width: 768px) {
+      width: fit-content;
 			margin: 0;
 			padding: ${theme.spacing.s2} 0;
-		`}
+    }
 	`}
 `
 

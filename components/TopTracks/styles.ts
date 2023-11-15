@@ -1,5 +1,4 @@
 import styled, { css } from "styled-components";
-import media from "styled-media-query";
 
 export const Wrapper = styled.ul`
   ${({ theme }) => css`
@@ -34,8 +33,8 @@ export const Wrapper = styled.ul`
         }
       }
     }
-    ${media.lessThan('medium')`
+    @media (max-width: 768px) {
       padding: 0;
-    `}
+    }
   `}
 `;
