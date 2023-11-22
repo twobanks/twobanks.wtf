@@ -2,6 +2,7 @@ export enum STACKS  {
   TYPESCRIPT = 'TypeScript',
   JAVASCRIPT = 'Javascript(ES6)',
   NEXT = 'NextJS',
+  NEXT_UI = 'NextUI',
   GATSBY = 'GatsbyJS',
   STYLED = 'styled-components',
   REACT = 'ReactJS',
@@ -9,4 +10,5 @@ export enum STACKS  {
   JEST = 'Jest',
   PHP = 'PHP',
   HTML = 'HTML5/CSS3',
+  TAILWIND = 'Tailwind CSS'
 }
