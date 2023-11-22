@@ -7,89 +7,76 @@ type WorksStyle = {
 
 export const Container = styled.div`
   ${({ theme }) => css`
-    display: flex;
-    flex-direction: column;
-    max-width: ${theme.container};
-    width: 100%;
-    margin: ${theme.spacing.s2} auto;
-    ul {
-      display: grid;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: ${theme.spacing.s2};
+    padding: ${theme.spacing.s2};
+    @media (max-width: 1170px) {
       grid-template-columns: repeat(2, 1fr);
     }
     @media (max-width: 768px) {
-      margin: 0 auto;
-      ul {
-        grid-template-columns: repeat(1, 1fr);
-      }
+      padding: 0;
+      grid-template-columns: repeat(1, 1fr);
+      gap: 0;
     }
   `}
 `
 
 export const Work = styled.li`
   ${({ theme }) => css`
-    a {
-      display: flex;
-      flex-direction: column;
-    }
-    &:hover strong {
-      color: ${theme.colors.blue};
-    }
-  `}
-`
-
-export const WrapperImage = styled.div`
-  ${({ theme }) => css`
-    position: relative;
-    img {
-      display: flex;
-      width: 100%;
-      height: auto;
-      border-radius: ${theme.radius};
-    }
-  `}
-`;
-
-export const Content = styled.div`
-  ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    margin-top: ${theme.spacing.s1};
-    gap: ${theme.spacing.s1};
-    strong {
-      color: ${theme.colors.primary};
-      transition: ${theme.transition.color};
+    border-radius: ${theme.radius};
+    border: 1px solid ${theme.colors.hover};
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.04);
+    &:hover {
+      background-color: ${theme.colors.hover};
+      .header_work {
+        border-bottom: 0.1px solid ${theme.colors.background};
+      }
     }
-    ul {
+    .header_work {
       display: flex;
-      gap: ${theme.spacing.s1};
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: ${theme.spacing.s2};
+      border-bottom: 0.1px solid ${theme.colors.hover};
     }
-    div {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      a {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
+    a {
+      width: fit-content;
+      strong {
+        font-size: 20px;
         color: ${theme.colors.primary};
-        img {
-          height: 2rem;
-          width: 2rem;
+        transition: ${theme.transition.color};
+        &:hover {
+          color: ${theme.colors.blue};
         }
       }
     }
-    em {
-      font-size: ${theme.font.sizes.s14};
+    @media (max-width: 768px) {
+      width: 100%;
+      border: none;
+      border-bottom: 0.1px solid ${theme.colors.hover};
+      &:last-child {
+        border-bottom: 0;
+      }
+      .header_work {
+        border: none;
+      }
+      &:hover {
+        .header_work {
+          border: none;
+        }
+      }
     }
   `}
 `
 
-export const Item = styled.li<WorksStyle>`
+export const Item = styled.span<WorksStyle>`
   ${({ theme, $stack }) => css`
     position: relative;
     font-size: ${theme.font.sizes.s14};
-    background-color: ${theme.colors.hover};
+    background-color: ${theme.colors.background};
     padding: .5rem ${theme.spacing.s1} .5rem 2.5rem;
     border-radius: ${theme.radius};
     &::after {
@@ -101,8 +88,32 @@ export const Item = styled.li<WorksStyle>`
       height: .5rem;
       width: .5rem;
       position: absolute;
-
     }
   `}
 `
 
+export const Company = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    a {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      &:hover {
+        color: ${theme.colors.blue};
+      }
+    }
+    font-size: ${theme.font.sizes.s14};
+  `}
+`;
+
+export const Stack = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+    padding: ${theme.spacing.s2};
+  `}
+`;
