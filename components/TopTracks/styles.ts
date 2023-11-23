@@ -5,36 +5,40 @@ export const Wrapper = styled.ul`
     display: flex;
     flex-direction: column;
     width: 100%;
-    li div {
-      padding: calc(${theme.spacing.s1} / 1.5) ${theme.spacing.s1};
+    padding: 0 16px;
+    li {
       a {
         display: flex;
         align-items: center;
-        gap: ${theme.spacing.s2};
-        em {
-          display: flex;
-          height: 1.5rem;
-          width: 1.5rem;
-          background-color: ${theme.colors.hover};
-          border-radius: 100%;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 0.1px solid ${theme.colors.hover};
+        img {
+          border-radius: 4px;
+          box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
         }
-        div {
-          display: flex;
-          flex-direction: column;
-          span {
-            line-height: ${theme.font.sizes.s20};
-            font-size: ${theme.font.sizes.s16};
-            color: ${theme.colors.primary};
-            :nth-child(2) {
-              color: ${theme.colors.secondary};
-              font-size: ${theme.font.sizes.s14};
-            }
-          }
+        &:hover strong {
+          color: ${theme.colors.spotify};
         }
       }
+      &:last-child a {
+        border-bottom: 0;
+      }
     }
-    @media (max-width: 768px) {
-      padding: 0;
+  `}
+`;
+
+export const Info = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    strong {
+      color: ${theme.colors.primary};
+      font-size: ${theme.font.sizes.s16};
+    }
+    span {
+      font-size: ${theme.font.sizes.s14};
+      color: ${theme.colors.secondary};
     }
   `}
 `;

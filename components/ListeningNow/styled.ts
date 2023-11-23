@@ -7,25 +7,6 @@ type PlayingProps = {
 }
 
 const animate = {
-  bounce: () => css`
-    @keyframes bounce {
-      10% {
-        transform: scaleY(0.3);
-      }
-      30% {
-        transform: scaleY(1);
-      }
-      60% {
-        transform: scaleY(0.5);
-      }
-      80% {
-        transform: scaleY(0.75);
-      }
-      100% {
-        transform: scaleY(0.6);
-      }
-    }
-  `,
   loading: () => css`
     @keyframes loading {
       0%, 80%, 100% {
@@ -35,6 +16,18 @@ const animate = {
       }
     }
   `,
+  wave: () => css`
+    @keyframes loader {
+      0%,
+      100% {
+        height: 2px;
+      }
+    
+      50% {
+        height: 50px;
+      }
+    }
+  `
 }
 
 export const Wrapper = styled.div<PlayingProps>`
@@ -46,15 +39,15 @@ export const Wrapper = styled.div<PlayingProps>`
   `}
 `;
 
-export const Content = styled(Link)`
+export const Container = styled(Link)`
   ${({ theme }) => css`
     display: flex;
-    flex-direction: column;
-    gap: ${theme.spacing.s4};
+    gap: ${theme.spacing.s2};
     background-color: ${theme.colors.hover};
-    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
     padding: ${theme.spacing.s2};
     border-radius: ${theme.radius};
+    justify-content: space-between;
+    align-items: center;
     span {
       cursor: pointer;
       font-size: ${theme.font.sizes.s16};
@@ -63,55 +56,31 @@ export const Content = styled(Link)`
   `}
 `;
 
-export const Icon = styled.div<PlayingProps>`
-  ${({ theme, $active }) => css`
-    position: relative;
+export const MusicContent = styled.div`
+  ${({ theme }) => css`
     display: flex;
-    justify-content: space-between;
-    width: 1.5rem;
-    height: 2rem;
-    ${animate.bounce()}
-    span {
-      width: .3rem;
-      height: 100%;
-      background-color: ${$active ? theme.colors.spotify : theme.colors.yellowTech};
-      border-radius: .3rem;
-      transform-origin: bottom;
-      animation: bounce 2.2s ease infinite alternate;
-      content: '';
-      &:nth-of-type(2) {
-        animation-delay: -2.2s;
-      }
-      &:nth-of-type(3) {
-        animation-delay: -3.7s;
-      }
-    }
+    gap: ${theme.spacing.s1};
   `}
-`
+`;
 
 export const Song = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    span {
-      font-size: ${theme.font.sizes.s18};
+    strong {
       color: ${theme.colors.primary};
-      line-height: ${theme.font.sizes.s22};
-      :nth-of-type(2) {
-        font-size: ${theme.font.sizes.s14};
-        color: ${theme.colors.secondary};
-      }
+      font-size: ${theme.font.sizes.s16};
+    }
+    span {
+      font-size: ${theme.font.sizes.s14};
+      color: ${theme.colors.secondary};
     }
   `}
 `
 
 export const ImageWrapper = styled.div`
   ${({ theme }) => css`
-    position: relative;
     display: flex;
-    width: 100%;
-    height: 40rem;
-    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
     img {
       border-radius: ${theme.radius};
     }
@@ -149,6 +118,91 @@ export const WrapperLoading = styled.div`
     }
     span:nth-of-type(3) {
       animation-delay: -0.16s;
+    }
+  `}
+`;
+
+export const MusicWaveWrapper = styled.div`
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+  height: 60px;
+  @media (max-width: 768px) {
+    width: 100px;
+  }
+`;
+
+export const Wave = styled.div`
+  ${({ theme }) => css`
+    width: 4px;
+    border-radius: 8px;
+    background-color: transparent;
+    ${animate.wave()}
+    animation: loader 1.5s ease-in-out infinite;
+    &:nth-child(1) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 1s;
+    }
+    &:nth-child(2) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.8s;
+    }
+    &:nth-child(3) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.6s;
+    }
+    &:nth-child(4) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.4s;
+    }
+    &:nth-child(5) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.2s;
+    }
+    &:nth-child(6) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.2s;
+    }
+    &:nth-child(7) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.4s;
+    }
+    &:nth-child(8) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.6s;
+    }
+    &:nth-child(9) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.8s;
+    }
+    &:nth-child(10) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 1s;
+    }
+    &:nth-child(11) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 1s;
+    }
+    &:nth-child(12) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.8s;
+    }
+    &:nth-child(13) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.6s;
+    }
+    &:nth-child(14) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.4s;
+    }
+    &:nth-child(15) {
+      background-color: ${theme.colors.spotify};
+      animation-delay: 0.2s;
+    }
+    @media (max-width: 768px) {
+      width: 2px;
     }
   `}
 `;

@@ -1,10 +1,10 @@
 export const conversionTitlePage = (value: string) => {
   const labels: { [index: string]: string } = {
     'about': 'sobre',
-    'works': 'trampos',
+    'trampos': 'trampos',
     'snippets': 'code snippets',
     'activities': 'atividades',
-    'listening': '...ouvindo!'
+    'ouvindo': '...ouvindo!'
   }
   return labels[value];
 }

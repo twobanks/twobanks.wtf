@@ -30,7 +30,7 @@ export const banksModifiers = {
   ['about']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.yellow};
   `,
-  ['works']: (theme: DefaultTheme) => css`
+  ['trampos']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.blue};
   `,
   ['activities']: (theme: DefaultTheme) => css`
@@ -39,7 +39,7 @@ export const banksModifiers = {
   ['snippets']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.red};
   `,
-  ['listening']: (theme: DefaultTheme) => css`
+  ['ouvindo']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.spotify};
   `,
 }
