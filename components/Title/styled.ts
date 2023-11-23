@@ -12,7 +12,7 @@ const titleModifiers = {
   ['about']: (theme: DefaultTheme) => css`
     color: ${theme.colors.yellow};
   `,
-  ['works']: (theme: DefaultTheme) => css`
+  ['trampos']: (theme: DefaultTheme) => css`
     color: ${theme.colors.blue};
   `,
   ['activities']: (theme: DefaultTheme) => css`
@@ -21,7 +21,7 @@ const titleModifiers = {
   ['snippets']: (theme: DefaultTheme) => css`
     color: ${theme.colors.red};
   `,
-  ['listening']: (theme: DefaultTheme) => css`
+  ['ouvindo']: (theme: DefaultTheme) => css`
     color: ${theme.colors.spotify};
   `,
 }

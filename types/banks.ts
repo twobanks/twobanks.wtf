@@ -84,4 +84,4 @@ export type StaticProps = {
   }
 }
 
-export type Pages = 'about' | 'works' | 'activities' | 'snippets' | 'home' | 'listening';
+export type Pages = 'about' | 'trampos' | 'activities' | 'snippets' | 'home' | 'ouvindo';

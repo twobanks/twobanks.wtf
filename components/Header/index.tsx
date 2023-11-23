@@ -1,12 +1,12 @@
 import * as S from './styles'
 import Link from 'next/link'
 import { conversionTitlePage } from '@/utils/functions/conversionPage'
-import { Header, Pages } from '@/types/banks';
+import { Header as HeaderType, Pages } from '@/types/banks';
 import { Title, Menu } from '@/components';
 
 type HeaderProps = {
   page?: Pages;
-  header: Header;
+  header: HeaderType;
 }
 
 const Header = ({ page = 'home', header }: HeaderProps) => (

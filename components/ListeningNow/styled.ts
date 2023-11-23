@@ -49,10 +49,9 @@ export const Wrapper = styled.div<PlayingProps>`
 export const Content = styled(Link)`
   ${({ theme }) => css`
     display: flex;
-    flex-direction: column;
-    gap: ${theme.spacing.s4};
+    gap: ${theme.spacing.s2};
     background-color: ${theme.colors.hover};
-    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
+    /* box-shadow: 0 1.5rem 1.5rem ${theme.colors.black}; */
     padding: ${theme.spacing.s2};
     border-radius: ${theme.radius};
     span {
@@ -93,25 +92,20 @@ export const Song = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    span {
-      font-size: ${theme.font.sizes.s18};
+    strong {
       color: ${theme.colors.primary};
-      line-height: ${theme.font.sizes.s22};
-      :nth-of-type(2) {
-        font-size: ${theme.font.sizes.s14};
-        color: ${theme.colors.secondary};
-      }
+      font-size: ${theme.font.sizes.s16};
+    }
+    span {
+      font-size: ${theme.font.sizes.s14};
+      color: ${theme.colors.secondary};
     }
   `}
 `
 
 export const ImageWrapper = styled.div`
   ${({ theme }) => css`
-    position: relative;
     display: flex;
-    width: 100%;
-    height: 40rem;
-    box-shadow: 0 1.5rem 1.5rem ${theme.colors.black};
     img {
       border-radius: ${theme.radius};
     }

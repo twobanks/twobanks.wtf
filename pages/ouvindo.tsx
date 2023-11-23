@@ -3,16 +3,16 @@ import { SEO } from '@/utils/constants/seo'
 import Wrapper from '@/layouts/Wrapper'
 import Listening from '@/layouts/Listening'
 
-const HomePage = () => (
+const ListeningPage = () => (
   <>
     <NextSeo
-      title="listening | twobanks"
+      title="ouvindo | twobanks"
       {...SEO}
     />
-    <Wrapper page="listening">
+    <Wrapper page="ouvindo">
       <Listening />
     </Wrapper>
   </>
 )
 
-export default HomePage
+export default ListeningPage

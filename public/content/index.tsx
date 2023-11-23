@@ -24,8 +24,8 @@ export const header = {
       iconAnimated: images.activitiesAnimated,
     },
     {
-      name: 'listening',
-      url: 'listening',
+      name: 'ouvindo',
+      url: 'ouvindo',
       icon: images.play,
       iconAnimated: images.playAnimated,
     },

@@ -9,7 +9,7 @@ const WorksPage = () => <>
     title="trampos | twobanks"
     {...SEO}
   />
-  <Wrapper page="works" >
+  <Wrapper page="trampos" >
     <Works works={works} />
   </Wrapper>
 </>

@@ -26,6 +26,7 @@ export type TopTracks = {
     url: string;
     artist: string;
     music: string;
+    images: string;
   }[];
 };
 
