@@ -1,13 +1,10 @@
-import useSWR from 'swr';
 import Image from 'next/image';
 import { NowPlayingSong } from '@/types/spotify';
-import fetcher from '@/utils/lib/fetcher';
 import * as S from './styled'
 
 const waves = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14];
 
-const ListeningNow = () => {
-  const { data, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
+const ListeningNow = ({ data, isLoading } : { data?: NowPlayingSong; isLoading: boolean; }) => {
   return (
     <S.Wrapper $visible={Boolean(data?.isPlaying)}>
       {isLoading ? (

@@ -1,12 +1,10 @@
-import useSWR from 'swr';
-import fetcher from "@/utils/lib/fetcher";
+
 import * as S from './styles';
 import Link from 'next/link';
 import Image from 'next/image';
 import { TopTracks as TopTracksType } from '@/types/spotify';
 
-const TopTracks = () => {
-  const { data } = useSWR<TopTracksType>(`/api/top-tracks`, fetcher);
+const TopTracks = ({ data } : { data?: TopTracksType; }) => {
   return (
     <S.Wrapper>
       {data?.tracks.map(track => (
