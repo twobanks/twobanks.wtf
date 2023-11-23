@@ -7,7 +7,6 @@ import { TopTracks as TopTracksType } from '@/types/spotify';
 
 const TopTracks = () => {
   const { data } = useSWR<TopTracksType>(`/api/top-tracks`, fetcher);
-  console.log("data", data);
   return (
     <S.Wrapper>
       {data?.tracks.map(track => (
