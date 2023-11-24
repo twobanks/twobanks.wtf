@@ -40,12 +40,14 @@ type Experiences = {
   city_company: string;
   period: string;
   tech: STACKS[],
+  description: Array<string>;
 }
 
 type Academic = {
   local: string;
   course: string;
   period: string;
+  url: string;
 }
 
 

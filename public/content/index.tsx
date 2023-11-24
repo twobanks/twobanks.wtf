@@ -47,13 +47,19 @@ export const header = {
 export const data: About = {
   experiences: [
     {
-      current: true,
+      current: false,
       role: 'Desenvolvedor Front-End',
       name_company: 'Bornlogic',
       url_company: 'https://www.bornlogic.com/',
       city_company: 'São Paulo, SP',
-      period: 'jul de 2022 - até o momento',
+      period: 'jul de 2022 - out de 2023 - 1 ano 4 meses',
       tech: [STACKS.TYPESCRIPT, STACKS.JAVASCRIPT, STACKS.HTML, STACKS.REACT, STACKS.STYLED],
+      description: [
+        'Responsável por melhorias no produto Gerentes Digitais',
+        'Desenvolvimento de um módulo de calendário/agenda.',
+        'Desenvolvimento dos módulos de Orçamentos e Retail Media.',
+        'Idealização e desenvolvimento de um módulo de Localização, possibilitando o usuário acessar informações de todas as unidades contidas em um determinado estado/cidade.',
+      ]
     },
     {
       current: false,
@@ -61,8 +67,13 @@ export const data: About = {
       name_company: 'Harpoon',
       url_company: 'https://harpoon.digital/',
       city_company: 'Uberlândia, MG',
-      period: 'fev de 2021 - jun de 2022 - 1 ano 4 meses',
+      period: 'fev de 2021 - jun de 2022 - 1 ano 5 meses',
       tech: [STACKS.TYPESCRIPT, STACKS.JAVASCRIPT, STACKS.HTML, STACKS.REACT, STACKS.NEXT, STACKS.JEST, STACKS.REACT_TESTING, STACKS.STYLED],
+      description: [
+        'Participação ativa no desenvolvimento do produto, desde sua criação.',
+        'Desenvolvimento de um módulo onde continha um Landing Page Builder e Email Builder.',
+        'Resposável por desenvolver melhorias de UX e UI.',
+      ]
     },
     {
       current: false,
@@ -70,8 +81,13 @@ export const data: About = {
       name_company: 'Bowe',
       url_company: 'https://bowe.com.br/',
       city_company: 'Uberlândia, MG',
-      period: 'nov de 2020 - fev de 2021 - 3 meses',
+      period: 'nov de 2020 - fev de 2021 - 4 meses',
       tech: [STACKS.JAVASCRIPT, STACKS.HTML, STACKS.REACT, STACKS.NEXT, STACKS.GATSBY, STACKS.JEST, STACKS.REACT_TESTING, STACKS.STYLED],
+      description: [
+        'Desenvolvimento do site da empresa, utilizando GatsbyJS',
+        'Melhorias pontuais no aplicativo mobile da Snackin, utilizando React Native',
+        'Desenvolvimento do site da EQI Investimentos, utilizando GatsbyJS',
+      ]
     },
     {
       current: false,
@@ -81,12 +97,14 @@ export const data: About = {
       city_company: 'Uberlândia, MG',
       period: 'jun de 2014 - out de 2020 - 6 anos 5 meses',
       tech: [STACKS.PHP, STACKS.HTML, STACKS.JAVASCRIPT],
+      description: ['Responsável pelo desenvolvimento de sites institucionais']
     },
   ],
   academic: {
     local: 'Instituto Federal do Triângulo Mineiro',
-    course: 'Análise e Desenvolvimento de Sistemas, Tecnologia da Informação',
+    course: 'Análise e Desenvolvimento de Sistemas',
     period: '2012 - 2015',
+    url: 'https://iftm.edu.br/cursos/patrocinio/tecnologo/analise-e-desenvolvimento-de-sistemas/'
   }
 }
 

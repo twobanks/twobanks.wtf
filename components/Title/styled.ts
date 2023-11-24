@@ -30,7 +30,7 @@ export const Wrapper = styled.h1<TitleStyles>`
   ${({ theme, $page }) => css`
     display: flex;
     align-items: center;
-    font-size: ${theme.font.sizes.s48};
+    font-size: ${theme.font.sizes.s64};
     padding: ${theme.spacing.s2};
     max-width: ${theme.container};
     width: 100vw;
