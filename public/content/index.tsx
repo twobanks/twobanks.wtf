@@ -1,6 +1,7 @@
 import images from "@/public";
 import { About, Works, Social, Challenges } from "@/types/banks";
 import { STACKS } from "@/utils/enums/stack";
+import { ACTIVITY } from "@/utils/enums/strava";
 
 export const header = {
   avatar: images.logo,
@@ -231,24 +232,129 @@ export const challenges:Challenges[] = [
     name: 'Bocaina ParkTrail',
     date: '04 de maio',
     distance: '45km',
-    image: images.bocaina,
-    local: 'Araxá-MG',
-    url: 'https://www.instagram.com/bocainapark/'
+    local: 'Araxá/MG',
+    url: 'https://www.instagram.com/bocainapark/',
+    type: ACTIVITY.TRAIL,
   },
   {
     name: 'Odisseia Ultra Trail Run',
     date: '01 e 02 de junho',
     distance: '21km - 21km',
-    image: images.odisseia,
-    local: 'Urubici-SC',
-    url: 'https://www.instagram.com/odisseiaultratrailrun/'
+    local: 'Urubici/SC',
+    url: 'https://www.instagram.com/odisseiaultratrailrun/',
+    type: ACTIVITY.TRAIL,
   },
   {
     name: 'La Missión',
-    date: '15 a 18 de agosto',
+    date: '17 de agosto',
     distance: '55km',
-    image: images.lamission,
-    local: 'Passa Quatro-MG',
-    url: 'https://www.instagram.com/lamisionbrasil/'
+    local: 'Passa Quatro/MG',
+    url: 'https://www.instagram.com/lamisionbrasil/',
+    type: ACTIVITY.TRAIL
+  },
+]
+
+export const completedChallenges: Challenges[] = [
+  {
+    name: 'UTMB',
+    local: 'Paraty/RJ',
+    distance: '32,2',
+    time: '4:00:35',
+    elevation: '1.184',
+    id: '9906609877',
+    type: ACTIVITY.TRAIL,
+    year: 2023,
+  },
+  {
+    name: 'Serra do Cruzeiro',
+    local: 'Patrocínio/MG',
+    distance: '14,4',
+    time: '1:53:41',
+    elevation: '629',
+    id: '9418213451',
+    type: ACTIVITY.TRAIL,
+    year: 2023,
+  },
+  {
+    name: 'Bocaina Park Trail',
+    local: 'Araxá/MG',
+    distance: '15,3',
+    time: '2:13:55',
+    elevation: '873',
+    id: '9107333179',
+    type: ACTIVITY.TRAIL,
+    year: 2023,
+  },
+  {
+    name: 'wos',
+    local: 'Amanhece/MG',
+    distance: '28,3',
+    time: '3:56:15',
+    elevation: '950',
+    id: '8073119330',
+    type: ACTIVITY.TRAIL,
+    year: 2022,
+  },
+  {
+    name: 'Bora pro Choque',
+    local: 'Uberaba/MG',
+    distance: '8,3',
+    time: '55:23',
+    elevation: '248',
+    id: '7932776512',
+    type: ACTIVITY.TRAIL,
+    year: 2022,
+  },
+  {
+    name: 'Serra do Cruzeiro',
+    local: 'Patrocínio/MG',
+    distance: '14,4',
+    time: '1:45:26',
+    elevation: '629',
+    id: '7827920260',
+    type: ACTIVITY.TRAIL,
+    year: 2022,
+  },
+
+  {
+    name: 'Copa Triângulo MTB',
+    local: 'Uberaba/MG',
+    distance: '64,3',
+    time: '2:42:17',
+    elevation: '945',
+    id: '7485354782',
+    type: ACTIVITY.RIDE,
+    year: 2022,
+  },
+  {
+    name: 'Boqueirão Trail Run',
+    local: 'Tapira/MG',
+    distance: '21,6',
+    time: '2:26:51',
+    elevation: '711',
+    id: '7291146423',
+    type: ACTIVITY.TRAIL,
+    year: 2022,
+  },
+
+  {
+    name: 'Treino Premiado XCO',
+    local: 'Uberaba/MG',
+    distance: '3,8',
+    time: '24:48',
+    elevation: '307',
+    id: '6996273187',
+    type: ACTIVITY.TRAIL,
+    year: 2022,
+  },
+  {
+    name: '1º Desafio Dan In Hotel de MTB',
+    local: 'Uberaba/MG',
+    distance: '39,2',
+    time: '1:36:04',
+    elevation: '401',
+    id: '2855454923',
+    type: ACTIVITY.RIDE,
+    year: 2019,
   },
 ]

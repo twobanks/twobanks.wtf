@@ -5,6 +5,9 @@ export const Content = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: ${theme.spacing.s1};
+    margin: 0 ${theme.spacing.s2};
+    @media (max-width: 768px) {
+      margin: 0;
+    }
   `}
 `;
