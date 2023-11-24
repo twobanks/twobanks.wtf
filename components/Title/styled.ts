@@ -9,7 +9,7 @@ const titleModifiers = {
   ['home']: () => css`
     display: none;
   `,
-  ['about']: (theme: DefaultTheme) => css`
+  ['sobre']: (theme: DefaultTheme) => css`
     color: ${theme.colors.yellow};
   `,
   ['trampos']: (theme: DefaultTheme) => css`

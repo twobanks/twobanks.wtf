@@ -27,7 +27,7 @@ export const banksModifiers = {
   ['home']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.secondary};
   `,
-  ['about']: (theme: DefaultTheme) => css`
+  ['sobre']: (theme: DefaultTheme) => css`
     background-color: ${theme.colors.yellow};
   `,
   ['trampos']: (theme: DefaultTheme) => css`
