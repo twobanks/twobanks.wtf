@@ -15,13 +15,17 @@ export type Header = {
 
 export type Challenges = {
   name: string;
-  local: string;
+  local?: string;
   distance: string;
-  date: string;
-  url: string;
-  image: string;
+  date?: string;
+  url?: string;
+  id?: string;
   type: ACTIVITY;
+  time?: string;
+  elevation?: string;
+  year?: number;
 }
+
 
 export type Works = {
   name: string;
