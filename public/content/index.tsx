@@ -1,6 +1,7 @@
 import images from "@/public";
 import { About, Works, Social, Challenges } from "@/types/banks";
 import { STACKS } from "@/utils/enums/stack";
+import { ACTIVITY } from "@/utils/enums/strava";
 
 export const header = {
   avatar: images.logo,
@@ -232,23 +233,26 @@ export const challenges:Challenges[] = [
     date: '04 de maio',
     distance: '45km',
     image: images.bocaina,
-    local: 'Araxá-MG',
-    url: 'https://www.instagram.com/bocainapark/'
+    local: 'Araxá/MG',
+    url: 'https://www.instagram.com/bocainapark/',
+    type: ACTIVITY.TRAIL,
   },
   {
     name: 'Odisseia Ultra Trail Run',
     date: '01 e 02 de junho',
     distance: '21km - 21km',
     image: images.odisseia,
-    local: 'Urubici-SC',
-    url: 'https://www.instagram.com/odisseiaultratrailrun/'
+    local: 'Urubici/SC',
+    url: 'https://www.instagram.com/odisseiaultratrailrun/',
+    type: ACTIVITY.TRAIL,
   },
   {
     name: 'La Missión',
     date: '15 a 18 de agosto',
     distance: '55km',
     image: images.lamission,
-    local: 'Passa Quatro-MG',
-    url: 'https://www.instagram.com/lamisionbrasil/'
+    local: 'Passa Quatro/MG',
+    url: 'https://www.instagram.com/lamisionbrasil/',
+    type: ACTIVITY.TRAIL
   },
 ]

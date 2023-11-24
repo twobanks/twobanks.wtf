@@ -1,4 +1,5 @@
 import { STACKS } from "@/utils/enums/stack";
+import { ACTIVITY } from "@/utils/enums/strava";
 
 export type Menu = {
   name: string;
@@ -19,6 +20,7 @@ export type Challenges = {
   date: string;
   url: string;
   image: string;
+  type: ACTIVITY;
 }
 
 export type Works = {
