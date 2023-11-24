@@ -24,7 +24,7 @@ const NextChallenges = ({ data } : { data: Challenges[]; }) => (
           <div className='top'>
             <Image src={iconActivity[item.type]} alt={item.type} height={20} width={20} blurDataURL={iconActivity[item.type]} priority quality={100} />
             <div className='header'>
-              <Link href={`https://www.strava.com/activities/${item.id}`} target='_blank'>{item.name}</Link>
+              <Link href={item.url ?? '/'} target='_blank'>{item.name}</Link>
               <div className='info'>
                 <span>{item.date}</span> - <span>{item.local}</span>
               </div>
