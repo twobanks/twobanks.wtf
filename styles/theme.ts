@@ -18,6 +18,7 @@ export default {
       s32: "3.2rem",
       s36: "3.6rem",
       s48: "4.8rem",
+      s64: "6.4rem",
     },
   },
   transition: {

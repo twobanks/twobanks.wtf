@@ -40,12 +40,14 @@ type Experiences = {
   city_company: string;
   period: string;
   tech: STACKS[],
+  description: Array<string>;
 }
 
 type Academic = {
   local: string;
   course: string;
   period: string;
+  url: string;
 }
 
 
@@ -84,4 +86,4 @@ export type StaticProps = {
   }
 }
 
-export type Pages = 'about' | 'trampos' | 'activities' | 'snippets' | 'home' | 'ouvindo';
+export type Pages = 'sobre' | 'trampos' | 'activities' | 'snippets' | 'home' | 'ouvindo';

@@ -9,7 +9,7 @@ const titleModifiers = {
   ['home']: () => css`
     display: none;
   `,
-  ['about']: (theme: DefaultTheme) => css`
+  ['sobre']: (theme: DefaultTheme) => css`
     color: ${theme.colors.yellow};
   `,
   ['trampos']: (theme: DefaultTheme) => css`
@@ -30,7 +30,7 @@ export const Wrapper = styled.h1<TitleStyles>`
   ${({ theme, $page }) => css`
     display: flex;
     align-items: center;
-    font-size: ${theme.font.sizes.s48};
+    font-size: ${theme.font.sizes.s64};
     padding: ${theme.spacing.s2};
     max-width: ${theme.container};
     width: 100vw;

@@ -10,7 +10,7 @@ const AboutPage = () => (
       title="sobre | twobanks"
       {...SEO}
     />
-    <Wrapper page="about">
+    <Wrapper page="sobre">
       <About data={data} />
     </Wrapper>
   </>
