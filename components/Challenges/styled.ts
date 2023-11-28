@@ -1,19 +1,5 @@
 import styled, { css } from "styled-components";
 
-export const WrapperChallenges = styled.section`
-  ${({ theme }) => css`
-    display: flex;
-    flex-direction: column;
-    gap: ${theme.spacing.s2};
-    width: 100%;
-    h2 {
-      color: ${theme.colors.primary};
-    }
-    background-color: ${theme.colors.black};
-    border-radius: ${theme.radius};
-  `}
-`;
-
 export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;

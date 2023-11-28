@@ -4,4 +4,5 @@ export enum ACTIVITY {
   TRAIL = 'TrailRun',
   WALK = 'Walk',
   GYM = 'WeightTraining',
+  WORKOUT = 'Workout'
 }
