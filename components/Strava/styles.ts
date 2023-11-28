@@ -8,22 +8,21 @@ export const Wrapper = styled.main<StravaStyles>`
   ${({ theme }) => css`
     max-width: ${theme.container};
     width: 100%;
-    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
-    padding: ${theme.spacing.s2};
-    @media (max-width: 768px) {
+    gap: 2rem;
+    padding: ${theme.spacing.s2} 0;
+    
+    /* @media (max-width: 768px) {
       padding: 0;
-    }
+    } */
   `}
 `
 export const MapWrapper = styled.div`
   ${({ theme }) => css`
     position: relative;
-    background-color: ${theme.colors.black};
-    border-radius: ${theme.radius};
-    padding: ${theme.spacing.s2};
-    margin: ${theme.spacing.s1};
+    background-color: ${theme.colors.hover};
+    border-radius: ${theme.radius} ${theme.radius} 0 0;
     min-width: 29rem;
     min-height: 16.5rem;
     img {
@@ -51,6 +50,7 @@ export const ActivityData = styled.div`
     flex-wrap: wrap;
     gap: ${theme.spacing.s4};
     line-height: ${theme.font.sizes.s24};
+    padding: 0 2rem;
     > div {
       display: flex;
       flex-direction: column;
@@ -63,6 +63,18 @@ export const ActivityData = styled.div`
       font-size: ${theme.font.sizes.s24};
       font-weight: normal;
     }
+    .content {
+      display: flex;
+      flex-direction: column;
+      /* align-items: self-end; */
+      span {
+        font-size: ${theme.font.sizes.s12};
+      }
+      strong {
+        color: ${theme.colors.primary};
+        font-size: ${theme.font.sizes.s22};
+      }
+    }
   `}
 `
 
@@ -70,7 +82,6 @@ export const ContentActivity = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    padding: ${theme.spacing.s3};
     gap: ${theme.spacing.s2};
     flex: 1;
   `}
@@ -79,6 +90,7 @@ export const ContentActivity = styled.div`
 export const HeaderActivity = styled.div`
   display: flex;
   justify-content: space-between;
+  padding: 0 2rem;
 `
 
 export const HeartRate = styled.div<StravaStyles>`
@@ -108,19 +120,28 @@ export const HeartRate = styled.div<StravaStyles>`
 `
 
 export const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
+  ${({ theme }) => css`
+    display: flex;
+    gap: 2rem;
+    cursor: pointer;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid ${theme.colors.hover};
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  `}
 `
 
 export const DateAndCity = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items:center;
+    width: 100%;
     gap: ${theme.spacing.s1};
-    strong {
-      font-size: ${theme.font.sizes.s18};
-      color: ${theme.colors.secondary};
+    span {
+      font-size: ${theme.font.sizes.s16};
+      color: ${theme.colors.green};
     }
     em {
       color: ${theme.colors.secondary};

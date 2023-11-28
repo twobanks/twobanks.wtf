@@ -27,7 +27,7 @@ const getAccessToken = async () => {
 export const getActivities = async () => {
   const { access_token: accessToken } = await getAccessToken();
   const response = await fetch(
-    `${CALL_ATHLETE}/activities?access_token=${accessToken}`
+    `${CALL_ATHLETE}/activities?access_token=${accessToken}&per_page=50`
   );
   const json = await response.json();
 

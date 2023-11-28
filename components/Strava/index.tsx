@@ -27,7 +27,7 @@ const Strava = ({ activities }: { activities: Activities[] }) => {
       {activities?.map((activity, index) => (
         <S.Content key={uuid()} onClick={() => handleActivity(activity.id, index)}>
           <ListActivities activity={activity} />
-          {loading && itemClicked === index ? <>...loading</> : activitySelected !== null && activity.id === activitySelected.id && <Activity activity={activitySelected} />}
+          {/* {loading && itemClicked === index ? <>...loading</> : activitySelected !== null && activity.id === activitySelected.id && <Activity activity={activitySelected} />} */}
         </S.Content>
       ))}
     </S.Wrapper>

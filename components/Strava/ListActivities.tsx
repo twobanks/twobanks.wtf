@@ -6,6 +6,7 @@ import theme from '@/styles/theme';
 import images from '@/public';
 import * as S from './styles'
 import { ACTIVITY } from '@/utils/enums/strava';
+import Results from './Results';
 
 const iconActivity: any = {
   [ACTIVITY.RIDE]: images.bike,
@@ -28,34 +29,27 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
   /* const mapUrl = handleMap(map.summary_polyline); */
   const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
   const averageTitle = type !== ACTIVITY.RIDE ? 'Pace ' : 'Vel. Média ';
-  const averageSpeed = type !== ACTIVITY.RIDE ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
-
-  const renderWeightTraining = () => (
-    <S.ActivityData>
-      <div><span>Tempo</span> <em>{movingTime}</em></div>
-    </S.ActivityData>
-  )
-  const renderActivity = () => (
-    <S.ActivityData>
-      <div><span>Distância</span> <div><em>{metersToKilometers(distance)}</em> km</div></div>
-      <div><span>Tempo</span> <em>{movingTime}</em></div>
-      <div><span>{averageTitle}</span> <div><em>{averageSpeed} </em>km/h</div></div>
-      <div><span>Elevação</span> <div><em>{total_elevation_gain.toFixed(0)} </em>m</div></div>
-    </S.ActivityData>
-  )
+  const averageSpeed = type !== ACTIVITY.RIDE ? `${metersPerSecondToMinPerKm(average_speed)} /km` : `${metersPerSecondTokmPerHour(average_speed)} km/h`;
 
   return (
-    <S.ContentActivity>
-      <S.HeaderActivity>
-        <S.DateAndCity>
-          <S.TypeActivity>
-            <Image src={iconActivity[type]} alt={type} height={20} width={20} blurDataURL={iconActivity[type]} priority quality={100} />
-          </S.TypeActivity>
-          <strong>{date}</strong>
-        </S.DateAndCity>
-      </S.HeaderActivity>
-      {type !== ACTIVITY.GYM ? renderActivity() : renderWeightTraining()}
-    </S.ContentActivity>
+    <>
+      {/* {type !== ACTIVITY.GYM  &&(
+        <S.MapWrapper>
+          <Image src={mapUrl} alt={`${name} map`} fill sizes="100%" blurDataURL={mapUrl} priority quality={100} />
+        </S.MapWrapper>
+      )} */}
+      <S.ContentActivity>
+        <S.HeaderActivity>
+          <S.DateAndCity>
+            <S.TypeActivity>
+              <Image src={iconActivity[type] ?? images.workout} alt={type} height={20} width={20} blurDataURL={iconActivity[type]} priority quality={100} />
+            </S.TypeActivity>
+            <span>{date}</span>
+          </S.DateAndCity>
+        </S.HeaderActivity>
+        <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} />
+      </S.ContentActivity>
+    </>
   )
 }
 
