@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
 
 type StravaStyles = {
-  average?: number;
+  $average?: number;
 }
 
 export const Wrapper = styled.main<StravaStyles>`
@@ -90,7 +90,7 @@ export const ContentActivity = styled.div`
 `;
 
 export const HeartRate = styled.div<StravaStyles>`
-  ${({ theme, average = 0 }) => css`
+  ${({ theme, $average = 0 }) => css`
     display: flex;
     height: 4px;
     width: 1rem;
@@ -98,19 +98,19 @@ export const HeartRate = styled.div<StravaStyles>`
     outline: none;
     border-radius: ${theme.radius};
     margin-right: 4px;
-    ${average < 120 && css`
+    ${$average < 120 && css`
       background-color: ${theme.colors.trainingZone.z1};
     `}
-    ${average >= 120 && average < 159 && css`
+    ${$average >= 120 && $average < 159 && css`
       background-color: ${theme.colors.trainingZone.z2};
     `}
-    ${average >= 159 && average < 179 && css`
+    ${$average >= 159 && $average < 179 && css`
       background-color: ${theme.colors.trainingZone.z3};
     `}
-    ${average >= 179 && average < 198 && css`
+    ${$average >= 179 && $average < 198 && css`
       background-color: ${theme.colors.trainingZone.z4};
     `}
-    ${average >= 198 && css`
+    ${$average >= 198 && css`
       background-color: ${theme.colors.trainingZone.z5};
     `}
   `}

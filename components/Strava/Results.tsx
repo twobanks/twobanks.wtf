@@ -48,7 +48,7 @@ const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_eleva
         <div className='content'  title="Frequência cardiaca média">
           <span>F.C Média</span>
           <div className='values'>
-            <S.HeartRate average={average} />
+            <S.HeartRate $average={average} />
             <strong>{average.toFixed(0)}</strong>bpm
           </div>
         </div>
