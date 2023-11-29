@@ -29,7 +29,7 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
   /* const mapUrl = handleMap(map.summary_polyline); */
   const movingTime = new Date(moving_time * 1000).toISOString().substring(11, 16);
   const averageTitle = type !== ACTIVITY.RIDE ? 'Pace ' : 'Vel. Média ';
-  const averageSpeed = type !== ACTIVITY.RIDE ? `${metersPerSecondToMinPerKm(average_speed)} /km` : `${metersPerSecondTokmPerHour(average_speed)} km/h`;
+  const averageSpeed = type !== ACTIVITY.RIDE ? metersPerSecondToMinPerKm(average_speed) : metersPerSecondTokmPerHour(average_speed);
 
   return (
     <>

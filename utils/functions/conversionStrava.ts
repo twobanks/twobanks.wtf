@@ -1,4 +1,4 @@
-export const metersToKilometers = (value: number) => (value / 1000).toFixed(0)
+export const metersToKilometers = (value: number) => (value / 1000).toFixed(2)
 
 export const metersPerSecondTokmPerHour = (value: number) => (3.6 * value).toFixed(2)
 

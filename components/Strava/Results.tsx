@@ -31,7 +31,7 @@ const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_eleva
         <div className='content'>
           <span>{averageTitle}</span>
           <div className='values'>
-            <strong>{averageSpeed}</strong>
+            <strong>{averageSpeed}</strong>{type !== ACTIVITY.RIDE ? 'km' : 'km/h'}
           </div>
         </div>
       )}
