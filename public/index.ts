@@ -34,7 +34,9 @@ const banks = '/img/twobanks.png';
 const twobanks = '/img/twobanks.webp';
 const logo = '/img/avatar.webp';
 const bike = '/icon/bike.svg';
+const conquests = '/icon/conquests.svg';
 const trail = '/icon/trail.svg';
+const running = '/icon/running.svg';
 const walking = '/icon/walking.svg';
 const workout = '/icon/workout.svg';
 const discord = '/icon/discord.svg';
@@ -82,6 +84,7 @@ export default {
   logo,
   bike,
   trail,
+  running,
   walking,
   discord,
   me,
@@ -92,5 +95,6 @@ export default {
   persona,
   bocaina,
   odisseia,
-  lamission
+  lamission,
+  conquests
 }

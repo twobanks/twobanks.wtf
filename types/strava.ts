@@ -82,6 +82,7 @@ export type Activities = {
   total_photo_count: number;
   trainer: boolean;
   type: ACTIVITY;
+  sport_type: ACTIVITY;
   upload_id: number;
   upload_id_str: string;
   utc_offset: number;

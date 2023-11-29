@@ -1,5 +1,8 @@
-import theme from "@/styles/theme";
 import styled, { css } from "styled-components";
+
+type ButtonStyles = {
+  $active: boolean;
+}
 
 export const Content = styled.div`
   ${({ theme }) => css`
@@ -15,28 +18,23 @@ export const Content = styled.div`
   `}
 `;
 
+export const OptionsWrapper = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    gap: ${theme.spacing.s1};
+  `}
+`;
+
 export const Options = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
+    flex: 1;
     justify-content: flex-end;
     gap: ${theme.spacing.s1};
-    button {
-      background-color: ${theme.colors.hover};
-      color: ${theme.colors.primary};
-      padding: 6px 12px;
-      border: 0;
-      outline: none;
-      border-radius: 4px;
-      cursor: pointer;
-      box-shadow: 0 8px 24px -8px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.04);
-      opacity: .6;
-      &:hover {
-        /* color: ${theme.colors.green}; */
-        background-color: ${theme.colors.background};
-        opacity: 1;
-      }
-    }
   `}
 `;
 
@@ -53,3 +51,34 @@ export const WrapperChallenges = styled.section`
     border-radius: ${theme.radius};
   `}
 `;
+
+export const Button = styled.button<ButtonStyles>`
+  ${({ theme, $active }) => css`
+    background-color: ${$active ? theme.colors.green : theme.colors.background};
+    color: ${theme.colors.primary};
+    padding: 6px 12px;
+    border: 0;
+    outline: none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: ${$active ? '.9' : '.6'};
+    &:hover {
+      opacity: 1;
+    }
+  `}
+`;
+
+export const TypeActivity = styled.div`
+  ${({ theme}) => css`
+    display: flex;
+    align-items: center;
+    gap: ${theme.spacing.s1};
+    strong {
+      color: ${theme.colors.primary};
+      font-size: ${theme.font.sizes.s22};
+    }
+    img {
+      opacity: .6;
+    }
+  `}
+`

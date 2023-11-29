@@ -10,21 +10,17 @@ export const Wrapper = styled.main<StravaStyles>`
     width: 100%;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
-    gap: 2rem;
+    gap: ${theme.spacing.s2};
     padding: ${theme.spacing.s2} 0;
-    
-    /* @media (max-width: 768px) {
-      padding: 0;
-    } */
   `}
 `
 export const MapWrapper = styled.div`
   ${({ theme }) => css`
     position: relative;
     background-color: ${theme.colors.hover};
-    border-radius: ${theme.radius} ${theme.radius} 0 0;
-    min-width: 29rem;
-    min-height: 16.5rem;
+    border-radius: ${theme.radius};
+    min-width: 19rem;
+    min-height: 6.5rem;
     img {
       display: flex;
       max-width: 25rem;
@@ -32,25 +28,24 @@ export const MapWrapper = styled.div`
       height: auto;
       margin: 0 auto;
     }
-  `}
-`
-
-export const TypeActivity = styled.div`
-  ${({ theme}) => css`
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.s1};
+    @media (max-width: 1170px) {
+      min-width: 25rem;
+      min-height: 12.5rem;
+    }
+    @media (max-width: 768px) {
+      min-width: 29rem;
+      min-height: 16.5rem;
+    }
   `}
 `
 
 export const ActivityData = styled.div`
   ${({ theme }) => css`
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 100px);
     flex-wrap: wrap;
-    gap: ${theme.spacing.s4};
+    gap: ${theme.spacing.s2};
     line-height: ${theme.font.sizes.s24};
-    padding: 0 2rem;
     > div {
       display: flex;
       flex-direction: column;
@@ -66,7 +61,6 @@ export const ActivityData = styled.div`
     .content {
       display: flex;
       flex-direction: column;
-      /* align-items: self-end; */
       span {
         font-size: ${theme.font.sizes.s12};
       }
@@ -74,6 +68,10 @@ export const ActivityData = styled.div`
         color: ${theme.colors.primary};
         font-size: ${theme.font.sizes.s22};
       }
+    }
+    .values {
+      display: flex;
+      align-items: center;
     }
   `}
 `
@@ -84,23 +82,22 @@ export const ContentActivity = styled.div`
     flex-direction: column;
     gap: ${theme.spacing.s2};
     flex: 1;
+    strong {
+      font-size: ${theme.font.sizes.s16};
+      color: ${theme.colors.green};
+    }
   `}
 `;
-
-export const HeaderActivity = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 0 2rem;
-`
 
 export const HeartRate = styled.div<StravaStyles>`
   ${({ theme, average = 0 }) => css`
     display: flex;
-    height: 50%;
-    width: .40rem;
+    height: 4px;
+    width: 1rem;
     border: 0;
     outline: none;
     border-radius: ${theme.radius};
+    margin-right: 4px;
     ${average < 120 && css`
       background-color: ${theme.colors.trainingZone.z1};
     `}
@@ -122,9 +119,8 @@ export const HeartRate = styled.div<StravaStyles>`
 export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
-    gap: 2rem;
-    cursor: pointer;
-    padding-bottom: 2rem;
+    gap: ${theme.spacing.s2};
+    padding-bottom: ${theme.spacing.s2};
     border-bottom: 1px solid ${theme.colors.hover};
     &:last-child {
       border-bottom: none;
@@ -133,20 +129,15 @@ export const Content = styled.div`
   `}
 `
 
-export const DateAndCity = styled.div`
+export const WrapperActivity = styled.div`
   ${({ theme }) => css`
     display: flex;
-    align-items:center;
-    width: 100%;
-    gap: ${theme.spacing.s1};
-    span {
-      font-size: ${theme.font.sizes.s16};
-      color: ${theme.colors.green};
-    }
-    em {
-      color: ${theme.colors.secondary};
-      font-size: ${theme.font.sizes.s14};
-      font-weight: ${theme.font.light};
+    gap: ${theme.spacing.s2};
+    justify-content: space-between;
+    flex: 1;
+    padding: 0 ${theme.spacing.s2};
+    @media (max-width: 768px) {
+      flex-direction: column;
     }
   `}
 `;
