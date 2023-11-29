@@ -20,7 +20,7 @@ export const header = {
     },
     {
       name: 'atividades',
-      url: 'activities',
+      url: 'atividades',
       icon: images.activities,
       iconAnimated: images.activitiesAnimated,
     },
@@ -250,7 +250,7 @@ export const challenges:Challenges[] = [
     distance: '55km',
     local: 'Passa Quatro/MG',
     url: 'https://www.instagram.com/lamisionbrasil/',
-    type: ACTIVITY.TRAIL
+    type: ACTIVITY.TRAIL,
   },
 ]
 

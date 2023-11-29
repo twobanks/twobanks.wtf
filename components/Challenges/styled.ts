@@ -38,6 +38,9 @@ export const NextChallengeWrapper = styled.ul`
         span {
           font-size: ${theme.font.sizes.s14};
         }
+        img {
+          opacity: .6;
+        }
       }
       strong {
         background-color: ${theme.colors.black};
@@ -113,6 +116,9 @@ export const CompletedChallengesWrapper = styled.ul`
         flex: 1;
         span {
           font-size: ${theme.font.sizes.s14};
+        }
+        img {
+          opacity: .6;
         }
       }
       .header {
