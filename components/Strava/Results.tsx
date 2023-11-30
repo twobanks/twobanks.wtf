@@ -1,6 +1,7 @@
 import { metersToKilometers } from "@/utils/functions/conversionStrava";
 import * as S from './styles';
 import { ACTIVITY } from "@/utils/enums/strava";
+import { useCallback } from "react";
 
 type ResultsType = { 
   movingTime?: string;
@@ -13,10 +14,9 @@ type ResultsType = {
 }
 
 const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_elevation_gain, type, average } : ResultsType) => {
-  const OUTDOOR = (type !== ACTIVITY.WORKOUT) && (type !== ACTIVITY.GYM);
   return (
     <S.ActivityData>
-      {OUTDOOR && distance && (
+      {distance && (
         <div className='content'  title="Distância">
           <span>Distância</span>
           <div className='values'>
@@ -24,28 +24,26 @@ const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_eleva
           </div>
         </div>
       )}
-      <div className='content'  title="Tempo">
+      <div className='content' title="Tempo">
         <span>Tempo</span>
         <strong>{movingTime}</strong>
       </div>
-      {OUTDOOR && (
-        <div className='content'>
-          <span>{averageTitle}</span>
-          <div className='values'  title={averageTitle}>
-            <strong>{averageSpeed}</strong>{type !== ACTIVITY.RIDE ? 'km' : 'km/h'}
-          </div>
+      <div className='content' title={averageTitle}>
+        <span>{averageTitle}</span>
+        <div className='values'>
+          <strong>{averageSpeed}</strong>{type !== ACTIVITY.RIDE ? 'km' : 'km/h'}
         </div>
-      )}
-      {OUTDOOR && total_elevation_gain !== undefined && (
-        <div className='content'>
+      </div>
+      {total_elevation_gain !== undefined && (
+        <div className='content' title="Elevação">
           <span>Elevação</span>
-          <div className='values' title="Elevação">
+          <div className='values'>
             <strong>{total_elevation_gain.toFixed(0)}</strong>m
           </div>
         </div>
       )}
-      {OUTDOOR && average !== undefined && (
-        <div className='content'  title="Frequência cardiaca média">
+      {average !== undefined && (
+        <div className='content' title="Frequência cardiaca média">
           <span>F.C Média</span>
           <div className='values'>
             <S.HeartRate $average={average} />

@@ -11,6 +11,8 @@ export const Container = styled.div`
     grid-template-columns: repeat(3, 1fr);
     gap: ${theme.spacing.s2};
     padding: ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    border-radius: .8rem;
     @media (max-width: 1170px) {
       grid-template-columns: repeat(2, 1fr);
     }

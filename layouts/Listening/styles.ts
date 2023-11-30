@@ -6,12 +6,11 @@ export const Wrapper = styled.div`
     flex-direction: column;
     gap: ${theme.spacing.s2};
     width: 100%;
-    padding: ${theme.spacing.s2};
+    padding: ${theme.spacing.s2} 0;
+    background-color: ${theme.colors.black};
+    border-radius: .8rem;
     h2 {
       color: ${theme.colors.primary};
-    }
-    @media (max-width: 768px) {
-      padding: ${theme.spacing.s2} 0;
     }
   `}
 `;

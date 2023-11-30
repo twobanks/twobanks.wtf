@@ -6,19 +6,19 @@ import { useState } from 'react';
 import images from '@/public';
 import Image from 'next/image';
 import { ACTIVITY } from '@/utils/enums/strava';
-import { conversionTypeActivity } from '@/utils/functions/conversionStrava';
+/* import { conversionTypeActivity } from '@/utils/functions/conversionStrava'; */
 
 type ActivitiesProps = {
   activities: Activities[];
 }
 
-const iconActivity: any = {
+/* const iconActivity: any = {
   [ACTIVITY.RIDE]: images.bike,
   [ACTIVITY.RUN]: images.running,
   [ACTIVITY.TRAIL]: images.trail,
   [ACTIVITY.WALK]: images.walking,
   [ACTIVITY.GYM]: images.workout
-}
+} */
 
 const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
   const [options, setOptions] = useState<'training' | 'race'>('training');
@@ -28,12 +28,12 @@ const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
   return (
     <S.Content>
       <S.OptionsWrapper>
-        {options === 'training' && (
+        {/* {options === 'training' && (
           <S.TypeActivity>
             <Image src={iconActivity[type] ?? images.workout} title={type} alt={type} height={20} width={20} blurDataURL={iconActivity[type]} priority quality={100} />
             <strong>{conversionTypeActivity(type)}</strong>
           </S.TypeActivity>
-        )}
+        )} */}
         <S.Options>
           <S.Button type='button' title='Treinos' onClick={() => setOptions('training')} $active={options === 'training'}>
             Treinos

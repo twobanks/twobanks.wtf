@@ -1,13 +1,12 @@
 import { useCallback } from 'react';
 import Image from 'next/image';
-import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour, metersToKilometers } from '@/utils/functions/conversionStrava'
+import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour } from '@/utils/functions/conversionStrava'
 import { Activities } from '@/types/strava';
 import theme from '@/styles/theme';
 import images from '@/public';
 import * as S from './styles'
 import { ACTIVITY } from '@/utils/enums/strava';
 import Results from './Results';
-import Link from 'next/link';
 
 const iconActivity: any = {
   [ACTIVITY.RIDE]: images.bike,
@@ -18,7 +17,7 @@ const iconActivity: any = {
 }
 
 const ListActivities = ({ activity }: { activity: Activities}) => {
-  const { start_date, average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
+  const { start_date, average_heartrate, average_speed, distance, moving_time, sport_type, type, total_elevation_gain, map, name, id } = activity;
   const handleMap = useCallback((polyline: string) => {
     let polylineEncoded = encodeURIComponent(polyline)
     let style = 'ckmi23ula94rm17rxmlpg00as'
@@ -35,8 +34,30 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
   return (
     <S.WrapperActivity>
       <S.ContentActivity>
-        <strong>{date}</strong>
+        <S.HeaderActivity>
+          <S.DateAndCity>
+            <S.TypeActivity>
+              <Image src={iconActivity[sport_type] ?? images.workout} alt={type} height={20} width={20} blurDataURL={iconActivity[sport_type]} priority quality={100} title={type} />
+            </S.TypeActivity>
+            <span>{date}</span>
+          </S.DateAndCity>
+        </S.HeaderActivity>
         <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} average={average_heartrate} />
+        <div className='footer'>
+          {activity.pr_count > 0 && (
+            <>
+              <div className='rp_wrapper' title='Recorde Pessoal'>
+                <Image src={images.rpIcon} alt={type} height={20} width={20} blurDataURL={images.rpIcon} priority quality={100} />
+                <strong>{activity.pr_count}</strong>
+              </div>
+              |
+            </>
+          )}
+          <S.StravaLink href={`https://www.strava.com/activities/${id}`} target='_blank' title='Ver mais no Strava'>
+            <Image src={images.strava} alt={type} height={20} width={20} blurDataURL={images.strava} priority quality={100} />
+            <span>ver mais</span>
+          </S.StravaLink>
+        </div>
       </S.ContentActivity>
       {type !== ACTIVITY.GYM  && map.summary_polyline !== '' && (
         <S.MapWrapper>
