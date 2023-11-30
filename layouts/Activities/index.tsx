@@ -1,6 +1,6 @@
 import { challenges, completedChallenges } from '@/public/content';
-import { Challenges, Strava } from '@/components';
-import { Activities } from '@/types/strava';
+import { Athlete, Challenges, Strava } from '@/components';
+import { Activities, AthleteStats } from '@/types/strava';
 import * as S from './styled'
 import { useState } from 'react';
 import images from '@/public';
@@ -10,6 +10,8 @@ import { ACTIVITY } from '@/utils/enums/strava';
 
 type ActivitiesProps = {
   activities: Activities[];
+  athlete: any;
+  athleteStat?: AthleteStats;
 }
 
 /* const iconActivity: any = {
@@ -20,13 +22,14 @@ type ActivitiesProps = {
   [ACTIVITY.GYM]: images.workout
 } */
 
-const ActivitiesTemplate = ({ activities }: ActivitiesProps) => {
+const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProps) => {
   const [options, setOptions] = useState<'training' | 'race'>('training');
   const [type, setType] = useState<ACTIVITY>(ACTIVITY.RUN);
   const activitiesFiltered = activities.filter(item => item.sport_type === type);
 
   return (
     <S.Content>
+      <Athlete athlete={athlete} athleteStat={athleteStat} />
       <S.OptionsWrapper>
         {/* {options === 'training' && (
           <S.TypeActivity>

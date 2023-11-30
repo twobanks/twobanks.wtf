@@ -19,7 +19,7 @@ const ActivitiesPage = ({ activities, athlete, athleteStat }: ActivitiesProps) =
         {...SEO}
       />
       <Wrapper page="activities">
-        <ActivitiesTemplate activities={activities} />
+        <ActivitiesTemplate activities={activities} athlete={athlete} athleteStat={athleteStat} />
       </Wrapper>
     </>
   )
