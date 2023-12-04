@@ -1,7 +1,6 @@
 import { metersToKilometers } from "@/utils/functions/conversionStrava";
 import * as S from './styles';
 import { ACTIVITY } from "@/utils/enums/strava";
-import { useCallback } from "react";
 
 type ResultsType = { 
   movingTime?: string;

@@ -1,13 +1,20 @@
 import styled, { css } from "styled-components";
 
-export const Content = styled.div`
+export const Wrapper = styled.section`
+  ${({ theme }) => css`
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    padding: ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    border-radius: .8rem;
+  `}
+`
+
+export const ContentEquipment = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.s2};
-    background-color: ${theme.colors.black};
-    padding: ${theme.spacing.s2};
-    border-radius: .8rem;
     strong {
       font-size: ${theme.font.sizes.s20};
       color: ${theme.colors.green};
@@ -75,3 +82,25 @@ export const Content = styled.div`
     }
   `}
 `;
+
+export const ContentStats = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.s2};
+    strong {
+      font-size: ${theme.font.sizes.s20};
+      color: ${theme.colors.green};
+    }
+    ul {
+      li {
+        span {
+          font-size: ${theme.font.sizes.s14};
+        }
+        strong {
+          color: ${theme.colors.primary};
+        }
+      }
+    }
+  `}
+`

@@ -6,37 +6,20 @@ import { useState } from 'react';
 import images from '@/public';
 import Image from 'next/image';
 import { ACTIVITY } from '@/utils/enums/strava';
-/* import { conversionTypeActivity } from '@/utils/functions/conversionStrava'; */
 
 type ActivitiesProps = {
   activities: Activities[];
   athlete: any;
-  athleteStat?: AthleteStats;
+  athleteStat: AthleteStats;
 }
-
-/* const iconActivity: any = {
-  [ACTIVITY.RIDE]: images.bike,
-  [ACTIVITY.RUN]: images.running,
-  [ACTIVITY.TRAIL]: images.trail,
-  [ACTIVITY.WALK]: images.walking,
-  [ACTIVITY.GYM]: images.workout
-} */
 
 const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProps) => {
   const [options, setOptions] = useState<'training' | 'race'>('training');
   const [type, setType] = useState<ACTIVITY>(ACTIVITY.RUN);
   const activitiesFiltered = activities.filter(item => item.sport_type === type);
-
   return (
     <S.Content>
-      <Athlete athlete={athlete} athleteStat={athleteStat} />
       <S.OptionsWrapper>
-        {/* {options === 'training' && (
-          <S.TypeActivity>
-            <Image src={iconActivity[type] ?? images.workout} title={type} alt={type} height={20} width={20} blurDataURL={iconActivity[type]} priority quality={100} />
-            <strong>{conversionTypeActivity(type)}</strong>
-          </S.TypeActivity>
-        )} */}
         <S.Options>
           <S.Button type='button' title='Treinos' onClick={() => setOptions('training')} $active={options === 'training'}>
             Treinos
@@ -56,9 +39,10 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
                 <Image src={images.bike} alt={ACTIVITY.RIDE} height={20} width={20} blurDataURL={images.bike} priority quality={100} />
               </S.Button>
             </div>
-        )}
+          )}
         </S.Options>
       </S.OptionsWrapper>
+      <Athlete athlete={athlete} athleteStat={athleteStat} type={type} />
       <S.WrapperChallenges>
         {options === 'training' && <Strava activities={activitiesFiltered} />}
         {options === 'race' && <Challenges challenges={challenges} completedChallenges={completedChallenges} />}
