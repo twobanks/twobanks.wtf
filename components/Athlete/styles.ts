@@ -8,6 +8,10 @@ export const Wrapper = styled.section`
     background-color: ${theme.colors.black};
     border-radius: .8rem;
     gap: ${theme.spacing.s8};
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(1, 1fr);
+      gap: ${theme.spacing.s4};
+    }
   `}
 `
 
