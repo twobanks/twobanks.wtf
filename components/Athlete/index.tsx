@@ -8,7 +8,7 @@ const Athlete = ({ athlete, athleteStat, type } : { athlete: AthleteType; athlet
   return (
     <S.Wrapper>
       <S.ContentStats>
-        <strong>Estatísticas</strong>
+        <strong title='Estatísticas'>Estatísticas</strong>
         <ul>
           {(type === ACTIVITY.RUN || type === ACTIVITY.TRAIL) && (
             <StatsRun statsRun={athleteStat} />
@@ -19,13 +19,13 @@ const Athlete = ({ athlete, athleteStat, type } : { athlete: AthleteType; athlet
         </ul>
       </S.ContentStats>
       <S.ContentEquipment>
-        <strong>Equipamentos</strong>
+        <strong title='Equipamentos'>Equipamentos</strong>
         {type === ACTIVITY.RIDE && (
           <div className="bike">
-            <strong>Bike</strong>
+            <strong title='Bike'>Bike</strong>
             <ul>
               {athlete.bikes.map(item => item.id === 'b7570883' && (
-                <li key={item.id}>
+                <li key={item.id} title='Cannondale FSi Carbon 5 2020'>
                   <strong>Cannondale FSi Carbon 5 2020</strong>
                   <div>
                     <span>{item.name}</span>
@@ -38,10 +38,10 @@ const Athlete = ({ athlete, athleteStat, type } : { athlete: AthleteType; athlet
         )}
         {(type === ACTIVITY.RUN || type === ACTIVITY.TRAIL) && (
           <div className='shoes'>
-            <strong>Tênis</strong>
+            <strong title='Tênis'>Tênis</strong>
             <ul>
               {athlete.shoes.map(item => (
-                <li key={item.id}>
+                <li key={item.id} title={item.name}>
                   <span>{item.name}</span>
                   <em>({item.converted_distance}km)</em>
                 </li>
