@@ -8,7 +8,7 @@ import { Activities, AthleteStats } from '@/types/strava';
 type ActivitiesProps = {
   activities: Activities[];
   athlete: any;
-  athleteStat?: AthleteStats;
+  athleteStat: AthleteStats;
 }
 
 const ActivitiesPage = ({ activities, athlete, athleteStat }: ActivitiesProps) => {
