@@ -6,9 +6,9 @@ const ACTIVITY_ENDPOINT = "https://www.strava.com/api/v3/";
 
 const getAccessToken = async () => {
   const body = JSON.stringify({
-    client_id: process.env.NEXT_PUBLIC_CLIENT_ID,
-    client_secret: process.env.NEXT_PUBLIC_CLIENT_SECRET,
-    refresh_token: process.env.NEXT_PUBLIC_REFRESH_TOKEN,
+    client_id: process.env.STRAVA_CLIENT_ID,
+    client_secret: process.env.STRAVA_CLIENT_SECRET,
+    refresh_token: process.env.STRAVA_REFRESH_TOKEN,
     grant_type: "refresh_token",
   });
 
@@ -22,6 +22,16 @@ const getAccessToken = async () => {
   });
 
   return response.json();
+};
+
+export const getAthlete = async () => {
+  const { access_token: accessToken } = await getAccessToken();
+  const response = await fetch(
+    `${ACTIVITY_ENDPOINT}/athlete?access_token=${accessToken}`
+  );
+
+  const athlete = await response.json();
+  return athlete;
 };
 
 export const getActivities = async () => {
@@ -43,4 +53,14 @@ export const getActivity = async (id: number) => {
   );
   const activity = await response.json();
   return activity;
+};
+
+export const getAthleteStats = async () => {
+  const { access_token: accessToken } = await getAccessToken();
+  const response = await fetch(
+    `${ACTIVITY_ENDPOINT}/athletes/28981595/stats?access_token=${accessToken}`
+  );
+  const athleteStats = await response.json();
+
+  return athleteStats;
 };

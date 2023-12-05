@@ -46,6 +46,8 @@ const persona = '/img/persona.svg';
 const bocaina = '/img/bocaina.png';
 const odisseia = '/img/odisseia.webp';
 const lamission = '/img/lamission.png';
+const rpIcon = '/icon/rp.svg';
+const bikeIcon = '/icon/bikeIcon.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -96,5 +98,7 @@ export default {
   bocaina,
   odisseia,
   lamission,
-  conquests
+  conquests,
+  rpIcon,
+  bikeIcon
 }

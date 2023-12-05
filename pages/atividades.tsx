@@ -2,30 +2,38 @@ import { NextSeo } from 'next-seo'
 import ActivitiesTemplate from '@/layouts/Activities';
 import { SEO } from '@/utils/constants/seo'
 import Wrapper from '@/layouts/Wrapper';
-import { getActivities } from '@/utils/lib/strava';
-import { Activities } from '@/types/strava';
+import { getActivities, getAthlete, getAthleteStats } from '@/utils/lib/strava';
+import { Activities, AthleteStats } from '@/types/strava';
 
 type ActivitiesProps = {
   activities: Activities[];
+  athlete: any;
+  athleteStat: AthleteStats;
 }
 
-const ActivitiesPage = ({ activities }: ActivitiesProps) => (
-  <>
-    <NextSeo
-      title="atividades | twobanks"
-      {...SEO}
-    />
-    <Wrapper page="activities">
-      <ActivitiesTemplate activities={activities} />
-    </Wrapper>
-  </>
-)
+const ActivitiesPage = ({ activities, athlete, athleteStat }: ActivitiesProps) => {
+  return (
+    <>
+      <NextSeo
+        title="atividades | twobanks"
+        {...SEO}
+      />
+      <Wrapper page="activities">
+        <ActivitiesTemplate activities={activities} athlete={athlete} athleteStat={athleteStat} />
+      </Wrapper>
+    </>
+  )
+}
 
 export const getStaticProps = async () => {
   const activities = await getActivities();
+  const athlete = await getAthlete();
+  const athleteStat = await getAthleteStats();
   return {
     props: {
       activities,
+      athlete,
+      athleteStat,
     },
     revalidate: 3600,
   };
