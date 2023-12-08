@@ -18,6 +18,8 @@ export const NextChallengeWrapper = styled.ul`
     display: flex;
     width: 100%;
     gap:  ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    padding: ${theme.spacing.s2};
     li {
       display: flex;
       flex-direction: column;
@@ -96,15 +98,13 @@ export const CompletedChallengesWrapper = styled.ul`
     flex-direction: column;
     width: 100%;
     padding: 0 ;
-    background-color: ${theme.colors.black};
+    /* background-color: ${theme.colors.black}; */
     border-radius: ${theme.radius};
     li {
       display: flex;
       justify-content: space-between;
-      padding: ${theme.spacing.s2} 0;
-      background-color: ${theme.colors.black};
+      padding: ${theme.spacing.s2};
       line-height: ${theme.font.sizes.s22};
-      border-right: none;
       border-bottom: 1px solid ${theme.colors.hover};
       &:last-child {
         border: none;

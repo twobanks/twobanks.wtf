@@ -2,7 +2,7 @@ import * as S from './styled';
 
 const Home = () => (
   <S.Content>
-    <S.TwoBanks />
+    {/* <S.TwoBanks /> */}
   </S.Content>
 )
 
