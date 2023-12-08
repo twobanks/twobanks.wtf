@@ -2,8 +2,8 @@ const IconTwobanks = () => (
   <svg id="Camada_1" data-name="Camada 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 202.1 221.58">
     <defs>
       <linearGradient id="Gradiente_sem_nome_9" data-name="Gradiente sem nome 9" x1="82.93" y1="97.94" x2="99.43" y2="97.94" gradientUnits="userSpaceOnUse">
-        <stop offset="0" stop-color="#5f2262"/>
-        <stop offset="1" stop-color="#ec6698"/>
+        <stop offset="0" stopColor="#5f2262"/>
+        <stop offset="1" stopColor="#ec6698"/>
       </linearGradient>
       <linearGradient id="Gradiente_sem_nome_9-2" data-name="Gradiente sem nome 9" x1="158.77" y1="85.35" x2="170.29" y2="85.35" />
       <linearGradient id="Gradiente_sem_nome_9-3" data-name="Gradiente sem nome 9" x1="178.13" y1="80.96" x2="190.01" y2="80.96" />
