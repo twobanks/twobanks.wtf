@@ -7,8 +7,6 @@ export const Wrapper = styled.div`
     gap: ${theme.spacing.s2};
     width: 100%;
     padding: ${theme.spacing.s2} 0;
-    background-color: ${theme.colors.black};
-    border-radius: .8rem;
     h2 {
       color: ${theme.colors.primary};
     }

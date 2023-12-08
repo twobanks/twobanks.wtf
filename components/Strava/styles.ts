@@ -145,7 +145,6 @@ export const WrapperActivity = styled.div`
     gap: ${theme.spacing.s2};
     justify-content: space-between;
     flex: 1;
-    padding: 0 ${theme.spacing.s2};
     @media (max-width: 768px) {
       flex-direction: column;
     }

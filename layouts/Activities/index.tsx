@@ -42,7 +42,7 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
           )}
         </S.Options>
       </S.OptionsWrapper>
-      <Athlete athlete={athlete} athleteStat={athleteStat} type={type} />
+      {options === 'training' && <Athlete athlete={athlete} athleteStat={athleteStat} type={type} />}
       <S.WrapperChallenges>
         {options === 'training' && <Strava activities={activitiesFiltered} />}
         {options === 'race' && <Challenges challenges={challenges} completedChallenges={completedChallenges} />}

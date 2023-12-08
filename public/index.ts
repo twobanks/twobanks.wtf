@@ -40,7 +40,7 @@ const running = '/icon/running.svg';
 const walking = '/icon/walking.svg';
 const workout = '/icon/workout.svg';
 const discord = '/icon/discord.svg';
-const me = '/img/twobanks.svg';
+const me = '/img/twobanks2.svg';
 const new_me = '/img/lettering.svg';
 const persona = '/img/persona.svg';
 const bocaina = '/img/bocaina.png';
@@ -48,6 +48,8 @@ const odisseia = '/img/odisseia.webp';
 const lamission = '/img/lamission.png';
 const rpIcon = '/icon/rp.svg';
 const bikeIcon = '/icon/bikeIcon.svg';
+const twobanksNew = '/img/twobanks.svg';
+const menu = '/icon/menu.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -100,5 +102,7 @@ export default {
   lamission,
   conquests,
   rpIcon,
-  bikeIcon
+  bikeIcon,
+  twobanksNew,
+  menu
 }

@@ -47,8 +47,6 @@ export const WrapperChallenges = styled.section`
     h2 {
       color: ${theme.colors.primary};
     }
-    background-color: ${theme.colors.black};
-    border-radius: ${theme.radius};
   `}
 `;
 

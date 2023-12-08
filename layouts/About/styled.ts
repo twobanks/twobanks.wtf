@@ -22,7 +22,7 @@ export const Stacks = styled.div`
       gap: ${theme.spacing.s1};
       flex-wrap: wrap;
       li {
-        background-color: ${theme.colors.hover};
+        background-color: ${theme.colors.black};
         padding: calc(${theme.spacing.s1} / 2) ${theme.spacing.s1};
         border-radius: ${theme.radius};
         color: ${theme.colors.yellowFont};
@@ -87,7 +87,7 @@ export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    background-color: ${theme.colors.black};
+    /* background-color: ${theme.colors.black}; */
     border-radius: .8rem;
     h2 {
       font-size: ${theme.font.sizes.s24};

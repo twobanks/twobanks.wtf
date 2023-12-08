@@ -20,12 +20,12 @@ export const Content = styled.section<WrapperProps>`
     max-width: ${theme.container};
     width: 100%;
     height: auto;
-    margin: 0 auto;
+    margin: ${theme.spacing.s10} auto 0 auto;
     ${$page === 'home' && css`
       height: 100%;
     `}
     @media (max-width: 768px) {
-      padding: ${theme.spacing.s1} ${theme.spacing.s2} ${theme.spacing.s8} ${theme.spacing.s2};
+      padding: ${theme.spacing.s1} ${theme.spacing.s2} ${theme.spacing.s4} ${theme.spacing.s2};
     }
   `}
 `;
