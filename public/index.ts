@@ -49,6 +49,7 @@ const lamission = '/img/lamission.png';
 const rpIcon = '/icon/rp.svg';
 const bikeIcon = '/icon/bikeIcon.svg';
 const twobanksNew = '/img/twobanks.svg';
+const menu = '/icon/menu.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -102,5 +103,6 @@ export default {
   conquests,
   rpIcon,
   bikeIcon,
-  twobanksNew
+  twobanksNew,
+  menu
 }

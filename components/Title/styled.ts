@@ -28,19 +28,10 @@ const titleModifiers = {
 
 export const Wrapper = styled.h1<TitleStyles>`
   ${({ theme, $page }) => css`
-    display: flex;
-    align-items: center;
-    font-size: ${theme.font.sizes.s64};
-    padding: ${theme.spacing.s2};
-    max-width: ${theme.container};
-    width: 100vw;
-    margin: 0 auto;
+    font-size: ${theme.font.sizes.s48};
     ${titleModifiers[$page](theme)}
     @media (max-width: 768px) {
-      justify-content: flex-end;
-      font-size: ${theme.font.sizes.s28};
-      width: 100%;
-      padding: ${theme.spacing.s2} 0;
+      font-size: ${theme.font.sizes.s36};
     }
   `}
 `;
