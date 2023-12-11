@@ -9,7 +9,7 @@ export const Wrapper = styled.nav`
   display: flex;
   align-items: center;
   z-index: 5;
-  @media (max-width: 768px) {
+  @media (max-width: 1170px) {
     display: none;
   }
 `;
@@ -38,7 +38,7 @@ export const Nav = styled.ul`
     flex-direction: column;
     border-bottom: .1rem solid ${theme.colors.hover};
     padding-bottom: ${theme.spacing.s1};
-    @media (max-width: 768px) {
+    @media (max-width: 1170px) {
       display: none;
     }
   `}

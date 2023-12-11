@@ -32,10 +32,17 @@ const animate = {
 
 export const Wrapper = styled.div<PlayingProps>`
   ${({ $visible }) => css`
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 4;
     display: ${$visible ? 'flex' : 'none'};
     flex-direction: column;
     width: 100%;
     height: fit-content;
+    @media (max-width: 1170px) {
+      bottom: 6rem;
+    }
   `}
 `;
 
@@ -43,11 +50,12 @@ export const Container = styled(Link)`
   ${({ theme }) => css`
     display: flex;
     gap: ${theme.spacing.s2};
-    background-color: ${theme.colors.hover};
-    padding: ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    padding: 1rem ${theme.spacing.s2};
     border-radius: ${theme.radius};
     justify-content: space-between;
     align-items: center;
+    border-top: 1px solid ${theme.colors.hover};
     span {
       cursor: pointer;
       font-size: ${theme.font.sizes.s16};
@@ -78,21 +86,11 @@ export const Song = styled.div`
   `}
 `
 
-export const ImageWrapper = styled.div`
-  ${({ theme }) => css`
-    display: flex;
-    img {
-      border-radius: ${theme.radius};
-    }
-  `}
-`;
-
 export const SongWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.s2};
-    padding-left: ${theme.spacing.s1};
   `}
 `;
 

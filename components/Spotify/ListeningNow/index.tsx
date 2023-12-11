@@ -18,9 +18,7 @@ const ListeningNow = ({ data, isLoading } : { data?: NowPlayingSong; isLoading: 
           {data?.isPlaying && (
             <S.Container href={data.url} target="_blank" rel="noreferrer" passHref>
               <S.MusicContent>
-                <S.ImageWrapper>
-                  <Image src={data.image} alt={`${data.artist}-${data.music}`} placeholder='blur' height={80} width={80} sizes="100%" blurDataURL={data.image} priority quality={100} />
-                </S.ImageWrapper>
+                <Image src={data.image} alt={`${data.artist}-${data.music}`} placeholder='blur' height={60} width={60} sizes="100%" blurDataURL={data.image} priority quality={100} />
                 <S.SongWrapper>
                   <S.Song>
                     <strong>{data.music}</strong>

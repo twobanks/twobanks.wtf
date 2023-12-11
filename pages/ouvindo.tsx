@@ -2,14 +2,16 @@ import { NextSeo } from 'next-seo'
 import { SEO } from '@/utils/constants/seo'
 import Wrapper from '@/layouts/Wrapper'
 import Listening from '@/layouts/Listening'
-import { NowPlayingSong } from '@/types/spotify'
+import { Artist, NowPlayingSong } from '@/types/spotify'
 import useSWR from 'swr'
 import fetcher from '@/utils/lib/fetcher'
 import { TopTracks } from '@/types/spotify';
+import { ListeningNow } from '@/components'
 
 const ListeningPage = () => {
   const { data, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
   const { data: dataTopTracks } = useSWR<TopTracks>(`/api/top-tracks`, fetcher);
+  const { data: dataTopArtists } = useSWR<{artists: Artist[]}>(`/api/top-artists`, fetcher);
   return (
     <>
       <NextSeo
@@ -17,7 +19,8 @@ const ListeningPage = () => {
         {...SEO}
       />
       <Wrapper page="ouvindo">
-        <Listening data={data} dataTopTracks={dataTopTracks} isLoading={isLoading} />
+        <ListeningNow data={data} isLoading={isLoading} />
+        <Listening data={data} dataTopTracks={dataTopTracks} isLoading={isLoading} artists={dataTopArtists}/>
       </Wrapper>
     </>
   )

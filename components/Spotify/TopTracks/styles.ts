@@ -5,13 +5,19 @@ export const Wrapper = styled.ul`
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    gap: 2rem;
+    gap: ${theme.spacing.s2};
     li {
       width: 24rem;
       a {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: ${theme.spacing.s1};
+        img {
+          opacity: .9;
+        }
+        &:hover img {
+          opacity: 1;
+        }
         &:hover strong {
           color: ${theme.colors.spotify};
         }
