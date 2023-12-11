@@ -3,35 +3,23 @@ import styled, { css } from "styled-components";
 export const Wrapper = styled.ul`
   ${({ theme }) => css`
     display: flex;
-    /* flex-direction: column; */
     flex-wrap: wrap;
     width: 100%;
     gap: 2rem;
-    /* padding: 0 16px; */
     li {
-      width: 20rem;
-      /* background: red; */
+      width: 24rem;
       a {
         display: flex;
         flex-direction: column;
-        /* align-items: center; */
         gap: 16px;
-        /* padding: 16px 0; */
-        /* border-bottom: 0.1px solid ${theme.colors.hover}; */
-        img {
-          position: relative;
-          width: 6rem;
-          height: 6rem;
-          border-radius: ${theme.radius};
-          /* box-shadow: 0 1.5rem 1.5rem ${theme.colors.black}; */
-        }
-        
         &:hover strong {
           color: ${theme.colors.spotify};
         }
       }
-      &:last-child a {
-        border-bottom: 0;
+    }
+    @media (max-width: 1170px) {
+      li {
+        width: 21rem;
       }
     }
   `}
@@ -40,9 +28,13 @@ export const Wrapper = styled.ul`
 export const AlbumCover = styled.div`
   ${({ theme }) => css`
     position: relative;
-    width: 22rem;
-    height: 22rem;
+    width: 24rem;
+    height: 24rem;
     border-radius: ${theme.radius};
+    @media (max-width: 1170px) {
+      width: 21rem;
+      height: 21rem;
+    }
   `}
 `;
 

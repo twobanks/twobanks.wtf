@@ -24,7 +24,7 @@ export const Content = styled.section<WrapperProps>`
     ${$page === 'home' && css`
       height: 100%;
     `}
-    @media (max-width: 768px) {
+    @media (max-width: 1170px) {
       padding: ${theme.spacing.s1} ${theme.spacing.s2} ${theme.spacing.s4} ${theme.spacing.s2};
     }
   `}
