@@ -33,6 +33,7 @@ export default {
     s4: "4rem",
     s8: "8rem",
     s10: "10rem",
+    s12: "12rem",
     s20: "20rem"
   },
   colors: {

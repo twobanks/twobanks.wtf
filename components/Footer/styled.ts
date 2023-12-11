@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components'
 export const Footer = styled.footer`
   ${({ theme }) => css`
     display: none;
-    @media (max-width: 768px) {
+    @media (max-width: 1170px) {
       position: fixed;
       bottom: 0;
       width: 100vw;
@@ -19,7 +19,7 @@ export const Footer = styled.footer`
 
 export const Item = styled.div`
   ${({ theme }) => css`
-    @media (max-width: 768px) {
+    @media (max-width: 1170px) {
       position: relative;
       img {
         background-color: ${theme.colors.background};

@@ -50,6 +50,8 @@ const rpIcon = '/icon/rp.svg';
 const bikeIcon = '/icon/bikeIcon.svg';
 const twobanksNew = '/img/twobanks.svg';
 const menu = '/icon/menu.svg';
+const mic = '/icon/mic.svg';
+const speaker = '/icon/speaker.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -104,5 +106,7 @@ export default {
   rpIcon,
   bikeIcon,
   twobanksNew,
-  menu
+  menu,
+  mic,
+  speaker
 }
