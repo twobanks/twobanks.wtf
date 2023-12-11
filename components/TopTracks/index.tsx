@@ -10,7 +10,9 @@ const TopTracks = ({ data } : { data?: TopTracksType; }) => {
       {data?.tracks.map(track => (
         <li key={`track-${track.music}`}>
           <Link href={track.url} target='_blank'>
-            <Image src={track.images} alt={track.music} width={40} height={40} />
+            <S.AlbumCover>
+              <Image src={track.images} alt={track.music} fill  />
+            </S.AlbumCover>
             <S.Info>
               <strong>{track.music}</strong>
               <span>{track.artist}</span>
