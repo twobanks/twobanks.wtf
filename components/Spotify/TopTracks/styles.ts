@@ -7,7 +7,7 @@ export const Wrapper = styled.ul`
     width: 100%;
     gap: ${theme.spacing.s2};
     li {
-      width: 24rem;
+      width: 22rem;
       a {
         display: flex;
         flex-direction: column;
@@ -23,9 +23,9 @@ export const Wrapper = styled.ul`
         }
       }
     }
-    @media (max-width: 1170px) {
+    @media (max-width: 768px) {
       li {
-        width: 21rem;
+        width: 20rem;
       }
     }
   `}
@@ -34,12 +34,12 @@ export const Wrapper = styled.ul`
 export const AlbumCover = styled.div`
   ${({ theme }) => css`
     position: relative;
-    width: 24rem;
-    height: 24rem;
+    width: 22rem;
+    height: 22rem;
     border-radius: ${theme.radius};
-    @media (max-width: 1170px) {
-      width: 21rem;
-      height: 21rem;
+    @media (max-width: 768px) {
+      width: 20rem;
+      height: 20rem;
     }
   `}
 `;

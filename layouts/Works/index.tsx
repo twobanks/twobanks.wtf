@@ -10,17 +10,17 @@ const Works = ({ works }: { works: WorksType[] }) => (
       return (
         <S.Work key={`work-${index}`}>
           <div className='header_work'>
-            <Link href={link} target="_blank" rel="noreferrer">
+            <Link href={link} target="_blank" rel="noreferrer" title={name}>
               <strong>{name}</strong>
             </Link>
             <S.Company>
-              <Link href={company.link} target="_blank" rel="noreferrer">
+              <Link href={company.link} target="_blank" rel="noreferrer" title={company.name}>
                 {company.name}
-              </Link> • <em>{type}</em>
+              </Link> • <em title={type}>{type}</em>
             </S.Company>
           </div>
           <S.Stack>
-            {tech.map(language => <S.Item key={uuid()} $stack={language}>{language}</S.Item>)}
+            {tech.map(language => <S.Item key={uuid()} $stack={language} title={language}>{language}</S.Item>)}
           </S.Stack>
         </S.Work>
       )

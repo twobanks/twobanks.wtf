@@ -9,12 +9,7 @@ export const Content = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin: 0 ${theme.spacing.s2};
-    padding-bottom: ${theme.spacing.s2};
     gap: ${theme.spacing.s2};
-    @media (max-width: 768px) {
-      margin: 0;
-    }
   `}
 `;
 

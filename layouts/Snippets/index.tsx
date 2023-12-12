@@ -14,8 +14,8 @@ const Snippets = ({ posts }: { posts: Post[] }) => {
           passHref
         >
           <S.Item>
-            <strong>{post.data.title}</strong>
-            <span>{post.data.description}</span>
+            <strong title={post.data.title}>{post.data.title}</strong>
+            <span title={post.data.description}>{post.data.description}</span>
           </S.Item>
         </Link>
       ))}

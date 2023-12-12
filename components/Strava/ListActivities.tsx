@@ -37,9 +37,9 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
         <S.HeaderActivity>
           <S.DateAndCity>
             <S.TypeActivity>
-              <Image src={iconActivity[sport_type] ?? images.workout} alt={type} height={20} width={20} blurDataURL={iconActivity[sport_type]} priority quality={100} title={type} />
+              <Image src={iconActivity[sport_type] ?? images.workout} alt={type} height={20} width={20} blurDataURL={iconActivity[sport_type]} priority quality={100} title={type}  />
             </S.TypeActivity>
-            <span>{date}</span>
+            <span title={date}>{date}</span>
           </S.DateAndCity>
         </S.HeaderActivity>
         <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} average={average_heartrate} />
@@ -61,7 +61,7 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
       </S.ContentActivity>
       {type !== ACTIVITY.GYM  && map.summary_polyline !== '' && (
         <S.MapWrapper>
-          <Image src={mapUrl} alt={`${name} map`} fill sizes="100%" blurDataURL={mapUrl} priority quality={100} />
+          <Image src={mapUrl} alt={`${name} map`} fill sizes="100%" blurDataURL={mapUrl} priority quality={100} title={name} />
         </S.MapWrapper>
       )}
     </S.WrapperActivity>

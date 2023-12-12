@@ -8,7 +8,6 @@ import images from '@/public';
 const Menu = ({ header }: { header: Header; }) => {
   const [hovered, setHovered] = useState<string>('');
   const [open, setOpen] = useState<boolean>(false);
-  console.log("open", open);
   const { menu } = header;
   const renderBody = () => (
     <S.Nav>

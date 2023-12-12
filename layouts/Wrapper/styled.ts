@@ -21,11 +21,9 @@ export const Content = styled.section<WrapperProps>`
     width: 100%;
     height: auto;
     margin: ${theme.spacing.s10} auto 0 auto;
+    padding: 0 ${theme.spacing.s2} ${theme.spacing.s8} ${theme.spacing.s2};
     ${$page === 'home' && css`
       height: 100%;
     `}
-    @media (max-width: 1170px) {
-      padding: ${theme.spacing.s1} ${theme.spacing.s2} ${theme.spacing.s4} ${theme.spacing.s2};
-    }
   `}
 `;

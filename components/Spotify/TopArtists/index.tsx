@@ -7,7 +7,7 @@ import { Artist } from '@/types/spotify';
 const TopArtists = ({ data } : { data?: { artists: Artist[] } }) => (
   <S.Wrapper>
     {data?.artists.map(artist => (
-      <li key={uuid()}>
+      <li key={uuid()} title={artist.name}>
         <Link href={artist.href} target='_blank'>
           <S.AlbumCover>
             <Image src={artist.images.url} alt={artist.name} fill objectFit='cover'  />
