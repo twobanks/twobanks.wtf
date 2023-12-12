@@ -8,7 +8,7 @@ import IconTwobanks from './IconTwobanks';
 const Header = ({ page = 'home' }: { page?: Pages; }) => (
   <S.Header>
     <S.Content>
-      <Link href={`/`} passHref prefetch={false}>
+      <Link href={`/`} passHref prefetch={false} title='o pai!'>
         <IconTwobanks />
       </Link>
       {page !== 'home' && <Title text={conversionTitlePage(page)} page={page} />}

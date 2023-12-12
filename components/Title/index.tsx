@@ -7,7 +7,7 @@ type Title = {
 }
 
 const Title = ({ text, page = 'home' }: Title) => (
-  <S.Wrapper $page={page}>
+  <S.Wrapper $page={page} title={text}>
     {text}
   </S.Wrapper>
 )

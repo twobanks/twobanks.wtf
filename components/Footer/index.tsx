@@ -12,7 +12,7 @@ const Footer = ({ menu } : { menu: Menu[] }) => {
       {menu.map((item, index) => {
         const isHovered = hovered === item.name;
         return (
-          <Link href={`/${item.url}`} passHref key={`${item.name}-${index}`} >
+          <Link href={`/${item.url}`} passHref key={`${item.name}-${index}`} title={item.name} >
             <S.Item
               onMouseEnter={() => setHovered(item.name)}
               onMouseLeave={() => setHovered('')}

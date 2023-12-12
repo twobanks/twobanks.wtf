@@ -14,13 +14,16 @@ type ActivitiesProps = {
 }
 
 const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProps) => {
-  const [options, setOptions] = useState<'training' | 'race'>('training');
+  const [options, setOptions] = useState<'training' | 'race' | 'statistics'>('training');
   const [type, setType] = useState<ACTIVITY>(ACTIVITY.RUN);
   const activitiesFiltered = activities.filter(item => item.sport_type === type);
   return (
     <S.Content>
       <S.OptionsWrapper>
         <S.Options>
+          <S.Button type='button' title='Estatísticas - Equipamentos' onClick={() => setOptions('statistics')} $active={options === 'statistics'}>
+            Estatísticas - Equipamentos
+          </S.Button>
           <S.Button type='button' title='Treinos' onClick={() => setOptions('training')} $active={options === 'training'}>
             Treinos
           </S.Button>
@@ -42,8 +45,8 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
           )}
         </S.Options>
       </S.OptionsWrapper>
-      {options === 'training' && <Athlete athlete={athlete} athleteStat={athleteStat} type={type} />}
       <S.WrapperChallenges>
+        {options === 'statistics' && <Athlete athlete={athlete} athleteStat={athleteStat} type={type} />}
         {options === 'training' && <Strava activities={activitiesFiltered} />}
         {options === 'race' && <Challenges challenges={challenges} completedChallenges={completedChallenges} />}
       </S.WrapperChallenges>

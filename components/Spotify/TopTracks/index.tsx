@@ -7,7 +7,7 @@ import { TopTracks as TopTracksType } from '@/types/spotify';
 const TopTracks = ({ data } : { data?: TopTracksType; }) => (
   <S.Wrapper>
     {data?.tracks.map(track => (
-      <li key={`track-${track.music}`}>
+      <li key={`track-${track.music}`} title={`${track.artist} - ${track.music}`}>
         <Link href={track.url} target='_blank'>
           <S.AlbumCover>
             <Image src={track.images} alt={track.music} fill />
