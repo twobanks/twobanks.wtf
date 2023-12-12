@@ -10,7 +10,7 @@ type WrapperProps = {
 
 const Wrapper = ({ page, children }: WrapperProps) => (
   <S.Wrapper>
-    <Header header={header} page={page} />
+    <Header page={page} />
     <S.Content $page={page}>
       {children}
     </S.Content>

@@ -19,7 +19,7 @@ const ListeningPage = () => {
         {...SEO}
       />
       <Wrapper page="ouvindo">
-        <ListeningNow data={data} isLoading={isLoading} />
+        {/* <ListeningNow data={data} isLoading={isLoading} /> */}
         <Listening data={data} dataTopTracks={dataTopTracks} isLoading={isLoading} artists={dataTopArtists}/>
       </Wrapper>
     </>
