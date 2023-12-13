@@ -52,6 +52,7 @@ const twobanksNew = '/img/twobanks.svg';
 const menu = '/icon/menu.svg';
 const mic = '/icon/mic.svg';
 const speaker = '/icon/speaker.svg';
+const statistics = '/icon/statistics.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -108,5 +109,6 @@ export default {
   twobanksNew,
   menu,
   mic,
-  speaker
+  speaker,
+  statistics
 }

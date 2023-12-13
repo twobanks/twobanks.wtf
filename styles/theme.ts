@@ -31,6 +31,7 @@ export default {
     s2: "2rem",
     s3: "3rem",
     s4: "4rem",
+    s6: "6rem",
     s8: "8rem",
     s10: "10rem",
     s12: "12rem",

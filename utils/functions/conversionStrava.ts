@@ -1,4 +1,5 @@
-import { ACTIVITY } from "../enums/strava"
+import { ACTIVITY, OPTIONS_ACTIVITY } from "../enums/strava"
+import images from '@/public';
 
 export const metersToKilometers = (value: number) => (value / 1000).toFixed(2)
 
@@ -20,4 +21,21 @@ export const conversionTypeActivity: (value: ACTIVITY) => string = (value: ACTIV
     [ACTIVITY.WORKOUT]: 'Exercícios'
   }
   return labels[value];
+}
+
+export const conversionTitleActivities = (value: OPTIONS_ACTIVITY) => {
+  const labels: { [index: string]: string } = {
+    [OPTIONS_ACTIVITY.TRAINING]: 'Treinos',
+    [OPTIONS_ACTIVITY.RACE]: 'Provas',
+    [OPTIONS_ACTIVITY.STATISTICS]: 'Estatísticas - Equipamentos',
+  }
+  return labels[value];
+}
+
+export const getIconActivity: any = {
+  [ACTIVITY.RIDE]: images.bike,
+  [ACTIVITY.RUN]: images.running,
+  [ACTIVITY.TRAIL]: images.trail,
+  [ACTIVITY.WALK]: images.walking,
+  [ACTIVITY.GYM]: images.workout
 }

@@ -6,3 +6,9 @@ export enum ACTIVITY {
   GYM = 'WeightTraining',
   WORKOUT = 'Workout'
 }
+
+export enum OPTIONS_ACTIVITY {
+  RACE = 'race',
+  TRAINING = 'training',
+  STATISTICS = 'statistics'
+}
