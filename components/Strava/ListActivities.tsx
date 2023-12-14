@@ -37,7 +37,7 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
         <S.HeaderActivity>
           <S.DateAndCity>
             <S.TypeActivity>
-              <Image src={iconActivity[sport_type] ?? images.workout} alt={type} height={20} width={20} blurDataURL={iconActivity[sport_type]} priority quality={100} title={type}  />
+              <Image src={images.calendar} alt={type} height={16} width={16} blurDataURL={images.calendar} priority quality={100} title={type}  />
             </S.TypeActivity>
             <span title={date}>{date}</span>
           </S.DateAndCity>

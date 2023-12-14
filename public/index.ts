@@ -53,6 +53,12 @@ const menu = '/icon/menu.svg';
 const mic = '/icon/mic.svg';
 const speaker = '/icon/speaker.svg';
 const statistics = '/icon/statistics.svg';
+const trophy = '/icon/trophy.svg';
+const elevation = '/icon/elevation.svg';
+const time = '/icon/time.svg';
+const loc = '/icon/loc.svg';
+const calendar = '/icon/calendar.svg';
+const training = '/icon/training.svg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -110,5 +116,11 @@ export default {
   menu,
   mic,
   speaker,
-  statistics
+  statistics,
+  trophy,
+  elevation,
+  time,
+  loc,
+  calendar,
+  training
 }

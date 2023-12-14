@@ -39,3 +39,9 @@ export const getIconActivity: any = {
   [ACTIVITY.WALK]: images.walking,
   [ACTIVITY.GYM]: images.workout
 }
+
+export const getIconTypeActivity: any = {
+  [OPTIONS_ACTIVITY.TRAINING]: images.training,
+  [OPTIONS_ACTIVITY.RACE]: images.trophy,
+  [OPTIONS_ACTIVITY.STATISTICS]: images.statistics,
+}

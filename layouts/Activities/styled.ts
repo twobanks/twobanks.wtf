@@ -28,16 +28,21 @@ export const OptionsSelected = styled.div`
   ${({ theme }) => css`
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: ${theme.spacing.s1};
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
     background: ${theme.colors.background};
     padding: 2rem;
-    h5 {
-      font-size: ${theme.font.sizes.s22};
-      color: ${theme.colors.green};
+    .title {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: ${theme.font.sizes.s14};
+      h6 {
+        font-size: ${theme.font.sizes.s16};
+        color: ${theme.colors.primary};
+      }
     }
   `}
 `;

@@ -4,7 +4,7 @@ import { Activities, AthleteStats } from '@/types/strava';
 import * as S from './styled'
 import { useState } from 'react';
 import { ACTIVITY, OPTIONS_ACTIVITY } from '@/utils/enums/strava';
-import { conversionTypeActivity, conversionTitleActivities, getIconActivity } from '@/utils/functions/conversionStrava';
+import { conversionTypeActivity, conversionTitleActivities, getIconActivity, getIconTypeActivity } from '@/utils/functions/conversionStrava';
 import DropDown from './DropDown';
 import images from '@/public';
 import Image from 'next/image';
@@ -34,11 +34,8 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
     <S.Content>
       <S.OptionsWrapper>
         <S.OptionsSelected>
-          <h5>{conversionTitleActivities(options)} {options === OPTIONS_ACTIVITY.TRAINING && (
-            <>de {conversionTypeActivity(type)}</>
-          )}</h5>
           <S.DropButton type='button'  onClick={() => setOpen(prevState => !prevState)}>
-            <Image src={images.statistics} alt='Selecionar' title='Selecionar' height={20} width={20} blurDataURL={images.statistics} priority quality={100}/>
+            <Image src={getIconTypeActivity[options]} alt='Selecionar' title='Selecionar' height={20} width={20} blurDataURL={getIconTypeActivity[options]} priority quality={100}/>
             {options === OPTIONS_ACTIVITY.TRAINING && (
               <>
                 |
@@ -46,6 +43,15 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
               </>
             )}
           </S.DropButton>
+          <div className='title'>
+            <h6>{conversionTitleActivities(options)}</h6>
+            {options === OPTIONS_ACTIVITY.TRAINING && (
+              <>
+                {`>`}
+                <h6>{conversionTypeActivity(type)}</h6>
+              </>
+            )}
+          </div>
         </S.OptionsSelected>
         {open && <DropDown options={options} setOptions={setOptions} type={type} setType={setType} />}
       </S.OptionsWrapper>

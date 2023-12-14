@@ -10,9 +10,12 @@ export const Wrapper = styled.main<StravaStyles>`
     max-width: ${theme.container};
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: ${theme.spacing.s2};
     padding: ${theme.spacing.s2} 0;
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(1, 1fr);
+    }
   `}
 `
 export const MapWrapper = styled.div`
@@ -21,25 +24,21 @@ export const MapWrapper = styled.div`
     background-color: ${theme.colors.hover};
     border-radius: ${theme.radius};
     min-width: 25rem;
-    min-height: 6.5rem;
+    min-height: 21rem;
     img {
       display: flex;
       max-width: 25rem;
       width: 100%;
       height: auto;
+      padding: 2rem 0;
       margin: 0 auto;
-    }
-    @media (max-width: 1170px) {
-      min-width: 29rem;
-      min-height: 16.5rem;
     }
   `}
 `
 
 export const ActivityData = styled.div`
   ${({ theme }) => css`
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 100px);
+    display: flex;
     flex-wrap: wrap;
     gap: ${theme.spacing.s2};
     line-height: ${theme.font.sizes.s24};
@@ -62,13 +61,16 @@ export const ActivityData = styled.div`
         font-size: ${theme.font.sizes.s12};
       }
       strong {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
         color: ${theme.colors.primary};
         font-size: ${theme.font.sizes.s22};
       }
     }
     .values {
       display: flex;
-      align-items: center;
+      /* align-items: center; */
     }
   `}
 `
@@ -79,6 +81,7 @@ export const ContentActivity = styled.div`
     flex-direction: column;
     gap: ${theme.spacing.s2};
     flex: 1;
+    padding: 2rem 1rem;
     strong {
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.green};
@@ -102,8 +105,8 @@ export const ContentActivity = styled.div`
 export const HeartRate = styled.div<StravaStyles>`
   ${({ theme, $average = 0 }) => css`
     display: flex;
-    height: 4px;
-    width: 1rem;
+    height: 100%;
+    width: 4px;
     border: 0;
     outline: none;
     border-radius: ${theme.radius};
@@ -142,12 +145,12 @@ export const Content = styled.div`
 export const WrapperActivity = styled.div`
   ${({ theme }) => css`
     display: flex;
-    gap: ${theme.spacing.s2};
-    justify-content: space-between;
+    flex-direction: column-reverse;
     flex: 1;
-    @media (max-width: 768px) {
-      flex-direction: column;
-    }
+    border-radius: 0.8rem;
+    background: ${theme.colors.black};
+    padding: 1rem;
+    box-shadow: 0 8px 24px -8px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.04);
   `}
 `;
 

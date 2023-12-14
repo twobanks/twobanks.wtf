@@ -16,12 +16,15 @@ const DropDown = ({ options, setOptions, type, setType } : DropDownTypes) => (
     <div>
       <h4>Tipos de atividades</h4>
       <S.Button type='button' title='Treinos' onClick={() => setOptions(OPTIONS_ACTIVITY.TRAINING)} $active={options === OPTIONS_ACTIVITY.TRAINING}>
+        <Image src={images.training} alt={ACTIVITY.TRAIL} height={20} width={20} blurDataURL={images.training} priority quality={100} />
         Treinos
       </S.Button>
       <S.Button type='button' title='Provas' onClick={() => setOptions(OPTIONS_ACTIVITY.RACE)} $active={options === OPTIONS_ACTIVITY.RACE}>
+        <Image src={images.trophy} alt={ACTIVITY.TRAIL} height={20} width={20} blurDataURL={images.trophy} priority quality={100} />
         Provas
       </S.Button>
       <S.Button type='button' title='Estatísticas - Equipamentos' onClick={() => setOptions(OPTIONS_ACTIVITY.STATISTICS)} $active={options === OPTIONS_ACTIVITY.STATISTICS}>
+        <Image src={images.statistics} alt='Estatísticas - Equipamentos' title='Estatísticas - Equipamentos' height={20} width={20} blurDataURL={images.statistics} priority quality={100}/>
         Estatísticas - Equipamentos
       </S.Button>
     </div>
