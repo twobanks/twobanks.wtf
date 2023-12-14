@@ -7,12 +7,14 @@ import IconTwobanks from './IconTwobanks';
 
 const Header = ({ page = 'home' }: { page?: Pages; }) => (
   <S.Header>
-    <S.Content>
-      <Link href={`/`} passHref prefetch={false} title='o pai!'>
-        <IconTwobanks />
-      </Link>
-      {page !== 'home' && <Title text={conversionTitlePage(page)} page={page} />}
-    </S.Content>
+    <S.Container>
+      <div className='content'>
+        <Link href={`/`} passHref prefetch={false} title='o pai!'>
+          <IconTwobanks />
+        </Link>
+        {page !== 'home' && <Title text={conversionTitlePage(page)} page={page} />}
+      </div>
+    </S.Container>
   </S.Header>
 )
 
