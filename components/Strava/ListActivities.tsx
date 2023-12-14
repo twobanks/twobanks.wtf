@@ -41,21 +41,17 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
             </S.TypeActivity>
             <span title={date}>{date}</span>
           </S.DateAndCity>
+          {activity.pr_count > 0 && (
+            <div className='rp_wrapper' title='Recorde Pessoal'>
+              <Image src={images.rpIcon} alt={type} height={20} width={20} blurDataURL={images.rpIcon} priority quality={100} />
+              <strong>{activity.pr_count}</strong>
+            </div>
+          )}
         </S.HeaderActivity>
         <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} average={average_heartrate} />
         <div className='footer'>
-          {activity.pr_count > 0 && (
-            <>
-              <div className='rp_wrapper' title='Recorde Pessoal'>
-                <Image src={images.rpIcon} alt={type} height={20} width={20} blurDataURL={images.rpIcon} priority quality={100} />
-                <strong>{activity.pr_count}</strong>
-              </div>
-              |
-            </>
-          )}
           <S.StravaLink href={`https://www.strava.com/activities/${id}`} target='_blank' title='Ver mais no Strava'>
             <Image src={images.strava} alt={type} height={20} width={20} blurDataURL={images.strava} priority quality={100} />
-            <span>ver mais</span>
           </S.StravaLink>
         </div>
       </S.ContentActivity>

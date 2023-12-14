@@ -49,7 +49,7 @@ const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_eleva
           <span>Elevação</span>
           <div className='values'>
             <strong>
-            <Image src={images.elevation} alt='Selecionar' title='Selecionar' height={16} width={16} blurDataURL={images.elevation} priority quality={100}/>
+              <Image src={images.elevation} alt='Selecionar' title='Selecionar' height={16} width={16} blurDataURL={images.elevation} priority quality={100}/>
               {total_elevation_gain.toFixed(0)}
             </strong>m
           </div>

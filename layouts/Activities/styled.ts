@@ -2,6 +2,7 @@ import styled, { css } from "styled-components";
 
 type ButtonStyles = {
   $active?: boolean;
+  $option?: boolean;
 }
 
 export const Content = styled.div`
@@ -14,26 +15,21 @@ export const Content = styled.div`
 `;
 
 export const OptionsWrapper = styled.div`
-  ${({ theme }) => css`
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    left: 0;
-    z-index: 2;
-  `}
+  position: fixed;
+  width: 100%;
+  left: 0;
+  z-index: 2;
 `;
 
 export const OptionsSelected = styled.div`
   ${({ theme }) => css`
+    position: relative;
     display: flex;
-    align-items: center;
-    gap: ${theme.spacing.s1};
     max-width: ${theme.container};
     width: 100%;
     margin: 0 auto;
-    background: ${theme.colors.background};
-    padding: 2rem;
+    background-color: ${theme.colors.background};
+    padding: ${theme.spacing.s2} ${theme.spacing.s2} 0 ${theme.spacing.s2};
     .title {
       display: flex;
       align-items: center;
@@ -42,7 +38,17 @@ export const OptionsSelected = styled.div`
       h6 {
         font-size: ${theme.font.sizes.s16};
         color: ${theme.colors.primary};
+        font-weight: ${theme.font.normal};
       }
+    }
+    .wrapper_options {
+      display: flex;
+      align-items: center;
+      gap: ${theme.spacing.s2};
+      background-color: ${theme.colors.black};
+      flex: 1;
+      padding: ${theme.spacing.s1};
+      border-radius: ${theme.radius};
     }
   `}
 `;
@@ -58,30 +64,30 @@ export const DropButton = styled.button`
     outline: none;
     border-radius: ${theme.radius};
     cursor: pointer;
-    font-size: ${theme.font.sizes.s14};
+    font-size: ${theme.font.sizes.s12};
     &:hover {
       background-color: ${theme.colors.background};
     }
   `}
 `;
 
-export const Options = styled.div`
-  ${({ theme }) => css`
+export const Options = styled.div<ButtonStyles>`
+  ${({ theme, $option }) => css`
     position: absolute;
-    margin-top: 5rem;
+    margin-top: ${theme.spacing.s6};
+    margin-left: ${theme.spacing.s1};
     display: flex;
-    right: 0;
-    flex-direction: column;
-    gap: ${theme.spacing.s1};
     background-color: ${theme.colors.hover};
-    padding: ${theme.spacing.s2} ${theme.spacing.s1};
+    padding: ${theme.spacing.s2} 0;
     border-radius: ${theme.radius};
-    width: 25rem;
+    width: fit-content;
     z-index: 1;
     div {
       display: flex;
       flex-direction: column;
-      gap: .5rem;
+      gap: ${theme.spacing.s1};
+      flex: 1;
+      padding: 0 ${theme.spacing.s2};
       h4 {
         color: ${theme.colors.primary};
         padding-left: .5rem;
@@ -90,9 +96,26 @@ export const Options = styled.div`
       
     }
     div:first-child {
-      padding-bottom: ${theme.spacing.s1};
-      border-bottom: 1px solid ${theme.colors.background};
+      border-right: 1px solid ${theme.colors.background};
     }
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: ${theme.spacing.s2};
+      width: 30rem;
+      div:first-child {
+        border-bottom: 1px solid ${theme.colors.background};
+      }
+    }
+    ${$option && css`
+      width: 60rem;
+      div:first-child {
+        padding-bottom: ${theme.spacing.s1};
+        border-bottom: 1px solid ${theme.colors.none};
+        @media (max-width: 768px) {
+          border-bottom: 1px solid ${theme.colors.background};
+        }
+      }
+    `}
   `}
 `;
 

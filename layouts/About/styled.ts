@@ -87,7 +87,8 @@ export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    border-radius: .8rem;
+    border-radius: ${theme.radius};
+    padding-top: ${theme.spacing.s2};
     h2 {
       font-size: ${theme.font.sizes.s24};
       color: ${theme.colors.yellowFont};

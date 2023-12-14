@@ -7,12 +7,12 @@ export const Header = styled.header`
     display: flex;
     align-items: center;
     background-color: ${theme.colors.background};
-    padding: ${theme.spacing.s1} ${theme.spacing.s2};
+    padding: ${theme.spacing.s2};
     z-index: 1;
   `}
 `
 
-export const Content = styled.div`
+export const Container = styled.div`
 	${({ theme }) => css`
 		display: flex;
 		align-items: center;
@@ -31,6 +31,19 @@ export const Content = styled.div`
     }
     a:hover svg {
       opacity: 1;
+    }
+    .content {
+      display: flex;
+      justify-content: space-between;
+      max-width: ${theme.container};
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 ${theme.spacing.s2};
+    }
+    @media (max-width: 768px) {
+      .content {
+        padding: 0;
+      }
     }
 	`}
 `

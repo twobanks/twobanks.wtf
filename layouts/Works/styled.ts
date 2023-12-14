@@ -10,12 +10,12 @@ export const Container = styled.div`
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: ${theme.spacing.s2};
-    padding: ${theme.spacing.s2};
+    padding-top: ${theme.spacing.s2};
     @media (max-width: 1170px) {
       grid-template-columns: repeat(2, 1fr);
+      padding-bottom: ${theme.spacing.s2};
     }
     @media (max-width: 768px) {
-      padding: 0;
       grid-template-columns: repeat(1, 1fr);
       gap: 0;
     }
@@ -28,7 +28,7 @@ export const Work = styled.li`
     flex-direction: column;
     border-radius: ${theme.radius};
     border: 1px solid ${theme.colors.hover};
-    box-shadow: 0 8px 24px -8px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.04);
+    box-shadow: ${theme.shadow};
     &:hover {
       background-color: ${theme.colors.hover};
       .header_work {

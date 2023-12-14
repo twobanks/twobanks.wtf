@@ -25,12 +25,13 @@ export const MapWrapper = styled.div`
     border-radius: ${theme.radius};
     min-width: 25rem;
     min-height: 21rem;
+    box-shadow: ${theme.shadow};
     img {
       display: flex;
       max-width: 25rem;
       width: 100%;
       height: auto;
-      padding: 2rem 0;
+      padding: ${theme.spacing.s2} 0;
       margin: 0 auto;
     }
   `}
@@ -67,10 +68,12 @@ export const ActivityData = styled.div`
         color: ${theme.colors.primary};
         font-size: ${theme.font.sizes.s22};
       }
+      img {
+        opacity: .6;
+      }
     }
     .values {
       display: flex;
-      /* align-items: center; */
     }
   `}
 `
@@ -80,8 +83,7 @@ export const ContentActivity = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.s2};
-    flex: 1;
-    padding: 2rem 1rem;
+    padding: ${theme.spacing.s2} ${theme.spacing.s1};
     strong {
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.green};
@@ -89,7 +91,7 @@ export const ContentActivity = styled.div`
     .footer {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      justify-content: flex-end;
       .rp_wrapper {
         display: flex;
         align-items: center;
@@ -133,12 +135,6 @@ export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     gap: ${theme.spacing.s2};
-    padding-bottom: ${theme.spacing.s2};
-    border-bottom: 1px solid ${theme.colors.hover};
-    &:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
   `}
 `
 
@@ -147,16 +143,26 @@ export const WrapperActivity = styled.div`
     display: flex;
     flex-direction: column-reverse;
     flex: 1;
-    border-radius: 0.8rem;
+    border-radius: ${theme.radius};
     background: ${theme.colors.black};
-    padding: 1rem;
-    box-shadow: 0 8px 24px -8px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.04);
+    padding: ${theme.spacing.s1};
+    box-shadow: ${theme.shadow};
   `}
 `;
 
 export const HeaderActivity = styled.div`
-  display: flex;
-  justify-content: space-between;
+  ${({ theme }) => css`
+    display: flex;
+    justify-content: space-between;
+    .rp_wrapper {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      strong {
+        color: ${theme.colors.primary};
+      }
+    }
+  `}
 `
 
 export const DateAndCity = styled.div`
@@ -190,23 +196,14 @@ export const TypeActivity = styled.div`
 `
 
 export const StravaLink = styled(Link)`
-  ${({ theme,  }) => css`
-    display: flex;
-    align-items: center;
-    gap: .25rem;
-    color: ${theme.colors.primary};
-    border-radius: 4px;
-    cursor: pointer;
-    span {
-      font-size: ${theme.font.sizes.s14};
-    }
+  display: flex;
+  cursor: pointer;
+  img {
+    opacity: .6;
+  }
+  &:hover {
     img {
-      opacity: .6;
+      opacity: 1;
     }
-    &:hover {
-      img {
-        opacity: 1;
-      }
-    }
-  `}
+  }
 `;

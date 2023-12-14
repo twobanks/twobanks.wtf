@@ -26,7 +26,7 @@ export const conversionTypeActivity: (value: ACTIVITY) => string = (value: ACTIV
 export const conversionTitleActivities = (value: OPTIONS_ACTIVITY) => {
   const labels: { [index: string]: string } = {
     [OPTIONS_ACTIVITY.TRAINING]: 'Treinos',
-    [OPTIONS_ACTIVITY.RACE]: 'Provas',
+    [OPTIONS_ACTIVITY.RACE]: 'Competições',
     [OPTIONS_ACTIVITY.STATISTICS]: 'Estatísticas - Equipamentos',
   }
   return labels[value];

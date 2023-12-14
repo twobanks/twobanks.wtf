@@ -2,19 +2,10 @@
 import { v4 as uuid } from 'uuid'
 import * as S from './styled'
 import Link from 'next/link';
-import images from '@/public';
 import Image from 'next/image';
-
-import { ACTIVITY } from '@/utils/enums/strava';
 import { Challenges } from '@/types/banks';
+import { getIconActivity } from '@/utils/functions/conversionStrava';
 
-const iconActivity: any = {
-  [ACTIVITY.RIDE]: images.bike,
-  [ACTIVITY.RUN]: images.trail,
-  [ACTIVITY.TRAIL]: images.trail,
-  [ACTIVITY.WALK]: images.walking,
-  [ACTIVITY.GYM]: images.workout
-}
 
 const CompletedChallenges = ({ data } : { data: Challenges[]; }) => (
   <S.Wrapper>
@@ -23,7 +14,7 @@ const CompletedChallenges = ({ data } : { data: Challenges[]; }) => (
       {data.map(item => (
         <li key={uuid()}>
           <div className='top'>
-            <Image src={iconActivity[item.type]} alt={item.type} height={20} width={20} blurDataURL={iconActivity[item.type]} priority quality={100} />
+            <Image src={getIconActivity[item.type]} alt={item.type} height={20} width={20} blurDataURL={getIconActivity[item.type]} priority quality={100} />
             <div className='header'>
               <Link href={`https://www.strava.com/activities/${item.id}`} target='_blank'>{item.name}</Link>
               <span>{item.local}</span>

@@ -2,11 +2,10 @@ import { challenges, completedChallenges } from '@/public/content';
 import { Athlete, Challenges, Strava } from '@/components';
 import { Activities, AthleteStats } from '@/types/strava';
 import * as S from './styled'
-import { useState } from 'react';
+import { useState } from "react";
 import { ACTIVITY, OPTIONS_ACTIVITY } from '@/utils/enums/strava';
 import { conversionTypeActivity, conversionTitleActivities, getIconActivity, getIconTypeActivity } from '@/utils/functions/conversionStrava';
 import DropDown from './DropDown';
-import images from '@/public';
 import Image from 'next/image';
 
 type ActivitiesProps = {
@@ -34,26 +33,28 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
     <S.Content>
       <S.OptionsWrapper>
         <S.OptionsSelected>
-          <S.DropButton type='button'  onClick={() => setOpen(prevState => !prevState)}>
-            <Image src={getIconTypeActivity[options]} alt='Selecionar' title='Selecionar' height={20} width={20} blurDataURL={getIconTypeActivity[options]} priority quality={100}/>
-            {options === OPTIONS_ACTIVITY.TRAINING && (
-              <>
-                |
-                <Image src={getIconActivity[type]} alt={type} title={type} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100}/>
-              </>
-            )}
-          </S.DropButton>
-          <div className='title'>
-            <h6>{conversionTitleActivities(options)}</h6>
-            {options === OPTIONS_ACTIVITY.TRAINING && (
-              <>
-                {`>`}
-                <h6>{conversionTypeActivity(type)}</h6>
-              </>
-            )}
+          <div className='wrapper_options'>
+            <S.DropButton type='button'  onClick={() => setOpen(prevState => !prevState)}>
+              <Image src={getIconTypeActivity[options]} alt={conversionTitleActivities(options)} title={conversionTitleActivities(options)} height={20} width={20} blurDataURL={getIconTypeActivity[options]} priority quality={100}/>
+              {options === OPTIONS_ACTIVITY.TRAINING && (
+                <>
+                  |
+                  <Image src={getIconActivity[type]} alt={conversionTypeActivity(type)} title={conversionTypeActivity(type)} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100}/>
+                </>
+              )}
+            </S.DropButton>
+            <div className='title'>
+              <h6 title={conversionTitleActivities(options)}>{conversionTitleActivities(options)}</h6>
+              {options === OPTIONS_ACTIVITY.TRAINING && (
+                <>
+                  {`>`}
+                  <h6 title={conversionTypeActivity(type)}>{conversionTypeActivity(type)}</h6>
+                </>
+              )}
+            </div>
           </div>
+          {open && <DropDown options={options} setOptions={setOptions} type={type} setType={setType} />}
         </S.OptionsSelected>
-        {open && <DropDown options={options} setOptions={setOptions} type={type} setType={setType} />}
       </S.OptionsWrapper>
       <S.WrapperChallenges>
         {renderOption(options)}
