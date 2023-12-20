@@ -1,10 +1,15 @@
+import { Pages } from '@/types/banks';
 import styled, { css } from 'styled-components'
 
-export const Header = styled.header`
-	${({ theme }) => css`
+type HeaderStyle = {
+  $page?: Pages;
+}
+
+export const Header = styled.header<HeaderStyle>`
+	${({ theme, $page }) => css`
+    display: ${$page === 'home' ? 'none' : 'flex'};
     position: fixed;
 		width: 100vw;
-    display: flex;
     align-items: center;
     background-color: ${theme.colors.background};
     padding: ${theme.spacing.s2};
@@ -21,20 +26,19 @@ export const Container = styled.div`
 		color: ${theme.colors.secondary};
 		width: 100%;
 		margin: 0 auto;
-    a svg {
+    a img {
       display: flex;
-      height: 7rem;
-      width: 7rem;
       z-index: 6;
       position: relative;
       opacity: .8;
     }
-    a:hover svg {
+    a:hover img {
       opacity: 1;
     }
     .content {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       max-width: ${theme.container};
       width: 100%;
       margin: 0 auto;

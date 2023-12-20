@@ -22,8 +22,11 @@ export const Content = styled.section<WrapperProps>`
     height: auto;
     margin: 11rem auto 0 auto;
     padding: 0 ${theme.spacing.s2} ${theme.spacing.s6} ${theme.spacing.s2};
+    flex: 1;
     ${$page === 'home' && css`
+      margin:0 auto;
       height: 100%;
+      padding: 0 ${theme.spacing.s2};
     `}
   `}
 `;

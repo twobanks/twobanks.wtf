@@ -14,7 +14,7 @@ const Wrapper = ({ page, children }: WrapperProps) => (
     <S.Content $page={page}>
       {children}
     </S.Content>
-    <Footer menu={header.menu} />
+    <Footer page={page} menu={header.menu} />
   </S.Wrapper>
 )
 

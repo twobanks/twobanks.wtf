@@ -1,11 +1,16 @@
+import { Pages } from '@/types/banks';
 import styled, { css } from 'styled-components'
 
-export const Footer = styled.footer`
-  ${({ theme }) => css`
+type FooterStyle = {
+  $page?: Pages;
+}
+
+export const Footer = styled.footer<FooterStyle>`
+  ${({ theme, $page }) => css`
+    display: ${$page === 'home' ? 'none' : 'flex'};
     position: fixed;
     bottom: 0;
     width: 100vw;
-    display: flex;
     align-items: center;
     padding: 0 ${theme.spacing.s2};
     height: 6rem;

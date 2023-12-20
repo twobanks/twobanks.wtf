@@ -34,15 +34,18 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
       <S.OptionsWrapper>
         <S.OptionsSelected>
           <div className='wrapper_options'>
-            <S.DropButton type='button'  onClick={() => setOpen(prevState => !prevState)}>
-              <Image src={getIconTypeActivity[options]} alt={conversionTitleActivities(options)} title={conversionTitleActivities(options)} height={20} width={20} blurDataURL={getIconTypeActivity[options]} priority quality={100}/>
-              {options === OPTIONS_ACTIVITY.TRAINING && (
-                <>
-                  |
-                  <Image src={getIconActivity[type]} alt={conversionTypeActivity(type)} title={conversionTypeActivity(type)} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100}/>
-                </>
-              )}
-            </S.DropButton>
+            <div className='dropdown_container'>
+              <span>Opções:</span>
+              <S.DropButton type='button'  onClick={() => setOpen(prevState => !prevState)}>
+                <Image src={getIconTypeActivity[options]} alt={conversionTitleActivities(options)} title={conversionTitleActivities(options)} height={20} width={20} blurDataURL={getIconTypeActivity[options]} priority quality={100}/>
+                {options === OPTIONS_ACTIVITY.TRAINING && (
+                  <>
+                    |
+                    <Image src={getIconActivity[type]} alt={conversionTypeActivity(type)} title={conversionTypeActivity(type)} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100}/>
+                  </>
+                )}
+              </S.DropButton>
+            </div>
             <div className='title'>
               <h6 title={conversionTitleActivities(options)}>{conversionTitleActivities(options)}</h6>
               {options === OPTIONS_ACTIVITY.TRAINING && (

@@ -3,12 +3,12 @@ import Image from 'next/image';
 import * as S from './styled';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Menu } from '@/types/banks';
+import { Menu, Pages } from '@/types/banks';
 
-const Footer = ({ menu } : { menu: Menu[] }) => {
+const Footer = ({ menu, page = 'home' } : { menu: Menu[]; page?: Pages }) => {
   const [hovered, setHovered] = useState<string>('');
   return (
-    <S.Footer>
+    <S.Footer $page={page}>
       {menu.map((item, index) => {
         const isHovered = hovered === item.name;
         return (
