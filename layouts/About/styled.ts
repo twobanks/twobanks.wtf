@@ -220,9 +220,7 @@ export const AcademicEducation = styled.div`
 export const SocialWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: ${theme.spacing.s1};
+    justify-content: space-between;
     a {
       line-height: ${theme.spacing.s1};
     }
@@ -232,6 +230,44 @@ export const SocialWrapper = styled.div`
       border-radius: 0;
       &:hover {
         opacity: 1;
+      }
+    }
+    > div {
+      display: flex;
+      align-items: center; 
+      gap: ${theme.spacing.s1};
+    }
+    em {
+      display: flex;
+      height: 10px;
+      width: 10px;
+      transform: scale(1);
+      border-radius: 50%;
+      background: ${theme.colors.green};
+      animation: pulse-green 1.5s infinite;
+    }
+    .link_to_work {
+      color: ${theme.colors.primary};
+      font-weight: ${theme.font.bold};
+      transition: ${theme.transition.color};
+      &:hover {
+        color: ${theme.colors.green};
+      }
+    }
+    @keyframes pulse-green {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(51, 217, 178, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(51, 217, 178, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
       }
     }
   `}

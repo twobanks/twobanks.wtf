@@ -19,19 +19,25 @@ const Listening = ({ data, isLoading, dataTopTracks, artists } : { data?: NowPla
   return (
     <S.Wrapper>
       {/* <ListeningNow data={data} isLoading={isLoading} /> */}
-      <S.OptionContainer>
-        <h2 title={optionSelected(option)}>{optionSelected(option)}</h2>
-        <div>
-          <S.Button onClick={() => setOption('track')} title={optionSelected(option)} $active={option === 'track'}>
-            <Image src={images.speaker} alt={optionSelected(option)} height={20} width={20} />
-          </S.Button>
-          <S.Button onClick={() => setOption('artist')} title={optionSelected(option)} $active={option === 'artist'}>
-            <Image src={images.mic} alt={optionSelected(option)} height={20} width={20} />
-          </S.Button>
-        </div>
-      </S.OptionContainer>
-      {option === 'track' && <TopTracks data={dataTopTracks} />}
-      {option === 'artist' && <TopArtists data={artists} />}
+      {isLoading ? (
+        <>loading</>
+      ) : (
+        <>
+          <S.OptionContainer>
+            <h2 title={optionSelected(option)}>{optionSelected(option)}</h2>
+            <div>
+              <S.Button onClick={() => setOption('track')} title={optionSelected(option)} $active={option === 'track'}>
+                <Image src={images.speaker} alt={optionSelected(option)} height={20} width={20} />
+              </S.Button>
+              <S.Button onClick={() => setOption('artist')} title={optionSelected(option)} $active={option === 'artist'}>
+                <Image src={images.mic} alt={optionSelected(option)} height={20} width={20} />
+              </S.Button>
+            </div>
+          </S.OptionContainer>
+          {option === 'track' && <TopTracks data={dataTopTracks} />}
+          {option === 'artist' && <TopArtists data={artists} />}
+        </>
+      )}
     </S.Wrapper>
   )
 }

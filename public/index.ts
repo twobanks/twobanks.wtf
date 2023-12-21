@@ -62,6 +62,7 @@ const calendar = '/icon/calendar.svg';
 const training = '/icon/training.svg';
 const webp = '/img/twobanks-head.webp';
 const thiago = '/img/thiago.jpg';
+const loader = '/icon/animation/loader.webp';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -128,5 +129,6 @@ export default {
   training,
   webp,
   thiago,
-  book
+  book,
+  loader
 }

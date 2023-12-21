@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <S.Content>
       <div className="section_twobanks">
-        <Image src={images.webp} alt='twobanks' title='o pai!' width={214} height={236} />
+        <Image src={images.webp} alt='twobanks' title='o pai!' className='two_me' width={214} height={236} />
         <div className='info'>
           <h2>twobanks</h2>
           <ul>

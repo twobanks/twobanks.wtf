@@ -5,20 +5,12 @@ type WorksStyle = {
   $stack: STACKS
 }
 
-export const Container = styled.div`
+export const Container = styled.ul`
   ${({ theme }) => css`
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: ${theme.spacing.s2};
-    padding-top: ${theme.spacing.s2};
-    @media (max-width: 1170px) {
-      grid-template-columns: repeat(2, 1fr);
-      padding-bottom: ${theme.spacing.s2};
-    }
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(1, 1fr);
-      gap: 0;
-    }
+    grid-template-columns: repeat(1, 1fr);
+    width: 100%;
+    padding: ${theme.spacing.s4} 0;
   `}
 `
 
@@ -27,25 +19,25 @@ export const Work = styled.li`
     display: flex;
     flex-direction: column;
     border-radius: ${theme.radius};
-    border: 1px solid ${theme.colors.hover};
+    border-bottom: 1px solid ${theme.colors.hover};
     box-shadow: ${theme.shadow};
+    flex: 1;
+    &:last-child {
+      border-bottom: 0;
+    }
     &:hover {
       background-color: ${theme.colors.hover};
-      .header_work {
-        border-bottom: 0.1px solid ${theme.colors.background};
-      }
     }
     .header_work {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      padding: ${theme.spacing.s2};
-      border-bottom: 0.1px solid ${theme.colors.hover};
+      padding: 2rem 2rem 0 2rem;
     }
     a {
       width: fit-content;
       strong {
-        font-size: 20px;
+        font-size: ${theme.font.sizes.s18};
         color: ${theme.colors.primary};
         transition: ${theme.transition.color};
         &:hover {

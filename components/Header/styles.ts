@@ -13,6 +13,7 @@ export const Header = styled.header<HeaderStyle>`
     align-items: center;
     background-color: #1a181ed9;
     padding: ${theme.spacing.s2};
+    border-bottom: 1px solid ${theme.colors.hover};
     z-index: 1;
   `}
 `
@@ -34,6 +35,7 @@ export const Container = styled.div`
     }
     a:hover img {
       opacity: 1;
+      transform: rotate(-10deg);
     }
     .content {
       display: flex;

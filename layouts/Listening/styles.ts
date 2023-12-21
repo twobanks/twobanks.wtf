@@ -4,9 +4,9 @@ export const Wrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    gap: ${theme.spacing.s2};
+    gap: ${theme.spacing.s4};
     width: 100%;
-    padding: ${theme.spacing.s2} 0;
+    padding: ${theme.spacing.s4} 0;
     h2 {
       color: ${theme.colors.primary};
     }

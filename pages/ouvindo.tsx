@@ -10,8 +10,8 @@ import { ListeningNow } from '@/components'
 
 const ListeningPage = () => {
   const { data, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
-  const { data: dataTopTracks } = useSWR<TopTracks>(`/api/top-tracks`, fetcher);
-  const { data: dataTopArtists } = useSWR<{artists: Artist[]}>(`/api/top-artists`, fetcher);
+  const { data: dataTopTracks, isLoading: loadingTopTracks } = useSWR<TopTracks>(`/api/top-tracks`, fetcher);
+  const { data: dataTopArtists, isLoading: loadingTopArtists } = useSWR<{artists: Artist[]}>(`/api/top-artists`, fetcher);
   return (
     <>
       <NextSeo
@@ -20,7 +20,7 @@ const ListeningPage = () => {
       />
       <Wrapper page="ouvindo">
         {/* <ListeningNow data={data} isLoading={isLoading} /> */}
-        <Listening data={data} dataTopTracks={dataTopTracks} isLoading={isLoading} artists={dataTopArtists}/>
+        <Listening data={data} dataTopTracks={dataTopTracks} isLoading={(loadingTopTracks || loadingTopArtists || isLoading)} artists={dataTopArtists}/>
       </Wrapper>
     </>
   )

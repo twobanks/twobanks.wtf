@@ -28,10 +28,10 @@ const titleModifiers = {
 
 export const Wrapper = styled.h1<TitleStyles>`
   ${({ theme, $page }) => css`
-    font-size: ${theme.font.sizes.s48};
+    font-size: ${theme.font.sizes.s36};
     ${titleModifiers[$page](theme)}
     @media (max-width: 768px) {
-      font-size: ${theme.font.sizes.s36};
+      font-size: ${theme.font.sizes.s32};
     }
   `}
 `;

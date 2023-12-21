@@ -6,6 +6,7 @@ export const Wrapper = styled.ul`
     flex-wrap: wrap;
     width: 100%;
     gap: ${theme.spacing.s2};
+    justify-content: space-around;
     li {
       a {
         display: flex;
@@ -17,6 +18,7 @@ export const Wrapper = styled.ul`
         img {
           width: 24rem;
           opacity: .9;
+          border-radius: ${theme.radius};
         }
         &:hover img {
           opacity: 1;

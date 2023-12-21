@@ -14,6 +14,9 @@ export const Content = styled.div`
       width: 100%;
       img {
         box-shadow: ${theme.shadow};
+        &:hover {
+          transform: rotate(-10deg);
+        }
       }
       .info {
         display: flex;
@@ -35,22 +38,6 @@ export const Content = styled.div`
   `}
 `;
 
-export const SocialWrapper = styled.div`
-  ${({ theme }) => css`
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.s1};
-    padding-top: ${theme.spacing.s1};
-    img {
-      opacity: .6;
-      transition: ${theme.transition.color};
-      border-radius: 0;
-      &:hover {
-        opacity: 1;
-      }
-    }
-  `}
-`;
 
 export const Nav = styled.ul`
   ${({ theme }) => css`
@@ -77,6 +64,9 @@ export const NavContainer = styled.li`
     }
     &:hover {
       color: ${theme.colors.primary};
+    }
+    @media (max-width: 768px) {
+      font-size: ${theme.font.sizes.s14};
     }
 	`}
 `
