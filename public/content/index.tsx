@@ -36,12 +36,12 @@ export const header = {
       icon: images.work,
       iconAnimated: images.workAnimated,
     },
-    {
+    /* {
       name: 'code snippets',
       url: 'snippets',
       icon: images.code,
       iconAnimated: images.codeAnimated,
-    },
+    }, */
   ]
 }
 
