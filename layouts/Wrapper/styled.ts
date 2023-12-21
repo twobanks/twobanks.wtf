@@ -20,7 +20,7 @@ export const Content = styled.section<WrapperProps>`
     max-width: ${theme.container};
     width: 100%;
     height: auto;
-    margin: 11rem auto 0 auto;
+    margin: 13rem auto 0 auto;
     padding: 0 ${theme.spacing.s2} ${theme.spacing.s6} ${theme.spacing.s2};
     flex: 1;
     ${$page === 'home' && css`

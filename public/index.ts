@@ -15,6 +15,7 @@ const gridAnimated = '/icon/animation/grid-animated.webp';
 const row = '/icon/animation/row.svg';
 const rowAnimated = '/icon/animation/row-animated.webp';
 const work = '/icon/animation/work.svg';
+const book = '/icon/animation/book.svg';
 const workAnimated = '/icon/animation/work-animated.webp';
 const folder = '/icon/animation/folder.svg';
 const folderAnimated = '/icon/animation/folder-animated.webp';
@@ -60,6 +61,7 @@ const loc = '/icon/loc.svg';
 const calendar = '/icon/calendar.svg';
 const training = '/icon/training.svg';
 const webp = '/img/twobanks-head.webp';
+const thiago = '/img/thiago.jpg';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -124,5 +126,7 @@ export default {
   loc,
   calendar,
   training,
-  webp
+  webp,
+  thiago,
+  book
 }

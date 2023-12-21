@@ -11,7 +11,7 @@ export const Header = styled.header<HeaderStyle>`
     position: fixed;
 		width: 100vw;
     align-items: center;
-    background-color: ${theme.colors.background};
+    background-color: #1a181ed9;
     padding: ${theme.spacing.s2};
     z-index: 1;
   `}

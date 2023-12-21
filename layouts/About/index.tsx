@@ -2,17 +2,36 @@ import Link from 'next/link';
 import { v4 as uuid } from 'uuid'
 import { About as AboutType } from '@/types/banks'
 import * as S from './styled'
+import images from '@/public';
+import Image from 'next/image';
+import { social } from '@/public/content';
 
 const About = ({ data }: { data: AboutType }) => {
   const { experiences, academic } = data;
   return (
     <S.Content>
       <S.About>
-        <h3>Salveee 🏹</h3>
-        <p>Sou <strong title='Desenvolvedor Front-End'>Desenvolvedor Front-End</strong>, atualmente resido em <strong title='capital do Triângulo Mineiro'>Uberaba, Minas Gerais</strong>.</p>
-        <p>Com mais de <strong>9 anos</strong> de experiência na área de desenvolvimento 💻, tenho sólida formação em <strong title='TypeScript'>TypeScript</strong>, <strong title='ReactJS'>ReactJS</strong>, <strong title='NextJS'>NextJS</strong>, <strong title='Tailwind CSS'>Tailwind CSS</strong>, <strong title='Styled Components'>Styled Components</strong>.</p>
-        <p>Acredito em escrever código limpo, legível e de fácil manutenção 🛠️. Gosto de trabalhar em projetos desafiadores 💡, aprender e aprimorar continuamente minhas habilidades 📚.</p>
-        <p>No meu tempo livre, curto momentos com minha esposa <strong title='@stephaniemontandon'>Tefa</strong> 👫 e meu cachorro <strong title='bebê Brown'>Brown</strong> 🐶, pratico <strong title='mountain bike'>mountain bike</strong> 🚵‍♂️ e quase sempre estou na trilha praticando <strong title='trail running'>trail running</strong> 🏃, estou sempre ouvindo uma música <span>(preferencialmente rap)</span>🎧, torço pelo time do <strong title='MAIOR DE MINAS ✋✌'>Cruzeiro</strong>🦊, assisto a NBA 🏀 e atualmente jogo BF V.</p>
+        <h2>Salveee 🏹</h2>
+        <div className='content_about'>
+          <section>
+            <p>Meu nome é <strong title='o pai!'>Thiago</strong>, vulgo: <span>twobanks, rasta, petildo, zui</span>. Nasci em <strong>Brasília de Minas</strong><span>(norte de minas)</span>, porém, cresci e vivo em <strong title='capital do Triângulo Mineiro'>Uberaba, Minas Gerais</strong>. Trabalho como <strong title='Desenvolvedor Front-End'>Desenvolvedor Front-End</strong> e treino para <strong>ultramaratonas</strong> nas horas vagas. </p>
+            <p>Com mais de <strong>9 anos de experiência</strong>  na área de desenvolvimento 💻, tenho sólida formação em <strong title='JavaScript'>JavaScript</strong>, <strong title='TypeScript'>TypeScript</strong>, <strong title='ReactJS'>ReactJS</strong>, <strong title='NextJS'>NextJS</strong>, <strong>CSS</strong>(<strong title='Tailwind CSS'>Tailwind CSS</strong>, <strong title='Styled Components'>Styled Components</strong>).</p>
+            <p>Acredito em escrever código limpo, legível e de fácil manutenção 🛠️. Gosto de trabalhar em projetos desafiadores 💡, aprender e aprimorar continuamente minhas habilidades 📚.</p>
+            <p>No meu tempo livre, curto momentos com minha esposa <strong title='@stephaniemontandon'>Tefa</strong> 👫 e meu cachorro <strong title='bebê Brown'>Brown</strong> 🐶. Pratico <strong title='mountain bike'>mountain bike</strong> 🚵‍♂️ e, quase sempre, estou na trilha, praticando <strong title='trail running'>trail running</strong> 🏃. Estou sempre ouvindo música <span>(preferencialmente rap)</span>🎧, torço pelo time do <strong title='MAIOR DE MINAS ✋✌'>Cruzeiro</strong>🦊, assisto a <strong>NBA</strong> 🏀 e, atualmente, jogo <strong title='Battlefield V'>Battlefield V</strong>.</p>
+          </section>
+          <S.PicAndSocial>
+            <S.ImageWrapper>
+              <Image src={images.thiago} alt='twobanks' title='o pai!' fill blurDataURL={images.thiago} priority quality={100} />
+            </S.ImageWrapper>
+            <S.SocialWrapper>
+              {social.map(item => (
+                <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
+                  <Image src={item.icon} alt={item.name} height={20} width={20} blurDataURL={item.icon} priority quality={100}/>
+                </Link>
+              ))}
+            </S.SocialWrapper>
+          </S.PicAndSocial>
+        </div>
       </S.About>
       <S.Career>
         <h2 title='Experiências'>Experiências</h2>
