@@ -14,9 +14,15 @@ export const Content = styled.div`
       width: 100%;
       img {
         box-shadow: ${theme.shadow};
-        &:hover {
-          transform: rotate(-10deg);
-        }
+        animation: spin 5s infinite linear;
+        /* &:hover {
+          transform: rotate(10deg);
+        } */
+      }
+      @keyframes spin {
+        0% { transform: rotate(10deg); }
+        50% { transform: rotate(-10deg); }
+        100% { transform: rotate(10deg); }
       }
       .info {
         display: flex;

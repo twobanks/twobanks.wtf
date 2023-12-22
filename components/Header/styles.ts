@@ -35,7 +35,12 @@ export const Container = styled.div`
     }
     a:hover img {
       opacity: 1;
-      transform: rotate(-10deg);
+      animation: spin 5s infinite linear;
+    }
+    @keyframes spin {
+      0% { transform: rotate(10deg); }
+      50% { transform: rotate(-10deg); }
+      100% { transform: rotate(10deg); }
     }
     .content {
       display: flex;
