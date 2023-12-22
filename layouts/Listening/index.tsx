@@ -10,30 +10,35 @@ const Listening = ({ data, isLoading, dataTopTracks, artists, dataPlaylist } : {
   return (
     <S.Wrapper>
       {/* <ListeningNow data={data} isLoading={isLoading} /> */}
-      <S.TabsWrapper>
-        <div className="tab_content">
-          <S.Button onClick={() => setOption('track')} title="Músicas mais ouvidas" $active={option === 'track'}>
-            <Image src={images.speaker} alt="Músicas mais ouvidas" height={20} width={20} />
-            <span>Músicas</span>
-          </S.Button>
-          <S.Button onClick={() => setOption('artist')} title="Artistas mais ouvidos" $active={option === 'artist'}>
-            <Image src={images.mic} alt="Artistas mais ouvidos" height={20} width={20} />
-            <span>Artistas</span>
-          </S.Button>
-          <S.Button onClick={() => setOption('playlists')} title="Minhas playlists" $active={option === 'playlists'}>
-            <Image src={images.mic} alt="Minhas playlists" height={20} width={20} />
-            <span>Playlists</span>
-          </S.Button>
-        </div>
-      </S.TabsWrapper>
       {isLoading ? (
-        <>loading</>
+         <S.LoadingWrapper>
+          <Image src={images.webp} alt="Artistas mais ouvidos" height={200} width={200} />
+          <h2>Carregando</h2>
+         </S.LoadingWrapper>
       ) : (
-        <S.Container>
-          {option === 'track' && <TopTracks data={dataTopTracks} />}
-          {option === 'artist' && <TopArtists data={artists} />}
-          {option === 'playlists' && <Playlist data={dataPlaylist} />}
-        </S.Container>
+        <>
+          <S.TabsWrapper>
+            <div className="tab_content">
+              <S.Button onClick={() => setOption('track')} title="Músicas mais ouvidas" $active={option === 'track'}>
+                <Image src={images.speaker} alt="Músicas mais ouvidas" height={20} width={20} />
+                <span>Músicas</span>
+              </S.Button>
+              <S.Button onClick={() => setOption('artist')} title="Artistas mais ouvidos" $active={option === 'artist'}>
+                <Image src={images.mic} alt="Artistas mais ouvidos" height={20} width={20} />
+                <span>Artistas</span>
+              </S.Button>
+              <S.Button onClick={() => setOption('playlists')} title="Minhas playlists" $active={option === 'playlists'}>
+                <Image src={images.mic} alt="Minhas playlists" height={20} width={20} />
+                <span>Playlists</span>
+              </S.Button>
+            </div>
+          </S.TabsWrapper>
+          <S.Container>
+            {option === 'track' && <TopTracks data={dataTopTracks} />}
+            {option === 'artist' && <TopArtists data={artists} />}
+            {option === 'playlists' && <Playlist data={dataPlaylist} />}
+          </S.Container>
+        </>
       )}
     </S.Wrapper>
   )

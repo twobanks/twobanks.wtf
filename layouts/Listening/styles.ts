@@ -108,3 +108,22 @@ export const Container = styled.div`
     padding: 11rem 0 ${theme.spacing.s4} 0;
   `}
 `;
+
+export const LoadingWrapper = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    gap: ${theme.spacing.s2};
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    img {
+      animation: spin 3.5s infinite linear;
+    }
+  `}
+`;
