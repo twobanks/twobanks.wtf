@@ -124,7 +124,7 @@ export const WrapperChallenges = styled.section`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.s2};
-    margin-top: 8rem;
+    margin-top: 13rem;
     width: 100%;
     h2 {
       color: ${theme.colors.primary};
@@ -167,3 +167,88 @@ export const TypeActivity = styled.div`
     }
   `}
 `
+
+export const TabsWrapper = styled.section`
+  ${({ theme }) => css`
+    position: fixed;
+    width: 100%;
+    left: 0;
+    z-index: 2;
+    padding: ${theme.spacing.s2} ${theme.spacing.s2} 0 ${theme.spacing.s2};
+    background-color: #1a181ef7;
+    .tab_container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      max-width: ${theme.container};
+      width: 100%;
+      margin: 0 auto;
+      background-color: ${theme.colors.black};
+      padding: 1rem;
+      border-radius: ${theme.radius};
+    }
+    .tab_content {
+      display: flex;
+      button {
+        flex: 1;
+      }
+    }
+    .modality {
+      justify-content: center;
+      button {
+        width: fit-content;
+        flex: 0;
+        padding: 1rem 2rem;
+      }
+    }
+  `}
+`;
+
+export const TabButton = styled.button<ButtonStyles>`
+  ${({ theme, $active }) => css`
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    background-color: ${theme.colors.black};
+    width: fit-content;
+    height: fit-content;
+    outline: none;
+    cursor: pointer;
+    color: ${theme.colors.primary};
+    font-size: ${theme.font.sizes.s16};
+    padding: ${theme.spacing.s1} 0;
+    border: 0;
+    transition: ${theme.transition.color};
+    &:first-child {
+      border-radius: ${theme.radius} 0 0 ${theme.radius};
+    }
+    &:last-child {
+      border-radius: 0 ${theme.radius} ${theme.radius} 0;
+    }
+    &:hover {
+      background-color: ${theme.colors.hover};
+      img {
+        opacity: .8;
+      }
+    }
+    img {
+      opacity: .5;
+    }
+    ${$active && css`
+      background-color: ${theme.colors.hover};
+      img {
+        opacity: 1;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    `}
+    @media (max-width: 768px) {
+      span {
+        display: none;
+      }
+    }
+  `}
+`;

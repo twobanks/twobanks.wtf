@@ -3,15 +3,12 @@ import styled, { css } from "styled-components";
 export const Wrapper = styled.section`
   ${({ theme }) => css`
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     padding: ${theme.spacing.s2};
     background-color: ${theme.colors.black};
-    border-radius: .8rem;
-    gap: ${theme.spacing.s8};
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(1, 1fr);
-      gap: ${theme.spacing.s4};
-    }
+    border-radius: ${theme.radius};
+    margin-top: ${theme.spacing.s2};
+    gap: ${theme.spacing.s4};
   `}
 `
 
@@ -70,7 +67,7 @@ export const ContentEquipment = styled.div`
         li {
           display: flex;
           align-items: center;
-          padding: .5rem 0;
+          padding: ${theme.spacing.s1} 0;
           border-bottom: 1px solid ${theme.colors.hover};
           span {
             color: ${theme.colors.primary};
@@ -124,6 +121,8 @@ export const ItemStats = styled.ul`
     .data_stats {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      width: fit-content;
+      gap: 4rem;
       strong {
         font-size: ${theme.font.sizes.s22};
         color: ${theme.colors.primary};
