@@ -10,7 +10,7 @@ const TopArtists = ({ data } : { data?: { artists: Artist[] } }) => (
       <li key={uuid()} title={artist.name}>
         <Link href={artist.href} target='_blank'>
           <S.AlbumCover>
-            <Image src={artist.images.url} alt={artist.name} fill objectFit='cover'  />
+            <Image src={artist.images.url} alt={artist.name} fill objectFit='cover' />
           </S.AlbumCover>
           <div className='header'>
             <strong>{artist.name}</strong>

@@ -2,26 +2,30 @@ import styled, { css } from "styled-components";
 
 export const Wrapper = styled.ul`
   ${({ theme }) => css`
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     width: 100%;
     gap: ${theme.spacing.s2};
-    justify-content: space-around;
     li {
       a {
         display: flex;
         flex-direction: column;
         gap: ${theme.spacing.s1};
+        transition: ${theme.transition.color};
         &:hover .header strong {
           color: ${theme.colors.spotify};
         }
         img {
-          width: 24rem;
           opacity: .9;
           border-radius: ${theme.radius};
         }
-        &:hover img {
-          opacity: 1;
+        &:hover {
+          strong {
+            color: ${theme.colors.spotify};
+          }
+          img {
+            opacity: 1;
+          }
         }
         .header {
           display: flex;
@@ -40,17 +44,25 @@ export const Wrapper = styled.ul`
         width: 20rem;
       }
     }
+    @media (max-width: 1070px) {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    @media (max-width: 500px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
   `}
 `;
 
 export const AlbumCover = styled.div`
   ${({ theme }) => css`
     position: relative;
-    width: 22rem;
-    height: 22rem;
+    width: 100%;
+    height: 18rem;
     border-radius: ${theme.radius};
-    @media (max-width: 768px) {
-      width: 20rem;
+    @media (max-width: 1070px) {
       height: 20rem;
     }
   `}
@@ -64,6 +76,23 @@ export const Genre = styled.div`
     span {
       font-size: ${theme.font.sizes.s12};
       color: ${theme.colors.spotify};
+    }
+  `}
+`;
+
+export const Info = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: column;
+    strong {
+      display: flex;
+      color: ${theme.colors.primary};
+      font-size: ${theme.font.sizes.s16};
+      flex-wrap: wrap;
+    }
+    span {
+      font-size: ${theme.font.sizes.s14};
+      color: ${theme.colors.secondary};
     }
   `}
 `;

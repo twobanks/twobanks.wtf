@@ -1,4 +1,4 @@
-import { NOW_PLAYING_ENDPOINT, TOKEN_ENDPOINT, TOP_TRACKS_ENDPOINT, TOP_ARTISTS_ENDPOINT } from '@/utils/constants/spotify'
+import { NOW_PLAYING_ENDPOINT, TOKEN_ENDPOINT, TOP_TRACKS_ENDPOINT, TOP_ARTISTS_ENDPOINT, PLAYLIST_ENDPOINT } from '@/utils/constants/spotify'
 
 const basic = btoa(`${process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID}:${process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET}`);
 
@@ -42,6 +42,16 @@ export const getTopArtists = async () => {
   const { access_token } = await getAccessToken();
 
   return fetch(TOP_ARTISTS_ENDPOINT, {
+    headers: {
+      Authorization: `Bearer ${access_token}`
+    }
+  });
+};
+
+export const getPlaylist = async () => {
+  const { access_token } = await getAccessToken();
+
+  return fetch(PLAYLIST_ENDPOINT, {
     headers: {
       Authorization: `Bearer ${access_token}`
     }

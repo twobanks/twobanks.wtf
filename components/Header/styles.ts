@@ -11,7 +11,7 @@ export const Header = styled.header<HeaderStyle>`
     position: fixed;
 		width: 100vw;
     align-items: center;
-    background-color: #1a181ed9;
+    background-color: #1a181ef7;
     padding: ${theme.spacing.s2};
     border-bottom: 1px solid ${theme.colors.hover};
     z-index: 1;
