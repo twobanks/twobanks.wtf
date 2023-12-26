@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 type ResultsType = { 
   movingTime?: string;
-  distance?: number;
+  distance: number;
   averageSpeed?: string;
   averageTitle?: string;
   type: ACTIVITY;
@@ -17,7 +17,7 @@ type ResultsType = {
 const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_elevation_gain, type, average } : ResultsType) => {
   return (
     <S.ActivityData>
-      {distance && (
+      {(type !== ACTIVITY.GYM && type !== ACTIVITY.WORKOUT) && (
         <div className='content'  title="Distância">
           <span>Distância</span>
           <div className='values'>
@@ -35,22 +35,24 @@ const Results = ({ movingTime, distance, averageTitle, averageSpeed, total_eleva
           {movingTime}
         </strong>
       </div>
-      <div className='content' title={averageTitle}>
-        <span>{averageTitle}</span>
-        <div className='values'>
-          <strong>
-            <Image src={getIconActivity[type]} alt='Selecionar' title='Selecionar' height={16} width={16} blurDataURL={getIconActivity[type]} priority quality={100}/>
-            {averageSpeed}
-          </strong>{type !== ACTIVITY.RIDE ? 'km' : 'km/h'}
+      {(type !== ACTIVITY.GYM && type !== ACTIVITY.WORKOUT) && (
+        <div className='content' title={averageTitle}>
+          <span>{averageTitle}</span>
+          <div className='values'>
+            <strong>
+              <Image src={getIconActivity[type]} alt='Selecionar' title='Selecionar' height={16} width={16} blurDataURL={getIconActivity[type]} priority quality={100}/>
+              {averageSpeed}
+            </strong>{type !== ACTIVITY.RIDE ? 'km' : 'km/h'}
+          </div>
         </div>
-      </div>
-      {total_elevation_gain !== undefined && (
+      )}
+      {(type !== ACTIVITY.GYM && type !== ACTIVITY.WORKOUT) && (
         <div className='content' title="Elevação">
           <span>Elevação</span>
           <div className='values'>
             <strong>
               <Image src={images.elevation} alt='Selecionar' title='Selecionar' height={16} width={16} blurDataURL={images.elevation} priority quality={100}/>
-              {total_elevation_gain.toFixed(0)}
+              {total_elevation_gain?.toFixed(0)}
             </strong>m
           </div>
         </div>

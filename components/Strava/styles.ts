@@ -10,7 +10,7 @@ export const Wrapper = styled.main<StravaStyles>`
     max-width: ${theme.container};
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
     gap: ${theme.spacing.s2};
     padding: ${theme.spacing.s2} 0;
     @media (max-width: 768px) {
@@ -23,7 +23,7 @@ export const MapWrapper = styled.div`
     position: relative;
     background-color: ${theme.colors.hover};
     border-radius: ${theme.radius};
-    min-width: 25rem;
+    min-width: 35rem;
     min-height: 21rem;
     box-shadow: ${theme.shadow};
     img {
@@ -43,6 +43,7 @@ export const ActivityData = styled.div`
     flex-wrap: wrap;
     gap: ${theme.spacing.s2};
     line-height: ${theme.font.sizes.s24};
+    flex: 1;
     > div {
       display: flex;
       flex-direction: column;
@@ -74,6 +75,7 @@ export const ActivityData = styled.div`
     }
     .values {
       display: flex;
+      align-items: baseline;
     }
   `}
 `
@@ -84,6 +86,7 @@ export const ContentActivity = styled.div`
     flex-direction: column;
     gap: ${theme.spacing.s2};
     padding: ${theme.spacing.s2} ${theme.spacing.s1};
+    flex: 1;
     strong {
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.green};
@@ -91,7 +94,12 @@ export const ContentActivity = styled.div`
     .footer {
       display: flex;
       align-items: center;
-      justify-content: flex-end;
+      justify-content: space-between;
+      .devices {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+      }
       .rp_wrapper {
         display: flex;
         align-items: center;
@@ -107,12 +115,13 @@ export const ContentActivity = styled.div`
 export const HeartRate = styled.div<StravaStyles>`
   ${({ theme, $average = 0 }) => css`
     display: flex;
-    height: 100%;
-    width: 4px;
+    align-self: center;
+    height: 10px;
+    width: 10px;
     border: 0;
     outline: none;
     border-radius: ${theme.radius};
-    margin-right: 4px;
+    margin-right: 8px;
     ${$average < 120 && css`
       background-color: ${theme.colors.trainingZone.z1};
     `}
@@ -141,12 +150,16 @@ export const Content = styled.div`
 export const WrapperActivity = styled.div`
   ${({ theme }) => css`
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: row-reverse;
     flex: 1;
+    gap: ${theme.spacing.s2};
     border-radius: ${theme.radius};
     background: ${theme.colors.black};
     padding: ${theme.spacing.s1};
     box-shadow: ${theme.shadow};
+    @media (max-width: 768px) {
+      flex-direction: column-reverse;
+    }
   `}
 `;
 

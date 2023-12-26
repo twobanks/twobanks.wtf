@@ -41,6 +41,7 @@ const running = '/icon/running.svg';
 const walking = '/icon/walking.svg';
 const workout = '/icon/workout.svg';
 const discord = '/icon/discord.svg';
+const clock = '/icon/clock.svg';
 const me = '/img/twobanks2.svg';
 const new_me = '/img/lettering.svg';
 const persona = '/img/persona.svg';
@@ -130,5 +131,6 @@ export default {
   webp,
   thiago,
   book,
-  loader
+  loader,
+  clock
 }

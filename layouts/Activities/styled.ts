@@ -191,15 +191,13 @@ export const TabsWrapper = styled.section`
     .tab_content {
       display: flex;
       button {
+        height: 4rem;
         flex: 1;
       }
     }
-    .modality {
-      justify-content: center;
+    @media (max-width: 768px) {
       button {
-        width: fit-content;
-        flex: 0;
-        padding: 1rem 2rem;
+        font-size: ${theme.font.sizes.s14};
       }
     }
   `}

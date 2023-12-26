@@ -18,7 +18,8 @@ export const conversionTypeActivity: (value: ACTIVITY) => string = (value: ACTIV
     [ACTIVITY.TRAIL]: 'Trail Running',
     [ACTIVITY.WALK]: 'Caminhada',
     [ACTIVITY.GYM]: 'Academia',
-    [ACTIVITY.WORKOUT]: 'Exercícios'
+    [ACTIVITY.WORKOUT]: 'Exercícios',
+    [ACTIVITY.ALL]: 'Todas as atividades'
   }
   return labels[value];
 }

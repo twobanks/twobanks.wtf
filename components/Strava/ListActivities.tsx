@@ -8,16 +8,8 @@ import * as S from './styles'
 import { ACTIVITY } from '@/utils/enums/strava';
 import Results from './Results';
 
-const iconActivity: any = {
-  [ACTIVITY.RIDE]: images.bike,
-  [ACTIVITY.RUN]: images.running,
-  [ACTIVITY.TRAIL]: images.trail,
-  [ACTIVITY.WALK]: images.walking,
-  [ACTIVITY.GYM]: images.workout
-}
-
 const ListActivities = ({ activity }: { activity: Activities}) => {
-  const { start_date, average_heartrate, average_speed, distance, moving_time, sport_type, type, total_elevation_gain, map, name, id } = activity;
+  const { start_date, average_heartrate, average_speed, distance, moving_time, type, total_elevation_gain, map, name, id } = activity;
   const handleMap = useCallback((polyline: string) => {
     let polylineEncoded = encodeURIComponent(polyline)
     let style = 'ckmi23ula94rm17rxmlpg00as'
@@ -50,12 +42,16 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
         </S.HeaderActivity>
         <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} average={average_heartrate} />
         <div className='footer'>
+          <div className='devices' title='Coros Apex Pro'>
+              <Image src={images.clock} alt={type} height={20} width={20} blurDataURL={images.clock} priority quality={100} />
+              Coros Apex Pro
+          </div>
           <S.StravaLink href={`https://www.strava.com/activities/${id}`} target='_blank' title='Ver mais no Strava'>
             <Image src={images.strava} alt={type} height={20} width={20} blurDataURL={images.strava} priority quality={100} />
           </S.StravaLink>
         </div>
       </S.ContentActivity>
-      {type !== ACTIVITY.GYM  && map.summary_polyline !== '' && (
+      {(type !== ACTIVITY.GYM && type !== ACTIVITY.WORKOUT) && map.summary_polyline !== '' && (
         <S.MapWrapper>
           <Image src={mapUrl} alt={`${name} map`} fill sizes="100%" blurDataURL={mapUrl} priority quality={100} title={name} />
         </S.MapWrapper>
