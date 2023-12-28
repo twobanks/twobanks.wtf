@@ -35,9 +35,9 @@ export const Container = styled.div`
     }
     a:hover img {
       opacity: 1;
-      animation: spin 5s infinite linear;
+      animation: logo 5s infinite linear;
     }
-    @keyframes spin {
+    @keyframes logo {
       0% { transform: rotate(10deg); }
       50% { transform: rotate(-10deg); }
       100% { transform: rotate(10deg); }

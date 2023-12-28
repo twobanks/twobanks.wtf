@@ -12,8 +12,8 @@ const Listening = ({ data, isLoading, dataTopTracks, artists, dataPlaylist } : {
       {/* <ListeningNow data={data} isLoading={isLoading} /> */}
       {isLoading ? (
          <S.LoadingWrapper>
-          <Image src={images.webp} alt="Artistas mais ouvidos" height={200} width={200} />
-          <h2>Carregando</h2>
+          <Image src={images.webp} alt="twobanks" height={200} width={200} />
+          <h2>Carregando...</h2>
          </S.LoadingWrapper>
       ) : (
         <>

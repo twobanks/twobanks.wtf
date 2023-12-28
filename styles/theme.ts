@@ -66,6 +66,12 @@ export default {
       [STACKS.PHP]: '#4B568C',
       [STACKS.TAILWIND]: '#38BDF8',
     },
+    title: {
+      about: 'background: linear-gradient(to right, #f4e67c, #F1E05A, #645e2d, #343117);',
+      work: 'background: linear-gradient(to right, #bdf2f1, #9DE1E0, #61abaa, #224d4c);',
+      listening: 'background: linear-gradient(to right, #3ec970, #1DB954, #137034, #092b15);',
+      activities: 'background: linear-gradient(to right, #93dbac, #54A671, #315e41, #183322);',
+    },
     trainingZone: {
       z1: '#9DE1E0',
       z2: '#1DB954',

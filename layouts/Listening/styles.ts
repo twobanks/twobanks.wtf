@@ -123,7 +123,20 @@ export const LoadingWrapper = styled.div`
       to { transform: rotate(360deg); }
     }
     img {
-      animation: spin 3.5s infinite linear;
+      animation: spin 5s infinite linear;
+    }
+    h2 {
+      font-size: ${theme.font.sizes.s28};
+      ${theme.colors.title.listening};
+      animation: gradient 5s ease-in-out infinite;
+      background-size: 300%;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      @keyframes gradient {
+        0% { background-position: 0 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0 50%; }
+      }
     }
   `}
 `;

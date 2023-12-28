@@ -14,10 +14,9 @@ export const Content = styled.div`
       width: 100%;
       .two_me {
         box-shadow: ${theme.shadow};
-        animation: spin 5s infinite linear;
+        animation: home 5s infinite linear;
       }
-      
-      @keyframes spin {
+      @keyframes home {
         0% { transform: rotate(10deg); }
         50% { transform: rotate(-10deg); }
         100% { transform: rotate(10deg); }
@@ -28,11 +27,21 @@ export const Content = styled.div`
         justify-content: center;
         align-items: center;
         gap: ${theme.spacing.s1};
-      }
-      h2 {
-        font-size: 70px;
-        color: ${theme.colors.yellow};
-        line-height: 56px;
+        h2 {
+          font-size: 70px;
+          color: ${theme.colors.yellow};
+          line-height: 56px;
+          ${theme.colors.title.about};
+          animation: gradient 5s ease-in-out infinite;
+          background-size: 300%;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          @keyframes gradient {
+            0% { background-position: 0 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0 50%; }
+          }
+        }
       }
       ul {
         display: flex;
