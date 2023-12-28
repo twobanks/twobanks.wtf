@@ -1,8 +1,10 @@
+import { OPTIONS_ACTIVITY } from "@/utils/enums/strava";
 import styled, { css } from "styled-components";
 
 type ButtonStyles = {
   $active?: boolean;
   $option?: boolean;
+  $options?: OPTIONS_ACTIVITY;
 }
 
 export const Content = styled.div`
@@ -119,16 +121,19 @@ export const Options = styled.div<ButtonStyles>`
   `}
 `;
 
-export const WrapperChallenges = styled.section`
-  ${({ theme }) => css`
+export const WrapperChallenges = styled.section<ButtonStyles>`
+  ${({ theme, $options }) => css`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.s2};
-    margin-top: 13rem;
+    margin-top: 14rem;
     width: 100%;
     h2 {
       color: ${theme.colors.primary};
     }
+    ${($options !== OPTIONS_ACTIVITY.TRAINING) && css`
+      margin-top: 8rem;
+    `}
   `}
 `;
 
@@ -179,20 +184,26 @@ export const TabsWrapper = styled.section`
     .tab_container {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: ${theme.spacing.s1};
       position: relative;
       max-width: ${theme.container};
       width: 100%;
       margin: 0 auto;
       background-color: ${theme.colors.black};
-      padding: 1rem;
+      padding: ${theme.spacing.s1};
       border-radius: ${theme.radius};
     }
     .tab_content {
       display: flex;
+      border-bottom: 1px solid ${theme.colors.hover};
+      padding-bottom: ${theme.spacing.s1};
       button {
         height: 4rem;
         flex: 1;
+      }
+      &:last-child {
+        border-bottom: 1px solid ${theme.colors.none};
+        padding-bottom: 0;
       }
     }
     @media (max-width: 768px) {

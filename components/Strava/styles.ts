@@ -1,12 +1,14 @@
+import { ACTIVITY } from '@/utils/enums/strava';
 import Link from 'next/link';
 import styled, { css } from 'styled-components'
 
 type StravaStyles = {
   $average?: number;
+  $type?: ACTIVITY;
 }
 
 export const Wrapper = styled.main<StravaStyles>`
-  ${({ theme }) => css`
+  ${({ theme, $type }) => css`
     max-width: ${theme.container};
     width: 100%;
     display: grid;
@@ -16,6 +18,15 @@ export const Wrapper = styled.main<StravaStyles>`
     @media (max-width: 768px) {
       grid-template-columns: repeat(1, 1fr);
     }
+    ${($type === ACTIVITY.GYM || $type === ACTIVITY.WORKOUT) && css`
+      grid-template-columns: repeat(3, 1fr);
+      @media (max-width: 1170px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @media (max-width: 768px) {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    `}
   `}
 `
 export const MapWrapper = styled.div`

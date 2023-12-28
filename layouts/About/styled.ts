@@ -270,6 +270,11 @@ export const SocialWrapper = styled.div`
         box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
       }
     }
+    @media (max-width: 768px) {
+      > div {
+        font-size: ${theme.font.sizes.s14};
+      }
+    }
   `}
 `;
 

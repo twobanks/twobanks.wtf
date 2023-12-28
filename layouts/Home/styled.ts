@@ -12,13 +12,11 @@ export const Content = styled.div`
       align-items: center;
       gap: ${theme.spacing.s2};
       width: 100%;
-      img {
+      .two_me {
         box-shadow: ${theme.shadow};
         animation: spin 5s infinite linear;
-        /* &:hover {
-          transform: rotate(10deg);
-        } */
       }
+      
       @keyframes spin {
         0% { transform: rotate(10deg); }
         50% { transform: rotate(-10deg); }

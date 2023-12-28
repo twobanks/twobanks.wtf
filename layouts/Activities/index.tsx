@@ -4,8 +4,6 @@ import { Activities, AthleteStats } from '@/types/strava';
 import * as S from './styled'
 import { useMemo, useState } from "react";
 import { ACTIVITY, OPTIONS_ACTIVITY } from '@/utils/enums/strava';
-import { conversionTypeActivity, conversionTitleActivities, getIconActivity, getIconTypeActivity } from '@/utils/functions/conversionStrava';
-import DropDown from './DropDown';
 import Image from 'next/image';
 import images from '@/public';
 
@@ -29,7 +27,7 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
   const renderOption = (value: OPTIONS_ACTIVITY) => {
     const label = {
       [OPTIONS_ACTIVITY.STATISTICS]: <Athlete athlete={athlete} athleteStat={athleteStat} type={type} />,
-      [OPTIONS_ACTIVITY.TRAINING]: <Strava activities={activitiesSelected} />,
+      [OPTIONS_ACTIVITY.TRAINING]: <Strava activities={activitiesSelected} type={type} />,
       [OPTIONS_ACTIVITY.RACE]: <Challenges challenges={challenges} completedChallenges={completedChallenges} />,
     }
     return label[value];
@@ -55,8 +53,8 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
           </div>
           {options === OPTIONS_ACTIVITY.TRAINING && (
             <div className="tab_content">
-              <S.TabButton type='button' onClick={() => setType(ACTIVITY.ALL)} title='Todas as atividades' $active={type === ACTIVITY.ALL}>
-                Todas as atividades
+              <S.TabButton type='button' onClick={() => setType(ACTIVITY.ALL)} title='Todas os treinos' $active={type === ACTIVITY.ALL}>
+                Todos
               </S.TabButton>
               <S.TabButton type='button' onClick={() => setType(ACTIVITY.RUN)} title='Corrida' $active={type === ACTIVITY.RUN}>
                 <Image src={images.running} alt={ACTIVITY.RUN} height={20} width={20} blurDataURL={images.running} priority quality={100} />
@@ -74,7 +72,7 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
           )}
         </div>
       </S.TabsWrapper>
-      <S.WrapperChallenges>
+      <S.WrapperChallenges $options={options}>
         {renderOption(options)}
       </S.WrapperChallenges>
     </S.Content>
