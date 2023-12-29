@@ -6,11 +6,12 @@ export const Wrapper = styled.ul`
     grid-template-columns: repeat(5, 1fr);
     width: 100%;
     gap: ${theme.spacing.s2};
+    padding: 0 ${theme.spacing.s2};
     li {
       a {
         display: flex;
         flex-direction: column;
-        gap: ${theme.spacing.s1};
+        gap: ${theme.spacing.s2};
         transition: ${theme.transition.color};
         &:hover .header strong {
           color: ${theme.colors.spotify};
@@ -48,10 +49,11 @@ export const Wrapper = styled.ul`
       grid-template-columns: repeat(4, 1fr);
     }
     @media (max-width: 768px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    @media (max-width: 500px) {
       grid-template-columns: repeat(1, 1fr);
+      li a {
+        flex-direction: row;
+        align-items: center;
+      }
     }
   `}
 `;
@@ -65,8 +67,9 @@ export const AlbumCover = styled.div`
     @media (max-width: 1170px) {
       height: 20rem;
     }
-    @media (max-width: 500px) {
-      height: 37rem;
+    @media (max-width: 768px) {
+      height: 5rem;
+      width: 5rem;
     }
   `}
 `;

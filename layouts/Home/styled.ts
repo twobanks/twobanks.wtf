@@ -14,12 +14,6 @@ export const Content = styled.div`
       width: 100%;
       .two_me {
         box-shadow: ${theme.shadow};
-        animation: home 5s infinite linear;
-      }
-      @keyframes home {
-        0% { transform: rotate(10deg); }
-        50% { transform: rotate(-10deg); }
-        100% { transform: rotate(10deg); }
       }
       .info {
         display: flex;

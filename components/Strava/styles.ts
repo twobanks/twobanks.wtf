@@ -45,6 +45,9 @@ export const MapWrapper = styled.div`
       padding: ${theme.spacing.s2} 0;
       margin: 0 auto;
     }
+    @media (max-width: 768px) {
+      min-width: auto;
+    }
   `}
 `
 
