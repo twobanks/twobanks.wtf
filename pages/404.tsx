@@ -9,9 +9,7 @@ const Custom404 = () => (
       title="twobanks"
       {...SEO}
     />
-    <Wrapper page="home">
-      <Error />
-    </Wrapper>
+    <Error />
   </>
 )
 

@@ -1,14 +1,14 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { useState } from 'react';
-import { header } from '@/public/content';
 import * as S from './styled';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import images from '@/public';
 
 const Error = () => {
-  const [hovered, setHovered] = useState<string>('');
+  const router = useRouter()
+  console.log("router", router);
   return (
     <S.Content>
-      <S.Hantaro aria-label="Orange and tan hamster running in a metal wheel" role="img">
+      {/* <S.Hantaro aria-label="Orange and tan hamster running in a metal wheel" role="img">
         <div className="wheel"></div>
         <div className="hamster">
           <div className="hamster__body">
@@ -31,25 +31,54 @@ const Error = () => {
         <div>
           <strong>Ocorreu algum erro!</strong>
         </div>
-        <ul>
-          {header.menu.map(page => {
-            const path = `/${page.url}`
-            const isHovered = hovered === page.name
-            return (
-              <Link href={path} passHref key={page.name}>
-                <S.NavContainer
-                  title={page.name}
-                  onMouseEnter={() => setHovered(page.name)}
-                  onMouseLeave={() => setHovered('')}
-                >
-                    <Image src={isHovered ? page.iconAnimated : page.icon}  alt={page.name} height={20} width={20} blurDataURL={isHovered ? page.iconAnimated : page.icon} priority quality={100}/>
-                    {page.name}
-                </S.NavContainer>
-              </Link>
-            )
-          })}
-        </ul>
+        <button onClick={() => router.back()}>Voltar</button>
+      </div> */}
+      <div className="box-of-star1">
+        <div className="star star-position1"></div>
+        <div className="star star-position2"></div>
+        <div className="star star-position3"></div>
+        <div className="star star-position4"></div>
+        <div className="star star-position5"></div>
+        <div className="star star-position6"></div>
+        <div className="star star-position7"></div>
       </div>
+      <div className="box-of-star2">
+        <div className="star star-position1"></div>
+        <div className="star star-position2"></div>
+        <div className="star star-position3"></div>
+        <div className="star star-position4"></div>
+        <div className="star star-position5"></div>
+        <div className="star star-position6"></div>
+        <div className="star star-position7"></div>
+      </div>
+      <div className="box-of-star3">
+        <div className="star star-position1"></div>
+        <div className="star star-position2"></div>
+        <div className="star star-position3"></div>
+        <div className="star star-position4"></div>
+        <div className="star star-position5"></div>
+        <div className="star star-position6"></div>
+        <div className="star star-position7"></div>
+      </div>
+      <div className="box-of-star4">
+        <div className="star star-position1"></div>
+        <div className="star star-position2"></div>
+        <div className="star star-position3"></div>
+        <div className="star star-position4"></div>
+        <div className="star star-position5"></div>
+        <div className="star star-position6"></div>
+        <div className="star star-position7"></div>
+      </div>
+      <div className="box-of-star5">
+        <div className="star star-position1"></div>
+        <div className="star star-position2"></div>
+        <div className="star star-position3"></div>
+        <div className="star star-position4"></div>
+        <div className="star star-position5"></div>
+        <div className="star star-position6"></div>
+        <div className="star star-position7"></div>
+      </div>
+      <Image src={images.webp} alt="twobanks" height={200} width={200} className="astronaut" />
     </S.Content>
   )
 }

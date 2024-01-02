@@ -4,12 +4,11 @@ import styled, { css } from "styled-components";
 export const Content = styled.section`
   ${({ theme }) => css`
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    width: 100%;
-    height: 100vh;
-    padding: 0 ${theme.spacing.s2};
-    .text_content {
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    /* .text_content {
       h2 {
         color: ${theme.colors.yellow};
         font-size: ${theme.font.sizes.s36};
@@ -41,6 +40,143 @@ export const Content = styled.section`
         align-items: center;
         gap: ${theme.spacing.s1};
       }
+    }  */
+    @keyframes snow {
+      0% {
+        opacity: 0;
+        transform: translateY(0px);
+      }
+    
+      20% {
+        opacity: 1;
+      }
+    
+      100% {
+        opacity: 1;
+        transform: translateY(650px);
+      }
+    }
+    
+    @keyframes astronaut {
+      0% {
+        transform: rotate(0deg);
+      }
+    
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    
+    .box-of-star1,
+    .box-of-star2,
+    .box-of-star3,
+    .box-of-star4,
+    .box-of-star5 {
+      width: 100%;
+      /* position: absolute; */
+      z-index: 10;
+      /* left: 0;
+      top: 0; */
+      transform: translateY(0px);
+      height: 210px;
+    }
+    
+    .box-of-star1 {
+      animation: snow 10s linear infinite;
+    }
+    
+    .box-of-star2 {
+      animation: snow 10s -.24s linear infinite;
+    }
+    
+    .box-of-star3 {
+      animation: snow 10s -.44s linear infinite;
+    }
+    
+    .box-of-star4 {
+      animation: snow 10s -1.4s linear infinite;
+    }
+
+    .box-of-star5 {
+      animation: snow 10s -1.40s linear infinite;
+    }
+    
+    .star {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background-color: #FFF;
+      position: absolute;
+      z-index: 10;
+      opacity: 0.7;
+    }
+    
+    .star:before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #FFF;
+      position: absolute;
+      z-index: 10;
+      top: 80px;
+      left: 70px;
+      opacity: .7;
+    }
+    
+    .star:after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #FFF;
+      position: absolute;
+      z-index: 10;
+      top: 8px;
+      left: 170px;
+      opacity: .9;
+    }
+    
+    .star-position1 {
+      top: 30px;
+      left: 20px;
+    }
+    
+    .star-position2 {
+      top: 110px;
+      left: 250px;
+    }
+    
+    .star-position3 {
+      top: 60px;
+      left: 570px;
+    }
+    
+    .star-position4 {
+      top: 120px;
+      left: 900px;
+    }
+    
+    .star-position5 {
+      top: 20px;
+      left: 1120px;
+    }
+    
+    .star-position6 {
+      top: 90px;
+      left: 1280px;
+    }
+    
+    .star-position7 {
+      top: 30px;
+      left: 1480px;
+    }
+    .astronaut {
+      position: absolute;
+      z-index: 11;
+      top: calc(50% - 150px);
+      left: calc(50% - 125px);
+      animation: astronaut 10s linear infinite;
     }
   `}
 `;
