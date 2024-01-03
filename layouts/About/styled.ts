@@ -88,8 +88,10 @@ export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
     flex-direction: column;
-    padding: ${theme.spacing.s4} 0;
+    padding: ${theme.spacing.s4} ${theme.spacing.s2};
     gap: ${theme.spacing.s4};
+    background-color: ${theme.colors.black};
+    border-radius: ${theme.radius};
     h2 {
       font-size: ${theme.font.sizes.s24};
       color: ${theme.colors.yellowFont};
@@ -147,10 +149,9 @@ export const PicAndSocial = styled.div`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.s1};
-    background-color: ${theme.colors.black};
+    background-color: ${theme.colors.hover};
     border-radius: ${theme.radius};
     box-shadow: ${theme.shadow};
-    background: ${theme.colors.black};
     padding: ${theme.spacing.s1};
   `}
 `;

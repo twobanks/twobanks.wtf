@@ -41,14 +41,19 @@ export const Content = styled.section<WrapperProps>`
     max-width: ${theme.container};
     width: 100%;
     height: auto;
-    margin: 13.1rem auto 0 auto;
-    padding: 0 ${theme.spacing.s2} ${theme.spacing.s6} ${theme.spacing.s2};
+    margin: 15.1rem auto 8rem auto;
+    padding: 0 ${theme.spacing.s2};
     flex: 1;
     z-index: 0;
+    /* background-color: ${theme.colors.black};
+    border-radius: ${theme.radius}; */
     ${$page === 'home' && css`
-      margin:0 auto;
+      margin: 0 auto;
       height: 100%;
       padding: 0 ${theme.spacing.s2};
     `}
+    /* @media (max-width: 1170px) {
+      
+    } */
   `}
 `;

@@ -13,14 +13,14 @@ export const Content = styled.div`
     flex-direction: column;
     width: 100%;
     gap: ${theme.spacing.s2};
+    padding: ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    border-radius: ${theme.radius};
   `}
 `;
 
 export const OptionsWrapper = styled.div`
-  position: fixed;
   width: 100%;
-  left: 0;
-  z-index: 2;
 `;
 
 export const OptionsSelected = styled.div`
@@ -121,19 +121,15 @@ export const Options = styled.div<ButtonStyles>`
   `}
 `;
 
-export const WrapperChallenges = styled.section<ButtonStyles>`
-  ${({ theme, $options }) => css`
+export const WrapperChallenges = styled.section`
+  ${({ theme }) => css`
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing.s2};
-    margin-top: 14rem;
     width: 100%;
     h2 {
       color: ${theme.colors.primary};
     }
-    ${($options !== OPTIONS_ACTIVITY.TRAINING) && css`
-      margin-top: 8rem;
-    `}
   `}
 `;
 
@@ -175,12 +171,6 @@ export const TypeActivity = styled.div`
 
 export const TabsWrapper = styled.section`
   ${({ theme }) => css`
-    position: fixed;
-    width: 100%;
-    left: 0;
-    z-index: 2;
-    padding: ${theme.spacing.s2} ${theme.spacing.s2} 0 ${theme.spacing.s2};
-    background-color: #1a181ef7;
     .tab_container {
       display: flex;
       flex-direction: column;
@@ -189,7 +179,7 @@ export const TabsWrapper = styled.section`
       max-width: ${theme.container};
       width: 100%;
       margin: 0 auto;
-      background-color: ${theme.colors.black};
+      background-color: ${theme.colors.background};
       padding: ${theme.spacing.s1};
       border-radius: ${theme.radius};
     }

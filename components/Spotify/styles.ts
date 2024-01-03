@@ -6,7 +6,6 @@ export const Wrapper = styled.ul`
     grid-template-columns: repeat(5, 1fr);
     width: 100%;
     gap: ${theme.spacing.s2};
-    padding: 0 ${theme.spacing.s2};
     li {
       a {
         display: flex;

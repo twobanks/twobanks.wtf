@@ -72,7 +72,7 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
           )}
         </div>
       </S.TabsWrapper>
-      <S.WrapperChallenges $options={options}>
+      <S.WrapperChallenges>
         {renderOption(options)}
       </S.WrapperChallenges>
     </S.Content>

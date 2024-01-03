@@ -14,10 +14,6 @@ export const Wrapper = styled.main<StravaStyles>`
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     gap: ${theme.spacing.s2};
-    padding: ${theme.spacing.s2} 0;
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(1, 1fr);
-    }
     ${($type === ACTIVITY.GYM || $type === ACTIVITY.WORKOUT) && css`
       grid-template-columns: repeat(3, 1fr);
       @media (max-width: 1170px) {
@@ -157,6 +153,8 @@ export const HeartRate = styled.div<StravaStyles>`
 export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
+    background-color: ${theme.colors.background};
+    border-radius: ${theme.radius};
     gap: ${theme.spacing.s2};
   `}
 `
@@ -167,8 +165,6 @@ export const WrapperActivity = styled.div`
     flex-direction: row-reverse;
     flex: 1;
     gap: ${theme.spacing.s2};
-    border-radius: ${theme.radius};
-    background: ${theme.colors.black};
     padding: ${theme.spacing.s1};
     box-shadow: ${theme.shadow};
     @media (max-width: 768px) {

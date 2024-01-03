@@ -10,7 +10,9 @@ export const Container = styled.ul`
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     width: 100%;
-    padding: ${theme.spacing.s4} 0;
+    padding: ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    border-radius: ${theme.radius};
   `}
 `
 

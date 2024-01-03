@@ -9,6 +9,9 @@ export const Wrapper = styled.div`
     h2 {
       color: ${theme.colors.primary};
     }
+    padding: ${theme.spacing.s2};
+    background-color: ${theme.colors.black};
+    border-radius: ${theme.radius};
   `}
 `;
 
@@ -80,19 +83,10 @@ export const Button = styled.button<ButtonStyle>`
 
 export const TabsWrapper = styled.section`
   ${({ theme }) => css`
-    position: fixed;
-    width: 100%;
-    left: 0;
-    z-index: 2;
-    padding: ${theme.spacing.s2} ${theme.spacing.s2} 0 ${theme.spacing.s2};
-    background-color: #1a181ef7;
     .tab_content {
-      position: relative;
       display: flex;
-      max-width: ${theme.container};
       width: 100%;
-      margin: 0 auto;
-      background-color: ${theme.colors.black};
+      background-color: ${theme.colors.background};
       padding: 1rem;
       border-radius: ${theme.radius};
       button {
@@ -103,10 +97,7 @@ export const TabsWrapper = styled.section`
 `;
 
 export const Container = styled.div`
-  ${({ theme }) => css`
-    display: flex;
-    padding: 11rem 0 ${theme.spacing.s4} 0;
-  `}
+  display: flex;
 `;
 
 export const LoadingWrapper = styled.div`
