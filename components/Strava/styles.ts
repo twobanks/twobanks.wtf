@@ -230,3 +230,17 @@ export const StravaLink = styled(Link)`
     }
   }
 `;
+
+export const Empty = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: ${theme.spacing.s2} 0;
+    gap: .6rem;
+    font-size: ${theme.font.sizes.s18};
+    strong {
+      color: ${theme.colors.green};
+    }
+  `}
+`;

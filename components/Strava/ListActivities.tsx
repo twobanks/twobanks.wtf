@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import Image from 'next/image';
-import { metersPerSecondToMinPerKm, metersPerSecondTokmPerHour } from '@/utils/functions/conversionStrava'
+import { getIconActivity, metersPerSecondToMinPerKm, metersPerSecondTokmPerHour } from '@/utils/functions/conversionStrava'
 import { Activities } from '@/types/strava';
 import theme from '@/styles/theme';
 import images from '@/public';
@@ -39,6 +39,7 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
               <strong>{activity.pr_count}</strong>
             </div>
           )}
+          <Image src={getIconActivity[type]} alt={type} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100} title={type} />
         </S.HeaderActivity>
         <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} average={average_heartrate} />
         <div className='footer'>

@@ -18,10 +18,11 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
   const [type, setType] = useState<ACTIVITY>(ACTIVITY.ALL);
 
   const activitiesFiltered = activities.filter(item => item.sport_type === type);
+  console.log("activitiesFiltered", activitiesFiltered);
 
   const activitiesSelected = useMemo(() => {
-    const test = type === ACTIVITY.ALL ? activities : activitiesFiltered;
-    return test;
+    const activitiesList = type === ACTIVITY.ALL ? activities : activitiesFiltered;
+    return activitiesList;
   }, [activities, activitiesFiltered, type]);
 
   const renderOption = (value: OPTIONS_ACTIVITY) => {
