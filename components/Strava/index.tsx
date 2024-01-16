@@ -9,7 +9,7 @@ const Strava = ({ activities, type }: { activities: Activities[]; type: ACTIVITY
   <S.Wrapper $type={type}>
     {activities.length === 0 ? (
       <S.Empty>
-        Não rolou treino de <strong>{conversionTypeActivity(type)}</strong>
+        Ainda não rolou treino de <strong>{conversionTypeActivity(type)}</strong>
       </S.Empty>
     ) : (
       <>

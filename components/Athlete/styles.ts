@@ -7,7 +7,6 @@ export const Wrapper = styled.section`
     padding: ${theme.spacing.s2};
     background-color: ${theme.colors.black};
     border-radius: ${theme.radius};
-    margin-top: ${theme.spacing.s2};
     gap: ${theme.spacing.s4};
   `}
 `
@@ -119,10 +118,8 @@ export const ItemStats = styled.ul`
       }
     }
     .data_stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      width: fit-content;
-      gap: 4rem;
+      display: flex;
+      gap: 5rem;
       strong {
         font-size: ${theme.font.sizes.s22};
         color: ${theme.colors.primary};
@@ -130,6 +127,18 @@ export const ItemStats = styled.ul`
       > div {
         display: flex;
         flex-direction: column;
+        min-width: 15%;
+      }
+    }
+    .values {
+      img {
+        margin-right: .5rem;
+      }
+    }
+    @media (max-width: 768px) {
+      .data_stats {
+        flex-wrap: wrap;
+        justify-content: space-between;
       }
     }
   `}

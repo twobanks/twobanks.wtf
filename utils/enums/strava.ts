@@ -13,3 +13,9 @@ export enum OPTIONS_ACTIVITY {
   TRAINING = 'training',
   STATISTICS = 'statistics'
 }
+
+export enum STATISTICS {
+  ALL = 'all',
+  LAST_4_WEEKS = 'last_4_weeks',
+  CURRENT_YEAR = 'currentYear'
+}
