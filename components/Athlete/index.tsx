@@ -8,13 +8,13 @@ const Athlete = ({ athlete, athleteStat, type } : { athlete: AthleteType; athlet
   return (
     <S.Wrapper>
       <S.ContentStats>
-        <strong title='Estatísticas'>Estatísticas</strong>
+        {/* <strong title='Estatísticas'>Estatísticas</strong> */}
         <ul>
-          <StatsRun statsRun={athleteStat} />
-          <StatsRide statsRide={athleteStat} />
+          {/* <StatsRun statsRun={athleteStat} /> */}
+          {/* <StatsRide statsRide={athleteStat} /> */}
         </ul>
       </S.ContentStats>
-      <S.ContentEquipment>
+      {/* <S.ContentEquipment>
         <strong title='Equipamentos'>Equipamentos</strong>
         <div className="bike">
           <strong title='Bike'>Bike</strong>
@@ -41,7 +41,7 @@ const Athlete = ({ athlete, athleteStat, type } : { athlete: AthleteType; athlet
             ))}
           </ul>
         </div>
-      </S.ContentEquipment>
+      </S.ContentEquipment> */}
     </S.Wrapper>
   )
 }

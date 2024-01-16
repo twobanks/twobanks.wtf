@@ -186,6 +186,7 @@ export const TabsWrapper = styled.section`
     .tab_content {
       display: flex;
       border-bottom: 1px solid ${theme.colors.hover};
+      width: 100%;
       padding-bottom: ${theme.spacing.s1};
       button {
         height: 4rem;
@@ -196,9 +197,25 @@ export const TabsWrapper = styled.section`
         padding-bottom: 0;
       }
     }
+    .wrapper_content {
+      display: flex;
+      gap: 10px;
+      div:first-child {
+        padding-bottom: 0;
+        border-bottom: none;
+      }
+      
+    }
     @media (max-width: 768px) {
       button {
         font-size: ${theme.font.sizes.s14};
+      }
+      .wrapper_content {
+        flex-direction: column;
+        div:first-child {
+          border-bottom: 1px solid ${theme.colors.hover};
+          padding-bottom: ${theme.spacing.s1};
+        }
       }
     }
   `}

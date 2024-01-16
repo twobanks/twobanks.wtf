@@ -16,10 +16,12 @@ type ActivitiesProps = {
 const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProps) => {
   const [options, setOptions] = useState<OPTIONS_ACTIVITY>(OPTIONS_ACTIVITY.TRAINING);
   const [type, setType] = useState<ACTIVITY>(ACTIVITY.ALL);
+  const [statistics, setStatistics] = useState('');
+  console.log("statistics", statistics);
 
   const activitiesFiltered = activities.filter(item => item.sport_type === type);
   console.log("activitiesFiltered", activitiesFiltered);
-
+  const currentYear = new Date().getFullYear();
   const activitiesSelected = useMemo(() => {
     const activitiesList = type === ACTIVITY.ALL ? activities : activitiesFiltered;
     return activitiesList;
@@ -69,6 +71,30 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
               <S.TabButton type='button' onClick={() => setType(ACTIVITY.GYM)} title='Academia' $active={type === ACTIVITY.GYM}>
                 <Image src={images.workout} alt={ACTIVITY.GYM} height={20} width={20} blurDataURL={images.workout} priority quality={100} />
               </S.TabButton>
+            </div>
+          )}
+          {options === OPTIONS_ACTIVITY.STATISTICS && (
+            <div className='wrapper_content'>
+              <div className="tab_content">
+                <S.TabButton type='button' onClick={() => setStatistics('currentYear')} title='Corrida' $active={type === ACTIVITY.RUN}>
+                  {currentYear}
+                </S.TabButton>
+                <S.TabButton type='button' onClick={() => setStatistics('last_4_weeks')} title='Trail Running' $active={type === ACTIVITY.TRAIL}>
+                  Últimas 4 semanas
+                </S.TabButton>
+                <S.TabButton type='button' onClick={() => setStatistics('all')} title='Todas os treinos' $active={type === ACTIVITY.ALL}>
+                  Total
+                </S.TabButton>
+                
+              </div>
+              <div className='tab_content'>
+                <S.TabButton type='button' onClick={() => setType(ACTIVITY.RIDE)} title='Mountain Bike' $active={type === ACTIVITY.RIDE}>
+                  <Image src={images.running} alt={ACTIVITY.GYM} height={20} width={20} blurDataURL={images.running} priority quality={100} />
+                </S.TabButton>
+                <S.TabButton type='button' onClick={() => setType(ACTIVITY.GYM)} title='Academia' $active={type === ACTIVITY.GYM}>
+                  <Image src={images.bike} alt={ACTIVITY.RIDE} height={20} width={20} blurDataURL={images.bike} priority quality={100} />
+                </S.TabButton>
+              </div>
             </div>
           )}
         </div>
