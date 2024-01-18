@@ -153,6 +153,45 @@ export const PicAndSocial = styled.div`
     border-radius: ${theme.radius};
     box-shadow: ${theme.shadow};
     padding: ${theme.spacing.s1};
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: ${theme.spacing.s1};
+      em {
+        display: flex;
+        height: 10px;
+        width: 10px;
+        transform: scale(1);
+        border-radius: 50%;
+        background: ${theme.colors.green};
+        animation: pulse-green 1.5s infinite;
+      }
+      .link_to_work {
+        color: ${theme.colors.primary};
+        font-weight: ${theme.font.bold};
+        transition: ${theme.transition.color};
+        &:hover {
+          color: ${theme.colors.green};
+        }
+      }
+    }
+    @keyframes pulse-green {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(51, 217, 178, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(51, 217, 178, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
+      }
+    }
   `}
 `;
 
@@ -221,59 +260,13 @@ export const AcademicEducation = styled.div`
 export const SocialWrapper = styled.div`
   ${({ theme }) => css`
     display: flex;
-    justify-content: space-between;
-    a {
-      line-height: ${theme.spacing.s1};
-    }
+    justify-content: center;
+    gap: ${theme.spacing.s1};
     img {
       opacity: .6;
       transition: ${theme.transition.color};
-      border-radius: 0;
       &:hover {
         opacity: 1;
-      }
-    }
-    > div {
-      display: flex;
-      align-items: center; 
-      gap: ${theme.spacing.s1};
-    }
-    em {
-      display: flex;
-      height: 10px;
-      width: 10px;
-      transform: scale(1);
-      border-radius: 50%;
-      background: ${theme.colors.green};
-      animation: pulse-green 1.5s infinite;
-    }
-    .link_to_work {
-      color: ${theme.colors.primary};
-      font-weight: ${theme.font.bold};
-      transition: ${theme.transition.color};
-      &:hover {
-        color: ${theme.colors.green};
-      }
-    }
-    @keyframes pulse-green {
-      0% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(51, 217, 178, 0.7);
-      }
-      
-      70% {
-        transform: scale(1);
-        box-shadow: 0 0 0 10px rgba(51, 217, 178, 0);
-      }
-      
-      100% {
-        transform: scale(0.95);
-        box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
-      }
-    }
-    @media (max-width: 768px) {
-      > div {
-        font-size: ${theme.font.sizes.s14};
       }
     }
   `}

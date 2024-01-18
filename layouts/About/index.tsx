@@ -20,21 +20,19 @@ const About = ({ data }: { data: AboutType }) => {
             <p>No meu tempo livre, curto momentos com minha esposa <strong title='@stephaniemontandon'>Tefa</strong> 👫 e meu cachorro <strong title='bebê Brown'>Brown</strong> 🐶. Pratico <strong title='mountain bike'>mountain bike</strong> 🚵‍♂️ e, quase sempre, estou na trilha, praticando <strong title='trail running'>trail running</strong> 🏃. Estou sempre ouvindo música <span>(preferencialmente rap)</span>🎧, torço pelo time do <strong title='MAIOR DE MINAS ✋✌'>Cruzeiro</strong>🦊, assisto a <strong>NBA</strong> 🏀 e, atualmente, jogo <strong title='Battlefield V'>Battlefield V</strong>.</p>
           </section>
           <S.PicAndSocial>
+            <div className='status'>
+              <em />
+              <Link href="https://www.linkedin.com/in/twobanks/" title='Disponível para trabalhos como CLT ou PJ' target="_blank" rel="noreferrer" className='link_to_work'>OpenToWork</Link>
+            </div>
             <S.ImageWrapper>
               <Image src={images.thiago} alt='twobanks' title='o pai!' fill blurDataURL={images.thiago} priority quality={100} />
             </S.ImageWrapper>
             <S.SocialWrapper>
-              <div>
-                <em />
-                <Link href="https://www.linkedin.com/in/twobanks/" title='Disponível para trabalhos como CLT ou PJ' target="_blank" rel="noreferrer" className='link_to_work'>OpenToWork</Link>
-              </div>
-              <div>
-                {social.map(item => (
-                  <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
-                    <Image src={item.icon} alt={item.name} height={20} width={20} blurDataURL={item.icon} priority quality={100}/>
-                  </Link>
-                ))}
-              </div>
+              {social.map(item => (
+                <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
+                  <Image src={item.icon} alt={item.name} height={20} width={20} blurDataURL={item.icon} priority quality={100}/>
+                </Link>
+              ))}
             </S.SocialWrapper>
           </S.PicAndSocial>
         </div>
