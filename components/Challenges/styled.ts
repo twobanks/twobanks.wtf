@@ -154,7 +154,7 @@ export const CompletedChallengesWrapper = styled.ul`
         }
         strong {
           color: ${theme.colors.primary};
-          font-size: ${theme.font.sizes.s22};
+          font-size: ${theme.font.sizes.s24};
         }
       }
     }

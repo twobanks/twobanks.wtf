@@ -33,13 +33,15 @@ const ListActivities = ({ activity }: { activity: Activities}) => {
             </S.TypeActivity>
             <span title={date}>{date}</span>
           </S.DateAndCity>
-          {activity.pr_count > 0 && (
-            <div className='rp_wrapper' title='Recorde Pessoal'>
-              <Image src={images.rpIcon} alt={type} height={20} width={20} blurDataURL={images.rpIcon} priority quality={100} />
-              <strong>{activity.pr_count}</strong>
-            </div>
-          )}
-          <Image src={getIconActivity[type]} alt={type} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100} title={type} />
+          <div className="rp_type_activity">
+            {activity.pr_count > 0 && (
+              <div className='rp_wrapper' title='Recorde Pessoal'>
+                <Image src={images.rpIcon} alt={type} height={20} width={20} blurDataURL={images.rpIcon} priority quality={100} />
+                <strong>{activity.pr_count}</strong>
+              </div>
+            )}
+            <Image src={getIconActivity[type]} alt={type} height={20} width={20} blurDataURL={getIconActivity[type]} priority quality={100} title={type} />
+          </div>
         </S.HeaderActivity>
         <Results movingTime={movingTime} averageTitle={averageTitle} averageSpeed={averageSpeed} total_elevation_gain={total_elevation_gain} distance={distance} type={type} average={average_heartrate} />
         <div className='footer'>

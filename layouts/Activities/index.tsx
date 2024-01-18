@@ -84,8 +84,8 @@ const ActivitiesTemplate = ({ activities, athlete, athleteStat }: ActivitiesProp
                 <S.TabButton type='button' onClick={() => setStatistics(STATISTICS.CURRENT_YEAR)} title='Ano atual' $active={statistics === STATISTICS.CURRENT_YEAR}>
                   {currentYear}
                 </S.TabButton>
-                <S.TabButton type='button' onClick={() => setStatistics(STATISTICS.LAST_4_WEEKS)} title='Últimos 30 dias' $active={statistics === STATISTICS.LAST_4_WEEKS}>
-                  Últimos 30 dias
+                <S.TabButton type='button' onClick={() => setStatistics(STATISTICS.LAST_4_WEEKS)} title='Últimas 4 semanas' $active={statistics === STATISTICS.LAST_4_WEEKS}>
+                  Últimas 4 semanas
                 </S.TabButton>
                 <S.TabButton type='button' onClick={() => setStatistics(STATISTICS.ALL)} title='Total' $active={statistics === STATISTICS.ALL}>
                   Total

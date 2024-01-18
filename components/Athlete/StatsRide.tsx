@@ -10,9 +10,9 @@ const StatsRide = ({ statsRide, statistics } : { statsRide: AthleteStats; statis
     <S.ItemStats>
       {statistics === STATISTICS.ALL && (
         <li>
-          <strong title='Total'>
+          {/* <strong title='Total'>
             Total
-          </strong>
+          </strong> */}
           <div className='data_stats'>
             <div title={`${statsRide.all_ride_totals.count} treinos`}>
               <strong>
@@ -49,9 +49,9 @@ const StatsRide = ({ statsRide, statistics } : { statsRide: AthleteStats; statis
       )}
       {statistics === STATISTICS.CURRENT_YEAR && (
         <li>
-          <strong title='Este ano'>
+          {/* <strong title='Este ano'>
             Este ano
-          </strong>
+          </strong> */}
           <div className='data_stats'>
             <div title={`${statsRide.ytd_ride_totals.count} treinos`}>
               <strong>
@@ -88,9 +88,9 @@ const StatsRide = ({ statsRide, statistics } : { statsRide: AthleteStats; statis
       )}
       {statistics === STATISTICS.LAST_4_WEEKS && (
         <li>
-          <strong title='Últimas 4 semanas'>
+          {/* <strong title='Últimas 4 semanas'>
             Últimas 4 semanas 
-          </strong>
+          </strong> */}
           <div className='data_stats'>
             <div title={`${statsRide.recent_ride_totals.count} treinos`}>
               <strong>

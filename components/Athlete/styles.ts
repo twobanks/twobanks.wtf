@@ -4,7 +4,6 @@ export const Wrapper = styled.section`
   ${({ theme }) => css`
     display: grid;
     grid-template-columns: repeat(1, 1fr);
-    padding: ${theme.spacing.s2};
     background-color: ${theme.colors.black};
     border-radius: ${theme.radius};
     gap: ${theme.spacing.s4};
@@ -18,7 +17,22 @@ export const ContentEquipment = styled.div`
     gap: ${theme.spacing.s2};
     strong {
       font-size: ${theme.font.sizes.s22};
-      color: ${theme.colors.green};
+      color: ${theme.colors.primary};
+    }
+    .container_equipment {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-left: 1rem;
+      span {
+        color: ${theme.colors.primary};
+      }
+    }
+    .type {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      width: fit-content;
     }
     .bike {
       display: flex;
@@ -32,7 +46,7 @@ export const ContentEquipment = styled.div`
         display: flex;
         flex-direction: column;
         strong {
-          color: ${theme.colors.primary};
+          color: ${theme.colors.green};
           font-size: ${theme.font.sizes.s16};
           font-weight: ${theme.font.normal};
         }
@@ -46,6 +60,7 @@ export const ContentEquipment = styled.div`
         }
         em {
           font-size: ${theme.font.sizes.s14};
+          color: ${theme.colors.green};
         }
         &:last-child {
           border-bottom: none;
@@ -62,21 +77,38 @@ export const ContentEquipment = styled.div`
       }
       ul {
         display: flex;
-        flex-direction: column;
+        gap: ${theme.spacing.s2};
+        flex-wrap: wrap;
+        justify-content: space-between;
         li {
           display: flex;
-          align-items: center;
-          padding: ${theme.spacing.s1} 0;
-          border-bottom: 1px solid ${theme.colors.hover};
+          flex-direction: column;
+          padding: ${theme.spacing.s2};
+          background-color: ${theme.colors.background};
+          min-width: fit-content;
+          border: 1px solid ${theme.colors.hover};
+          border-radius: ${theme.radius};
           span {
             color: ${theme.colors.primary};
+            
           }
           em {
             font-size: ${theme.font.sizes.s14};
+            color: ${theme.colors.green};
           }
-          &:last-child {
-            border-bottom: none;
-          }
+        }
+      }
+    }
+    .type_activity {
+      display: flex;
+      gap: ${theme.spacing.s1};
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .shoes {
+        ul {
+          flex-direction: column;
+          gap: ${theme.spacing.s1};
         }
       }
     }
@@ -90,7 +122,22 @@ export const ContentStats = styled.div`
     gap: ${theme.spacing.s2};
     strong {
       font-size: ${theme.font.sizes.s22};
-      color: ${theme.colors.green};
+      color: ${theme.colors.primary};
+    }
+    .container_equipment {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-left: 1rem;
+      span {
+        color: ${theme.colors.primary};
+      }
+    }
+    .type {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      width: fit-content;
     }
   `}
 `
@@ -119,9 +166,10 @@ export const ItemStats = styled.ul`
     }
     .data_stats {
       display: flex;
+      padding-left: 1rem;
       gap: 5rem;
       strong {
-        font-size: ${theme.font.sizes.s22};
+        font-size: ${theme.font.sizes.s24};
         color: ${theme.colors.primary};
       }
       > div {

@@ -10,9 +10,9 @@ const StatsRun = ({ statsRun, statistics } : { statsRun: AthleteStats; statistic
     <S.ItemStats>
       {statistics === STATISTICS.ALL && (
         <li>
-          <strong title='Total'>
+          {/* <strong title='Total'>
             Total
-          </strong>
+          </strong> */}
           <div className='data_stats'>
             <div title={`${statsRun.all_run_totals.count} treinos`}>
               <strong>
@@ -49,9 +49,9 @@ const StatsRun = ({ statsRun, statistics } : { statsRun: AthleteStats; statistic
       )}
       {statistics === STATISTICS.CURRENT_YEAR && (
         <li>
-          <strong title='Este ano'>
+          {/* <strong title='Este ano'>
             Este ano
-          </strong>
+          </strong> */}
           <div className='data_stats'>
             <div title={`${statsRun.ytd_run_totals.count} treinos`}>
               <strong>
@@ -88,9 +88,9 @@ const StatsRun = ({ statsRun, statistics } : { statsRun: AthleteStats; statistic
       )}
       {statistics === STATISTICS.LAST_4_WEEKS && (
         <li>
-          <strong title='Últimas 4 semanas'>
+          {/* <strong title='Últimas 4 semanas'>
             Últimas 4 semanas 
-          </strong>
+          </strong> */}
           <div className='data_stats'>
             <div title={`${statsRun.recent_run_totals.count} treinos`}>
               <strong>
