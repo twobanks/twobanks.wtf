@@ -46,7 +46,6 @@ export const Container = styled.div`
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: ${theme.container};
       width: 100%;
       margin: 0 auto;
       padding: 0 ${theme.spacing.s2};
@@ -54,6 +53,11 @@ export const Container = styled.div`
     @media (max-width: 768px) {
       .content {
         padding: 0;
+      }
+    }
+    @media (min-width: 1840px) {
+      .content {
+        max-width: ${theme.container};
       }
     }
 	`}

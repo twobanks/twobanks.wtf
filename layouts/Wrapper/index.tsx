@@ -10,7 +10,7 @@ type WrapperProps = {
 
 const Wrapper = ({ page, children }: WrapperProps) => (
   <S.Wrapper>
-    <div className='infinite' />
+    <S.Space />
     <Header page={page} />
     <S.Content $page={page}>
       {children}
