@@ -11,6 +11,7 @@
   "dependencies": {
     "@mapbox/polyline": "^1.2.1",
     "@vercel/analytics": "^1.1.2",
+    "@vercel/speed-insights": "^1.0.7",
     "city-reverse-geocoder": "^0.0.1",
     "gray-matter": "^4.0.3",
     "mapbox-gl": "^2.15.0",
