@@ -43,6 +43,11 @@ export const Content = styled.div`
         gap: ${theme.spacing.s1};
       }
     }
+    @media (max-width: 768px) {
+      .section_twobanks .info h2 {
+        font-size: 70px;
+      }
+    }
   `}
 `;
 

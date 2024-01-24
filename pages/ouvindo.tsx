@@ -17,7 +17,12 @@ const ListeningPage = () => {
     <>
       <NextSeo
         title="ouvindo | twobanks"
-        {...SEO}
+        openGraph={{
+          title: "ouvindo | twobanks",
+          description: "Hello World!",
+          url: "https://www.twobanks.wtf/ouvindo",
+          site_name: "twobanks",
+        }}
       />
       <Wrapper page="ouvindo">
         {/* <ListeningNow data={data} isLoading={isLoading} /> */}

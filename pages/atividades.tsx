@@ -16,7 +16,12 @@ const ActivitiesPage = ({ activities, athlete, athleteStat }: ActivitiesProps) =
     <>
       <NextSeo
         title="atividades | twobanks"
-        {...SEO}
+        openGraph={{
+          title: "atividades | twobanks",
+          description: "Hello World!",
+          url: "https://www.twobanks.wtf/atividades",
+          site_name: "twobanks",
+        }}
       />
       <Wrapper page="activities">
         <ActivitiesTemplate activities={activities} athlete={athlete} athleteStat={athleteStat} />

@@ -8,7 +8,12 @@ const AboutPage = () => (
   <>
     <NextSeo
       title="sobre | twobanks"
-      {...SEO}
+      openGraph={{
+        title: "sobre | twobanks",
+        description: "Hello World!",
+        url: "https://www.twobanks.wtf/sobre",
+        site_name: "twobanks",
+      }}
     />
     <Wrapper page="sobre">
       <About data={data} />
