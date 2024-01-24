@@ -17,6 +17,7 @@ const ListeningPage = () => {
     <>
       <NextSeo
         title="ouvindo | twobanks"
+        {...SEO}
         openGraph={{
           title: "ouvindo | twobanks",
           description: "Hello World!",

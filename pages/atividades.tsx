@@ -16,6 +16,7 @@ const ActivitiesPage = ({ activities, athlete, athleteStat }: ActivitiesProps) =
     <>
       <NextSeo
         title="atividades | twobanks"
+        {...SEO}
         openGraph={{
           title: "atividades | twobanks",
           description: "Hello World!",

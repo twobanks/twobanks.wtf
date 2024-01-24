@@ -8,6 +8,7 @@ const AboutPage = () => (
   <>
     <NextSeo
       title="sobre | twobanks"
+      {...SEO}
       openGraph={{
         title: "sobre | twobanks",
         description: "Hello World!",

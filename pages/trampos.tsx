@@ -8,6 +8,12 @@ const WorksPage = () => <>
   <NextSeo
     title="trampos | twobanks"
     {...SEO}
+    openGraph={{
+      title: "trampos | twobanks",
+      description: "Hello World!",
+      url: "https://www.twobanks.wtf/trampos",
+      site_name: "twobanks",
+    }}
   />
   <Wrapper page="trampos" >
     <Works works={works} />
