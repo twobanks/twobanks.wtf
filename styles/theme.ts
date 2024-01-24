@@ -1,5 +1,7 @@
 import { STACKS } from "@/utils/enums/stack";
-
+import { Inter, Londrina_Solid, Rubik_Glitch } from 'next/font/google';
+const inter = Inter({ subsets: ['latin'] });
+const londrina = Londrina_Solid({ subsets: ['latin'], weight: "900" });
 
 export default {
   font: {
@@ -19,7 +21,13 @@ export default {
       s36: "3.6rem",
       s48: "4.8rem",
       s64: "6.4rem",
+      s80: "8rem",
+      s100: "10rem",
     },
+    family: {
+      inter: inter.style.fontFamily,
+      londrina: londrina.style.fontFamily,
+    }
   },
   transition: {
     color: 'color 0.2s ease-in-out',

@@ -1,5 +1,5 @@
 import { Pages } from "@/types/banks";
-import styled, { css, DefaultTheme, keyframes } from "styled-components";
+import styled, { css, DefaultTheme } from "styled-components";
 
 type TitleStyles = {
   $page: Pages;
@@ -28,7 +28,8 @@ const titleModifiers = {
 
 export const Wrapper = styled.h1<TitleStyles>`
   ${({ theme, $page }) => css`
-    font-size: ${theme.font.sizes.s36};
+    font-size: ${theme.font.sizes.s48};
+    font-family: ${theme.font.family.londrina};
     ${titleModifiers[$page](theme)}
     animation: gradient 5s ease-in-out infinite;
     background-size: 300%;
@@ -40,7 +41,7 @@ export const Wrapper = styled.h1<TitleStyles>`
       100% { background-position: 0 50%; }
     }
     @media (max-width: 768px) {
-      font-size: ${theme.font.sizes.s32};
+      font-size: ${theme.font.sizes.s36};
     }
   `}
 `;

@@ -1,6 +1,4 @@
 import { createGlobalStyle, css } from "styled-components";
-import { Inter } from 'next/font/google';
-const inter = Inter({ subsets: ['latin'] });
 
 const GlobalStyles = createGlobalStyle`
   ${({ theme }) => css`
@@ -50,7 +48,7 @@ const GlobalStyles = createGlobalStyle`
       background-color: ${theme.colors.background};
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.secondary};
-      font-family: ${inter.style.fontFamily};
+      font-family: ${theme.font.family.inter};
       font-weight: ${theme.font.light};
       font-style: normal;
     }

@@ -22,10 +22,11 @@ export const Content = styled.div`
         align-items: center;
         gap: ${theme.spacing.s1};
         h2 {
-          font-size: 70px;
+          font-size: ${theme.font.sizes.s100};
           color: ${theme.colors.yellow};
-          line-height: 56px;
+          line-height: ${theme.font.sizes.s80};
           ${theme.colors.title.about};
+          font-family: ${theme.font.family.londrina};
           animation: gradient 5s ease-in-out infinite;
           background-size: 300%;
           background-clip: text;

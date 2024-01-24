@@ -31,7 +31,7 @@ const About = ({ data }: { data: AboutType }) => {
             </S.ImageWrapper>
             <S.SocialWrapper>
               {social.map(item => (
-                <Link href={item.link} key={item.name} target="_blank" rel="noreferrer" passHref>
+                <Link href={item.link} key={item.name} title={item.name} target="_blank" rel="noreferrer" passHref>
                   <Image src={item.icon} alt={item.name} height={20} width={20} blurDataURL={item.icon} priority quality={100}/>
                 </Link>
               ))}
