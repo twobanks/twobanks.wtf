@@ -1,3 +1,4 @@
+import SEO from '@/components/seo';
 import Document, { DocumentContext, Head, Html, Main, NextScript } from 'next/document';
 import { Fragment } from 'react';
 import { ServerStyleSheet } from 'styled-components';
@@ -31,6 +32,7 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html lang="pt-BR">
+        <SEO />
         <Head />
         <body>
           <Main />

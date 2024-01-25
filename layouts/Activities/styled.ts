@@ -16,6 +16,7 @@ export const Content = styled.div`
     padding: ${theme.spacing.s2};
     background-color: ${theme.colors.black};
     border-radius: ${theme.radius};
+    height: fit-content;
   `}
 `;
 

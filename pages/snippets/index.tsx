@@ -4,8 +4,8 @@ import path, { join } from 'path'
 import matter from 'gray-matter'
 import { Post } from '@/types/banks'
 import Snippets from '@/layouts/Snippets'
-import { SEO } from '@/utils/constants/seo'
 import Wrapper from '@/layouts/Wrapper'
+import { seoConfig } from '@/components/seo'
 
 const postsDirectory = join(process.cwd(), 'public/posts')
 
@@ -13,7 +13,7 @@ const SnippetsPage = ({ posts }: { posts: Post[] }) => (
   <>
     <NextSeo
       title="code snippets | twobanks"
-      {...SEO}
+      {...seoConfig}
     />
     <Wrapper page="snippets">
       <Snippets posts={posts} />

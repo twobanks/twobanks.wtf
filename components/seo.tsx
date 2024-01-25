@@ -1,4 +1,6 @@
-export const SEO = {
+import { DefaultSeo } from "next-seo";
+
+export const seoConfig = {
   canonical: "https://www.twobanks.wtf/",
   description: "twobanks",
   openGraph: {
@@ -17,3 +19,6 @@ export const SEO = {
   },
 };
 
+export default function SEO() {
+  return <DefaultSeo {...seoConfig} />;
+}

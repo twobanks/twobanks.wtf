@@ -1,6 +1,5 @@
 import { NextSeo } from 'next-seo'
 import ActivitiesTemplate from '@/layouts/Activities';
-import { SEO } from '@/utils/constants/seo'
 import Wrapper from '@/layouts/Wrapper';
 import { getActivities, getAthlete, getAthleteStats } from '@/utils/lib/strava';
 import { Activities, AthleteStats } from '@/types/strava';
@@ -16,12 +15,15 @@ const ActivitiesPage = ({ activities, athlete, athleteStat }: ActivitiesProps) =
     <>
       <NextSeo
         title="atividades | twobanks"
-        {...SEO}
+        description="Hello World!"
         openGraph={{
           title: "atividades | twobanks",
           description: "Hello World!",
           url: "https://www.twobanks.wtf/atividades",
           site_name: "twobanks",
+          images: [
+            { url: 'https://avatars.githubusercontent.com/u/2577611?v=4' },
+          ],
         }}
       />
       <Wrapper page="activities">

@@ -1,5 +1,4 @@
 import { NextSeo } from 'next-seo'
-import { SEO } from '@/utils/constants/seo'
 import Wrapper from '@/layouts/Wrapper'
 import Listening from '@/layouts/Listening'
 import { Artist, NowPlayingSong, Playlists } from '@/types/spotify'
@@ -17,12 +16,15 @@ const ListeningPage = () => {
     <>
       <NextSeo
         title="ouvindo | twobanks"
-        {...SEO}
+        description="Hello World!"
         openGraph={{
           title: "ouvindo | twobanks",
           description: "Hello World!",
           url: "https://www.twobanks.wtf/ouvindo",
           site_name: "twobanks",
+          images: [
+            { url: 'https://avatars.githubusercontent.com/u/2577611?v=4' },
+          ],
         }}
       />
       <Wrapper page="ouvindo">
