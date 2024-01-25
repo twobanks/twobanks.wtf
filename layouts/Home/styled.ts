@@ -12,9 +12,6 @@ export const Content = styled.div`
       align-items: center;
       gap: ${theme.spacing.s2};
       width: 100%;
-      .two_me {
-        box-shadow: ${theme.shadow};
-      }
       .info {
         display: flex;
         flex-direction: column;
