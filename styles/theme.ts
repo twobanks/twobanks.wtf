@@ -34,7 +34,7 @@ export default {
   },
   radius: '.8rem',
   shadow: '0 8px 24px -8px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.04)',
-  container: '102rem',
+  container: '114rem',
   spacing: {
     s1: "1rem",
     s2: "2rem",

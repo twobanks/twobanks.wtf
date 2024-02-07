@@ -48,8 +48,20 @@ export const header = {
 export const data: About = {
   experiences: [
     {
+      current: true,
+      role: 'Desenvolvedor Front-End Pleno',
+      name_company: 'Fóton',
+      url_company: 'https://www.foton.la/',
+      city_company: 'Brasilia, DF',
+      period: 'fev de 2024 - atualmente',
+      tech: [STACKS.REACT, STACKS.TYPESCRIPT, STACKS.JAVASCRIPT, STACKS.HTML, STACKS.STYLED],
+      description: [
+        'Alocado em projetos internos no Banco do Nordeste',
+      ]
+    },
+    {
       current: false,
-      role: 'Desenvolvedor Front-End',
+      role: 'Desenvolvedor Front-End Pleno',
       name_company: 'Bornlogic',
       url_company: 'https://www.bornlogic.com/',
       city_company: 'São Paulo, SP',
