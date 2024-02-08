@@ -1,5 +1,5 @@
 import { Pages } from "@/types/banks";
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 
 type WrapperProps = {
   $page?: Pages;
@@ -54,96 +54,58 @@ export const Content = styled.section<WrapperProps>`
   `}
 `;
 
-export const Star = styled.span`
-  @keyframes animate {
-    0%
-    {
-        transform: rotate(315deg) translateX(0);
-        opacity: 1;
-    }
-    70%
-    {
-        opacity: 1;
-
-    }
-    100%
-    {
-        transform: rotate(315deg) translateX(-1500px);
-        opacity: 0;
-
-    }
-    
+const animate = keyframes`
+  0% {
+    transform: rotate(315deg) translateX(0);
+    opacity: 1;
   }
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 1)  ;
-  animation:  animate 3s linear infinite;
-  &::before{
-    content: '';
+  70% { opacity: 1; }
+  100% {
+    transform: rotate(315deg) translateX(-1500px);
+    opacity: 0;
+  }
+`
+
+export const Star = styled.span`
+  ${({ theme }) => css`
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    width: 300px;
-    height: 1px;
-    background: linear-gradient(90deg, #fff, transparent);
-  }
-  &:nth-child(1){
-    top: 0;
-    right: 0;
-    left:initial;
-    animation-delay:0 ;
-    animation-duration: 1s;
-  }
-
-  &:nth-child(2){
-      top: 0;
-      right: 80px;
-      left:initial;
-      animation-delay:0.2s;
-      animation-duration: 3s;
-  }
-
-  &:nth-child(3){
-      top: 80px;
-      right: 0px;
-      left:initial;
-      animation-delay:0.4s ;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background-color: ${theme.colors.primary};
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 0 0 8px rgba(255, 255, 255, 0.1), 0 0 20px rgba(255, 255, 255, 1);
+    animation: ${animate} 5s linear infinite;
+    &::before{
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 300px;
+      height: 1px;
+      background: linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.none});
+    }
+    &:nth-child(1){
+      top: -10px;
+      right: 0;
+      left: initial;
+      animation-delay: 0;
       animation-duration: 2s;
-  }
-
-  &:nth-child(4){
-      top: 0;
-      right: 180px;
-      left:initial;
-      animation-delay:0.6s;
-      animation-duration: 1.5s;
-  }
-
-  &:nth-child(5){
-      top: 0;
-      right: 400px;
-      left:initial;
-      animation-delay:0.8s;
-      animation-duration: 2.5s;
-  }
-
-  &:nth-child(6){
-      top: 0;
-      right: 600px;
-      left:initial;
-      animation-delay:1s ;
-      animation-duration: 3s;
-  }
-  &:nth-child(7 ){
-      top: 300px;
+    }
+    &:nth-child(2){
+      top: -10px;
+      right: 80px;
+      left: initial;
+      animation-delay: 0.2s;
+      animation-duration: 4s;
+    }
+    &:nth-child(3){
+      top: 70px;
       right: 0px;
-      left:initial;
-      animation-delay:1s ;
-      animation-duration: 1.75s;
-  }
+      left: initial;
+      animation-delay: 0.4s;
+      animation-duration: 3s;
+    }
+  `}
 `;

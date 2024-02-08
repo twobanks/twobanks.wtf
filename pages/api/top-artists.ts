@@ -10,10 +10,11 @@ export default async function handler() {
     let response = await getTopArtists();
     let { items }: { items: Artists } = await response.json();
     const artists: Artist[] = items.flatMap(item => ({
-        href: item.href,
+        href: item.external_urls.spotify,
         name: item.name,
         images: item.images[1],
         genres: item.genres.slice(0, 1),
+        uri: item.uri,
     }));
 
     return new Response(JSON.stringify({ artists }), {
