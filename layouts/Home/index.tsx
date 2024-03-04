@@ -8,12 +8,12 @@ import { useState } from 'react';
 const Home = () => {
   const [hovered, setHovered] = useState<string>('');
   return (
-    <S.Content>
-      <div className="section_twobanks">
+    <S.Wrapper>
+      <S.Container>
         <Image src={images.webp} alt='twobanks' title='o pai!' className='two_me' width={184} height={206} />
-        <div className='info'>
+        <S.Content>
           <h2>twobanks</h2>
-          <ul>
+          <nav>
             {header.menu.map(page => {
               const path = `/${page.url}`
               const isHovered = hovered === page.name
@@ -24,16 +24,16 @@ const Home = () => {
                     onMouseEnter={() => setHovered(page.name)}
                     onMouseLeave={() => setHovered('')}
                   >
-                      <Image src={isHovered ? page.iconAnimated : page.icon}  alt={page.name} height={20} width={20} blurDataURL={isHovered ? page.iconAnimated : page.icon} priority quality={100}/>
+                      <Image src={isHovered ? page.iconAnimated : page.icon}  alt={`Ícone referente a página - ${page.name}`} height={20} width={20} blurDataURL={isHovered ? page.iconAnimated : page.icon} priority quality={100}/>
                       {page.name}
                   </S.NavContainer>
                 </Link>
               ): null
             })}
-          </ul>
-        </div>
-      </div>
-    </S.Content>
+          </nav>
+        </S.Content>
+      </S.Container>
+    </S.Wrapper>
   )
 }
 
