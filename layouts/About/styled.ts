@@ -3,10 +3,11 @@ import styled, { css, DefaultTheme } from "styled-components";
 const link = {
   default: (theme: DefaultTheme) => css`
     a {
-      color: ${theme.colors.yellowFont};
+      color: ${theme.colors.yellow};
       transition: ${theme.transition.color};
+      font-weight: ${theme.font.bold};
       &:hover {
-        color: ${theme.colors.yellow};
+        color: ${theme.colors.yellowFont};
       }
     }
   `
@@ -25,7 +26,7 @@ export const Stacks = styled.div`
         background-color: ${theme.colors.black};
         padding: calc(${theme.spacing.s1} / 2) ${theme.spacing.s1};
         border-radius: ${theme.radius};
-        color: ${theme.colors.yellowFont};
+        color: ${theme.colors.yellow};
         font-size: ${theme.font.sizes.s14};
       }
     }
@@ -71,7 +72,7 @@ export const Experience = styled.li`
     line-height: ${theme.font.sizes.s24};
     border-bottom: 1px solid ${theme.colors.hover};
     padding-bottom: ${theme.spacing.s2};
-    h4 {
+    h3 {
       font-size: ${theme.font.sizes.s16};
       color: ${theme.colors.primary};
       font-weight: ${theme.font.normal};
@@ -94,7 +95,7 @@ export const Content = styled.div`
     border-radius: ${theme.radius};
     h2 {
       font-size: ${theme.font.sizes.s24};
-      color: ${theme.colors.yellowFont};
+      color: ${theme.colors.yellow};
     }
   `}
 `

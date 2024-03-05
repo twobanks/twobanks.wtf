@@ -61,13 +61,13 @@ const About = ({ data }: { data: AboutType }) => {
                   </S.Company>
                 </S.Header>
                 <S.Skills>
-                  <h4 title="Competências">Competências</h4>
+                  <h3 title="Competências">Competências</h3>
                   <ul>
                     {description.map(item => <li key={uuid()} title={item}>{item}</li>)}
                   </ul>
                 </S.Skills>
                 <S.Stacks>
-                  <h4 title='Tecnologias'>Tecnologias</h4>
+                  <h3 title='Tecnologias'>Tecnologias</h3>
                   <ul>
                     {tech?.map(item => <li key={uuid()} title={item}>{item}</li>)}
                   </ul>
