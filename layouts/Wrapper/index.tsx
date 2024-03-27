@@ -1,7 +1,10 @@
-import { Footer, Header } from '@/components';
+import dynamic from 'next/dynamic'
 import { header } from '@/public/content';
 import * as S from './styled';
 import { Pages } from '@/types/banks';
+
+const DynamicHeader = dynamic(() => import('@/components/Header'));
+const DynamicFooter = dynamic(() => import('@/components/Footer'));
 
 type WrapperProps = {
   children: React.ReactNode;
@@ -14,11 +17,11 @@ const Wrapper = ({ page, children }: WrapperProps) => (
   <S.Wrapper>
     <S.Space />
     {COUNT_STARS.map(index => <S.Star key={`star-${index}`} />)}
-    <Header page={page} />
+    <DynamicHeader page={page} />
     <S.Content $page={page}>
       {children}
     </S.Content>
-    <Footer page={page} menu={header.menu} />
+    <DynamicFooter page={page} menu={header.menu} />
   </S.Wrapper>
 )
 
