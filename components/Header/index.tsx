@@ -11,7 +11,7 @@ const Header = ({ page = 'home' }: { page?: Pages; }) => (
     <S.Container>
       <div className='content'>
         <Link href={`/`} passHref prefetch={false} title='o pai!'>
-          <Image src={images.webp} alt='twobanks, o pai!' width={70} height={80} priority />
+          <Image src={images.webp} alt='twobanks, o pai!' fill priority />
         </Link>
         <Title text={conversionTitlePage(page)} page={page} />
       </div>

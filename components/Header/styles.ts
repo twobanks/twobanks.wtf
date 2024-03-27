@@ -49,6 +49,12 @@ export const Container = styled.div`
       width: 100%;
       margin: 0 auto;
       padding: 0 ${theme.spacing.s2};
+      a {
+        position: relative;
+        display: flex;
+        height: 80px;
+        width: 70px;
+      }
     }
     @media (max-width: 768px) {
       .content {

@@ -84,7 +84,6 @@ export const Experience = styled.li`
   `}
 `;
 
-
 export const Content = styled.div`
   ${({ theme }) => css`
     display: flex;
