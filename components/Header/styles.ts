@@ -49,7 +49,7 @@ export const Container = styled.div`
       width: 100%;
       margin: 0 auto;
       padding: 0 ${theme.spacing.s2};
-      a {
+      .twobanks_avatar {
         position: relative;
         display: flex;
         height: 80px;
@@ -68,3 +68,9 @@ export const Container = styled.div`
     }
 	`}
 `
+
+export const Title = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+`;

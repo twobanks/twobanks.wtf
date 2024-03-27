@@ -1,15 +1,14 @@
 import { TopTracks, TopArtists, Playlist } from '@/components';
 import * as S from './styles';
-import { Artist, NowPlayingSong, Playlists as PlaylistType, TopTracks as TopTracksTypes } from '@/types/spotify';
+import { Artist, Playlists as PlaylistType, TopTracks as TopTracksTypes } from '@/types/spotify';
 import { useState } from 'react';
 import Image from 'next/image';
 import images from '@/public';
 
-const Listening = ({ data, isLoading, dataTopTracks, artists, dataPlaylist } : { data?: NowPlayingSong; isLoading: boolean; dataTopTracks?: TopTracksTypes; artists?: { artists: Artist[] }; dataPlaylist?: { playlists: PlaylistType[] } }) => {
+const Listening = ({ isLoading, dataTopTracks, artists, dataPlaylist } : { isLoading: boolean; dataTopTracks?: TopTracksTypes; artists?: { artists: Artist[] }; dataPlaylist?: { playlists: PlaylistType[] } }) => {
   const [option, setOption] = useState<'track' | 'artist' | 'playlists'>('track');
   return (
     <S.Wrapper>
-      {/* <ListeningNow data={data} isLoading={isLoading} /> */}
       {isLoading ? (
          <S.LoadingWrapper>
           <Image src={images.webp} alt="twobanks" height={200} width={200} />
