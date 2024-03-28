@@ -4,15 +4,14 @@ import * as S from './styled';
 import Link from 'next/link';
 import { header } from '@/public/content';
 import { useState } from 'react';
+import { imageLoader } from '@/utils/functions/imageLoader';
 
 const Home = () => {
   const [hovered, setHovered] = useState<string>('');
   return (
     <S.Wrapper>
       <S.Container>
-        <S.TwoBanks>
-          <Image src={images.webp} alt='twobanks' title='o pai!' priority fill />
-        </S.TwoBanks>
+        <Image src={images.webp} alt='twobanks' title='o pai!' priority width={184} height={206} loader={imageLoader} />
         <S.Content>
           <h2>twobanks</h2>
           <nav>

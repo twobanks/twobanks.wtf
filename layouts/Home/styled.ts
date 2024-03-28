@@ -73,12 +73,3 @@ export const NavContainer = styled.div`
     }
 	`}
 `
-
-export const TwoBanks = styled.div`
-  position: relative;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  max-width: 184px;
-  max-height: 206px;
-`;
