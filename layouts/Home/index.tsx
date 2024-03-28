@@ -10,7 +10,9 @@ const Home = () => {
   return (
     <S.Wrapper>
       <S.Container>
-        <Image src={images.webp} alt='twobanks' title='o pai!' className='two_me' width={184} height={206} priority />
+        <S.TwoBanks>
+          <Image src={images.webp} alt='twobanks' title='o pai!' priority fill />
+        </S.TwoBanks>
         <S.Content>
           <h2>twobanks</h2>
           <nav>
