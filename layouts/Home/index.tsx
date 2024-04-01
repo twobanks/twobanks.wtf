@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <S.Wrapper>
       <S.Container>
-        <Image src={images.webp} alt='twobanks' title='o pai!' priority width={184} height={206} loader={imageLoader} />
+        <Image src={images.webp} alt='twobanks' title='o pai!' quality={100} priority width={184} height={206} loader={imageLoader} />
         <S.Content>
           <h2>twobanks</h2>
           <nav>
