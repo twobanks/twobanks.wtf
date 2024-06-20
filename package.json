@@ -21,7 +21,7 @@
     "styled-components": "^6.1.11",
     "swr": "^2.2.5",
     "typescript": "^5",
-    "uuid": "^9.0.0"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/mapbox-gl": "^3.1.0",
