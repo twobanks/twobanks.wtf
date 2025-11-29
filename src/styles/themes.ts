@@ -1,4 +1,4 @@
-import { generateBoxShadow } from '@/utils/starGenerator';
+import { generateBoxShadow } from '@/utils/functions/starGenerator';
 
 const starsSmall = generateBoxShadow(1500); 
 const starsMedium = generateBoxShadow(400); 

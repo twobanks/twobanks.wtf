@@ -7,9 +7,30 @@ export const GlobalStyles = createGlobalStyle`
   html, body {
     margin: 0;
     padding: 0;
-    overflow: hidden; 
+    overflow-y: auto; 
+    overflow-x: hidden;
     height: 100%;
     width: 100%;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.menuText}; /* Cinza do tema */
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.title === 'dark' 
+      ? '#F3E779' 
+      : '#00B0FF' 
+    }; 
   }
   body {
     background-color: ${({ theme }) => theme.colors.background};

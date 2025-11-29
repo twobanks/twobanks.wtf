@@ -10,15 +10,20 @@
   },
   "dependencies": {
     "next": "16.0.5",
+    "next-seo": "^7.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "styled-components": "^6.1.19"
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "styled-components": "^6.1.19",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/styled-components": "^5.1.36",
+    "baseline-browser-mapping": "^2.8.32",
     "eslint": "^9",
     "eslint-config-next": "16.0.5",
     "typescript": "^5"
