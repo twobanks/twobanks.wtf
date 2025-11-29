@@ -1,3 +1,4 @@
+import { STACKS } from '@/utils/enums';
 import { generateBoxShadow } from '@/utils/functions/starGenerator';
 
 const starsSmall = generateBoxShadow(1500); 
@@ -16,6 +17,20 @@ export const lightTheme = {
     menuText: '#121212',   
     menuHover: '#283593',
   },
+  stacks: {
+    [STACKS.TYPESCRIPT]: '#3178C6',
+    [STACKS.REACT]: '#6574ab',
+    [STACKS.JAVASCRIPT]: '#F1E05A ',
+    [STACKS.NEXT]: '#FFFFFF',
+    [STACKS.NEXT_UI]: '#FFFFFF',
+    [STACKS.GATSBY]: '#A456F0',
+    [STACKS.STYLED]: '#DB7093',
+    [STACKS.HTML]: '#F25320',
+    [STACKS.REACT_TESTING]: '#CB2423',
+    [STACKS.JEST]: '#15C213',
+    [STACKS.PHP]: '#4B568C',
+    [STACKS.TAILWIND]: '#38BDF8',
+  },
   backgroundImage: 'none',
 };
 
@@ -31,6 +46,20 @@ export const darkTheme = {
     menuText: '#888899',   
     menuHover: '#F3E779',  
   },
+  stacks: {
+      [STACKS.TYPESCRIPT]: '#3178C6',
+      [STACKS.REACT]: '#6574ab',
+      [STACKS.JAVASCRIPT]: '#F1E05A ',
+      [STACKS.NEXT]: '#FFFFFF',
+      [STACKS.NEXT_UI]: '#FFFFFF',
+      [STACKS.GATSBY]: '#A456F0',
+      [STACKS.STYLED]: '#DB7093',
+      [STACKS.HTML]: '#F25320',
+      [STACKS.REACT_TESTING]: '#CB2423',
+      [STACKS.JEST]: '#15C213',
+      [STACKS.PHP]: '#4B568C',
+      [STACKS.TAILWIND]: '#38BDF8',
+    },
   stars: {
     small: starsSmall,
     medium: starsMedium,

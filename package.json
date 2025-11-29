@@ -16,6 +16,7 @@
     "react-markdown": "^10.1.0",
     "rehype-raw": "^7.0.0",
     "styled-components": "^6.1.19",
+    "swr": "^2.3.7",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

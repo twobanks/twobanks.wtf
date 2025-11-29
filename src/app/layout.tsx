@@ -1,5 +1,5 @@
 import { Poppins, Sedgwick_Ave_Display } from 'next/font/google';
-import StyledComponentsRegistry from '@/lib/registry';
+import StyledComponentsRegistry from '@/utils/lib/registry';
 
 import { ThemeProvider } from '@/context/ThemeContext';
 import StarBackground from '@/components/StarBackground';

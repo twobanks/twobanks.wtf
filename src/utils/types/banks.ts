@@ -30,3 +30,14 @@ export type About = {
   academic: Academic;
   about: string;
 }
+
+export type Works = {
+  name: string;
+  type: string;
+  link: string;
+  tech: STACKS[];
+  company: {
+    link: string;
+    name: string;
+  }
+}

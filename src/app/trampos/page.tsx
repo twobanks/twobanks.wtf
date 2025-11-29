@@ -1,9 +1,9 @@
 'use client';
 
-import About from "@/layout/about";
+import Works from "@/layout/works";
 
 export default function Trampos() {
   return (
-    <About />
+    <Works />
   );
 }

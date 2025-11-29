@@ -1,9 +1,9 @@
 'use client';
 
-import About from "@/layout/about";
+import Activities from "@/layout/activities";
 
 export default function Atividades() {
   return (
-    <About />
+    <Activities />
   );
 }

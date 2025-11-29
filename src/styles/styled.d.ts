@@ -1,3 +1,4 @@
+import { STACKS } from '@/utils/enums';
 import 'styled-components';
 
 declare module 'styled-components' {
@@ -13,6 +14,7 @@ declare module 'styled-components' {
       menuText: string;
       menuHover: string;
     };
+    stacks: { [key: string]: string };
     stars?: {
       small: string;
       medium: string;
