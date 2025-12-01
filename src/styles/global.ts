@@ -32,6 +32,9 @@ export const GlobalStyles = createGlobalStyle`
       : '#00B0FF' 
     }; 
   }
+  a {
+    text-decoration: none;
+  }
   body {
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};

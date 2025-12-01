@@ -4,7 +4,7 @@ export type Social = {
   name: string;
   link: string;
   nickname?: string;
-  icon: string;
+  icon: React.ElementType;
 }
 
 type Experiences = {

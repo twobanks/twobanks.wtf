@@ -1,12 +1,12 @@
+import type { Metadata } from 'next';
 import { Poppins, Sedgwick_Ave_Display } from 'next/font/google';
-import StyledComponentsRegistry from '@/utils/lib/registry';
 
 import { ThemeProvider } from '@/context/ThemeContext';
 import StarBackground from '@/components/StarBackground';
-import ThemeToggle from '@/components/ThemeToggle';
 import Header from '@/components/Header';
 
-import type { Metadata } from 'next';
+import StyledComponentsRegistry from '@/utils/lib/registry';
+
 
 const graffitiFont = Sedgwick_Ave_Display({
   weight: '400',
@@ -22,8 +22,8 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: 'TwoBanks | Developer',
-    template: '%s | TwoBanks',    
+    default: 'twobanks',
+    template: '%s | twobanks',    
   },
   description: 'Portfolio e projetos de TwoBanks. Desenvolvedor Front-end, fã de React e CSS.',
   icons: {
@@ -39,7 +39,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <StarBackground /> 
             <Header />
-            <ThemeToggle />
             {children}
           </ThemeProvider>
         </StyledComponentsRegistry>

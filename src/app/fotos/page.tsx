@@ -1,14 +1,14 @@
 
+import Photos from "@/layout/photos";
 import { Metadata } from "next";
-import Works from "@/layout/works";
 
 export const metadata: Metadata = {
-  title: 'trampos', 
+  title: 'fotos', 
   description: 'Conheça minha trajetória, skills e experiências.',
 };
 
-export default function Trampos() {
+export default function Ouvindo() {
   return (
-    <Works />
+    <Photos />
   );
 }

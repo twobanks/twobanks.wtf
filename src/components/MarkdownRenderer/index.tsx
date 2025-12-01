@@ -20,12 +20,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
         a: ({ node, href, children, ...props }) => {
           const isExternal = href?.startsWith('http');
           return (
-            <S.StyledLink 
-              href={href || '#'} 
-              target={isExternal ? '_blank' : undefined}
-              rel={isExternal ? "noopener noreferrer" : undefined}
-              {...props}
-            >
+            <S.StyledLink href={href || '#'} target={isExternal ? '_blank' : undefined}rel={isExternal ? "noopener noreferrer" : undefined}{...props}>
               {children}
             </S.StyledLink>
           );

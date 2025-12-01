@@ -1,14 +1,14 @@
 
+import Games from "@/layout/games";
 import { Metadata } from "next";
-import Works from "@/layout/works";
 
 export const metadata: Metadata = {
-  title: 'trampos', 
+  title: 'games', 
   description: 'Conheça minha trajetória, skills e experiências.',
 };
 
-export default function Trampos() {
+export default function Ouvindo() {
   return (
-    <Works />
+    <Games />
   );
 }

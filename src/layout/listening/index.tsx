@@ -1,6 +1,6 @@
 'use client';
 
-import { Container } from '@/components/Container';
+import { Container, Content } from '@/components/Container';
 
 import * as S from './styles';
 import fetcher from '@/utils/lib/fetcher';
@@ -19,9 +19,9 @@ export default function Listening() {
   console.log("loadingTopArtists", loadingTopArtists);
   return (
     <Container size='md'>
-      <S.GlassCard>
+      <Content>
         <S.PageTitle>ouvindo</S.PageTitle>
-      </S.GlassCard>
+      </Content>
     </Container>
   );
 }

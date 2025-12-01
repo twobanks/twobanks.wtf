@@ -1,43 +1,36 @@
 import styled from "styled-components";
 
 export const Switch = styled.button`
-  background: ${({ theme }) => theme.title === 'dark' 
-    ? 'rgba(255, 255, 255, 0.03)'  
-    : 'rgba(255, 255, 255, 0.7)'   
-  };
-  border: 1px solid ${({ theme }) => theme.colors.menuText};
-  border-radius: 30px;
+  background: transparent;
   cursor: pointer;
+  border: none;
+  outline: none;  
   display: flex;
-  font-size: 0.5rem;
-  justify-content: space-between;
-  overflow: hidden;
-  padding: 0.5rem;
-  width: 4rem;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
   height: 2rem;
-  position: fixed; 
-  top: 2rem; 
-  right: 2rem; 
-  z-index: 9999; 
-  margin: 0;
+  position: relative; 
+  overflow: hidden;
+  transition: all 0.3s ease;
   &:focus {
     outline: none;
-  }
-  @media (max-width: 600px) {
-    top: 1rem;
-    right: 1rem;
-  }
-  animation: slideDown 0.5s ease-out;
-  @keyframes slideDown {
-    from { transform: translateY(-100%); }
-    to { transform: translateY(0); }
   }
 `;
 
 export const IconWrapper = styled.div<{ $active: boolean }>`
-  height: 1rem;
-  width: 1rem;
-  transition: all 0.3s linear;
-  opacity: ${({ $active }) => ($active ? '0' : '1')};
-  transform: ${({ $active }) => ($active ? 'translateY(-100px)' : 'translateY(0)')};
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  opacity: ${({ $active }) => ($active ? '1' : '0')};
+  transform: ${({ $active }) => ($active ? 'translateY(0) rotate(0deg)' : 'translateY(20px) rotate(90deg)')};
+  color: ${({ theme }) => theme.colors.text};
+  &.on {
+    color: #FFC107;
+  }
+  &:hover {
+    color: ${({ theme }) => theme.colors.titleMain};
+  }
 `;

@@ -2,7 +2,7 @@ import About from "@/layout/about";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Sobre Mim', 
+  title: 'sobre', 
   description: 'Conheça minha trajetória, skills e experiências.',
 };
 

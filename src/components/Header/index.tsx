@@ -1,28 +1,43 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-
-import { menuLinks } from '@/utils/content/start';
+import ThemeToggle from '../ThemeToggle';
+import Navigation from '../Navigation';
 
 import * as S from './styles'
 
+const pageNames: Record<string, string> = {
+  '/sobre': 'sobre',
+  '/atividades': 'atividades',
+  '/ouvindo': 'ouvindo',
+  '/trampos': 'trampos',
+  '/fotos': 'fotos',
+  '/leituras': 'leituras',
+  '/viagens': 'viagens',
+  '/games': 'games',
+};
+
 export default function Header() {
   const pathname = usePathname();
-  if (pathname === '/') {
-    return null;
-  }
+  const isHome = pathname === '/';
+  const pageTitle = pageNames[pathname];
   return (
-    <S.HeaderContainer>
-      <S.LogoSection href="/">
-        <S.MiniLogoText>twobanks</S.MiniLogoText>
+    <S.HeaderContainer $isHome={isHome}>
+      <S.LogoSection href="/" $isHome={isHome}>
+        <S.LogoText>twobanks</S.LogoText>
       </S.LogoSection>
-      <S.NavLinks>
-        {menuLinks.map(link => (
-          <S.NavItem key={link.name} href={link.link} $isActive={pathname === link.link}>
-            {link.name}
-          </S.NavItem>
-        ))}
-      </S.NavLinks>
+      <S.ActionsContainer>
+        {!isHome && pageTitle && (
+          <>
+            <strong>{pageTitle}</strong>
+            <span>|</span>
+          </>
+        )}
+        <S.IconsContainer>
+          <Navigation />
+          <ThemeToggle />
+        </S.IconsContainer>
+      </S.ActionsContainer>
     </S.HeaderContainer>
   );
 }

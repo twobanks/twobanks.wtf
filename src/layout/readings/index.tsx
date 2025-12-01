@@ -4,11 +4,11 @@ import { Container, Content } from '@/components/Container';
 
 import * as S from './styles';
 
-export default function Activities() {
+export default function Readings() {
   return (
     <Container size='md'>
       <Content>
-        <S.PageTitle>atividades</S.PageTitle>
+        <S.PageTitle>leituras</S.PageTitle>
       </Content>
     </Container>
   );

@@ -1,14 +1,14 @@
 
+import Readings from "@/layout/readings";
 import { Metadata } from "next";
-import Works from "@/layout/works";
 
 export const metadata: Metadata = {
-  title: 'trampos', 
+  title: 'leituras', 
   description: 'Conheça minha trajetória, skills e experiências.',
 };
 
-export default function Trampos() {
+export default function Ouvindo() {
   return (
-    <Works />
+    <Readings />
   );
 }

@@ -1,48 +1,49 @@
 import { STACKS } from "../enums";
 import { About, Social } from "../types/banks";
+import { GithubLogoIcon, LinkedinLogoIcon, InstagramLogoIcon, XLogoIcon, DiscordLogoIcon, SpotifyLogoIcon, PersonSimpleRunIcon } from '@phosphor-icons/react';
 
 export const social: Social[] = [
   {
     name: 'github',
     link: 'https://github.com/twobanks',
     nickname: 'twobanks',
-    icon: '/icon/github.svg',
+    icon: GithubLogoIcon,
   },
   {
     name: 'linkedin',
     link: 'https://www.linkedin.com/in/twobanks/',
     nickname: 'twobanks',
-    icon: '/icon/linkedin.svg',
+    icon: LinkedinLogoIcon,
   },
   {
     name: 'instagram',
     link: 'https://www.instagram.com/twobanks/',
     nickname: 'twobanks',
-    icon: '/icon/instagram.svg',
+    icon: InstagramLogoIcon,
   },
   {
     name: 'twitter',
     link: 'https://twitter.com/twobanks_',
     nickname: 'twobanks_',
-    icon: '/icon/twitter.svg',
+    icon: XLogoIcon,
   },
-  {
+   {
     name: 'discord',
     link: 'https://discord.com/users/535889118282907678',
     nickname: 'twobanks#5730',
-    icon: '/icon/discord.svg',
+    icon: DiscordLogoIcon,
   },
   {
     name: 'strava',
     link: 'https://www.strava.com/athletes/twobanks',
     nickname: 'twobanks',
-    icon: '/icon/strava.svg',
+    icon: PersonSimpleRunIcon,
   },
   {
     name: 'spotify',
     link: 'https://open.spotify.com/user/twobanks',
     nickname: 'twobanks',
-    icon: '/icon/spotify.svg',
+    icon: SpotifyLogoIcon,
   },
 ];
 
@@ -54,7 +55,7 @@ Com mais de **9 anos de experiência** na área de desenvolvimento, tenho sólid
 
 Acredito em escrever código limpo, legível e de fácil manutenção. Gosto de trabalhar em projetos desafiadores, aprender e aprimorar continuamente minhas habilidades.
 
-No meu tempo livre, pratico <strong title='mountain bike'>mountain bike</strong> e, nas horas vagas, estou na trilha, treinando para **ultramaratonas** 🏃. Estou sempre ouvindo música <span>(preferencialmente rap)</span>🎧, torço pelo time do <strong title='MAIOR DE MINAS ✋✌'>Cruzeiro</strong>🦊, assisto a **NBA** 🏀 e, atualmente, jogo <strong title='Battlefield V'>Battlefield V</strong>.
+No meu tempo livre, pratico <strong title='mountain bike'>mountain bike</strong> e, nas horas vagas, estou na trilha, treinando para **ultramaratonas** 🏃. Estou sempre ouvindo música <span>(preferencialmente rap)</span>🎧, torço pelo time do <strong title='MAIOR DE MINAS ✋✌'>Cruzeiro</strong>🦊, assisto a **NBA** 🏀 e, atualmente, jogo <strong title='Battlefield V'>Battlefield 6</strong>.
 `,
   experiences: [
     {
