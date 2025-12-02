@@ -12,12 +12,12 @@ export async function GET() {
   const { items } = await response.json();
 
   const tracks = items.slice(0, 10).map((track: any) => ({
-    artist: track.artists,
-    album: track.album,
-    duration: track.duration_ms,
+    artist: track.artists.map((_artist: any) => _artist.name).join(', '),
     url: track.external_urls.spotify,
-    title: track.name,
-    genres: track.genres
+    music: track.name,
+    duration: track.duration_ms,
+    album: track.album,
+    images: track.album.images[0]?.url || '', 
   }));
 
   return NextResponse.json(tracks);

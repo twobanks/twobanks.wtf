@@ -22,12 +22,10 @@ export type Track = {
 };
 
 export type TopTracks = {
-  tracks: {
-    url: string;
-    artist: string;
-    music: string;
-    images: string;
-  }[];
+  url: string;
+  artist: string;
+  music: string;
+  images: string;
 };
 
 export type Song = {
@@ -58,13 +56,13 @@ export type Artists = {
 }[]
 
 export type Artist = {
-  href: string;
+  url: string;
   name: string;
   images: {
     height: number;
     url: string;
     width: number;
-  }
+  }[];
   genres: string[];
 }
 
