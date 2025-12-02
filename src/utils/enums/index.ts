@@ -12,3 +12,8 @@ export enum STACKS  {
   HTML = 'HTML5/CSS3',
   TAILWIND = 'Tailwind CSS'
 }
+
+export enum PLATFORM_GAME {
+  PS4 = 'psn',
+  STEAM = 'steam'
+}

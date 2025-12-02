@@ -1,26 +1,6 @@
 import styled from "styled-components";
 
 
-export const GlassCard = styled.div`
-  width: 100%;
-  padding: 3rem;
-  background: ${({ theme }) => theme.title === 'dark' 
-    ? 'rgba(255, 255, 255, 0.03)'  
-    : 'rgba(255, 255, 255, 0.7)'   
-  };
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid ${({ theme }) => theme.title === 'dark' 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.05)'
-  };
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  @media (max-width: 600px) {
-    padding: 1.5rem;
-  }
-`;
 
 export const PageTitle = styled.h1`
   font-family: var(--font-graffiti);
@@ -38,3 +18,17 @@ export const PageTitle = styled.h1`
     font-size: 3rem;
   }
 `;
+
+export const List = styled.ul`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-family: var(--font-poppins);
+  list-style: none;
+  font-size: 1.2rem;
+  li span {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+`
