@@ -7,20 +7,23 @@ import polyline from '@mapbox/polyline';
 import { useTheme } from '@/context/ThemeContext';
 import { CubeIcon, GlobeIcon, MapTrifoldIcon } from '@phosphor-icons/react';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useTheme as useThemeStyled } from 'styled-components';
 
 import * as S from './styles'
 
 interface ActivityMapProps {
   polylineString: string;
+  highlightCoord?: [number, number] | null;
 }
 
 type MapMode = '2D' | '3D';
 type MapStyleType = 'VECTOR' | 'SATELLITE';
 
-export default function ActivityMap({ polylineString }: ActivityMapProps) {
+export default function ActivityMap({ polylineString, highlightCoord }: ActivityMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const { isDarkMode } = useTheme();
+  const theme = useThemeStyled();
 
   const [viewMode, setViewMode] = useState<MapMode>('2D');
   const [styleType, setStyleType] = useState<MapStyleType>('VECTOR');
@@ -60,7 +63,7 @@ export default function ActivityMap({ polylineString }: ActivityMapProps) {
       source: 'route',
       layout: { 'line-join': 'round', 'line-cap': 'round' },
       paint: {
-        'line-color': '#FC4C02',
+        'line-color': theme.colors.menuHover,
         'line-width': 4,
       },
     });
@@ -79,7 +82,7 @@ export default function ActivityMap({ polylineString }: ActivityMapProps) {
     endEl.style.cssText = `width:16px;height:16px;border-radius:50%;background:#EF4444;border:2px solid white;box-shadow:0 0 10px rgba(0,0,0,0.5);cursor:pointer;`;
     new mapboxgl.Marker(endEl).setLngLat(coordinates[coordinates.length - 1] as [number, number]).addTo(map);
 
-  }, [coordinates]);
+  }, [coordinates, theme]);
 
   useEffect(() => {
     let isMounted = true;
@@ -114,7 +117,7 @@ export default function ActivityMap({ polylineString }: ActivityMapProps) {
 
       const map = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: isDarkMode ? "mapbox://styles/mapbox/dark-v11" : "mapbox://styles/mapbox/light-v11",
+        style: isDarkMode ? "mapbox://styles/mapbox/dark-v11" : "mapbox://styles/mapbox/outdoors-v12", 
         bounds: bounds,
         fitBoundsOptions: { padding: 60 },
         interactive: true,
@@ -153,12 +156,15 @@ export default function ActivityMap({ polylineString }: ActivityMapProps) {
     if (!map) return;
 
     let styleUrl = "";
+    
     if (styleType === 'SATELLITE') {
       styleUrl = "mapbox://styles/mapbox/satellite-streets-v12";
     } else {
-      styleUrl = isDarkMode ? "mapbox://styles/mapbox/dark-v11" : "mapbox://styles/mapbox/light-v11";
+      styleUrl = isDarkMode ? "mapbox://styles/mapbox/dark-v11" : "mapbox://styles/mapbox/outdoors-v12"; 
     }
+
     map.setStyle(styleUrl);
+
   }, [styleType, isDarkMode]);
 
   useEffect(() => {
@@ -189,6 +195,63 @@ export default function ActivityMap({ polylineString }: ActivityMapProps) {
     }
     return () => { map.off('styledata', applyViewMode); };
   }, [viewMode]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    
+    if (!map || !map.isStyleLoaded()) return;
+
+    const sourceId = 'hover-point';
+    const layerId = 'hover-point-layer';
+
+    if (!map.getSource(sourceId)) {
+      map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+    }
+
+    if (!map.getLayer(layerId)) {
+      map.addLayer({
+        id: layerId,
+        type: 'circle',
+        source: sourceId,
+        paint: {
+          'circle-radius': 8,
+          'circle-color': '#3B82F6', 
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#FFFFFF', 
+          'circle-opacity': 1
+        }
+      });
+    }
+
+    const source = map.getSource(sourceId) as mapboxgl.GeoJSONSource;
+    
+    if (highlightCoord) {
+      source.setData({
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Point',
+            coordinates: highlightCoord
+          }
+        }]
+      });
+    } else {
+      source.setData({
+        type: 'FeatureCollection',
+        features: []
+      });
+    }
+
+  }, [highlightCoord, styleType, isDarkMode]); 
+
 
   if (!coordinates) return null;
 
