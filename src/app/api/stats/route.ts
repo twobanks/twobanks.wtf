@@ -1,0 +1,75 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from 'next/server';
+import { getAthleteStats } from '@/utils/lib/strava';
+import { getAthleteSettings, getWellnessData } from '@/utils/lib/intervals';
+
+export async function GET() {
+  const stravaStats = await getAthleteStats();
+  const intervalsProfile = await getAthleteSettings();
+  const intervalsWellness = await getWellnessData(7); 
+
+  if (!stravaStats) {
+    return NextResponse.json({ error: 'Erro ao buscar dados' }, { status: 500 });
+  }
+
+  const formatVolume = (statObj: any) => ({
+    count: statObj?.count || 0,
+    distance: statObj ? Math.round(statObj.distance / 1000) : 0, 
+    elevation: statObj ? Math.round(statObj.elevation_gain) : 0, 
+    time: statObj ? Math.round(statObj.moving_time / 3600) : 0, 
+  });
+
+  const volume = {
+    year: {
+      run: formatVolume(stravaStats.ytd_run_totals),
+      ride: formatVolume(stravaStats.ytd_ride_totals),
+      swim: formatVolume(stravaStats.ytd_swim_totals),
+    },
+    recent: { 
+      run: formatVolume(stravaStats.recent_run_totals),
+      ride: formatVolume(stravaStats.recent_ride_totals),
+      swim: formatVolume(stravaStats.recent_swim_totals),
+    },
+    all_time: {
+      run: formatVolume(stravaStats.all_run_totals),
+      ride: formatVolume(stravaStats.all_ride_totals),
+    }
+  };
+
+  const runSettings = intervalsProfile?.sportSettings?.find((s: any) => s.types.includes('Run'));
+  const lthr = runSettings?.lthr || 0;
+  
+  const rawZones = runSettings?.hr_zones || [];
+  
+  const zones = rawZones.map((upperLimit: any, index: number) => {
+    if (typeof upperLimit === 'number') {
+      const lowerLimit = index === 0 ? 0 : rawZones[index - 1] + 1;
+      return {
+        min: lowerLimit,
+        max: upperLimit,
+        name: `Z${index + 1}` 
+      };
+    }
+    
+    return {
+      min: upperLimit.min || 0,
+      max: upperLimit.max || 0,
+      name: upperLimit.name || `Z${index + 1}`
+    };
+  });
+
+  const wellness = intervalsWellness ? [...intervalsWellness].reverse().find(day => day.restingHR || day.hrv) : null;
+
+ const physiology = {
+    lthr: lthr,
+    restingHR: wellness?.restingHR || intervalsProfile?.restingHR || 0,
+    maxHR: intervalsProfile?.max_hr || 0,
+    ctl: intervalsProfile?.fitness || 0,  
+    atl: intervalsProfile?.fatigue || 0,  
+    form: intervalsProfile?.form || 0,
+    
+    zones: zones
+  };
+
+  return NextResponse.json({ volume, physiology });
+}

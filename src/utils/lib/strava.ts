@@ -6,6 +6,7 @@ import { getWeatherCondition } from "../functions/getWeatherCondition";
 const client_id = process.env.STRAVA_CLIENT_ID;
 const client_secret = process.env.STRAVA_CLIENT_SECRET;
 const refresh_token = process.env.STRAVA_REFRESH_TOKEN;
+const STRAVA_ATHLETE_ID = process.env.STRAVA_ATHLETE_ID;
 
 const TOKEN_ENDPOINT = 'https://www.strava.com/oauth/token';
 const ACTIVITIES_ENDPOINT = 'https://www.strava.com/api/v3/athlete/activities';
@@ -158,4 +159,18 @@ export const getActivityById = async (id: string) => {
     console.error("💥 Erro fatal no getActivityById:", error);
     return null;
   }
+};
+
+export const getAthleteStats = async () => {
+  const { access_token } = await getAccessToken();
+
+  const response = await fetch(
+    `https://www.strava.com/api/v3/athletes/${STRAVA_ATHLETE_ID}/stats`,
+    { 
+      headers: { Authorization: `Bearer ${access_token}` },
+      next: { revalidate: 3600 } 
+    }
+  );
+
+  return response.json();
 };

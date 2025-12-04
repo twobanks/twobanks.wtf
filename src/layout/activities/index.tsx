@@ -8,6 +8,9 @@ import fetcher from '@/utils/lib/fetcher';
 import { IActivity } from '@/utils/types/strava';
 
 import * as S from './styles';
+import WellnessBar from '@/components/Strava/WellnessBar';
+import StatsDashboard from '@/components/Strava/StatsDashboard';
+import TrainingStatus from '@/components/Strava/TrainingStatus';
 
 const iconMap: any = {
   Run: <SneakerIcon size={24} weight="fill" />,
@@ -25,6 +28,9 @@ export default function Activities() {
   return (
     <Container size='md'>
       <Content>
+        <TrainingStatus />
+        <StatsDashboard />
+        <WellnessBar />
         <S.Grid>
           {data.map((activity: IActivity) => (
             <S.ActivityCard key={activity.id} href={`/atividades/${activity.id}`}>
