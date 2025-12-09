@@ -1,13 +1,14 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import useSWR from 'swr';
 import { HeadphonesIcon, MicrophoneStageIcon, PlaylistIcon, PlayIcon } from '@phosphor-icons/react';
 import Image from 'next/image';
 import { Container, Content } from '@/components/Container';
+import { SkeletonListening } from '@/components/Skeleton/SkeletonListening';
 import fetcher from '@/utils/lib/fetcher';
 import { Artist, Playlists, TopTracks } from '@/utils/types/spotify';
 import * as S from './styles';
-import { useState, useCallback } from 'react';
 
 type TabType = 'tracks' | 'artists' | 'playlists';
 
@@ -54,24 +55,23 @@ export default function Listening() {
   return (
     <Container size='md'>
       <Content>
+        <S.TabContainer>
+          <S.ActivePill $left={pillStyle.left} $width={pillStyle.width} $opacity={pillStyle.opacity} />
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <S.TabButton key={tab.id} ref={isActive ? activeTabRef : null} onClick={() => setActiveTab(tab.id as TabType)} $active={isActive}>
+                <Icon weight={isActive ? 'fill' : 'regular'} />
+                {tab.label}
+              </S.TabButton>
+            );
+          })}
+        </S.TabContainer>
         {isLoading ? (
-          <p style={{ textAlign: 'center', opacity: 0.6 }}>Carregando dados do Spotify...</p>
+          <SkeletonListening /> 
         ) : (
           <>
-            <S.TabContainer>
-              <S.ActivePill $left={pillStyle.left} $width={pillStyle.width} $opacity={pillStyle.opacity} />
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <S.TabButton key={tab.id} ref={isActive ? activeTabRef : null} onClick={() => setActiveTab(tab.id as TabType)} $active={isActive}>
-                    <Icon weight={isActive ? 'fill' : 'regular'} />
-                    {tab.label}
-                  </S.TabButton>
-                );
-              })}
-            </S.TabContainer>
-            
             {activeTab === 'tracks' && topTracks && (
               <S.TracksList animate="show">
                 {topTracks.map((track, index) => (
@@ -94,7 +94,6 @@ export default function Listening() {
                 ))}
               </S.TracksList>
             )}
-
             {activeTab === 'artists' && topArtists?.artists && (
               <S.ArtistsList>
                 {topArtists.artists.map((artist, index) => (
@@ -114,7 +113,6 @@ export default function Listening() {
                 ))}
               </S.ArtistsList>
             )}
-
             {activeTab === 'playlists' && playlists?.playlists && (
               <S.PlaylistsList>
                 {playlists.playlists.map((playlist, index) => (
