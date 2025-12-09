@@ -26,6 +26,7 @@ export type TopTracks = {
   artist: string;
   music: string;
   images: string;
+  duration: number;
 };
 
 export type Song = {
@@ -108,6 +109,11 @@ export type Playlists = {
   url: string;
   name: string;
   images: string;
+  tracks: {
+      href: string;
+      total: number;
+  };
+  owner: string;
 }
 
 export type ListeningTypes = { isLoading: boolean; dataTopTracks?: TopTracks; artists?: { artists: Artist[] }; dataPlaylist?: { playlists: Playlists[] } }

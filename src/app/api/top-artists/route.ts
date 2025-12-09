@@ -14,7 +14,7 @@ export async function GET() {
   const artists = items.slice(0, 10).map((artist: any) => ({
     name: artist.name,
     url: artist.external_urls.spotify,
-    genres: artist.genres,
+    genres: artist.genres.slice(0, 3),
     images: artist.images,
   }));
 

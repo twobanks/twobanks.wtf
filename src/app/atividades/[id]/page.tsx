@@ -12,12 +12,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const activity = await getActivityById(resolvedParams.id);
   if (!activity) {
     return {
-      title: 'Atividade não encontrada | TwoBanks',
+      title: 'Atividade não encontrada',
       description: 'A atividade solicitada não foi encontrada ou é privada.',
     };
   }
   return {
-    title: `${activity.name} - Detalhes | TwoBanks`,
+    title: `${activity.name}`,
     description: `Confira os detalhes do treino de ${activity.type} no TwoBanks.`,
   };
 }

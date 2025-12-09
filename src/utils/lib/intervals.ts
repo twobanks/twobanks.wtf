@@ -18,13 +18,6 @@ export interface WellnessData {
   weight?: number | null;
 }
 
-/* export interface AthleteStats {
-  fitness: number; 
-  fatigue: number; 
-  form: number;    
-  caloriesToday: number; 
-} */
-
 export const getWellnessData = async (days = 2): Promise<WellnessData[] | null> => {
   const today = new Date();
   const pastDate = new Date();
