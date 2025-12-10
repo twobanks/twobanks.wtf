@@ -7,24 +7,25 @@ import * as S from './styles';
 
 export default function Works() {
   return (
-    <Container size='md'>
+    <Container size='lg'>
       <Content>
-        <S.ProjectsGrid>
+        <S.ListContainer>
           {works.map((work, index) => {
             const { name, type, link, tech, company } = work;
             return (
-              <S.ProjectCard key={index}>
-                <S.CardHeader>
+              <S.ProjectRow key={index}>
+                <S.ProjectInfo>
                   <Link href={link} target="_blank" rel="noreferrer" title={`Ver projeto ${name}`}>
                     <strong>{name}</strong>
                   </Link>
-                  <S.CompanyInfo>
+                  <S.CompanyDetails>
                     <Link href={company.link} target="_blank" rel="noreferrer" title={company.name}>
                       {company.name}
                     </Link>
-                    <span>• {type}</span>
-                  </S.CompanyInfo>
-                </S.CardHeader>
+                    <span>•</span>
+                    <span>{type}</span>
+                  </S.CompanyDetails>
+                </S.ProjectInfo>
                 <S.TechList>
                   {tech.map((language) => (
                     <S.TechItem key={language} $stack={language} title={language}>
@@ -32,10 +33,11 @@ export default function Works() {
                     </S.TechItem>
                   ))}
                 </S.TechList>
-              </S.ProjectCard>
+
+              </S.ProjectRow>
             )
           })}
-        </S.ProjectsGrid>
+        </S.ListContainer>
       </Content>
     </Container>
   );

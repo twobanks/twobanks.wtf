@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { getWellnessData } from '@/utils/lib/intervals';
 
 export async function GET() {
-  const data = await getWellnessData(7);
+  const data = await getWellnessData(6);
 
   if (!data) {
     return NextResponse.json({ error: 'Erro ao buscar dados' }, { status: 500 });
@@ -20,7 +20,13 @@ export async function GET() {
       sleepHours: parseFloat((day.sleepSecs / 3600).toFixed(1)), 
       sleepScore: day.sleepScore,
       hrv: day.hrv ? Math.round(day.hrv) : null,
-      restingHR: day.restingHR
+      restingHR: day.restingHR,
+      atl: day.atl,
+      atlLoad: day.atlLoad,
+      avgSleepingHR: day.avgSleepingHR,
+      ctl: day.ctl,
+      ctlLoad: day.ctlLoad,
+      steps: day.steps
     };
   });
 

@@ -126,7 +126,9 @@ export const MenuLink = styled(Link)<{ $isActive: boolean }>`
   transition: color 0.3s ease;
   position: relative;
   z-index: 1;
-  
+  &:hover {
+    color: ${({ theme }) => theme.colors.menuHover};
+  }
   span {
     font-family: monospace;
     font-size: 1rem;

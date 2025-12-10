@@ -11,6 +11,7 @@ import { menuLinks } from '@/utils/content/start';
 import * as S from './styles';
 import { social } from '@/utils/content/about';
 import { usePathname } from 'next/navigation';
+import { blurDataURL } from '@/utils/functions/imageShimmer';
 
 const backdropVariants: Variants = {
   closed: { opacity: 0 },
@@ -75,7 +76,7 @@ export default function Navigation() {
               <S.DrawerContainer key="drawer" initial="closed" animate="open" exit="closed" variants={drawerVariants} >
                 <S.HeaderDrawer>
                   <S.LogoLink>
-                    <Image src="/img/twobanks.webp" alt="Personagem BERA" width={40} height={40} priority style={{ width: '100%', height: 'auto' }} />
+                    <Image src="/img/twobanks.webp" alt="Personagem BERA" width={40} height={40} priority style={{ width: '100%', height: 'auto' }} placeholder="blur" blurDataURL={blurDataURL} />
                   </S.LogoLink>
                   <S.CloseButton onClick={toggleMenu}>
                     <XIcon size={22} />
@@ -86,17 +87,7 @@ export default function Navigation() {
                     {menuLinks.map((item, index) => (
                       <S.NavItem key={item.link} variants={itemVariants} onMouseEnter={() => setHoveredPath(item.link)}>
                         {hoveredPath === item.link && (
-                          <S.HoverHighlight
-                            layoutId="nav-highlight"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ 
-                              type: "spring", 
-                              stiffness: 300, 
-                              damping: 30 
-                            }}
-                          />
+                          <S.HoverHighlight layoutId="nav-highlight" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
                         )}
                         <S.MenuLink onClick={toggleMenu} href={item.link} $isActive={pathname === item.link}>
                           <span>{String(index + 1).padStart(2, '0')}</span>

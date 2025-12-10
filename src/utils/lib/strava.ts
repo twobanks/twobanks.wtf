@@ -56,7 +56,7 @@ export const getActivityStreams = async (id: string, accessToken: string) => {
 
 export const getActivities = async () => {
   const { access_token } = await getAccessToken();
-  const response = await fetch(`${ACTIVITIES_ENDPOINT}?per_page=10`, {
+  const response = await fetch(`${ACTIVITIES_ENDPOINT}?per_page=30`, {
     headers: {
       Authorization: `Bearer ${access_token}`,
     },

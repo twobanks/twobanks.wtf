@@ -6,13 +6,13 @@ import { FireIcon, TrendUpIcon, LightningIcon, ActivityIcon } from '@phosphor-ic
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-// --- ESTILOS ---
 const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
   width: 100%;
   margin-bottom: 2rem;
+  font-family: var(--font-poppins);
 `;
 
 const StatusCard = styled.div`
@@ -57,23 +57,20 @@ const Value = styled.div`
   }
 `;
 
-// Helper para cor do Form (TSB)
 const getFormColor = (val: number) => {
-  if (val > 5) return '#10B981'; // Verde (Fresh)
-  if (val >= -10) return '#9CA3AF'; // Cinza (Optimal/Neutral)
-  if (val < -30) return '#EF4444'; // Vermelho (High Risk)
-  return '#F59E0B'; // Amarelo (Optimal)
+  if (val > 5) return '#10B981'; 
+  if (val >= -10) return '#9CA3AF';
+  if (val < -30) return '#EF4444'; 
+  return '#F59E0B'; 
 };
 
 export default function TrainingStatus() {
   const { data, isLoading } = useSWR('/api/training-status', fetcher);
 
-  if (isLoading || !data) return null; // Pode por um Skeleton aqui se quiser
+  if (isLoading || !data) return null; 
 
   return (
     <Container>
-      
-      {/* FITNESS (CTL) */}
       <StatusCard>
         <Header>
           <TrendUpIcon size={20} color="#3B82F6" weight="fill" />
@@ -83,8 +80,6 @@ export default function TrainingStatus() {
           {Math.round(data.fitness)}
         </Value>
       </StatusCard>
-
-      {/* FADIGA (ATL) */}
       <StatusCard>
         <Header>
           <LightningIcon size={20} color="#8B5CF6" weight="fill" />
@@ -94,8 +89,6 @@ export default function TrainingStatus() {
           {Math.round(data.fatigue)}
         </Value>
       </StatusCard>
-
-      {/* FORMA (TSB) */}
       <StatusCard style={{ borderColor: getFormColor(data.form) + '40' }}>
         <Header>
           <ActivityIcon size={20} color={getFormColor(data.form)} weight="fill" />
@@ -105,8 +98,6 @@ export default function TrainingStatus() {
           {Math.round(data.form)}
         </Value>
       </StatusCard>
-
-      {/* CALORIAS (HOJE) */}
       <StatusCard>
         <Header>
           <FireIcon size={20} color="#F97316" weight="fill" />
@@ -116,7 +107,6 @@ export default function TrainingStatus() {
           {Math.round(data.caloriesToday)} <small>kcal</small>
         </Value>
       </StatusCard>
-
     </Container>
   );
 }

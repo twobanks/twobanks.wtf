@@ -6,6 +6,7 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { Container, Content } from '@/components/Container';
 import { data, social } from '@/utils/content/about';
 import * as S from './styles';
+import { blurDataURL } from '@/utils/functions/imageShimmer';
 
 export default function About() {
   const { experiences, about } = data;
@@ -16,7 +17,7 @@ export default function About() {
         <S.LayoutGrid>
           <S.ContentColumn>
             <S.BioContainer>
-               <MarkdownRenderer content={about} />
+              <MarkdownRenderer content={about} />
             </S.BioContainer>
             <div>
               <S.SectionTitle>Experiências</S.SectionTitle>
@@ -58,18 +59,18 @@ export default function About() {
           </S.ContentColumn>
           <S.ProfileCard>
             <S.ImageWrapper>
-              <Image src="/img/two.jpg" alt='Thiago' fill style={{ objectFit: 'cover' }} priority />
+              <Image src="/img/two.jpg" alt='Thiago' fill style={{ objectFit: 'cover' }} priority placeholder="blur" blurDataURL={blurDataURL} />
             </S.ImageWrapper>
             <S.SocialWrapper>
-                  {social.map((item, index) => {
-                    const IconComponent = item.icon;
-                    return (
-                      <Link key={index} href={item.link} target="_blank" title={item.name}>
-                        <IconComponent size={24} weight="regular" />
-                      </Link>
-                    )
-                  })}
-                </S.SocialWrapper>
+              {social.map((item, index) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link key={index} href={item.link} target="_blank" title={item.name}>
+                    <IconComponent size={24} weight="regular" />
+                  </Link>
+                )
+              })}
+            </S.SocialWrapper>
           </S.ProfileCard>
         </S.LayoutGrid>
       </Content>

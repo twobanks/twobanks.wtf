@@ -30,12 +30,9 @@ export const Container = styled.div<ContainerProps>`
 
 export const Content = styled.div`
   width: 100%; 
-  padding: 3rem;
+  padding: 2rem;
   background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)'};
   backdrop-filter: blur(100px); 
   border: 1px solid ${({ theme }) => theme.title === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)'};
   border-radius: 20px;
-  @media (max-width: 600px) { 
-    padding: 1.5rem; 
-  }
 `;

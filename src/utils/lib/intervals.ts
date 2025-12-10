@@ -42,14 +42,18 @@ export const getWellnessData = async (days = 2): Promise<WellnessData[] | null> 
     if (!response.ok) return null;
 
     const data = await response.json();
-    
+
     return data.map((item: any) => ({
       id: item.id,
       sleepSecs: item.sleepSecs || 0,
-      sleepScore: item.sleepScore || null,
+      atl: item.atl || null,
+      atlLoad: item.atlLoad || null,
+      avgSleepingHR: item.avgSleepingHR || null,
+      ctl: item.ctl || null,
+      ctlLoad: item.ctlLoad || null,
       hrv: item.hrv || null,
       restingHR: item.restingHR || null,
-      readiness: item.readiness || null,
+      steps: item.steps || null,
     }));
 
   } catch (error) {

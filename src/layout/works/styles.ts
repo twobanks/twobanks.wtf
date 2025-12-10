@@ -36,100 +36,123 @@ export const PageTitle = styled.h1`
   @media (max-width: 600px) { font-size: 3rem; }
 `;
 
-export const ProjectsGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr; 
-  gap: 1.5rem; 
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-`;
-export const ProjectCard = styled.article`
+export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 12px;
+  width: 100%;
+`;
+
+export const ProjectRow = styled.article`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1rem;
+  
   font-family: var(--font-poppins);
-  background-color: ${({ theme }) => theme.title === 'dark' ? '#121212' : '#ffffff'};
-  border: 1px solid ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
+  background-color: transparent;
+  
+  transition: all 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    border-color: ${({ theme }) => theme.colors.menuHover}40;
-    cursor: pointer;
-    a strong {
+    background-color: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'};
+    padding-left: 1.5rem; /* Efeito suave de slide */
+    
+    strong {
       color: ${({ theme }) => theme.colors.titleMain};
+    }
+  }
+
+  @media (max-width: 850px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.2rem;
+    padding: 1.5rem 0;
+    
+    &:hover {
+      padding-left: 0;
     }
   }
 `;
 
-export const CardHeader = styled.div`
+export const ProjectInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  a strong {
+  gap: 0.4rem;
+  flex: 1; 
+  margin-right: 2rem;
+
+  a {
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  strong {
     font-size: 1.2rem;
     color: ${({ theme }) => theme.colors.text};
     font-weight: 700;
     transition: color 0.2s;
-    
-  }
-  a:hover strong {
-    color: ${({ theme }) => theme.colors.titleMain};
   }
 `;
 
-export const CompanyInfo = styled.div`
+export const CompanyDetails = styled.div`
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.text};
   opacity: 0.6;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 
   a {
     color: inherit;
     text-decoration: none;
-  }
-
-  span {
-    font-style: normal;
+    border-bottom: 1px dotted transparent;
+    transition: border 0.2s;
+    
+    &:hover {
+      opacity: 1;
+      border-bottom-color: currentColor;
+    }
   }
 `;
 
 export const TechList = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  max-width: 50%;
+
+  @media (max-width: 850px) {
+    justify-content: flex-start;
+    max-width: 100%;
+  }
 `;
 
 export const TechItem = styled.span<WorksStyle>`
   position: relative;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
   color: ${({ theme }) => theme.colors.text};
   background-color: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
-  padding: 0.4rem 0.8rem 0.4rem 1.8rem;
-  border-radius: 20px;
-  transition: background 0.2s;
+  padding: 0.3rem 0.7rem 0.3rem 1.6rem; 
+  border-radius: 5px;
+  white-space: nowrap;
 
   &::before {
     content: "";
     position: absolute;
-    left: 0.7rem;
+    left: 0.6rem;
     top: 50%;
     transform: translateY(-50%);
     height: 6px;
     width: 6px;
     border-radius: 50%;
     background-color: ${({ theme, $stack }) => theme.stacks[$stack] || '#ccc'};
-    box-shadow: 0 0 5px ${({ theme, $stack }) => theme.stacks[$stack] || '#ccc'}80;
-  }
-
-  &:hover {
-    background-color: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'};
   }
 `;

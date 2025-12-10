@@ -24,15 +24,10 @@ export default function ElevationChart({ data, onHover }: ElevationChartProps) {
               <stop offset="95%" stopColor={strokeColor} stopOpacity={0} />
             </linearGradient>
           </defs>
-          
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme?.colors?.text ? `${theme.colors.text}10` : '#ccc'} />
-          
           <XAxis dataKey="distance" tickLine={false} axisLine={false}interval="preserveStartEnd"minTickGap={50}unit="km" />
-          
           <YAxis hide={false}tickLine={false}axisLine={false}domain={['dataMin', 'auto']} unit="m"width={40} />
-          
           <Tooltip content={<CustomTooltip onHoverProp={onHover} />} cursor={{ stroke: theme.colors.text, strokeWidth: 1, strokeDasharray: '5 5' }} />
-          
           <Area type="monotone" dataKey="elevation" stroke={strokeColor} strokeWidth={2} fillOpacity={1} fill="url(#colorElevation)" />
         </AreaChart>
       </ResponsiveContainer>

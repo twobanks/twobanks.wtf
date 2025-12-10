@@ -5,6 +5,7 @@ import { getAthleteSettings, getWellnessData } from '@/utils/lib/intervals';
 
 export async function GET() {
   const stravaStats = await getAthleteStats();
+  console.log("stravaStats", stravaStats);
   const intervalsProfile = await getAthleteSettings();
   const intervalsWellness = await getWellnessData(7); 
 
@@ -23,12 +24,10 @@ export async function GET() {
     year: {
       run: formatVolume(stravaStats.ytd_run_totals),
       ride: formatVolume(stravaStats.ytd_ride_totals),
-      swim: formatVolume(stravaStats.ytd_swim_totals),
     },
     recent: { 
       run: formatVolume(stravaStats.recent_run_totals),
       ride: formatVolume(stravaStats.recent_ride_totals),
-      swim: formatVolume(stravaStats.recent_swim_totals),
     },
     all_time: {
       run: formatVolume(stravaStats.all_run_totals),
@@ -67,7 +66,6 @@ export async function GET() {
     ctl: intervalsProfile?.fitness || 0,  
     atl: intervalsProfile?.fatigue || 0,  
     form: intervalsProfile?.form || 0,
-    
     zones: zones
   };
 

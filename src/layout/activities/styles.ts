@@ -18,67 +18,154 @@ export const PageTitle = styled.h1`
   }
 `;
 
-export const Grid = styled.div`
-font-family: var(--font-poppins);
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-  width: 100%;
-`;
-
-export const ActivityCard = styled(Link)`
+export const Header = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background-color: ${({ theme }) => theme.title === 'dark' ? '#121212' : '#ffffff'};
-  border: 1px solid ${({ theme }) => theme.colors.text}10;
-  text-decoration: none;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-3px);
-    border-color: #FC4C02; /* Cor oficial do Strava (Laranja) */
-    box-shadow: 0 4px 20px rgba(252, 76, 2, 0.15);
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  @media (max-width: 1200px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 `;
 
-export const Header = styled.div`
+export const Title = styled.h3`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-poppins);
+  font-size: 1.2rem;
+  color: ${({ theme }) => theme.colors.text};
+  margin: 0;
+  
+  svg { color: #FFD700; }
+`;
+
+export const ListContainer = styled.div`
+  font-family: var(--font-poppins);
+  background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'};
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; 
+  width: 100%;
+  border-radius: 16px;
+`;
+
+export const ActivityRow = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 1rem 1.5rem;
   
-  strong {
-    color: ${({ theme }) => theme.colors.text};
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
+  background-color: transparent; 
+  border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
+  border-radius: 8px; 
+  
+  text-decoration: none;
+  transition: all 0.2s ease;
+  color: ${({ theme }) => theme.colors.text};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'};
+    padding-left: 2rem; 
+    
+    .chevron {
+      transform: translateX(3px);
+      opacity: 1;
+    }
   }
 
-  .icon {
-    color: #FC4C02; /* Laranja Strava */
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 `;
 
-export const Stats = styled.div`
+export const MainInfo = styled.div`
   display: flex;
-  justify-content: space-between;
-  font-size: 0.9rem;
-  color: ${({ theme }) => theme.colors.text};
-  opacity: 0.8;
-  
-  div {
+  align-items: center;
+  gap: 1rem;
+  flex: 1; 
+
+  .icon-box {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    color:  ${({ theme }) => theme.colors.menuHover};
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  strong {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 300px; 
+    
+    @media (max-width: 768px) {
+      max-width: 150px;
+    }
+  }
+`;
+
+export const MetaInfo = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2rem; /* Espaçamento entre os stats */
+
+  .chevron {
+    color: ${({ theme }) => theme.colors.text};
+    opacity: 0.3;
+    transition: all 0.2s;
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    justify-content: space-between;
+    gap: 1rem;
+    .chevron { display: none; }
+  }
+`;
+
+export const StatBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: ${({ theme }) => theme.colors.text};
+  
+  strong {
+    font-weight: 600;
+  }
+
+  span {
+    opacity: 0.7;
+  }
+
+  svg {
+    opacity: 0.6;
+    margin-bottom: 1px;
   }
 `;
 
 export const DateText = styled.span`
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: ${({ theme }) => theme.colors.text};
   opacity: 0.5;
+  min-width: 80px;
+  text-align: right;
+`;
+
+export const StatsContent = styled.div`
+  display: flex;
+  gap: 1rem;
+  @media (max-width: 1200px) {
+    flex-direction: column-reverse;
+  }
 `;

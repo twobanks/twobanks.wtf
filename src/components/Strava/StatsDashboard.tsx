@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import useSWR from 'swr';
 import styled from 'styled-components';
-import { TrophyIcon, SneakerIcon, BicycleIcon, TrendUpIcon, TimerIcon, HeartbeatIcon, LightningIcon, ActivityIcon } from '@phosphor-icons/react';
+import { SneakerMoveIcon, SneakerIcon, BicycleIcon, TrendUpIcon, TimerIcon, HeartbeatIcon, LightningIcon } from '@phosphor-icons/react';
 import fetcher from '@/utils/lib/fetcher';
+import Tabs from '@/components/Tabs';
 
 type StatDetail = {
   count: number;
@@ -60,34 +61,11 @@ const Title = styled.h3`
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-poppins);
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
 
   svg { color: #FFD700; }
-`;
-
-const Tabs = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  background: ${({ theme }) => theme.colors.text}05;
-  padding: 4px;
-  border-radius: 8px;
-`;
-
-const TabButton = styled.button<{ $active: boolean }>`
-  background: ${({ $active, theme }) => $active ? theme.colors.menuHover : 'transparent'};
-  color: ${({ $active, theme }) => $active ? (theme.title === 'dark' ? '#000' : '#fff') : theme.colors.text};
-  border: none;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  opacity: ${({ $active }) => $active ? 1 : 0.6};
-
-  &:hover { opacity: 1; }
 `;
 
 const Grid = styled.div`
@@ -153,32 +131,43 @@ const PhysioItem = styled.div`
   small { font-size: 0.7rem; opacity: 0.5; display: flex; align-items: center; gap: 4px; }
 `;
 
+const TABS = [
+  { id: 'recent', label: '30 Dias', icon: undefined },
+  { id: 'year', label: '2025', icon: undefined },
+  { id: 'all_time', label: 'Total', icon: undefined },
+];
+
 export default function StatsDashboard() {
   const { data, isLoading } = useSWR<StatsResponse>('/api/stats', fetcher);
-  const [tab, setTab] = useState<'recent' | 'year' | 'all_time'>('year');
+  const [tab, setTab] = useState<'recent' | 'year' | 'all_time'>('recent');
+
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
+    if (node) {
+      setPillStyle({
+        left: node.offsetLeft,
+        width: node.offsetWidth,
+        opacity: 1
+      });
+    }
+  }, [tab]);
 
   if (isLoading) return <p>Carregando stats...</p>;
   if (!data) return null;
 
   const stats = data.volume[tab];
   const physio = data.physiology;
-  console.log("physio", physio);
 
   return (
     <Container>
       <Header>
-        <Title><TrophyIcon size={24} weight="fill" /> Performance</Title>
-        <Tabs>
-          <TabButton $active={tab === 'recent'} onClick={() => setTab('recent')}>30 Dias</TabButton>
-          <TabButton $active={tab === 'year'} onClick={() => setTab('year')}>2024</TabButton>
-          <TabButton $active={tab === 'all_time'} onClick={() => setTab('all_time')}>Total</TabButton>
-        </Tabs>
+        <Title>Performance</Title>
+        <Tabs pillStyle={pillStyle} activeTab={tab} activeTabRef={activeTabRef} setActiveTab={setTab} dados={TABS}/>
       </Header>
-
       <Grid>
         <StatRow>
           <Category>
-            <div className="icon-box"><SneakerIcon size={24} weight="duotone" /></div>
+            <div className="icon-box"><SneakerMoveIcon size={24} weight="duotone" /></div>
             <div>
               <strong>Corrida</strong>
               <span>{stats.run.count} atividades</span>
@@ -192,7 +181,6 @@ export default function StatsDashboard() {
             </div>
           </Numbers>
         </StatRow>
-
         {stats.ride && (
           <StatRow>
             <Category>
@@ -212,27 +200,23 @@ export default function StatsDashboard() {
           </StatRow>
         )}
       </Grid>
-
       <PhysioGrid>
         <PhysioItem>
           <span>Fitness (CTL)</span>
           <strong>{Math.round(physio.ctl || 0)}</strong>
           <small title="Fadiga (ATL)"><LightningIcon size={12} weight="fill" color="#EF4444" /> {Math.round(physio.atl || 0)}</small>
         </PhysioItem>
-
         <PhysioItem>
           <span>Limiar (LTHR)</span>
           <strong>{physio.lthr}</strong>
           <small>bpm</small>
         </PhysioItem>
-
         <PhysioItem>
           <span>Zona 2 (Aeróbia)</span>
           <strong>{physio.zones[1] ? `${physio.zones[1].min}-${physio.zones[1].max}` : '-'}</strong>
           <small title="FC Repouso"><HeartbeatIcon size={12} weight="fill" color="#3B82F6" /> {physio.restingHR}</small>
         </PhysioItem>
       </PhysioGrid>
-
     </Container>
   );
 }

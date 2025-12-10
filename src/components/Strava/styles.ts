@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const MapWrapper = styled.div`
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 100%;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.colors.text}10;
@@ -12,6 +12,7 @@ export const MapWrapper = styled.div`
 export const MapContainer = styled.div`
   width: 100%;
   height: 100%;
+  min-height: 100%;
 `;
 
 export const Controls = styled.div`
@@ -54,7 +55,7 @@ export const ControlButton = styled.button<{ $active?: boolean }>`
 `;
 
 export const Header = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   font-family: var(--font-poppins);
   a {
     display: inline-flex;
@@ -70,50 +71,72 @@ export const Header = styled.div`
 
   h1 {
     font-family: var(--font-poppins);
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     color: ${({ theme }) => theme.colors.titleMain};
+    margin: 0;
   }
   
   span {
     display: block;
-    margin-top: 0.5rem;
     opacity: 0.6;
     font-size: 0.9rem;
   }
 `;
 
-export const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+export const StatsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   margin-bottom: 3rem;
 `;
 
-export const StatCard = styled.div`
-  font-family: var(--font-poppins);
-  background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
-  padding: 1.5rem;
-  border-radius: 16px;
-  border: 1px solid ${({ theme }) => theme.colors.text}10;
+export const StatItem = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
 
-  .icon {
-    color: ${({ theme }) => theme.colors.titleMain};
-    margin-bottom: 0.5rem;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: ${({ theme }) => theme.colors.text};
+    opacity: 0.8;
+
+    svg {
+      color: ${({ theme }) => theme.colors.titleMain};
+      opacity: 0.8;
+    }
+
+    span {
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: var(--font-poppins);
+    }
   }
 
   strong {
-    font-size: 1.8rem;
+    font-size: 1.1rem;
+    font-weight: 600;
     font-family: var(--font-poppins);
+    color: ${({ theme }) => theme.colors.text};
+    text-align: right;
   }
 
-  label {
-    font-size: 0.85rem;
-    opacity: 0.6;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  transition: background 0.2s;
+  &:hover {
+    background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'};
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    border-radius: 8px;
+    border-bottom-color: transparent;
   }
 `;
 
@@ -125,7 +148,6 @@ export const ChartContainer = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.text}10;
   border-radius: 16px;
   padding: 1.5rem 1.5rem 0.5rem 0; 
-  margin-top: 2rem;
   .recharts-text {
     fill: ${({ theme }) => theme.colors.text};
     font-size: 0.75rem;
@@ -133,24 +155,12 @@ export const ChartContainer = styled.div`
   }
 `;
 
-//SegmentsTable e LapsTable
-
 export const TableContainer = styled.div`
   width: 100%;
   overflow-x: auto;
-  margin-top: 3rem;
   border: 1px solid ${({ theme }) => theme.colors.text}10;
   border-radius: 16px;
   background: ${({ theme }) => theme.title === 'dark' ? '#121212' : '#ffffff'};
-`;
-
-export const Title = styled.h3`
-  font-family: var(--font-poppins);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
-  margin-bottom: 1rem;
-  padding: 0 0.5rem;
 `;
 
 export const StyledTable = styled.table`
@@ -196,4 +206,107 @@ export const StyledTable = styled.table`
   }
 `;
 
+export const LayoutGrid = styled.div`
+  display: grid;
+  grid-template-columns: 50% 1fr;
+  gap: 2rem;
+  height: calc(100vh - 230px); 
+  overflow: hidden; 
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+`;
 
+export const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;       
+  overflow: hidden;
+  padding: 2rem 0 2rem 2rem;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.colors.text}20;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${({ theme }) => theme.colors.text}40;
+  }
+`;
+
+export const MapColumn = styled.aside`
+  height: 100%; 
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative; 
+  @media (max-width: 1024px) {
+    height: 500px; 
+  }
+`;
+
+export const TabButton = styled.button<{ $active: boolean }>`
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-poppins);
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 1; 
+  
+  transition: color 0.3s ease;
+  
+  color: ${({ theme, $active }) => $active 
+    ? (theme.title === 'dark' ? '#000' : '#fff') 
+    : theme.colors.text
+  };
+
+  svg { width: 20px; height: 20px; }
+
+  &:hover {
+    color: ${({ theme, $active }) => $active ? null : theme.colors.titleMain};
+  }
+  white-space: nowrap;
+  flex-shrink: 0;
+`;
+
+export const TabContent = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${({ theme }) => theme.colors.text}20;
+    border-radius: 4px;
+  }
+`;
+
+export const ContentActivity = styled.div`
+  width: 100%; 
+  padding: 0;
+  background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)'};
+  backdrop-filter: blur(100px); 
+  border: 1px solid ${({ theme }) => theme.title === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)'};
+  border-radius: 20px;
+`;

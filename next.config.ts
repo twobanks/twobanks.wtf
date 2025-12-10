@@ -5,7 +5,6 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      // ... (Mantenha os da Steam e os outros do Spotify que já estavam) ...
       {
         protocol: 'https',
         hostname: 'shared.akamai.steamstatic.com',
@@ -30,17 +29,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
-      
-      // --- ADICIONE ESTE NOVO AQUI ---
       {
         protocol: 'https',
         hostname: 'image-cdn-ak.spotifycdn.com',
         port: '',
         pathname: '/**',
       },
-      // -------------------------------
-      
-      // Outros domínios do Spotify que podem aparecer no futuro (Recomendado adicionar já):
       {
         protocol: 'https',
         hostname: 'image-cdn-fa.spotifycdn.com',
@@ -66,6 +60,8 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    minimumCacheTTL: 31536000, 
+    formats: ['image/avif', 'image/webp'],
   },
 };
 

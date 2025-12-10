@@ -9,6 +9,9 @@ import { SkeletonListening } from '@/components/Skeleton/SkeletonListening';
 import fetcher from '@/utils/lib/fetcher';
 import { Artist, Playlists, TopTracks } from '@/utils/types/spotify';
 import * as S from './styles';
+import Tabs from '@/components/Tabs';
+import { blurDataURL } from '@/utils/functions/imageShimmer';
+import { formatDuration } from '@/utils/functions/formatDuration';
 
 type TabType = 'tracks' | 'artists' | 'playlists';
 
@@ -23,13 +26,6 @@ const SWR_OPTIONS = {
   revalidateOnFocus: false,
   revalidateOnReconnect: false,
   dedupingInterval: 60 * 60 * 1000,
-};
-
-const formatDuration = (ms: number) => {
-  if (!ms) return "-";
-  const minutes = Math.floor(ms / 60000);
-  const seconds = ((ms % 60000) / 1000).toFixed(0);
-  return `${minutes}:${Number(seconds) < 10 ? '0' : ''}${seconds}`;
 };
 
 export default function Listening() {
@@ -55,19 +51,7 @@ export default function Listening() {
   return (
     <Container size='md'>
       <Content>
-        <S.TabContainer>
-          <S.ActivePill $left={pillStyle.left} $width={pillStyle.width} $opacity={pillStyle.opacity} />
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <S.TabButton key={tab.id} ref={isActive ? activeTabRef : null} onClick={() => setActiveTab(tab.id as TabType)} $active={isActive}>
-                <Icon weight={isActive ? 'fill' : 'regular'} />
-                {tab.label}
-              </S.TabButton>
-            );
-          })}
-        </S.TabContainer>
+        <Tabs pillStyle={pillStyle} activeTab={activeTab} activeTabRef={activeTabRef} setActiveTab={setActiveTab} dados={TABS}/>
         {isLoading ? (
           <SkeletonListening /> 
         ) : (
@@ -77,7 +61,7 @@ export default function Listening() {
                 {topTracks.map((track, index) => (
                   <S.TrackCard key={index}>
                     <div className="img-box">
-                      <Image src={track.images} alt={track.music} width={64} height={64} unoptimized priority />
+                      <Image src={track.images} alt={track.music} width={64} height={64} priority placeholder="blur" blurDataURL={blurDataURL} />
                     </div>
                     <S.TrackInfo>
                       <strong>{track.music}</strong>
@@ -99,7 +83,7 @@ export default function Listening() {
                 {topArtists.artists.map((artist, index) => (
                   <S.ArtistRow key={index}>
                     <div className="img-box">
-                      <Image src={typeof artist.images === 'string' ? artist.images : artist.images[0]?.url} alt={artist.name} fill sizes="64px" priority={index < 4} style={{ objectFit: 'cover' }} />
+                      <Image src={typeof artist.images === 'string' ? artist.images : artist.images[0]?.url} alt={artist.name} fill sizes="64px" priority={index < 4} style={{ objectFit: 'cover' }} placeholder="blur" blurDataURL={blurDataURL} />
                     </div>
                     <S.TrackInfo>
                       <strong>{artist.name}</strong>
@@ -118,7 +102,7 @@ export default function Listening() {
                 {playlists.playlists.map((playlist, index) => (
                   <S.PlaylistRow key={index}>
                     <div className="img-box">
-                      <Image src={playlist.images} alt={playlist.name} fill sizes="64px" priority={index < 4} unoptimized />
+                      <Image src={playlist.images} alt={playlist.name} fill sizes="64px" priority={index < 4} placeholder="blur" blurDataURL={blurDataURL} />
                     </div>
                     <S.PlaylistInfo>
                       <strong>{playlist.name}</strong>
