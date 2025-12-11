@@ -50,3 +50,11 @@ export enum TYPE_BOOK {
   FISICO = 'fisico',
   KINDLE =  'kindle'
 }
+
+export enum GAME_STATUS {
+  PLAYING = 'playing',        // Jogando
+  FINISHED = 'finished',      // Zerado
+  PLATINUM = 'platinum',      // Platinado / 100%
+  DROPPED = 'dropped',        // Largou
+  WISHLIST = 'wishlist'       // Quero jogar
+}
