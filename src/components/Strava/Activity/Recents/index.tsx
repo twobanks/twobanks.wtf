@@ -22,7 +22,7 @@ const iconMap: any = {
 };
 
 export default function Recent() {
-   const { data, isLoading } = useSWR<IActivity[]>('/api/strava', fetcher);
+  const { data, isLoading } = useSWR<IActivity[]>('/api/strava', fetcher);
   const [tab, setTab] = useState<TABS_ACTIVITIES>(TABS_ACTIVITIES.ALL);
   
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });

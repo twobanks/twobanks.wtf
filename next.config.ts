@@ -59,6 +59,10 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'm.media-amazon.com',
+      },
     ],
     minimumCacheTTL: 31536000, 
     formats: ['image/avif', 'image/webp'],

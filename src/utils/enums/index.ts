@@ -38,3 +38,15 @@ export enum TABS_ACTIVITIES {
   RIDE = 'ride',
   GYM = 'weightTraining',
 }
+
+export enum STATUS_BOOK {
+  ALL = 'all',
+  READ = 'read',
+  READING = 'reading',
+  TO_READ = 'to_read'
+}
+
+export enum TYPE_BOOK {
+  FISICO = 'fisico',
+  KINDLE =  'kindle'
+}
