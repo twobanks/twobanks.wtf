@@ -17,3 +17,24 @@ export enum PLATFORM_GAME {
   PS4 = 'psn',
   STEAM = 'steam'
 }
+
+export enum TABS_ACTIVITY {
+  STATS = 'stats',
+  ELEVATION = 'elevation',
+  LAPS = 'laps',
+  SEGMENTS = 'segments',
+}
+
+export enum TABS_STATS {
+  RECENT = 'recent',
+  YEAR = 'year',
+  ALL = 'all_time',
+}
+
+export enum TABS_ACTIVITIES {
+  ALL = 'all',
+  RUN = 'run',
+  WALK = 'walk',
+  RIDE = 'ride',
+  GYM = 'weightTraining',
+}

@@ -4,7 +4,7 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from 'styled-components';
 import { ElevationChartProps } from '@/utils/types/strava';
-import { CustomTooltip } from '../CustomTooltip';
+import { CustomTooltip } from '@/components/CustomTooltip';
 
 import * as S from './styles';
 

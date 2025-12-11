@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface StravaActivity {
   id: number;
   name: string;
@@ -51,4 +52,48 @@ export interface ElevationChartProps {
     grade?: number;
   }[];
   onHover: (coord: [number, number] | null) => void;
+}
+
+export type StatDetail = {
+  count: number;
+  distance: number;
+  elevation: number;
+  time: number;
+};
+
+export type VolumeData = {
+  run: StatDetail;
+  ride: StatDetail;
+  swim?: StatDetail;
+};
+
+export type PhysiologyData = {
+  lthr: number;
+  restingHR: number;
+  maxHR: number;
+  ctl: number;
+  atl: number;
+  form: number;
+  zones: { min: number; max: number; name: string }[];
+};
+
+export interface StatsResponse {
+  volume: {
+    year: VolumeData;
+    recent: VolumeData;
+    all_time: VolumeData;
+  };
+  physiology: PhysiologyData;
+}
+
+export interface ActivityMapProps {
+  polylineString: string;
+  highlightCoord?: [number, number] | null;
+}
+
+export type MapMode = '2D' | '3D';
+export type MapStyleType = 'VECTOR' | 'SATELLITE';
+
+export interface ActivityProps {
+  activity: any;
 }

@@ -1,5 +1,5 @@
-// src/components/Skeleton/index.tsx
-import styled, { keyframes, css } from 'styled-components';
+'use client';
+import styled, { keyframes } from 'styled-components';
 
 const shimmer = keyframes`
   0% {

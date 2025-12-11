@@ -8,16 +8,9 @@ import { useTheme } from '@/context/ThemeContext';
 import { CubeIcon, GlobeIcon, MapTrifoldIcon } from '@phosphor-icons/react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useTheme as useThemeStyled } from 'styled-components';
+import { ActivityMapProps, MapMode, MapStyleType } from '@/utils/types/strava';
 
 import * as S from './styles'
-
-interface ActivityMapProps {
-  polylineString: string;
-  highlightCoord?: [number, number] | null;
-}
-
-type MapMode = '2D' | '3D';
-type MapStyleType = 'VECTOR' | 'SATELLITE';
 
 export default function ActivityMap({ polylineString, highlightCoord }: ActivityMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);

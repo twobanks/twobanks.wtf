@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { getActivityById } from '@/utils/lib/strava';
-import ActivityDetailContent from '@/components/Strava/ActivityDetailContent'; 
+import ActivityDetailContent from '@/components/Strava/Activity/Details'; 
 import { notFound } from 'next/navigation';
 
 type Props = {

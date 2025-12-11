@@ -2,7 +2,7 @@
 
 import { Lap } from '@/utils/types/strava';
 
-import * as S from './styles'
+import * as S from './styles';
 
 export default function LapsTable({ laps }: { laps: Lap[] }) {
   if (!laps || laps.length === 0) return null;
