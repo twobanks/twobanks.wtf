@@ -7,7 +7,6 @@ export interface Book {
   author: string;
   cover: string;
   status: STATUS_BOOK;
-  rating?: number;
   link: string; 
   type: TYPE_BOOK;
   readIn?: number;

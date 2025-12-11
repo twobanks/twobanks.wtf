@@ -9,7 +9,6 @@ export const books: Book[] = [
     author: 'Lúcia Helena Galvão',
     cover: 'https://m.media-amazon.com/images/I/81MwN7Sb+hL._SL1500_.jpg',
     status: STATUS_BOOK.READING,
-    rating: 5,
     link: 'https://a.co/d/9Uvm1ku',
     type: TYPE_BOOK.FISICO,
     readIn: 2025
@@ -21,7 +20,6 @@ export const books: Book[] = [
     author: 'Robert C. Martin',
     cover: 'https://m.media-amazon.com/images/I/41jEbK-jG+L.jpg',
     status: STATUS_BOOK.READ,
-    rating: 5,
     link: 'https://a.co/d/dg0MeUA',
     type: TYPE_BOOK.FISICO,
     readIn: 2020
@@ -33,7 +31,6 @@ export const books: Book[] = [
     author: 'Robert C. Martin',
     cover: 'https://m.media-amazon.com/images/I/815d9tE7jSL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
-    rating: 4,
     link: 'https://a.co/d/dlwn5SP',
     type: TYPE_BOOK.FISICO,
     readIn: 2020
@@ -44,7 +41,6 @@ export const books: Book[] = [
     author: 'Itamar Vieira Junior',
     cover: 'https://m.media-amazon.com/images/I/71gXpS2PAgL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
-    rating: 5,
     link: 'https://a.co/d/6YKAXZe',
     type: TYPE_BOOK.FISICO,
     readIn: 2025
@@ -55,7 +51,6 @@ export const books: Book[] = [
     author: 'Socorro Acioli',
     cover: 'https://m.media-amazon.com/images/I/71-YhujYUxS._SL1500_.jpg',
     status: STATUS_BOOK.READ,
-    rating: 5,
     link: 'https://a.co/d/0Esn52u',
     type: TYPE_BOOK.FISICO,
     readIn: 2025
@@ -68,7 +63,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/71-l6r9UAkL._SL1500_.jpg',
     status: STATUS_BOOK.READING,
     link: 'https://a.co/d/2LdIP7p',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
   },
   {
@@ -78,7 +72,6 @@ export const books: Book[] = [
     author: 'Geni Núñez',
     cover: 'https://m.media-amazon.com/images/I/71+URF9TeiL._SL1500_.jpg',
     status: STATUS_BOOK.READING,
-    rating: 3,
     link: 'https://a.co/d/a8lDK8s',
     type: TYPE_BOOK.FISICO
   },
@@ -89,7 +82,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/71I-5cC6oaL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/52iY1n5',
-    rating: 4,
     type: TYPE_BOOK.FISICO,
     readIn: 2025
   },
@@ -100,7 +92,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/71h29PYqECL._SL1360_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/0Rto53K',
-    rating: 5,
     type: TYPE_BOOK.FISICO,
     readIn: 2025
   },
@@ -112,7 +103,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/71-ghLb8qML._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/dCk3VmX',
-    rating: 5,
     readIn: 2023,
     type: TYPE_BOOK.KINDLE
   },
@@ -124,7 +114,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/81eT2pjx4jL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/dBhfiPq',
-    rating: 5,
     readIn: 2023,
     type: TYPE_BOOK.KINDLE
   },
@@ -136,7 +125,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/81Zb5YuQWxS._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/7o89s1r',
-    rating: 5,
     type: TYPE_BOOK.FISICO,
     readIn: 2023
   },
@@ -148,7 +136,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/81yW1Gqi2ZL._SL1500_.jpg',
     status: STATUS_BOOK.READING,
     link: 'https://a.co/d/afjqYwh',
-    rating: 5,
     type: TYPE_BOOK.FISICO,
   },
   {
@@ -158,7 +145,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/9158AbyFlVS._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/6Y9Z9j6',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
     readIn: 2024
   },
@@ -169,7 +155,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/8164LHIfJCL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/buwTUR2',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
     readIn: 2024
   },
@@ -180,7 +165,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/71roS7f3GyL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/fmIAyH1',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
     readIn: 2024
   },
@@ -193,7 +177,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/81K7XEw5ZvL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/0kPUYjS',
-    rating: 4,
     type: TYPE_BOOK.KINDLE,
     readIn: 2023
   },
@@ -204,7 +187,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/712kvxCRs4L._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/6H5CX99',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
     readIn: 2023
   },
@@ -216,7 +198,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/81fyJqqSEIL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/6zkSs4M',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
     readIn: 2023
   },
@@ -227,7 +208,6 @@ export const books: Book[] = [
     cover: 'https://m.media-amazon.com/images/I/81aPAmQRmZL._SL1500_.jpg',
     status: STATUS_BOOK.READ,
     link: 'https://a.co/d/d3A6yy8',
-    rating: 5,
     type: TYPE_BOOK.KINDLE,
     readIn: 2023
   },

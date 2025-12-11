@@ -1,10 +1,13 @@
 'use client';
 
-import {  CheckCircleIcon, ClockIcon, DesktopTowerIcon, GameControllerIcon, PlayCircleIcon, StarIcon, TrophyIcon, XCircleIcon } from '@phosphor-icons/react';
+import { useState, useCallback } from 'react'; 
+import { TrophyIcon, PlayCircleIcon, CheckCircleIcon, XCircleIcon, ClockIcon, GameControllerIcon, DesktopTowerIcon, WarningCircleIcon } from '@phosphor-icons/react';
+
 import { Container, Content } from '@/components/Container';
+import Tabs from '@/components/Tabs'; 
 import { games } from '@/utils/content/games';
+import { STATUS_LABELS, TABS_GAMES } from '@/utils/const/games';
 import { GAME_STATUS, PLATFORM_GAME } from '@/utils/enums';
-import { STATUS_LABELS } from '@/utils/const/games';
 
 import * as S from './styles';
 
@@ -19,48 +22,69 @@ const StatusIcon = ({ status }: { status: GAME_STATUS }) => {
 };
 
 export default function GamesList() {
+  const [tab, setTab] = useState<PLATFORM_GAME>(PLATFORM_GAME.ALL);
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+
+  const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
+    if (node) {
+      setPillStyle({
+        left: node.offsetLeft,
+        width: node.offsetWidth,
+        opacity: 1
+      });
+    }
+  }, [tab]);
+
+  const filteredGames = games.filter((game) => {
+    if (tab === PLATFORM_GAME.ALL) return true;
+    return game.type === tab;
+  });
+
   return (
-    <Container size='lg'>
+    <Container size='md'>
       <Content>
-        <S.ListContainer>
-          {games.map((game, index) => (
-            <S.GameRow key={index} href={game.link} target="_blank">
-              <S.MainInfo>
-                <S.GameDetails>
-                  <strong>
-                    {game.type === PLATFORM_GAME.PS4 ? <GameControllerIcon size={18} weight="fill"/> : <DesktopTowerIcon size={18} weight="fill"/>}
-                    {game.name}
-                  </strong>
-                  <div className="metadata">
-                    <span>{game.developer}</span>
-                    <span className="separator">•</span>
-                    <span>{game.releaseYear}</span>
-                  </div>
-                  {game.genres && (
-                    <S.GenreList>
-                      {game.genres.slice(0, 3).map(g => <span key={g}>{g}</span>)}
-                    </S.GenreList>
-                  )}
-                </S.GameDetails>
-              </S.MainInfo>
-              <S.MetaInfo>
-                <S.StatusTag $status={game.status}>
-                  <StatusIcon status={game.status} />
-                  <span>{STATUS_LABELS[game.status]}</span>
-                </S.StatusTag>
-                <S.StatsRow>
-                  {game.rating > 0 && (
-                    <S.Rating title={`Nota: ${game.rating}/5`}>
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <StarIcon key={i} size={12} weight={i < game.rating ? "fill" : "regular"} color={i < game.rating ? "#F59E0B" : "currentColor"} />
-                      ))}
-                    </S.Rating>
-                  )}
-                </S.StatsRow>
-              </S.MetaInfo>
-            </S.GameRow>
-          ))}
-        </S.ListContainer>
+        <div style={{ marginBottom: '2rem' }}>
+          <Tabs pillStyle={pillStyle} activeTab={tab} activeTabRef={activeTabRef} setActiveTab={setTab} dados={TABS_GAMES} />
+        </div>
+
+        {filteredGames.length > 0 ? (
+          <S.ListContainer>
+            {filteredGames.map((game, index) => (
+              <S.GameRow key={index} href={game.link} target="_blank">
+                <S.MainInfo>
+                  <S.GameDetails>
+                    <strong>
+                      {game.type === PLATFORM_GAME.PS4 ? <GameControllerIcon size={18} weight="fill"/> : <DesktopTowerIcon size={18} weight="fill"/>}
+                      {game.name}
+                    </strong>
+                    <div className="metadata">
+                      <span>{game.developer}</span>
+                      <span className="separator">•</span>
+                      <span>{game.releaseYear}</span>
+                    </div>
+                    {game.genres && (
+                      <S.GenreList>
+                        {game.genres.slice(0, 3).map(g => <span key={g}>{g}</span>)}
+                      </S.GenreList>
+                    )}
+                  </S.GameDetails>
+                </S.MainInfo>
+
+                <S.MetaInfo>
+                  <S.StatusTag $status={game.status}>
+                    <StatusIcon status={game.status} />
+                    <span>{STATUS_LABELS[game.status]}</span>
+                  </S.StatusTag>
+                </S.MetaInfo>
+              </S.GameRow>
+            ))}
+          </S.ListContainer>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.6 }}>
+            <WarningCircleIcon size={48} style={{ marginBottom: '1rem', display: 'inline-block' }}/>
+            <p>Nenhum jogo encontrado nesta plataforma.</p>
+          </div>
+        )}
       </Content>
     </Container>
   );

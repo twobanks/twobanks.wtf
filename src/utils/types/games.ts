@@ -5,7 +5,6 @@ export type Games = {
   type: PLATFORM_GAME;
   link: string;
   status: GAME_STATUS;
-  rating: number;           
   genres: string[];         
   developer: string;        
   releaseYear: number;

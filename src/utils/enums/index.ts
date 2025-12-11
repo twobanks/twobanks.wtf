@@ -14,6 +14,7 @@ export enum STACKS  {
 }
 
 export enum PLATFORM_GAME {
+  ALL = 'all',
   PS4 = 'psn',
   STEAM = 'steam'
 }

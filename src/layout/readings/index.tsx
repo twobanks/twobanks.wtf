@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import Image from 'next/image';
-import { StarIcon, BookOpenIcon, ClockIcon, CheckCircleIcon, WarningCircleIcon } from '@phosphor-icons/react';
+import {  BookOpenIcon, ClockIcon, CheckCircleIcon, WarningCircleIcon } from '@phosphor-icons/react';
 import { Container, Content } from '@/components/Container';
 import Tabs from '@/components/Tabs';
 import { books } from '@/utils/content/books';
@@ -51,13 +51,6 @@ export default function Readings() {
                     {book.status === STATUS_BOOK.TO_READ && <ClockIcon weight="fill" />}
                     <span>{STATUS_LABELS[book.status as STATUS_BOOK] || book.status}</span>
                   </S.StatusTag>
-                  {book.rating && (
-                    <S.Rating>
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <StarIcon key={i} size={12} weight={i < book.rating! ? "fill" : "regular"} color={i < book.rating! ? "#F59E0B" : "currentColor"} />
-                      ))}
-                    </S.Rating>
-                  )}
                   {book.readIn && <span className="date">Lido em: {book.readIn}</span>}
                 </S.MetaInfo>
               </S.BookRow>
