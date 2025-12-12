@@ -41,7 +41,7 @@ export default function GamesList() {
   });
 
   return (
-    <Container size='md'>
+    <Container size='lg'>
       <Content>
         <div style={{ marginBottom: '2rem' }}>
           <Tabs pillStyle={pillStyle} activeTab={tab} activeTabRef={activeTabRef} setActiveTab={setTab} dados={TABS_GAMES} />

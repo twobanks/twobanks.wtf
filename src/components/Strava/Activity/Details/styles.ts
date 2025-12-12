@@ -80,11 +80,12 @@ export const Header = styled.div`
 export const MapColumn = styled.aside`
   height: 100%; 
   width: 100%;
-  border-radius: 12px;
+  border-radius: 0 20px 20px 0;
   overflow: hidden;
   position: relative; 
   @media (max-width: 1024px) {
     height: 500px; 
+    border-radius: 20px 20px 0 0;
   }
 `;
 

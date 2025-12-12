@@ -4,7 +4,7 @@ export const MapWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  /* border-radius: 16px; */
   overflow: hidden;
   border: 1px solid ${({ theme }) => theme.colors.text}10;
 `;
