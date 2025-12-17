@@ -6,19 +6,25 @@ export interface StravaActivity {
   distance: number;
   moving_time: number;
   start_date: string;
+  total_elevation_gain: number;
   map: { 
     summary_polyline: string;
   };
+  laps: any;
 }
 
 export interface IActivity {
   id: number;
   name: string;
   type: string;
-  distance: string;
-  moving_time: string;
+  distance: number;
+  moving_time: number;
+  total_elevation_gain: number;
   date: string;
   url: string;
+  start_date: string;    
+  start_date_local: string;
+  laps: any;
 }
 
 export interface Segment {

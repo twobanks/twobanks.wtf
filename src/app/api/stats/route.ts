@@ -5,7 +5,6 @@ import { getAthleteSettings, getWellnessData } from '@/utils/lib/intervals';
 
 export async function GET() {
   const stravaStats = await getAthleteStats();
-  console.log("stravaStats", stravaStats);
   const intervalsProfile = await getAthleteSettings();
   const intervalsWellness = await getWellnessData(7); 
 

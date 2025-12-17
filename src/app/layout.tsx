@@ -7,7 +7,6 @@ import Header from '@/components/Header';
 
 import StyledComponentsRegistry from '@/utils/lib/registry';
 
-
 const graffitiFont = Sedgwick_Ave_Display({
   weight: '400',
   subsets: ['latin'],
@@ -25,7 +24,7 @@ export const metadata: Metadata = {
     default: 'twobanks',
     template: '%s | twobanks',    
   },
-  description: 'Portfolio e projetos de TwoBanks. Desenvolvedor Front-end, fã de React e CSS.',
+  description: '...twobanks',
   icons: {
     icon: '/favicon.ico',
   },

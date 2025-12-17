@@ -53,9 +53,15 @@ export enum TYPE_BOOK {
 }
 
 export enum GAME_STATUS {
-  PLAYING = 'playing',        // Jogando
-  FINISHED = 'finished',      // Zerado
-  PLATINUM = 'platinum',      // Platinado / 100%
-  DROPPED = 'dropped',        // Largou
-  WISHLIST = 'wishlist'       // Quero jogar
+  PLAYING = 'playing',   
+  FINISHED = 'finished', 
+  PLATINUM = 'platinum', 
+  DROPPED = 'dropped',   
+  WISHLIST = 'wishlist'  
+}
+
+export enum TABS_TYPE_ACTIVITIES {
+  STATS = 'stats',
+  TRAININGS = 'trainings',
+  RECENT = 'recent',
 }

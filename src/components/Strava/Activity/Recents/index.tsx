@@ -2,12 +2,10 @@
 import { SneakerIcon, BicycleIcon, BarbellIcon, ActivityIcon, TimerIcon, CaretRightIcon, SneakerMoveIcon } from '@phosphor-icons/react';
 
 import Tabs from '@/components/Tabs'
-import fetcher from '@/utils/lib/fetcher';
 import { IActivity } from '@/utils/types/strava';
 import { TABS_ACTIVITIES } from '@/utils/enums';
 import { TABS_DETAILS_ACTIVITIES } from '@/utils/const/strava';
 
-import useSWR from 'swr';
 import { useState, useCallback } from 'react';
 import { SkeletonRecent } from '@/components/Skeleton/SkeletonRecent';
 import * as S from './styles'
@@ -21,8 +19,12 @@ const iconMap: any = {
   Default: <ActivityIcon size={24} weight="regular" />
 };
 
-export default function Recent() {
-  const { data, isLoading } = useSWR<IActivity[]>('/api/strava', fetcher);
+interface RecentProps {
+  data?: IActivity[];
+  isLoading: boolean;
+}
+
+export default function Recent({ data = [], isLoading }: RecentProps) {
   const [tab, setTab] = useState<TABS_ACTIVITIES>(TABS_ACTIVITIES.ALL);
   
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });

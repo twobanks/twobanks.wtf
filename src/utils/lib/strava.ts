@@ -66,6 +66,21 @@ export const getActivities = async () => {
   return response;
 };
 
+export const getActivityLaps = async (activityId: number) => {
+  const { access_token } = await getAccessToken();
+  const response = await fetch(`https://www.strava.com/api/v3/activities/${activityId}/laps`, {
+    headers: {
+      'Authorization': `Bearer ${access_token}`
+    },
+    next: { revalidate: 3600 } 
+  });
+
+  if (!response.ok) {
+    throw new Error('Falha ao buscar laps');
+  }
+  return response.json();
+}
+
 export const getActivityById = async (id: string) => {
   try {
     const { access_token } = await getAccessToken();

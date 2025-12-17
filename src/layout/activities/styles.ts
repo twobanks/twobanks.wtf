@@ -7,3 +7,7 @@ export const StatsContent = styled.div`
     flex-direction: column-reverse;
   }
 `;
+
+export const WrapperTabs = styled.div`
+  margin-bottom: 2rem;
+`;
