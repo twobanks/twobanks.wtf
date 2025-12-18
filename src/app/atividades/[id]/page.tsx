@@ -1,8 +1,9 @@
 import { JSX } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getActivityById } from '@/utils/lib/strava';
+
 import ActivityDetailContent from '@/components/Strava/Activity/Details';
+import { getActivityById } from '@/utils/lib/strava';
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -13,9 +14,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const activity = await getActivityById(id);
   if (!activity) {
     return {
-      title: 'Atividade não encontrada | twobanks',
+      title: 'atividade não encontrada | twobanks',
       description: 'A atividade solicitada não está disponível.',
-      robots: { index: false }, // Evita indexação de erro
+      robots: { index: false },
     };
   }
   const statsSummary = [

@@ -1,3 +1,4 @@
+import { StarLayerProps } from "@/utils/types/component";
 import styled, { keyframes } from "styled-components";
 
 export const warpSpeed = keyframes`
@@ -29,7 +30,7 @@ export const StarWrapper = styled.div`
   z-index: -1;
 `;
 
-export const StarLayer = styled.div<{ size: number; shadow: string; duration: number; delay: number }>`
+export const StarLayer = styled.div<StarLayerProps>`
   position: absolute;
   top: 50%;
   left: 50%;

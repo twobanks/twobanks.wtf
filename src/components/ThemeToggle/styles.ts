@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { IconWrapperProps } from "@/utils/types/component";
 
 export const Switch = styled.button`
   background: transparent;
@@ -18,15 +19,15 @@ export const Switch = styled.button`
   }
 `;
 
-export const IconWrapper = styled.div<{ $active: boolean }>`
+export const IconWrapper = styled.div<IconWrapperProps>`
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  opacity: ${({ $active }) => ($active ? '1' : '0')};
+  opacity: ${({ $active }) => ($active ? 1 : 0.2)};
   transform: ${({ $active }) => ($active ? 'translateY(0) rotate(0deg)' : 'translateY(20px) rotate(90deg)')};
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ $active, theme }) => ($active ? theme.colors.primary : theme.colors.text)};
   &.on {
     color: #FFC107;
   }

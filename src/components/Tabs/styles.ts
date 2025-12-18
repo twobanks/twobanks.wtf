@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { ActivePillProps, TabButtonProps } from "@/utils/types/component";
 
 export const TabContainer = styled.div`
   position: relative; 
@@ -23,7 +24,7 @@ export const TabContainer = styled.div`
   
 `;
 
-export const ActivePill = styled.div<{ $left: number; $width: number; $opacity: number }>`
+export const ActivePill = styled.div<ActivePillProps>`
   position: absolute;
   top: 0.3rem;
   bottom: 0.3rem;
@@ -40,7 +41,7 @@ export const ActivePill = styled.div<{ $left: number; $width: number; $opacity: 
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 `;
 
-export const TabButton = styled.button<{ $active: boolean }>`
+export const TabButton = styled.button<TabButtonProps>`
   position: relative;
   background: transparent;
   border: none;

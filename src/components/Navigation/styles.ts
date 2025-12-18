@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { MenuLinkProps } from '@/utils/types/component';
 
 export const MenuButton = styled.button`
   display: flex;
@@ -114,7 +115,7 @@ export const HoverHighlight = styled(motion.div)`
   z-index: 0;
 `;
 
-export const MenuLink = styled(Link)<{ $isActive: boolean }>`
+export const MenuLink = styled(Link)<MenuLinkProps>`
   font-family: var(--font-poppins);
   font-size: 1.2rem;
   font-weight: 700;

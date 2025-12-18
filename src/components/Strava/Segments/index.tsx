@@ -1,7 +1,7 @@
 'use client';
 
 import { MedalIcon } from '@phosphor-icons/react';
-import { Segment } from '@/utils/types/strava';
+import { Segment } from '@/utils/types/component';
 
 import * as S from './styles'
 

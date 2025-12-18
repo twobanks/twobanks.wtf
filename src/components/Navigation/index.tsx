@@ -1,56 +1,36 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, JSX, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AnimatePresence, Variants } from 'framer-motion';
+import { usePathname } from 'next/navigation';
+import { AnimatePresence } from 'framer-motion';
 import { CommandIcon, XIcon } from '@phosphor-icons/react';
+
 import { menuLinks } from '@/utils/content/start';
+import { social } from '@/utils/content/about';
+import { blurDataURL } from '@/utils/functions/imageShimmer';
+import { SocialItem } from '@/utils/types/component';
+import { backdropVariants, drawerVariants, itemVariants } from '@/utils/const/component';
 
 import * as S from './styles';
-import { social } from '@/utils/content/about';
-import { usePathname } from 'next/navigation';
-import { blurDataURL } from '@/utils/functions/imageShimmer';
 
-const backdropVariants: Variants = {
-  closed: { opacity: 0 },
-  open: { opacity: 1 },
-};
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,    
+    () => false    
+  );
+}
 
-const drawerVariants: Variants = {
-  closed: { 
-    x: '100%', 
-    transition: { type: 'spring', stiffness: 400, damping: 40 }
-  },
-  open: { 
-    x: 0, 
-    transition: { 
-      type: 'spring', stiffness: 400, damping: 40,
-      staggerChildren: 0.1, 
-      delayChildren: 0.2    
-    } 
-  },
-};
-
-const itemVariants: Variants = {
-  closed: { x: 50, opacity: 0 },
-  open: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
-};
-
-export default function Navigation() {
+export default function Navigation(): JSX.Element {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
-  const toggleMenu = () => setIsOpen(!isOpen);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 0);
 
-    return () => clearTimeout(timer);
-  }, []);
+  const isMounted = useMounted();
+  const toggleMenu = () => setIsOpen((prev) => !prev);
 
   useEffect(() => {
     if (isOpen) {
@@ -63,17 +43,18 @@ export default function Navigation() {
     };
   }, [isOpen]);
 
+  const portalContainer = isMounted && typeof document !== 'undefined' ? document.body : null;
   return (
     <>
       <S.MenuButton onClick={toggleMenu} aria-label="Abrir Menu">
         <CommandIcon size={22} weight="bold" />
       </S.MenuButton>
-      {mounted && createPortal(
+      {portalContainer && createPortal(
         <AnimatePresence>
           {isOpen && (
             <>
               <S.Backdrop key="backdrop" initial="closed" animate="open" exit="closed" variants={backdropVariants} onClick={toggleMenu} />
-              <S.DrawerContainer key="drawer" initial="closed" animate="open" exit="closed" variants={drawerVariants} >
+              <S.DrawerContainer key="drawer" initial="closed" animate="open" exit="closed" variants={drawerVariants}>
                 <S.HeaderDrawer>
                   <S.LogoLink>
                     <Image src="/img/twobanks.webp" alt="Personagem BERA" width={40} height={40} priority style={{ width: '100%', height: 'auto' }} placeholder="blur" blurDataURL={blurDataURL} />
@@ -97,13 +78,13 @@ export default function Navigation() {
                     ))}
                   </S.NavList>
                   <S.SocialWrapper>
-                    {social.map((item, index) => {
+                    {social.map((item: SocialItem, index: number) => {
                       const IconComponent = item.icon;
                       return (
                         <Link key={index} href={item.link} target="_blank" title={item.name}>
                           <IconComponent size={24} weight="regular" />
                         </Link>
-                      )
+                      );
                     })}
                   </S.SocialWrapper>
                 </S.DrawerContent>
@@ -111,7 +92,7 @@ export default function Navigation() {
             </>
           )}
         </AnimatePresence>,
-        document.body
+        portalContainer
       )}
     </>
   );

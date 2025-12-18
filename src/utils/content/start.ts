@@ -15,18 +15,10 @@ export const menuLinks = [
     name: 'trampos',
     link: '/trampos'
   },
-  /* {
-    name: 'fotos',
-    link: '/fotos'
-  }, */
   {
     name: 'leituras',
     link: '/leituras'
   },
-  /* {
-    name: 'viagens',
-    link: '/viagens'
-  }, */
   {
     name: 'games',
     link: '/games'

@@ -1,17 +1,8 @@
 'use client';
 
 import styled from 'styled-components';
-
-interface ContainerProps {
-  size?: 'sm' | 'md' | 'lg' | 'full'; 
-}
-
-const sizes = {
-  sm: '800px',  
-  md: '1140px', 
-  lg: '1380px', 
-  full: '100%', 
-};
+import { sizes } from '@/utils/const/component';
+import { ContainerProps } from '@/utils/types/component';
 
 export const Container = styled.div<ContainerProps>`
   width: 100%;

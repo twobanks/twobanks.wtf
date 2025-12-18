@@ -11,14 +11,16 @@ export interface Segment {
   pr_rank?: number;
 }
 
+export interface ElevationChart { 
+  distance: string; 
+  elevation: number; 
+  speed?: number;
+  bpm?: number;
+  grade?: number;
+}
+
 export interface ElevationChartProps {
-  data: { 
-    distance: string; 
-    elevation: number; 
-    speed?: number;
-    bpm?: number;
-    grade?: number;
-  }[];
+  data: ElevationChart[];
   onHover: (coord: [number, number] | null) => void;
 }
 

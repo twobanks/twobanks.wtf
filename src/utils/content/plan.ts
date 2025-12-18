@@ -1,4 +1,6 @@
-export const plan_15_21__12__2025 = {
+import { PlanoTreinoSemana } from "../types/plan";
+
+export const plan_15_21__12__2025: PlanoTreinoSemana = {
   atleta: "Thiago Gonçalves Soares",
   semana: {
     inicio: "2025-12-15",
@@ -61,7 +63,7 @@ export const plan_15_21__12__2025 = {
   ]
 };
 
-export const planoTreinoSemana_2025_12_08 = {
+export const planoTreinoSemana_2025_12_08: PlanoTreinoSemana = {
   atleta: "Thiago Gonçalves Soares",
   semana: {
     inicio: "2025-12-08",

@@ -1,8 +1,6 @@
+import { WorksStyle } from "@/utils/types/works";
 import styled from "styled-components";
 
-type WorksStyle = {
-  $stack: string;
-}
 
 export const GlassCard = styled.div`
   width: 100%;

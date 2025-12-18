@@ -1,10 +1,9 @@
 'use client';
 
-import { Lap } from '@/utils/types/strava';
-
+import { LapData } from '@/utils/types/component';
 import * as S from './styles';
 
-export default function LapsTable({ laps }: { laps: Lap[] }) {
+export default function LapsTable({ laps }: { laps: LapData[] }) {
   if (!laps || laps.length === 0) return null;
 
   return (

@@ -1,15 +1,20 @@
 'use client';
 
+import { JSX } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { Container, Content } from '@/components/Container';
 import { data, social } from '@/utils/content/about';
-import * as S from './styles';
 import { blurDataURL } from '@/utils/functions/imageShimmer';
+import { Experience, SocialItem } from '@/utils/types/about';
 
-export default function About() {
-  const { experiences, about } = data;
+import * as S from './styles';
+
+export default function About(): JSX.Element {
+  const experiences = data.experiences as Experience[];
+  const about = data.about as string;
+  const socialItems = social as SocialItem[];
 
   return (
     <Container size='lg'>
@@ -27,16 +32,17 @@ export default function About() {
                     <S.Role>{item.role}</S.Role>
                     <S.CompanyInfo>
                       <div>
-                         {item.url_company ? (
-                           <Link href={item.url_company} target="_blank">{item.name_company}</Link>
-                         ) : (
-                           <span>{item.name_company}</span>
-                         )}
-                         <em> - {item.city_company}</em>
+                        {item.url_company ? (
+                          <Link href={item.url_company} target="_blank">{item.name_company}</Link>
+                        ) : (
+                          <span>{item.name_company}</span>
+                        )}
+                        <em> - {item.city_company}</em>
                       </div>
                       <p>{item.period}</p>
                     </S.CompanyInfo>
-                    {item.description?.length > 0 && (
+                    
+                    {item.description && item.description.length > 0 && (
                       <S.Competencies>
                         <h4>Competências</h4>
                         <ul>
@@ -44,7 +50,8 @@ export default function About() {
                         </ul>
                       </S.Competencies>
                     )}
-                    {item.tech?.length > 0 && (
+                    
+                    {item.tech && item.tech.length > 0 && (
                       <S.TechList>
                         <h4>Tecnologias</h4>
                         <ul>
@@ -57,12 +64,13 @@ export default function About() {
               </S.ExperiencesContainer>
             </div>
           </S.ContentColumn>
+          
           <S.ProfileCard>
             <S.ImageWrapper>
               <Image src="/img/two.jpg" alt='Thiago' fill style={{ objectFit: 'cover' }} priority placeholder="blur" blurDataURL={blurDataURL} />
             </S.ImageWrapper>
             <S.SocialWrapper>
-              {social.map((item, index) => {
+              {socialItems.map((item, index) => {
                 const IconComponent = item.icon;
                 return (
                   <Link key={index} href={item.link} target="_blank" title={item.name}>

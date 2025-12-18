@@ -1,4 +1,5 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled from 'styled-components';
+import { StatusProps, StructureRowProps } from '@/utils/types/component';
 
 export const Header = styled.div`
   display: flex;
@@ -29,7 +30,7 @@ export const ListContainer = styled.div`
   font-family: var(--font-poppins);
 `;
 
-export const WorkoutRowContainer = styled.div<{ $status: string }>`
+export const WorkoutRowContainer = styled.div<StatusProps>`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -42,7 +43,6 @@ export const WorkoutRowContainer = styled.div<{ $status: string }>`
   }
 `;
 
-// --- LINHA 1: Header ---
 export const HeaderRow = styled.div`
   display: flex;
   justify-content: space-between;
@@ -58,7 +58,6 @@ export const HeaderRow = styled.div`
   }
 `;
 
-// Onde fica o Dia e Modalidade + Título Amarelo
 export const TopInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -84,7 +83,6 @@ export const TopInfo = styled.div`
   }
 `;
 
-// --- LINHA 2: Body ---
 export const BodyRow = styled.div`
   width: 100%;
   padding-left: 1rem; 
@@ -101,7 +99,6 @@ export const BodyRow = styled.div`
   }
 `;
 
-// DateBox (Ajustado levemente)
 export const DateBox = styled.div<{ $status: string }>`
   display: flex;
   flex-direction: column;
@@ -125,7 +122,6 @@ export const DateBox = styled.div<{ $status: string }>`
   ${({ $status }) => $status === 'rest' && `opacity: 0.5;`}
 `;
 
-// MetaInfo (Mantido, mas ajustado para não encolher)
 export const MetaInfo = styled.div`
   display: flex;
   align-items: center;
@@ -157,23 +153,6 @@ export const IconBox = styled.div<{ $status: string }>`
     return theme.colors.primary;
   }};
 `;
-
-
-
-/* export const MetaInfo = styled.div`
-  display: flex;
-  flex-direction: column; 
-  align-items: flex-end; 
-  gap: 0.5rem;
-  
-  @media (max-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding-left: 4.5rem;
-  }
-`; */
 
 export const StatusTag = styled.div<{ $status: string }>`
   display: inline-flex;
@@ -209,7 +188,6 @@ export const StatusTag = styled.div<{ $status: string }>`
 
 export const ToggleButton = styled.button<{ $isOpen: boolean, $status: string }>`
   background: transparent;
-  /* border: 1px solid ${({ theme }) => theme.colors.text}20; */
   border: none;
   color: ${({ $status, theme }) => {
     switch ($status) {
@@ -365,7 +343,7 @@ export const StructureContainer = styled.div`
   }
 `;
 
-export const StructureRow = styled.div<{ $type: 'warmup' | 'main' | 'cooldown' }>`
+export const StructureRow = styled.div<StructureRowProps>`
   display: grid;
   grid-template-columns: 28px 1fr; 
   align-items: center;

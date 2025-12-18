@@ -1,17 +1,20 @@
 'use client';
 
-import { useState, useCallback } from 'react'; 
+import { useState, useCallback, JSX } from 'react'; 
 import { TrophyIcon, PlayCircleIcon, CheckCircleIcon, XCircleIcon, ClockIcon, GameControllerIcon, DesktopTowerIcon, WarningCircleIcon } from '@phosphor-icons/react';
 
 import { Container, Content } from '@/components/Container';
 import Tabs from '@/components/Tabs'; 
+
 import { games } from '@/utils/content/games';
 import { STATUS_LABELS, TABS_GAMES } from '@/utils/const/games';
 import { GAME_STATUS, PLATFORM_GAME } from '@/utils/enums';
+import { StatusIconProps, IGame } from '@/utils/types/games';
+import { PillStyle } from '@/utils/types/component';
 
 import * as S from './styles';
 
-const StatusIcon = ({ status }: { status: GAME_STATUS }) => {
+const StatusIcon = ({ status }: StatusIconProps): JSX.Element => {
   switch (status) {
     case GAME_STATUS.PLATINUM: return <TrophyIcon weight="fill" />;
     case GAME_STATUS.PLAYING: return <PlayCircleIcon weight="fill" />;
@@ -21,9 +24,9 @@ const StatusIcon = ({ status }: { status: GAME_STATUS }) => {
   }
 };
 
-export default function GamesList() {
+export default function GamesList(): JSX.Element {
   const [tab, setTab] = useState<PLATFORM_GAME>(PLATFORM_GAME.ALL);
-  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const [pillStyle, setPillStyle] = useState<PillStyle>({ left: 0, width: 0, opacity: 0 });
 
   const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
     if (node) {
@@ -35,7 +38,9 @@ export default function GamesList() {
     }
   }, [tab]);
 
-  const filteredGames = games.filter((game) => {
+  const gamesData = games as IGame[];
+
+  const filteredGames = gamesData.filter((game) => {
     if (tab === PLATFORM_GAME.ALL) return true;
     return game.type === tab;
   });
@@ -54,7 +59,11 @@ export default function GamesList() {
                 <S.MainInfo>
                   <S.GameDetails>
                     <strong>
-                      {game.type === PLATFORM_GAME.PS4 ? <GameControllerIcon size={18} weight="fill"/> : <DesktopTowerIcon size={18} weight="fill"/>}
+                      {game.type === PLATFORM_GAME.PS4 ? (
+                        <GameControllerIcon size={18} weight="fill"/>
+                      ) : (
+                        <DesktopTowerIcon size={18} weight="fill"/>
+                      )}
                       {game.name}
                     </strong>
                     <div className="metadata">
@@ -62,7 +71,7 @@ export default function GamesList() {
                       <span className="separator">•</span>
                       <span>{game.releaseYear}</span>
                     </div>
-                    {game.genres && (
+                    {game.genres && game.genres.length > 0 && (
                       <S.GenreList>
                         {game.genres.slice(0, 3).map(g => <span key={g}>{g}</span>)}
                       </S.GenreList>

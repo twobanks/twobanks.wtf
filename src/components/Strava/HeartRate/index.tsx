@@ -1,39 +1,22 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useMemo } from 'react';
-import * as S from './styles'
+import { JSX, useMemo } from 'react';
 import { formatTime } from '@/utils/functions/formatTime';
+import * as S from './styles';
+import { StreamProps, CalculatedZone } from '@/utils/types/component';
+import { ZONES_CONFIG } from '@/utils/const/component';
 
-interface DataPoint {
-  bpm: number;
-  [key: string]: any;
-}
-
-interface Props {
-  streamData: DataPoint[]; 
-}
-
-const ZONES_CONFIG = [
-  { label: 'Recuperação', min: 0, max: 133, color: '#94A3B8' }, // Z1 (Cinza)
-  { label: 'Resistência', min: 134, max: 166, color: '#3B82F6' }, // Z2 (Azul)
-  { label: 'Tempo', min: 167, max: 182, color: '#EAB308' }, // Z3 (Amarelo)
-  { label: 'Limite', min: 183, max: 199, color: '#F97316' }, // Z4 (Laranja)
-  { label: 'Anaeróbico', min: 200, max: 999, color: '#EF4444' } // Z5 (Vermelho)
-];
-
-export default function HeartRateZones({ streamData }: Props) {
-  const zonesData = useMemo(() => {
+export default function HeartRateZones({ streamData }: StreamProps): JSX.Element | null {
+  const zonesData = useMemo<CalculatedZone[]>(() => {
     if (!streamData || !Array.isArray(streamData) || streamData.length === 0) {
       return [];
     }
-    const validPoints = streamData.filter(p => p.bpm && p.bpm > 0);
+    const validPoints = streamData.filter(p => typeof p.bpm === 'number' && p.bpm > 0);
     const totalPoints = validPoints.length;
-
     if (totalPoints === 0) return [];
     const counts = [0, 0, 0, 0, 0];
     validPoints.forEach(point => {
-      const bpm = point.bpm;
+      const { bpm } = point;
       if (bpm <= ZONES_CONFIG[0].max) counts[0]++;
       else if (bpm <= ZONES_CONFIG[1].max) counts[1]++;
       else if (bpm <= ZONES_CONFIG[2].max) counts[2]++;
@@ -51,7 +34,6 @@ export default function HeartRateZones({ streamData }: Props) {
         percentage
       };
     }).reverse(); 
-
   }, [streamData]);
 
   if (zonesData.length === 0) return null;

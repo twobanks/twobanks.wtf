@@ -1,7 +1,8 @@
+import { HeaderStyleProps } from "@/utils/types/component";
 import Link from "next/link";
 import { css, styled } from "styled-components";
 
-export const HeaderContainer = styled.header<{ $isHome: boolean }>`
+export const HeaderContainer = styled.header<HeaderStyleProps>`
   position: fixed;
   top: 0;
   left: 0;
@@ -33,7 +34,7 @@ export const HeaderContainer = styled.header<{ $isHome: boolean }>`
   }
 `;
 
-export const LogoSection = styled(Link)<{ $isHome: boolean }>`
+export const LogoSection = styled(Link)<HeaderStyleProps>`
   display: ${({ $isHome }) => $isHome ? 'none' : 'flex'};
   align-items: center;
   gap: 0.8rem;

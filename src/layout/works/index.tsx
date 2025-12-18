@@ -3,14 +3,17 @@
 import Link from 'next/link';
 import { Container, Content } from '@/components/Container';
 import { works } from '@/utils/content/works';
+import { WorkItem } from '@/utils/types/works';
+
 import * as S from './styles';
 
 export default function Works() {
+  const worksData = works as WorkItem[];
   return (
     <Container size='lg'>
       <Content>
         <S.ListContainer>
-          {works.map((work, index) => {
+          {worksData.map((work, index) => {
             const { name, type, link, tech, company } = work;
             return (
               <S.ProjectRow key={index}>

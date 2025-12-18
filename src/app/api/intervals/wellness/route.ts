@@ -1,35 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getWellnessData } from '@/utils/lib/intervals';
-
-interface WellnessDayRaw {
-  id: string; 
-  sleepSecs: number;
-  sleepScore: number;
-  hrv?: number | null; 
-  restingHR: number;
-  atl: number;
-  atlLoad: number;
-  avgSleepingHR: number;
-  ctl: number;
-  ctlLoad: number;
-  steps: number;
-}
-
-interface FormattedWellnessData {
-  date: string;
-  fullDate: string;
-  sleepTime: string;
-  sleepHours: number;
-  sleepScore: number;
-  hrv: number | null;
-  restingHR: number;
-  atl: number;
-  atlLoad: number;
-  avgSleepingHR: number;
-  ctl: number;
-  ctlLoad: number;
-  steps: number;
-}
+import { WellnessDayRaw, FormattedWellnessData } from '@/utils/types/intervals';
 
 export async function GET() {
   const data = (await getWellnessData(6)) as WellnessDayRaw[] | null;

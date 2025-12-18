@@ -15,7 +15,7 @@ export const Header = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1.5rem;
-  height: 50px; /* Altura fixa para evitar pulos quando tooltip aparece */
+  height: 50px; 
 `;
 
 export const Title = styled.h3`
@@ -79,8 +79,8 @@ export const ChartArea = styled.div`
   align-items: flex-end;
   height: 200px;
   width: 100%;
-  gap: 1px; /* Espacinho entre as barras igual a imagem */
-  background: ${({ theme }) => theme.colors.text}02; /* Fundo muito sutil */
+  gap: 1px;
+  background: ${({ theme }) => theme.colors.text}02; 
   border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
 `;
 
@@ -100,11 +100,8 @@ export const BarWrapper = styled.div`
 export const Bar = styled.div<{ $height: number }>`
   width: 100%;
   height: ${({ $height }) => $height}%;
-  /* Azul claro similar ao da imagem do Strava */
   background: #87CEEB; 
-  /* Se quiser um gradiente sutil: */
   background: linear-gradient(to top, #38BDF8, #7DD3FC);
-  
   border-radius: 2px 2px 0 0;
   transition: height 0.5s ease-out;
 `;

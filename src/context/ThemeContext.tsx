@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, JSX, useSyncExternalStore } from 'react';
+import React, { createContext, useContext, useState, JSX, useSyncExternalStore } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { lightTheme, darkTheme } from '@/styles/themes';
 import { GlobalStyles } from '@/styles/global';
@@ -26,9 +26,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }): JSX.
     () => false     
   );
 
-  if (!isMounted) {
-    return null; 
-  }
+  if (!isMounted) { return null; }
 
   const toggleTheme = () => {
     setIsDarkMode((prev) => {

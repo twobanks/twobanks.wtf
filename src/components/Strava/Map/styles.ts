@@ -1,3 +1,4 @@
+import { TabButtonProps } from "@/utils/types/component";
 import styled from "styled-components";
 
 export const MapWrapper = styled.div`
@@ -25,7 +26,7 @@ export const Controls = styled.div`
   z-index: 10;
 `;
 
-export const ControlButton = styled.button<{ $active?: boolean }>`
+export const ControlButton = styled.button<TabButtonProps>`
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 8px;

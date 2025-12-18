@@ -1,31 +1,23 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-  CheckCircleIcon, XCircleIcon, ClockIcon, SneakerMoveIcon, 
-  MoonIcon, TrendUpIcon, TimerIcon, PersonSimpleRunIcon, 
-  FireIcon, SnowflakeIcon, CaretDownIcon 
-} from '@phosphor-icons/react';
-import * as S from './styles';
-import { IActivity } from '@/utils/types/strava';
-import { IntervalBlock, WorkoutDay } from '@/utils/types/plan';
+import { JSX, useState } from 'react';
+import { CheckCircleIcon, XCircleIcon, ClockIcon, PersonSimpleRunIcon, FireIcon, SnowflakeIcon, CaretDownIcon } from '@phosphor-icons/react';
+
+import { IntervalBlock } from '@/utils/types/plan';
 import { useActivityLaps } from '@/utils/hooks/useActivityLaps';
+import { WorkoutItemProps, DateObj } from '@/utils/types/component';
 import Laps from '../Laps';
-import HeartRateChart from '../HeartRate';
 
-interface CombinedWorkout extends WorkoutDay {
-  executed?: IActivity;
-  status: 'rest' | 'completed' | 'missed' | 'future';
-  treino?: boolean | null; 
-}
+import * as S from './styles';
 
-export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
+export const WorkoutItem = ({ day }: WorkoutItemProps): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): DateObj => {
     const date = new Date(dateString);
     const userTimezoneOffset = date.getTimezoneOffset() * 60000;
     const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
+    
     return {
       day: adjustedDate.getDate(),
       month: adjustedDate.toLocaleDateString('pt-BR', { month: 'short' }).toUpperCase().replace('.', '')
@@ -34,6 +26,12 @@ export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
 
   const { laps, fetchLaps, hasLoaded } = useActivityLaps(day.executed?.id);
 
+  const formattedLaps = laps?.map((lap) => ({
+    ...lap,
+    heartrate: typeof lap.heartrate === 'string' ? parseInt(lap.heartrate, 10) || undefined : lap.heartrate,
+    elevation: String(lap.elevation) 
+  }));
+
   const handleToggle = () => {
     if (!isOpen && !hasLoaded) {
       fetchLaps(); 
@@ -41,7 +39,7 @@ export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
     setIsOpen((prev) => !prev);
   };
 
-  const renderStructure = (blocks?: IntervalBlock[]) => {
+  const renderStructure = (blocks?: IntervalBlock[]): JSX.Element | null => {
     if (!blocks || blocks.length === 0) return null;
 
     return (
@@ -128,7 +126,7 @@ export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
           <S.StatusTag $status={day.status}>
             {day.status === 'completed' && (
                 <S.ToggleButton $status={day.status} onClick={handleToggle} $isOpen={isOpen} type="button">
-                  {<CheckCircleIcon weight="fill"/>} Feito
+                  <CheckCircleIcon weight="fill"/> Feito
                   <CaretDownIcon size={14} weight="bold" className="caret"/>
               </S.ToggleButton>
             )}
@@ -138,6 +136,7 @@ export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
           </S.StatusTag>
         </S.MetaInfo>
       </S.HeaderRow>
+
       {(day.treino !== null && day.tipo === 'Intervalado') && (
         <S.BodyRow>
           <h4>Treino proposto</h4>
@@ -146,14 +145,12 @@ export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
           )}
         </S.BodyRow>
       )}
+
       <S.AccordionContent $isOpen={isOpen}>
          {day.executed && (
           <>
             <h4>Treino executado</h4>
-            {/* {laps && laps.length > 0 && (
-                <HeartRateChart laps={laps} />
-            )} */}
-            <Laps laps={laps} />
+            <Laps laps={formattedLaps} />
           </>
          )}
       </S.AccordionContent>

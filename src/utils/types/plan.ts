@@ -38,3 +38,44 @@ export interface TrainingPlan {
   volumeSemanaKm: number;
   treinos: WorkoutDay[];
 }
+
+export type TipoBloco = 'Aquecimento' | 'Desaquecimento' | 'Intervalos' | 'Rodagem';
+export interface DetalhesIntervalo {
+  distanciaKm: number;
+  paceMinKm: string;
+  velocidadeKmH: string;
+}
+export interface BlocoEstrutura {
+  tipo: TipoBloco;
+  distanciaKm?: number; 
+  repeticoes?: number;  
+  corrida?: DetalhesIntervalo; 
+  descanso?: string;    
+}
+export interface TempoEstimado {
+  minimo: string;
+  maximo: string;
+}
+
+export interface TreinoDia {
+  dia: string;
+  data: string;
+  modalidade: string; 
+  tipo: string;       
+  distanciaKm: number;
+  terreno: string;
+  estrutura?: BlocoEstrutura[];
+  tempo?: TempoEstimado;
+  intensidade?: string;
+  descricao?: string;
+  treino?: boolean | null; 
+}
+export interface PlanoTreinoSemana {
+  atleta: string;
+  semana: {
+    inicio: string;
+    fim: string;
+  };
+  volumeSemanaKm: number;
+  treinos: TreinoDia[];
+}

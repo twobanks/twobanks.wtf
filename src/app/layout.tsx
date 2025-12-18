@@ -1,3 +1,4 @@
+import React from 'react';
 import type { Metadata } from 'next';
 import { Poppins, Sedgwick_Ave_Display } from 'next/font/google';
 
@@ -30,7 +31,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+interface RootLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-br">
       <body className={`${graffitiFont.className} ${poppins.variable}`} suppressHydrationWarning={true}>

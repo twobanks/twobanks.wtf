@@ -1,21 +1,14 @@
 'use client';
 
+import { JSX } from 'react';
 import { useTheme } from '@/context/ThemeContext';
+import { darkTheme } from '@/styles/themes'; 
+import * as S from './styles';
 
-import * as S from './styles'
-
-export default function StarBackground() {
+export default function StarBackground(): JSX.Element | null {
   const { isDarkMode } = useTheme();
-
-  let starsTheme = { small: '', medium: '', big: '' };
-  try {
-     // eslint-disable-next-line @typescript-eslint/no-require-imports
-     const { darkTheme } = require('@/styles/themes');
-     starsTheme = darkTheme.stars;
-  } catch (e) {}
-
+  const starsTheme = darkTheme?.stars || { small: '', medium: '', big: '' };
   if (!isDarkMode) return null;
-
   return (
     <S.StarWrapper>
       <S.StarLayer size={1} shadow={starsTheme.small} duration={40} delay={0} />

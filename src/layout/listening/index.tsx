@@ -2,20 +2,18 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { HeadphonesIcon, MicrophoneStageIcon, PlaylistIcon, PlayIcon } from '@phosphor-icons/react';
+import { PlayIcon } from '@phosphor-icons/react';
 import Image from 'next/image';
+
 import { Container, Content } from '@/components/Container';
-import { ListeningProps, PillStyle, TabType } from '@/utils/types/spotify';
-import * as S from './styles';
 import Tabs from '@/components/Tabs';
+
+import { ListeningProps, PillStyle, TabType } from '@/utils/types/spotify';
 import { blurDataURL } from '@/utils/functions/imageShimmer';
 import { formatDuration } from '@/utils/functions/formatDuration';
+import { TABS_LISTENING } from '@/utils/const/component';
 
-const TABS = [
-  { id: 'tracks', label: 'Top Músicas', icon: HeadphonesIcon },
-  { id: 'artists', label: 'Top Artistas', icon: MicrophoneStageIcon },
-  { id: 'playlists', label: 'Playlists', icon: PlaylistIcon },
-] as const;
+import * as S from './styles';
 
 export default function Listening({ initialTracks, initialArtists, initialPlaylists }: ListeningProps) {
   const topTracks = initialTracks;
@@ -40,9 +38,9 @@ export default function Listening({ initialTracks, initialArtists, initialPlayli
   };
 
   return (
-    <Container size='md'>
+    <Container size='lg'>
       <Content>
-        <Tabs pillStyle={pillStyle} activeTab={activeTab} activeTabRef={activeTabRef} setActiveTab={setActiveTab} dados={TABS} />
+        <Tabs pillStyle={pillStyle} activeTab={activeTab} activeTabRef={activeTabRef} setActiveTab={setActiveTab} dados={TABS_LISTENING} />
         {activeTab === 'tracks' && topTracks.length > 0 && (
           <S.TracksList animate="show">
             {topTracks.map((track, index) => (

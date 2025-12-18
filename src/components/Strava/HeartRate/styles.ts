@@ -1,6 +1,5 @@
 import styled from "styled-components";
-
-
+import { BarProps } from "@/utils/types/component";
 
 export const Container = styled.div`
   width: 100%;
@@ -26,7 +25,6 @@ export const Row = styled.div`
   
   @media (max-width: 600px) {
      grid-template-columns: 30px 1fr 60px;
-     /* Esconde colunas extras no mobile se necessário */
      & > *:nth-child(4), & > *:nth-child(6) { display: none; }
   }
 `;
@@ -46,7 +44,7 @@ export const BarContainer = styled.div`
   padding-left: 10px;
 `;
 
-export const Bar = styled.div<{ $width: number; $color: string }>`
+export const Bar = styled.div<BarProps>`
   height: 24px;
   width: ${({ $width }) => $width}%;
   border-radius: 0 4px 4px 0;

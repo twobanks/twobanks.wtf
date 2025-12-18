@@ -1,5 +1,6 @@
 'use client';
 import styled, { keyframes } from 'styled-components';
+import { SkeletonProps } from '@/utils/types/component';
 
 const shimmer = keyframes`
   0% {
@@ -10,19 +11,12 @@ const shimmer = keyframes`
   }
 `;
 
-interface SkeletonProps {
-  $width?: string;
-  $height?: string;
-  $radius?: string;
-  $marginTop?: string;
-}
-
 export const Skeleton = styled.div<SkeletonProps>`
-  background-color: #2a2a2a; /* Cor base do esqueleto (ajuste se seu fundo for mais claro/escuro) */
+  background-color: #2a2a2a; 
   background-image: linear-gradient(
     90deg,
     #2a2a2a 0%,
-    #383838 50%, /* Cor do brilho passando */
+    #383838 50%, 
     #2a2a2a 100%
   );
   background-size: 200% 100%;

@@ -3,11 +3,9 @@
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
-import * as S from './styles';
+import { MarkdownRendererProps } from '@/utils/types/component';
 
-interface MarkdownRendererProps {
-  content: string;
-}
+import * as S from './styles';
 
 export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (

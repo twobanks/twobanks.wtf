@@ -1,24 +1,16 @@
 'use client';
 
+import { JSX } from 'react';
 import { usePathname } from 'next/navigation';
 import ThemeToggle from '../ThemeToggle';
 import Navigation from '../Navigation';
 
-import * as S from './styles'
+import { pageNames } from '@/utils/const/component';
 
-const pageNames: Record<string, string> = {
-  '/sobre': 'sobre',
-  '/atividades': 'atividades',
-  '/ouvindo': 'ouvindo',
-  '/trampos': 'trampos',
-  '/fotos': 'fotos',
-  '/leituras': 'leituras',
-  '/viagens': 'viagens',
-  '/games': 'games',
-};
+import * as S from './styles';
 
-export default function Header() {
-  const pathname = usePathname();
+export default function Header(): JSX.Element {
+  const pathname = usePathname() || '/';
   const isHome = pathname === '/';
   const pageTitle = pageNames[pathname];
   return (
