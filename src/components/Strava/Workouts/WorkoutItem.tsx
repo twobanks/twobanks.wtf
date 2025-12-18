@@ -11,6 +11,7 @@ import { IActivity } from '@/utils/types/strava';
 import { IntervalBlock, WorkoutDay } from '@/utils/types/plan';
 import { useActivityLaps } from '@/utils/hooks/useActivityLaps';
 import Laps from '../Laps';
+import HeartRateChart from '../HeartRate';
 
 interface CombinedWorkout extends WorkoutDay {
   executed?: IActivity;
@@ -149,6 +150,9 @@ export const WorkoutItem = ({ day }: { day: CombinedWorkout }) => {
          {day.executed && (
           <>
             <h4>Treino executado</h4>
+            {/* {laps && laps.length > 0 && (
+                <HeartRateChart laps={laps} />
+            )} */}
             <Laps laps={laps} />
           </>
          )}

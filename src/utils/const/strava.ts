@@ -1,5 +1,5 @@
 import { TABS_ACTIVITIES, TABS_ACTIVITY, TABS_STATS, TABS_TYPE_ACTIVITIES } from '@/utils/enums';
-import { SneakerIcon, ChartLineUpIcon, ListNumbersIcon, PathIcon, ActivityIcon, SneakerMoveIcon, BicycleIcon, BarbellIcon } from '@phosphor-icons/react';
+import { SneakerIcon, ChartLineUpIcon, ListNumbersIcon, PathIcon, ActivityIcon, SneakerMoveIcon, BicycleIcon, BarbellIcon, HeartbeatIcon } from '@phosphor-icons/react';
 
 export const TABS = [
   { id: TABS_STATS.RECENT, label: '30 Dias', icon: undefined },
@@ -12,6 +12,7 @@ export const TABS_DETAIL = [
   { id: TABS_ACTIVITY.ELEVATION, label: 'Elevação', icon: ChartLineUpIcon },
   { id: TABS_ACTIVITY.LAPS, label: 'Voltas', icon: ListNumbersIcon },
   { id: TABS_ACTIVITY.SEGMENTS, label: 'Segmentos', icon: PathIcon },
+  { id: TABS_ACTIVITY.FC, label: 'Frequência Cardiaca', icon: HeartbeatIcon },
 ];
 
 export const TABS_DETAILS_ACTIVITIES = [

@@ -1,64 +1,68 @@
-import { NOW_PLAYING_ENDPOINT, TOKEN_ENDPOINT, TOP_TRACKS_ENDPOINT, TOP_ARTISTS_ENDPOINT, PLAYLIST_ENDPOINT } from '@/utils/const/spotify'
-
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN;
-
-const basic = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
-
-export const getAccessToken = async () => {
-  const response = await fetch(TOKEN_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${basic}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token!, 
-    }),
-    cache: 'no-store', 
-  });
-
-  return response.json();
-};
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { spotifyFetch } from '../functions/spotifyClient';
+import { Artist, DashboardData, Playlists, SpotifyArtistRaw, SpotifyPaging, SpotifyPlaylistRaw, SpotifyTrackRaw, TopTracks } from '../types/spotify';
 
 export const getNowPlaying = async () => {
-  const { access_token } = await getAccessToken();
-
-  return fetch(NOW_PLAYING_ENDPOINT, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
-    }
+  return spotifyFetch<any>('/me/player/currently-playing', {
+    next: { revalidate: 3600 }
   });
 };
 
-export const getTopTracks = async () => {
-  const { access_token } = await getAccessToken();
-
-  return fetch(TOP_TRACKS_ENDPOINT, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
-    }
+export const getTopTracks = async (): Promise<TopTracks[]> => {
+  const data = await spotifyFetch<SpotifyPaging<SpotifyTrackRaw>>('/me/top/tracks?limit=10&time_range=short_term', {
+    next: { revalidate: 3600 }
   });
+  return data.items.map((track) => ({
+    artist: track.artists.map((a) => a.name).join(', '),
+    url: track.external_urls.spotify,
+    music: track.name,
+    duration: track.duration_ms,
+    album: track.album, 
+    images: track.album.images[0]?.url || '', 
+  }));
 };
 
-export const getTopArtists = async () => {
-  const { access_token } = await getAccessToken();
-
-  return fetch(TOP_ARTISTS_ENDPOINT, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
-    }
+export const getTopArtists = async (): Promise<Artist[]> => {
+  const data = await spotifyFetch<SpotifyPaging<SpotifyArtistRaw>>('/me/top/artists?limit=10&time_range=short_term', {
+    next: { revalidate: 3600 }
   });
+
+  return data.items.map((artist) => ({
+    name: artist.name,
+    url: artist.external_urls.spotify,
+    genres: artist.genres.slice(0, 3),
+    images: artist.images, 
+  }));
 };
 
-export const getPlaylist = async () => {
-  const { access_token } = await getAccessToken();
-
-  return fetch(PLAYLIST_ENDPOINT, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
-    }
+export const getPlaylists = async (): Promise<Playlists[]> => {
+  const data = await spotifyFetch<SpotifyPaging<SpotifyPlaylistRaw>>('/me/playlists?limit=10', {
+    next: { revalidate: 3600 }
   });
+  return data.items.map((playlist) => ({
+    name: playlist.name,
+    url: playlist.external_urls.spotify,
+    images: playlist.images?.[0]?.url || '',
+    tracks: playlist.tracks, 
+    total: playlist.tracks.total,
+    owner: playlist.owner.display_name,
+  }));
+};
+
+export const getSpotifyDashboardData = async (): Promise<DashboardData> => {
+  try {
+    const [tracks, artists, playlists] = await Promise.all([
+      getTopTracks(),
+      getTopArtists(),
+      getPlaylists()
+    ]);
+    return {
+      tracks: tracks || [],
+      artists: artists || [],
+      playlists: playlists || []
+    };
+  } catch (error) {
+    console.error("Erro dashboard spotify:", error);
+    return { tracks: [], artists: [], playlists: [] };
+  }
 };

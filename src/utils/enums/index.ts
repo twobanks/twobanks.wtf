@@ -24,6 +24,7 @@ export enum TABS_ACTIVITY {
   ELEVATION = 'elevation',
   LAPS = 'laps',
   SEGMENTS = 'segments',
+  FC = 'fc'
 }
 
 export enum TABS_STATS {

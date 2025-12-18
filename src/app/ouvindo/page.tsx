@@ -1,14 +1,15 @@
-
 import Listening from "@/layout/listening";
+import { getSpotifyDashboardData } from "@/utils/lib/spotify";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: 'ouvindo', 
-  description: 'Conheça minha trajetória, skills e experiências.',
+  description: 'O que tenho escutado recentemente no Spotify.',
 };
 
-export default function Ouvindo() {
+export default async function OuvindoPage() {
+  const dashboardData = await getSpotifyDashboardData();
   return (
-    <Listening />
+    <Listening initialTracks={dashboardData.tracks} initialArtists={dashboardData.artists} initialPlaylists={dashboardData.playlists} />
   );
 }

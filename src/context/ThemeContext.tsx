@@ -1,28 +1,34 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, JSX, useSyncExternalStore } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 import { lightTheme, darkTheme } from '@/styles/themes';
 import { GlobalStyles } from '@/styles/global';
 
-type ThemeContextType = {
+interface ThemeContextType {
   isDarkMode: boolean;
   toggleTheme: () => void;
-};
+}
 
-const ThemeContext = createContext<ThemeContextType>({} as ThemeContextType);
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
+export const ThemeProvider = ({ children }: { children: React.ReactNode }): JSX.Element | null => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme');
+      return savedTheme === 'dark';
     }
-  }, []);
+    return false; 
+  });
+  const isMounted = useSyncExternalStore(
+    () => () => {}, 
+    () => true,     
+    () => false     
+  );
+
+  if (!isMounted) {
+    return null; 
+  }
 
   const toggleTheme = () => {
     setIsDarkMode((prev) => {
@@ -31,8 +37,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       return newMode;
     });
   };
+
   const theme = isDarkMode ? darkTheme : lightTheme;
-  if (!mounted) return null; 
+
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
       <StyledThemeProvider theme={theme}>
@@ -43,4 +50,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = (): ThemeContextType => {
+  const context = useContext(ThemeContext);
+  
+  if (!context) {
+    throw new Error('useTheme deve ser usado dentro de um ThemeProvider');
+  }
+  
+  return context;
+};

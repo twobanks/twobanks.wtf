@@ -1,7 +1,7 @@
 export const calculatePace = (speed: number) => {
-  if (!speed || speed === 0) return "-";
-  const secondsPerKm = 1000 / speed;
-  const minutes = Math.floor(secondsPerKm / 60);
-  const seconds = Math.round(secondsPerKm % 60);
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  if (!speed || speed === 0) return '-';
+  const paceDec = (1000 / speed) / 60;
+  const min = Math.floor(paceDec);
+  const sec = Math.round((paceDec - min) * 60);
+  return `${min}:${sec.toString().padStart(2, '0')}`;
 };

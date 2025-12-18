@@ -6,7 +6,7 @@ import { SneakerMoveIcon, BicycleIcon, TrendUpIcon, TimerIcon, HeartbeatIcon, Li
 import Tabs from '@/components/Tabs';
 import { StatsDashboardSkeleton } from '@/components/Skeleton/SkeletonStatsDashboard';
 
-import fetcher from '@/utils/lib/fetcher';
+import { fetcherStrava } from '@/utils/lib/fetcher';
 import { TABS_STATS } from '@/utils/enums';
 import { StatsResponse } from '@/utils/types/strava';
 import { TABS } from '@/utils/const/strava';
@@ -14,7 +14,7 @@ import { TABS } from '@/utils/const/strava';
 import * as S from './styles'
 
 export default function StatsDashboard() {
-  const { data, isLoading } = useSWR<StatsResponse>('/api/stats', fetcher);
+  const { data, isLoading } = useSWR<StatsResponse>('/api/strava/stats', fetcherStrava);
   
   const [tab, setTab] = useState<TABS_STATS>(TABS_STATS.RECENT);
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });

@@ -13,8 +13,7 @@ import Tabs from '@/components/Tabs';
 import { WellnessBarSkeleton } from '@/components/Skeleton/SkeletonWellnessBar';
 
 import * as S from './styles'
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import { fetcherStrava } from '@/utils/lib/fetcher';
 
 const formatDateLabel = (dateStr: string) => {
   const parts = dateStr.split('-');
@@ -22,7 +21,7 @@ const formatDateLabel = (dateStr: string) => {
 };
 
 export default function WellnessBar() {
-  const { data, isLoading } = useSWR('/api/wellness', fetcher);
+  const { data, isLoading } = useSWR('/api/intervals/wellness', fetcherStrava);
   
   const [activeTab, setActiveTab] = useState<string>('');
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });

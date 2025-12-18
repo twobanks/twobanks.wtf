@@ -105,3 +105,33 @@ export const TabContent = styled.div`
     border-radius: 4px;
   }
 `;
+
+export const SummaryBox = styled.div`
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: ${({ theme }) => theme.colors.text}05;
+  border-radius: 8px;
+font-family: var(--font-poppins);
+  div {
+    display: flex;
+    flex-direction: column;
+    span { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; }
+    strong { font-size: 1.2rem; color: ${({ theme }) => theme.colors.text}; }
+  }
+`;
+
+export const EmptyState = styled.div`
+  text-align: center;
+  padding: 3rem;
+  opacity: 0.5;
+`;
+
+export const FadeIn = styled.div`
+  animation: fadeIn 0.3s ease-in-out;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;

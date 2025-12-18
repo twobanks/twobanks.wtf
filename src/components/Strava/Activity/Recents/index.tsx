@@ -38,7 +38,9 @@ export default function Recent({ data = [], isLoading }: RecentProps) {
     }
   }, [tab]);
 
-  const filteredData = data?.filter((activity) => {
+  const safeData = Array.isArray(data) ? data : [];
+
+  const filteredData = safeData?.filter((activity) => {
     if (tab === 'all') return true;
     const currentTabConfig = TABS_DETAILS_ACTIVITIES.find(t => t.id === tab);
     return currentTabConfig?.types?.includes(activity.type);

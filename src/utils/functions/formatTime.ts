@@ -1,5 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const formatTime = (seconds: any) => {
-  if (!seconds || isNaN(seconds)) return "00:00:00";
-  return new Date(seconds * 1000).toISOString().substr(11, 8);
+export const formatTime = (seconds: number) => {
+  if (seconds === 0) return '0 s';
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  return `${m}:${s.toString().padStart(2, '0')}`;
 };

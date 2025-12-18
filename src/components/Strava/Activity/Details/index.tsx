@@ -10,12 +10,14 @@ import ActivityMap from '@/components/Strava/Map';
 import LapsTable from '@/components/Strava/Laps';
 import StatsList from '@/components/Strava/Stats/StatsList';
 import SegmentsTable from '@/components/Strava/Segments';
+import HeartRateZones from '@/components/Strava/HeartRate';
 import Tabs from '@/components/Tabs';
 import { TABS_ACTIVITY } from '@/utils/enums';
 import { TABS_DETAIL } from '@/utils/const/strava';
 import { ActivityProps } from '@/utils/types/strava';
 
 import * as S from './styles';
+import TrainingAnalysisChart from '../../TrainingAnalysisChart';
 
 const iconMap: any = {
   Run: <SneakerMoveIcon size={24} weight="fill" />,
@@ -30,6 +32,7 @@ export default function ActivityDetailContent({ activity }: ActivityProps) {
   const [hoveredCoord, setHoveredCoord] = useState<[number, number] | null>(null);
   const [activeTab, setActiveTab] = useState(TABS_ACTIVITY.STATS);
   const [pillStyle, setPillStyle] = useState({ left: 0, width: 0, opacity: 0 });
+
   const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
     if (node) {
       setPillStyle({
@@ -56,8 +59,14 @@ export default function ActivityDetailContent({ activity }: ActivityProps) {
             <S.TabContent>
               {activeTab === TABS_ACTIVITY.STATS && <StatsList activity={activity} />}
               {activeTab === TABS_ACTIVITY.ELEVATION && activity.elevationData && activity.elevationData.length > 0 && <ElevationChart data={activity.elevationData} onHover={setHoveredCoord} />}
-              {activeTab === TABS_ACTIVITY.LAPS && activity.laps && activity.laps.length > 0 && <LapsTable laps={activity.laps} />}
+              {activeTab === TABS_ACTIVITY.LAPS && activity.laps && activity.laps.length > 0 && (
+                <>
+                  <TrainingAnalysisChart laps={activity.laps} />
+                  <LapsTable laps={activity.laps} />
+                </>
+              )}
               {activeTab === TABS_ACTIVITY.SEGMENTS && activity.segments && activity.segments.length > 0 && <SegmentsTable segments={activity.segments} />}
+              {activeTab === TABS_ACTIVITY.FC && activity.elevationData && activity.elevationData.length > 0 && <HeartRateZones streamData={activity.elevationData} />}
             </S.TabContent>
           </S.LeftColumn>
           <S.MapColumn>
