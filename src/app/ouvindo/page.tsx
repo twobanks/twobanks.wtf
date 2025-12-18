@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Listening from "@/layout/listening";
 import { getSpotifyDashboardData } from "@/utils/lib/spotify";
 import { Metadata } from "next";
