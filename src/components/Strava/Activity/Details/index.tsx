@@ -5,7 +5,6 @@ import { useCallback, useState, ReactNode, JSX, useMemo } from 'react';
 import Link from 'next/link';
 import { ArrowLeftIcon, SneakerIcon, BicycleIcon, BarbellIcon, ActivityIcon, SneakerMoveIcon } from '@phosphor-icons/react';
 
-import { Container } from '@/components/Container'; 
 import ElevationChart from '@/components/Strava/Elevation';
 import ActivityMap from '@/components/Strava/Map';
 import LapsTable from '@/components/Strava/Laps';
@@ -14,6 +13,7 @@ import SegmentsTable from '@/components/Strava/Segments';
 import HeartRateZones from '@/components/Strava/HeartRate';
 import TrainingAnalysisChart from '@/components/Strava/TrainingAnalysisChart';
 import Tabs from '@/components/Tabs';
+import Container from '@/components/Container';
 
 import { TABS_ACTIVITY } from '@/utils/enums';
 import { TABS_DETAIL } from '@/utils/const/strava';
@@ -63,7 +63,7 @@ export default function ActivityDetailContent({ activity }: ActivityProps): JSX.
   }, [activity.elevationData]);
 
   return (
-    <Container size='lg'>
+    <Container name='atividades'>
       <S.ContentActivity>
         <S.LayoutGrid>
           <S.LeftColumn>

@@ -4,8 +4,8 @@ import { useCallback, useState, JSX } from 'react';
 import Image from 'next/image';
 import { BookOpenIcon, ClockIcon, CheckCircleIcon, WarningCircleIcon } from '@phosphor-icons/react';
 
-import { Container, Content } from '@/components/Container';
 import Tabs from '@/components/Tabs';
+import Container from '@/components/Container';
 
 import { books } from '@/utils/content/books';
 import { STATUS_LABELS, TABS_READING } from '@/utils/const/books';
@@ -37,52 +37,53 @@ export default function Readings(): JSX.Element {
   });
 
   return (
-    <Container size='lg'>
-      <Content>
+    <Container
+      name="leitura"
+      tabs={
         <Tabs pillStyle={pillStyle} activeTab={tab} activeTabRef={activeTabRef} setActiveTab={setTab} dados={TABS_READING} />
-        
-        {filteredBooks.length > 0 ? (
-          <S.ListContainer>
-            {filteredBooks.map((book) => (
-              <S.BookRow key={book.id} href={book.link} target="_blank">
-                <S.MainInfo>
-                  <S.BookCover>
-                    <Image 
-                      src={book.cover} 
-                      alt={book.title} 
-                      fill 
-                      sizes="80px" 
-                      style={{ objectFit: 'cover' }} 
-                    />
-                  </S.BookCover>
-                  <S.BookDetails>
-                    <strong>{book.title}</strong>
-                    {book.subtitle && <span className="subtitle">{book.subtitle}</span>}
-                    <span className="author">{book.author}</span>
-                  </S.BookDetails>
-                </S.MainInfo>
-                
-                <S.MetaInfo>
-                  <S.StatusTag $status={book.status}>
-                    {book.status === STATUS_BOOK.READ && <CheckCircleIcon weight="fill" />}
-                    {book.status === STATUS_BOOK.READING && <BookOpenIcon weight="fill" />}
-                    {book.status === STATUS_BOOK.TO_READ && <ClockIcon weight="fill" />}
-                    
-                    <span>{STATUS_LABELS[book.status] || book.status}</span>
-                  </S.StatusTag>
+      }
+    >
+      {filteredBooks.length > 0 ? (
+        <S.ListContainer>
+          {filteredBooks.map((book) => (
+            <S.BookRow key={book.id} href={book.link} target="_blank">
+              <S.MainInfo>
+                <S.BookCover>
+                  <Image 
+                    src={book.cover} 
+                    alt={book.title} 
+                    fill 
+                    sizes="80px" 
+                    style={{ objectFit: 'cover' }} 
+                  />
+                </S.BookCover>
+                <S.BookDetails>
+                  <strong>{book.title}</strong>
+                  {book.subtitle && <span className="subtitle">{book.subtitle}</span>}
+                  <span className="author">{book.author}</span>
+                </S.BookDetails>
+              </S.MainInfo>
+              
+              <S.MetaInfo>
+                <S.StatusTag $status={book.status}>
+                  {book.status === STATUS_BOOK.READ && <CheckCircleIcon weight="fill" />}
+                  {book.status === STATUS_BOOK.READING && <BookOpenIcon weight="fill" />}
+                  {book.status === STATUS_BOOK.TO_READ && <ClockIcon weight="fill" />}
                   
-                  {book.readIn && <span className="date">Lido em: {book.readIn}</span>}
-                </S.MetaInfo>
-              </S.BookRow>
-            ))}
-          </S.ListContainer>
-        ) : (
-          <S.Empty>
-            <WarningCircleIcon size={48} />
-            <p>Nenhum livro encontrado nesta categoria.</p>
-          </S.Empty>
-        )}
-      </Content>
+                  <span>{STATUS_LABELS[book.status] || book.status}</span>
+                </S.StatusTag>
+                
+                {book.readIn && <span className="date">Lido em: {book.readIn}</span>}
+              </S.MetaInfo>
+            </S.BookRow>
+          ))}
+        </S.ListContainer>
+      ) : (
+        <S.Empty>
+          <WarningCircleIcon size={48} />
+          <p>Nenhum livro encontrado nesta categoria.</p>
+        </S.Empty>
+      )}
     </Container>
   );
 }

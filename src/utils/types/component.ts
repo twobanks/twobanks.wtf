@@ -77,6 +77,7 @@ export interface HeaderStyleProps {
 // ESTILO CONTAINER
 export interface ContainerProps {
   size?: 'sm' | 'md' | 'lg' | 'full'; 
+  $hasTabs?: boolean;
 }
 
 // ESTILO SKELETON

@@ -4,7 +4,7 @@ import { BarProps } from "@/utils/types/component";
 export const Container = styled.div`
   width: 100%;
   margin-top: 2rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `;
 
 export const Table = styled.div`

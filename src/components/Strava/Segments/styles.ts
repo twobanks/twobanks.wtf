@@ -11,7 +11,7 @@ export const TableContainer = styled.div`
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 0.9rem;
   
   th, td {

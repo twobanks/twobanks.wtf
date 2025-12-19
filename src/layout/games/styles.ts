@@ -6,7 +6,7 @@ export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `;
 
 export const GameRow = styled(Link)`
@@ -90,7 +90,7 @@ export const GameDetails = styled.div`
     gap: .5rem;
     font-size: 1rem;
     color: ${({ theme }) => theme.colors.text};
-    font-family: var(--font-poppins);
+    font-family: var(--font-inter);
     line-height: 1.2;
   }
 

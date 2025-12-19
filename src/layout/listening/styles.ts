@@ -11,7 +11,7 @@ export const Section = styled.section`
 `;
 
 export const SectionTitle = styled.h2`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 1.5rem;
   color: ${({ theme }) => theme.colors.text};
   margin-bottom: 1.5rem;
@@ -36,7 +36,7 @@ export const Grid = styled.div<{ $type?: 'circle' | 'square' }>`
 `;
 
 export const CardItem = styled(Link)<{ $variant: 'artist' | 'playlist' }>`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -100,11 +100,10 @@ export const ActiveTabBackground = styled(motion.div)`
 `;
 
 export const TracksList = styled(motion.div)`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   display: flex;
   flex-direction: column;
   gap: 0; 
-  margin-top: 1rem;
 `;
 
 export const TrackCard = styled.div`
@@ -240,7 +239,7 @@ export const TabButton = styled.button<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-weight: 600;
   font-size: 0.9rem;
   z-index: 1; 
@@ -269,7 +268,7 @@ export const ArtistsList = styled.div`
 `;
 
 export const ArtistRow = styled.div`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   display: grid;
   grid-template-columns: auto 1fr auto auto; 
   align-items: center;
@@ -336,7 +335,7 @@ export const Genres = styled.div`
 `;
 
 export const PlaylistsList = styled.div`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   display: flex;
   flex-direction: column;
   gap: 0;

@@ -48,7 +48,7 @@ export const LeftColumn = styled.div`
 
 export const Header = styled.div`
   margin-bottom: 1rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   a {
     display: inline-flex;
     align-items: center;
@@ -62,7 +62,7 @@ export const Header = styled.div`
   }
 
   h1 {
-    font-family: var(--font-poppins);
+    font-family: var(--font-inter);
     font-size: 1.5rem;
     color: ${({ theme }) => theme.colors.titleMain};
     margin: 0;
@@ -113,7 +113,7 @@ export const SummaryBox = styled.div`
   padding: 1rem;
   background: ${({ theme }) => theme.colors.text}05;
   border-radius: 8px;
-font-family: var(--font-poppins);
+font-family: var(--font-inter);
   div {
     display: flex;
     flex-direction: column;

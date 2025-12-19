@@ -46,7 +46,7 @@ export const ProjectRow = styled.article`
   justify-content: space-between;
   padding: 1.5rem 1rem;
   
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
   background-color: transparent;
   

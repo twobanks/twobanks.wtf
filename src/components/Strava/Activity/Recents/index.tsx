@@ -4,7 +4,6 @@ import { useState, useCallback, ReactNode } from 'react';
 import { SneakerIcon, BicycleIcon, BarbellIcon, ActivityIcon, TimerIcon, CaretRightIcon, SneakerMoveIcon } from '@phosphor-icons/react';
 
 import Tabs from '@/components/Tabs';
-import { SkeletonRecent } from '@/components/Skeleton/SkeletonRecent';
 import { TABS_ACTIVITIES } from '@/utils/enums';
 import { TABS_DETAILS_ACTIVITIES } from '@/utils/const/strava';
 import { PillStyle, RecentProps } from '@/utils/types/component';
@@ -43,7 +42,7 @@ export default function Recent({ data = [], isLoading }: RecentProps) {
     return currentTabConfig?.types?.includes(activity.type);
   });
 
-  if (isLoading) return <SkeletonRecent />;
+  if (isLoading) return <>...loading</>;
 
   if (!data && !isLoading) return null; 
 

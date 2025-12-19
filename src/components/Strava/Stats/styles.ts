@@ -8,7 +8,7 @@ export const Container = styled.div`
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `;
 
 export const Header = styled.div`
@@ -22,7 +22,7 @@ export const Title = styled.h3`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 1.2rem;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
@@ -128,14 +128,14 @@ export const StatItem = styled.div`
     span {
       font-size: 0.95rem;
       font-weight: 500;
-      font-family: var(--font-poppins);
+      font-family: var(--font-inter);
     }
   }
 
   strong {
     font-size: 1.1rem;
     font-weight: 600;
-    font-family: var(--font-poppins);
+    font-family: var(--font-inter);
     color: ${({ theme }) => theme.colors.text};
     text-align: right;
   }

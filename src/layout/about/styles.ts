@@ -1,25 +1,12 @@
 import styled from "styled-components";
 
-export const LayoutGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 500px; 
-  gap: 4rem;
-  align-items: start;
-  @media (max-width: 900px) {
-    display: flex;
-    flex-direction: column-reverse;
-    gap: 2rem;
-  }
-`;
-
 export const ContentColumn = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4rem;
 `;
 
 export const BioContainer = styled.div`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   p {
     margin-bottom: 1.5rem;
     line-height: 1.8;
@@ -37,55 +24,9 @@ export const BioContainer = styled.div`
   }
 `;
 
-export const ProfileCard = styled.aside`
-  background-color: ${({ theme }) => theme.title === 'dark' ? '#212024' : '#fff'};
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  border: 1px solid ${({ theme }) => theme.colors.text}10;
-
-  position: sticky;
-  top: 120px;
-  
-  @media (max-width: 900px) {
-    position: static;
-    width: 100%;
-    max-width: 400px;
-    align-self: center;
-  }
-`;
-
-export const ImageWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-  img { 
-    object-fit: cover; 
-    transition: transform 0.5s ease; 
-  }
-  &:hover img { 
-    transform: scale(1.05); 
-  }
-`;
-
-export const SocialWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  a {
-    color: ${({ theme }) => theme.colors.text}70; 
-    transition: color 0.2s;
-    &:hover {
-      color: ${({ theme }) => theme.colors.titleMain};
-    }
-  }
-`;
 
 export const SectionTitle = styled.h2`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 2rem;
   color: ${({ theme }) => theme.colors.titleMain};
   margin-bottom: 1rem;
@@ -101,7 +42,7 @@ export const ExperiencesContainer = styled.div`
 export const ExperienceItem = styled.div`
   display: flex;
   flex-direction: column;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   padding-bottom: 2rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
   

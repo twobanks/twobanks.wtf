@@ -2,12 +2,12 @@
 
 import { useState, useCallback } from 'react';
 
-import { Container, Content } from '@/components/Container';
 import WellnessBar from '@/components/Strava/WellnessBar';
 import StatsDashboard from '@/components/Strava/Stats/StatsDashboard';
 import Recent from '@/components/Strava/Activity/Recents';
 import WeeklyWorkouts from '@/components/Strava/Workouts/WorkoutsWeekly';
 import Tabs from '@/components/Tabs';
+import Container from '@/components/Container';
 
 import { TABS_ACTIVITIES_PAGE } from '@/utils/const/strava';
 import { TABS_TYPE_ACTIVITIES } from '@/utils/enums';
@@ -29,20 +29,20 @@ export default function Activities({ activities }: ActivitiesProps) {
   }, []); 
 
   return (
-    <Container size='lg'>
-      <Content>
-        <S.WrapperTabs>
-          <Tabs  pillStyle={pillStyle}  activeTab={activeTab}  activeTabRef={activeTabRef}  setActiveTab={setActiveTab}  dados={TABS_ACTIVITIES_PAGE} />
-        </S.WrapperTabs>
-        {activeTab === TABS_TYPE_ACTIVITIES.STATS && (
-          <S.StatsContent>
-            <WellnessBar />
-            <StatsDashboard />
-          </S.StatsContent>
-        )}
-        {activeTab === TABS_TYPE_ACTIVITIES.RECENT && <Recent data={activities} isLoading={false} />}
-        {activeTab === TABS_TYPE_ACTIVITIES.TRAININGS && <WeeklyWorkouts activities={activities} />}
-      </Content>
+    <Container
+      name='atividades'
+      tabs={
+        <Tabs  pillStyle={pillStyle}  activeTab={activeTab}  activeTabRef={activeTabRef}  setActiveTab={setActiveTab}  dados={TABS_ACTIVITIES_PAGE} />
+      }  
+    >
+      {activeTab === TABS_TYPE_ACTIVITIES.STATS && (
+        <S.StatsContent>
+          <WellnessBar />
+          <StatsDashboard />
+        </S.StatsContent>
+      )}
+      {activeTab === TABS_TYPE_ACTIVITIES.RECENT && <Recent data={activities} isLoading={false} />}
+      {activeTab === TABS_TYPE_ACTIVITIES.TRAININGS && <WeeklyWorkouts activities={activities} />}
     </Container>
   );
 }

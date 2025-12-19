@@ -51,7 +51,7 @@ export const TabButton = styled.button<TabButtonProps>`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-weight: 600;
   font-size: 0.9rem;
   z-index: 1; 

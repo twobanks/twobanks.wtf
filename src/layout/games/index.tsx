@@ -3,8 +3,8 @@
 import { useState, useCallback, JSX } from 'react'; 
 import { TrophyIcon, PlayCircleIcon, CheckCircleIcon, XCircleIcon, ClockIcon, GameControllerIcon, DesktopTowerIcon, WarningCircleIcon } from '@phosphor-icons/react';
 
-import { Container, Content } from '@/components/Container';
 import Tabs from '@/components/Tabs'; 
+import Container from '@/components/Container';
 
 import { games } from '@/utils/content/games';
 import { STATUS_LABELS, TABS_GAMES } from '@/utils/const/games';
@@ -46,55 +46,54 @@ export default function GamesList(): JSX.Element {
   });
 
   return (
-    <Container size='lg'>
-      <Content>
-        <div style={{ marginBottom: '2rem' }}>
-          <Tabs pillStyle={pillStyle} activeTab={tab} activeTabRef={activeTabRef} setActiveTab={setTab} dados={TABS_GAMES} />
-        </div>
-
-        {filteredGames.length > 0 ? (
-          <S.ListContainer>
-            {filteredGames.map((game, index) => (
-              <S.GameRow key={index} href={game.link} target="_blank">
-                <S.MainInfo>
-                  <S.GameDetails>
-                    <strong>
-                      {game.type === PLATFORM_GAME.PS4 ? (
-                        <GameControllerIcon size={18} weight="fill"/>
-                      ) : (
-                        <DesktopTowerIcon size={18} weight="fill"/>
-                      )}
-                      {game.name}
-                    </strong>
-                    <div className="metadata">
-                      <span>{game.developer}</span>
-                      <span className="separator">•</span>
-                      <span>{game.releaseYear}</span>
-                    </div>
-                    {game.genres && game.genres.length > 0 && (
-                      <S.GenreList>
-                        {game.genres.slice(0, 3).map(g => <span key={g}>{g}</span>)}
-                      </S.GenreList>
+    <Container
+      name='games'
+      tabs={
+        <Tabs pillStyle={pillStyle} activeTab={tab} activeTabRef={activeTabRef} setActiveTab={setTab} dados={TABS_GAMES} />
+      }
+    >
+      {filteredGames.length > 0 ? (
+        <S.ListContainer>
+          {filteredGames.map((game, index) => (
+            <S.GameRow key={index} href={game.link} target="_blank">
+              <S.MainInfo>
+                <S.GameDetails>
+                  <strong>
+                    {game.type === PLATFORM_GAME.PS4 ? (
+                      <GameControllerIcon size={18} weight="fill"/>
+                    ) : (
+                      <DesktopTowerIcon size={18} weight="fill"/>
                     )}
-                  </S.GameDetails>
-                </S.MainInfo>
+                    {game.name}
+                  </strong>
+                  <div className="metadata">
+                    <span>{game.developer}</span>
+                    <span className="separator">•</span>
+                    <span>{game.releaseYear}</span>
+                  </div>
+                  {game.genres && game.genres.length > 0 && (
+                    <S.GenreList>
+                      {game.genres.slice(0, 3).map(g => <span key={g}>{g}</span>)}
+                    </S.GenreList>
+                  )}
+                </S.GameDetails>
+              </S.MainInfo>
 
-                <S.MetaInfo>
-                  <S.StatusTag $status={game.status}>
-                    <StatusIcon status={game.status} />
-                    <span>{STATUS_LABELS[game.status]}</span>
-                  </S.StatusTag>
-                </S.MetaInfo>
-              </S.GameRow>
-            ))}
-          </S.ListContainer>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.6 }}>
-            <WarningCircleIcon size={48} style={{ marginBottom: '1rem', display: 'inline-block' }}/>
-            <p>Nenhum jogo encontrado nesta plataforma.</p>
-          </div>
-        )}
-      </Content>
+              <S.MetaInfo>
+                <S.StatusTag $status={game.status}>
+                  <StatusIcon status={game.status} />
+                  <span>{STATUS_LABELS[game.status]}</span>
+                </S.StatusTag>
+              </S.MetaInfo>
+            </S.GameRow>
+          ))}
+        </S.ListContainer>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '4rem 0', opacity: 0.6 }}>
+          <WarningCircleIcon size={48} style={{ marginBottom: '1rem', display: 'inline-block' }}/>
+          <p>Nenhum jogo encontrado nesta plataforma.</p>
+        </div>
+      )}
     </Container>
   );
 }

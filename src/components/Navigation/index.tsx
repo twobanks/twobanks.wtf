@@ -2,19 +2,18 @@
 
 import { useEffect, useState, JSX, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from 'next/image' 
+import Link from 'next/link'; 
 import { usePathname } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { CommandIcon, XIcon } from '@phosphor-icons/react';
+import { ListIcon, XIcon } from '@phosphor-icons/react';
 
 import { menuLinks } from '@/utils/content/start';
 import { social } from '@/utils/content/about';
-import { blurDataURL } from '@/utils/functions/imageShimmer';
-import { SocialItem } from '@/utils/types/component';
-import { backdropVariants, drawerVariants, itemVariants } from '@/utils/const/component';
+import { backdropVariants, drawerVariants } from '@/utils/const/component';
 
 import * as S from './styles';
+import { blurDataURL } from '@/utils/functions/imageShimmer';
 
 function useMounted() {
   return useSyncExternalStore(
@@ -44,50 +43,87 @@ export default function Navigation(): JSX.Element {
   }, [isOpen]);
 
   const portalContainer = isMounted && typeof document !== 'undefined' ? document.body : null;
+
+  const renderNavItems = () => (
+    <>
+      {menuLinks.map((item) => {
+        const isActive = pathname === item.link;
+        const Icon = item.icon; 
+        return (
+          <S.NavItem key={item.link} onMouseEnter={() => setHoveredPath(item.link)}onMouseLeave={() => setHoveredPath(null)}>
+            {hoveredPath === item.link && (
+              <S.HoverHighlight layoutId="nav-highlight" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+            )}
+            <S.MenuLink onClick={() => setIsOpen(false)} href={item.link} $isActive={isActive}>
+              <Icon size={18} weight={isActive ? 'fill' : 'regular'} />
+              <span>{item.name}</span>
+            </S.MenuLink>
+          </S.NavItem>
+        );
+      })}
+    </>
+  );
+
+  const renderSocials = () => (
+    <S.SocialGrid>
+      {social.map((item, index) => {
+        const IconComponent = item.icon;
+        return (
+          <Link key={index} href={item.link} target="_blank" title={item.name}>
+             <IconComponent size={18} weight="regular" />
+          </Link>
+        );
+      })}
+    </S.SocialGrid>
+  );
+
   return (
     <>
-      <S.MenuButton onClick={toggleMenu} aria-label="Abrir Menu">
-        <CommandIcon size={22} weight="bold" />
-      </S.MenuButton>
+      <S.SidebarContainer>
+        <S.SidebarContent>
+          <S.SidebarHeader>
+            {/* <S.ProfileImageWrapper>
+              <Image 
+                src="/img/twobanks.webp" 
+                alt="twobanks" 
+                width={50} 
+                height={50} 
+                placeholder="blur" 
+                blurDataURL={blurDataURL} 
+              />
+            </S.ProfileImageWrapper> */}
+            <S.LogoText>
+              <span>{'{'}</span> twobanks <span>{'}'}</span>
+            </S.LogoText>
+          </S.SidebarHeader>
+          <S.SidebarNav onMouseLeave={() => setHoveredPath(null)}>
+            {renderNavItems()}
+          </S.SidebarNav>
+          <S.SidebarFooter>
+            {renderSocials()}
+          </S.SidebarFooter>
+        </S.SidebarContent>
+      </S.SidebarContainer>
+      <S.MobileMenuButton onClick={toggleMenu} aria-label="Abrir Menu">
+        <ListIcon size={32} weight="bold" />
+      </S.MobileMenuButton>
       {portalContainer && createPortal(
         <AnimatePresence>
           {isOpen && (
             <>
               <S.Backdrop key="backdrop" initial="closed" animate="open" exit="closed" variants={backdropVariants} onClick={toggleMenu} />
               <S.DrawerContainer key="drawer" initial="closed" animate="open" exit="closed" variants={drawerVariants}>
-                <S.HeaderDrawer>
-                  <S.LogoLink>
-                    <Image src="/img/twobanks.webp" alt="Personagem BERA" width={40} height={40} priority style={{ width: '100%', height: 'auto' }} placeholder="blur" blurDataURL={blurDataURL} />
-                  </S.LogoLink>
-                  <S.CloseButton onClick={toggleMenu}>
-                    <XIcon size={22} />
-                  </S.CloseButton>
-                </S.HeaderDrawer>
-                <S.DrawerContent>
-                  <S.NavList onMouseLeave={() => setHoveredPath(null)}>
-                    {menuLinks.map((item, index) => (
-                      <S.NavItem key={item.link} variants={itemVariants} onMouseEnter={() => setHoveredPath(item.link)}>
-                        {hoveredPath === item.link && (
-                          <S.HoverHighlight layoutId="nav-highlight" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
-                        )}
-                        <S.MenuLink onClick={toggleMenu} href={item.link} $isActive={pathname === item.link}>
-                          <span>{String(index + 1).padStart(2, '0')}</span>
-                          <strong>{item.name}</strong>
-                        </S.MenuLink>
-                      </S.NavItem>
-                    ))}
-                  </S.NavList>
-                  <S.SocialWrapper>
-                    {social.map((item: SocialItem, index: number) => {
-                      const IconComponent = item.icon;
-                      return (
-                        <Link key={index} href={item.link} target="_blank" title={item.name}>
-                          <IconComponent size={24} weight="regular" />
-                        </Link>
-                      );
-                    })}
-                  </S.SocialWrapper>
-                </S.DrawerContent>
+                <S.DrawerHeader>
+                  <S.MobileMenuButton onClick={toggleMenu}>
+                    <XIcon size={32} />
+                  </S.MobileMenuButton>
+                </S.DrawerHeader>
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {renderNavItems()}
+                </nav>
+                <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+                  {renderSocials()}
+                </div>
               </S.DrawerContainer>
             </>
           )}

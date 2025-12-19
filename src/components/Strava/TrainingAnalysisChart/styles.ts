@@ -7,7 +7,7 @@ export const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.text}10;
   border-radius: 12px;
   padding: 1.5rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `;
 
 export const Header = styled.div`

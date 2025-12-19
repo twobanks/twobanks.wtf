@@ -6,8 +6,7 @@ export const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  font-family: var(--font-poppins);
-  margin-top: 2rem;
+  font-family: var(--font-inter);
 `;
 
 export const BookRow = styled(Link)`
@@ -145,5 +144,5 @@ export const Empty = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 6rem 0;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `

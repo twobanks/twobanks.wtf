@@ -4,7 +4,7 @@ import { StatusProps, StructureRowProps } from '@/utils/types/component';
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   strong {
     color: ${({ theme }) => theme.colors.menuHover};
     font-size: 1rem;
@@ -12,7 +12,7 @@ export const Header = styled.div`
 `;
 
 export const Container = styled.div`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'};
   display: flex;
   flex-direction: column;
@@ -27,7 +27,7 @@ export const ListContainer = styled.div`
   flex-direction: column;
   width: 100%;
   gap: 8px; 
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `;
 
 export const WorkoutRowContainer = styled.div<StatusProps>`

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styled from 'styled-components';
 
 export const StyledParagraph = styled.p`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   margin-bottom: 1.5rem;
   line-height: 1.6;
   font-size: 1.1rem;
@@ -10,7 +10,7 @@ export const StyledParagraph = styled.p`
 `;
 
 export const StyledStrong = styled.strong`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   color: ${({ theme }) => theme.colors.primary};
   font-weight: 700;
   cursor: help;
@@ -22,7 +22,7 @@ export const StyledStrong = styled.strong`
 `;
 
 export const StyledSpan = styled.span`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 0.9em;
   opacity: 0.8;
   font-style: italic;
@@ -30,7 +30,7 @@ export const StyledSpan = styled.span`
 `;
 
 export const StyledLink = styled(Link)`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   color: ${({ theme }) => theme.colors.primary};
   text-decoration: underline;
   font-weight: 600;

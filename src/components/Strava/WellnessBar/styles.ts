@@ -7,7 +7,7 @@ export const ListContainer = styled.div`
   border-radius: 16px;
   padding: 1rem;
   margin-bottom: 2rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
 `;
 
 export const StatsList = styled.div`
@@ -48,7 +48,7 @@ export const ListItem = styled.div`
       font-size: 0.9rem;
       color: ${({ theme }) => theme.colors.text};
       opacity: 0.8;
-      font-family: var(--font-poppins);
+      font-family: var(--font-inter);
     }
   }
 
@@ -66,6 +66,6 @@ export const ListItem = styled.div`
     font-size: 1rem;
     font-weight: 600;
     color: ${({ theme }) => theme.colors.text};
-    font-family: var(--font-poppins);
+    font-family: var(--font-inter);
   }
 `;

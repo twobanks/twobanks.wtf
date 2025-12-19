@@ -1,11 +1,10 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { Poppins, Sedgwick_Ave_Display } from 'next/font/google';
+import { Poppins, Sedgwick_Ave_Display, Inter } from 'next/font/google';
 
 import { ThemeProvider } from '@/context/ThemeContext';
-import StarBackground from '@/components/StarBackground';
-import Header from '@/components/Header';
 
+import Navigation from '@/components/Navigation';
 import StyledComponentsRegistry from '@/utils/lib/registry';
 
 const graffitiFont = Sedgwick_Ave_Display({
@@ -14,10 +13,10 @@ const graffitiFont = Sedgwick_Ave_Display({
   variable: '--font-graffiti',
 });
 
-const poppins = Poppins({
+const inter = Inter({
   weight: ['400', '500', '600'], 
   subsets: ['latin'],
-  variable: '--font-poppins',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -38,11 +37,10 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-br">
-      <body className={`${graffitiFont.className} ${poppins.variable}`} suppressHydrationWarning={true}>
+      <body className={`${graffitiFont.className} ${inter.variable}`} suppressHydrationWarning={true}>
         <StyledComponentsRegistry>
           <ThemeProvider>
-            <StarBackground /> 
-            <Header />
+            <Navigation />
             {children}
           </ThemeProvider>
         </StyledComponentsRegistry>

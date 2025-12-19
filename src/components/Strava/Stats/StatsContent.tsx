@@ -1,21 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useCallback, useState } from 'react';
-import useSWR from 'swr';
 import { SneakerMoveIcon, BicycleIcon, TrendUpIcon, TimerIcon, HeartbeatIcon, LightningIcon } from '@phosphor-icons/react';
 
 import Tabs from '@/components/Tabs';
 
-import { fetcherStrava } from '@/utils/lib/fetcher';
 import { TABS_STATS } from '@/utils/enums';
 import { TABS } from '@/utils/const/strava';
-import { PillStyle, StatsResponse } from '@/utils/types/component';
+import { PillStyle } from '@/utils/types/component';
 
 import * as S from './styles';
 
-export default function StatsDashboard() {
-  const { data, isLoading } = useSWR<StatsResponse>('/api/strava/stats', fetcherStrava);
-    const [tab, setTab] = useState<TABS_STATS>(TABS_STATS.RECENT);
+export default function StatsContent({ stats } : { stats: any; }) {
+  const [tab, setTab] = useState<TABS_STATS>(TABS_STATS.RECENT);
   const [pillStyle, setPillStyle] = useState<PillStyle>({ left: 0, width: 0, opacity: 0 });
 
   const activeTabRef = useCallback((node: HTMLButtonElement | null) => {
@@ -28,11 +26,12 @@ export default function StatsDashboard() {
     }
   }, []); 
 
-  if (isLoading || !data) return <>...loading</>;
-
-  const stats = data.volume[tab];
-  const physio = data.physiology;
+  if (!stats || !stats.volume) return <>...loading</>;
+  const statsValue = stats.volume[tab];
+  const physio = stats.physiology || {};
   const zone2 = physio.zones && physio.zones[1] ? `${physio.zones[1].min}-${physio.zones[1].max}` : '-';
+  if (!statsValue) return null;
+
   return (
     <S.Container>
       <S.Header>
@@ -48,23 +47,23 @@ export default function StatsDashboard() {
             </div>
             <div>
               <strong>Corrida</strong>
-              <span>{stats.run.count} atividades</span>
+              <span>{statsValue.run.count} atividades</span>
             </div>
           </S.Category>
           <S.Numbers>
-            <div className="main-stat">{stats.run.distance} km</div>
+            <div className="main-stat">{statsValue.run.distance} km</div>
             <div className="sub-stats">
               <div title="Ganho de Elevação">
-                <TrendUpIcon size={14} /> {stats.run.elevation}m
+                <TrendUpIcon size={14} /> {statsValue.run.elevation}m
               </div>
               <div title="Horas Totais">
-                <TimerIcon size={14} /> {stats.run.time}h
+                <TimerIcon size={14} /> {statsValue.run.time}h
               </div>
             </div>
           </S.Numbers>
         </S.StatRow>
 
-        {stats.ride && (
+        {statsValue.ride && (
           <S.StatRow>
             <S.Category>
               <div className="icon-box">
@@ -72,14 +71,14 @@ export default function StatsDashboard() {
               </div>
               <div>
                 <strong>Ciclismo</strong>
-                <span>{stats.ride.count} atividades</span>
+                <span>{statsValue.ride.count} atividades</span>
               </div>
             </S.Category>
             <S.Numbers>
-              <div className="main-stat">{stats.ride.distance} km</div>
+              <div className="main-stat">{statsValue.ride.distance} km</div>
               <div className="sub-stats">
-                <div><TrendUpIcon size={14} /> {stats.ride.elevation}m</div>
-                <div><TimerIcon size={14} /> {stats.ride.time}h</div>
+                <div><TrendUpIcon size={14} /> {statsValue.ride.elevation}m</div>
+                <div><TimerIcon size={14} /> {statsValue.ride.time}h</div>
               </div>
             </S.Numbers>
           </S.StatRow>

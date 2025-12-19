@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 
 export const ChartContainer = styled.div`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   width: 100%;
   height: 300px; 
   background: ${({ theme }) => theme.title === 'dark' ? '#121212' : '#ffffff'};

@@ -9,8 +9,8 @@ export const Switch = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   position: relative; 
   overflow: hidden;
   transition: all 0.3s ease;

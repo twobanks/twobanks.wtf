@@ -1,29 +1,23 @@
-'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { JSX } from "react";
+import ThemeToggle from "../ThemeToggle";
 
-import styled from 'styled-components';
-import { sizes } from '@/utils/const/component';
-import { ContainerProps } from '@/utils/types/component';
+import * as S from './styles'
 
-export const Container = styled.div<ContainerProps>`
-  width: 100%;
-  max-width: ${({ size = 'md' }) => sizes[size]}; 
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 100vh;
-  padding: 10rem 2rem 4rem 2rem; 
-  position: relative;
-  z-index: 1;
-`;
-
-export const Content = styled.div`
-  width: 100%; 
-  padding: 2rem;
-  background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.8)'};
-  backdrop-filter: blur(100px); 
-  border: 1px solid ${({ theme }) => theme.title === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0,0,0,0.05)'};
-  border-radius: 20px;
-`;
+export default function Container({ name, children, tabs }: { name: string; children: any; tabs?: any; } ): JSX.Element {
+  console.log("tabs", Boolean(tabs));
+  return (
+   <S.Container>
+      <S.Content>
+        <S.ContentHeader $hasTabs={Boolean(tabs)}>
+          {tabs}
+          <div className="title_theme">
+            <h2>{name}</h2>
+            <ThemeToggle />
+          </div>
+        </S.ContentHeader>
+        <S.ContentBody>{children}</S.ContentBody>
+      </S.Content>
+   </S.Container>
+  )
+}

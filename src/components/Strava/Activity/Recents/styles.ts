@@ -35,7 +35,7 @@ export const Title = styled.h3`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   font-size: 1.2rem;
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
@@ -44,7 +44,7 @@ export const Title = styled.h3`
 `;
 
 export const ListContainer = styled.div`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'};
   display: flex;
   flex-direction: column;

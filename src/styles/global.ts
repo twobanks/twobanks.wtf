@@ -39,7 +39,7 @@ export const GlobalStyles = createGlobalStyle`
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
     transition: background-color 0.4s ease, color 0.4s ease;
-    font-family: var(--font-poppins);
+    font-family: var(--font-inter);
     background-attachment: fixed; 
   }
 `;

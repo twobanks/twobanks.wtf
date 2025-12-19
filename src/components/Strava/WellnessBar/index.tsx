@@ -10,7 +10,6 @@ import {
 } from '@phosphor-icons/react';
 
 import Tabs from '@/components/Tabs';
-import { WellnessBarSkeleton } from '@/components/Skeleton/SkeletonWellnessBar';
 import { fetcherStrava } from '@/utils/lib/fetcher';
 
 import * as S from './styles';
@@ -36,7 +35,7 @@ export default function WellnessBar() {
     }
   }, []);
 
-  if (isLoading || !data) return <WellnessBarSkeleton />;
+  if (isLoading || !data) return <>...loading</>;
   const tabsData = data.map((item) => ({
     id: item.fullDate,
     label: formatDateLabel(item.fullDate),

@@ -6,13 +6,7 @@ export const MainContainer = styled.main`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh; 
-  width: 100vw;
-  box-sizing: border-box; 
-  padding: 2rem;
-  overflow: hidden; 
-  position: relative;
-  z-index: 1;
+  height: 100%; 
   gap: 1rem;
 `;
 
@@ -20,6 +14,10 @@ export const ImageWrapper = styled.div`
   width: 100%;
   max-width: 180px;
   height: auto;
+  opacity: .4;
+  &:hover {
+    opacity: 1;
+  }
 `;
 
 export const Title = styled.h1`
@@ -53,7 +51,7 @@ export const NavMenu = styled.nav`
 `;
 
 export const NavItem = styled(Link)`
-  font-family: var(--font-poppins);
+  font-family: var(--font-inter);
   display: flex;
   align-items: center;
   gap: 0.5rem;

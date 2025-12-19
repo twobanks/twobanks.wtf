@@ -13,7 +13,7 @@ export const StyledTable = styled.table`
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-family: var(--font-poppins, sans-serif);
+  font-family: var(--font-inter, sans-serif);
   font-size: 0.85rem;
 
   thead {
