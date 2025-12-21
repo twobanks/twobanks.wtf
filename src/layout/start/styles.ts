@@ -21,17 +21,13 @@ export const ImageWrapper = styled.div`
 `;
 
 export const Title = styled.h1`
-  font-family: var(--font-graffiti);
-  font-size: 8rem;
-  font-weight: 900;
+  font-family: var(--font-pixo);
+  font-size: 15rem;
+  font-weight: 400;
   color: ${({ theme }) => theme.colors.titleMain};
   transition: color 0.4s ease, text-shadow 0.4s ease;
-  margin: 0;    
-  line-height: 0.7;
-  letter-spacing: -4px; 
-  text-transform: lowercase; 
-  text-align: center;
-  text-shadow: 2px 2px 0px #000, 0px 0px 20px ${({ theme }) => theme.colors.titleShadow};
+  letter-spacing: 4px; 
+  opacity: .5;
   @media (max-width: 600px) {
     font-size: 6rem;
   }

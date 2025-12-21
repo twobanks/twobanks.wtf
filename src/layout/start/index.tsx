@@ -9,10 +9,7 @@ export default function Start() {
   return (
     <Container name=''>
       <S.MainContainer>
-        <S.ImageWrapper>
-          <Image src="/img/twobanks.webp" alt="Personagem BERA" width={300} height={300} priority style={{ width: '100%', height: 'auto' }} />
-        </S.ImageWrapper>
-        <S.Title>twobanks</S.Title>
+        <S.Title>2banks</S.Title>
       </S.MainContainer>
     </Container>
   );

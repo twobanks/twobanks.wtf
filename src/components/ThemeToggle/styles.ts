@@ -2,15 +2,15 @@ import styled from "styled-components";
 import { IconWrapperProps } from "@/utils/types/component";
 
 export const Switch = styled.button`
-  background: transparent;
+  background-color: transparent;
   cursor: pointer;
   border: none;
   outline: none;  
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
   position: relative; 
   overflow: hidden;
   transition: all 0.3s ease;

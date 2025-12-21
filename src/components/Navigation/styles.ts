@@ -47,26 +47,33 @@ export const SidebarContent = styled.div`
 export const SidebarHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: .5rem;
   padding: 1rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.colors.text}10;
+  font-family: var(--font-pixo);
+  font-size: 4rem;
+  letter-spacing: 4px;
+  font-weight: 400;
+  span {
+    color: ${({ theme }) => theme.title === 'dark' ? '#FFF' : '#000'};
+    font-size: 4rem;
+    height: 2rem;
+  }
 `;
 
 export const ProfileImageWrapper = styled.div``;
 
 export const LogoText = styled.h2`
-  font-family: var(--font-inter) !important;
-  font-size: 2rem;
+  font-family: var(--font-pixo);
+  font-size: 3.5rem;
+  letter-spacing: 4px;
+  font-weight: 400;
   color: ${({ theme }) => theme.colors.titleMain};
   transition: color 0.4s ease, text-shadow 0.4s ease;
   margin: 0;    
-  letter-spacing: -3px;
   text-align: center;
-  span {
-    color: ${({ theme }) => theme.title === 'dark' ? '#FFF' : '#000'};
-    font-size: 2rem;
-  }
+  
 `;
 
 export const SidebarNav = styled.nav`
@@ -109,7 +116,7 @@ export const HoverHighlight = styled(motion.div)`
 export const MenuLink = styled(Link)<MenuLinkProps>`
   font-family: var(--font-inter);
   font-size: 1rem;
-  font-weight: 400;
+  font-weight: 200;
   text-decoration: none;
   color: ${({ theme, $isActive }) => $isActive ? theme.colors.titleMain : theme.colors.text};
   display: flex;

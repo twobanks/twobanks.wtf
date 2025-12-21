@@ -82,19 +82,9 @@ export default function Navigation(): JSX.Element {
       <S.SidebarContainer>
         <S.SidebarContent>
           <S.SidebarHeader>
-            {/* <S.ProfileImageWrapper>
-              <Image 
-                src="/img/twobanks.webp" 
-                alt="twobanks" 
-                width={50} 
-                height={50} 
-                placeholder="blur" 
-                blurDataURL={blurDataURL} 
-              />
-            </S.ProfileImageWrapper> */}
-            <S.LogoText>
-              <span>{'{'}</span> twobanks <span>{'}'}</span>
-            </S.LogoText>
+            <span>*</span>
+            <S.LogoText>2banks</S.LogoText>
+            <span>*</span>
           </S.SidebarHeader>
           <S.SidebarNav onMouseLeave={() => setHoveredPath(null)}>
             {renderNavItems()}

@@ -35,15 +35,16 @@ export const ContentHeader = styled.div<ContainerProps>`
   padding: 1rem; 
   background: transparent; 
   z-index: 10;
-  font-family: var(--font-inter);
   border-bottom: 1px solid #12121210;
   display: flex;
   justify-content: ${({ $hasTabs }) => $hasTabs ? 'space-between' : 'flex-end'};
-  h2 { margin: 0; }
+  h2 { margin: 0; font-weight: 400; }
   .title_theme {
+    font-family: var(--font-pixo);
+    font-size: 2.3rem;
+    letter-spacing: 4px;
     display: flex;
-    gap: 1rem;
-    align-items: center;
+    align-items: flex-end;
     justify-content: flex-end;
   }
 `;

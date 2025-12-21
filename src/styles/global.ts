@@ -40,6 +40,7 @@ export const GlobalStyles = createGlobalStyle`
     color: ${({ theme }) => theme.colors.text};
     transition: background-color 0.4s ease, color 0.4s ease;
     font-family: var(--font-inter);
+    font-weight: 200;
     background-attachment: fixed; 
   }
 `;
