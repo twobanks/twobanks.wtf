@@ -57,14 +57,14 @@ export const SidebarHeader = styled.div`
   font-weight: 400;
   span {
     color: ${({ theme }) => theme.title === 'dark' ? '#FFF' : '#000'};
-    font-size: 4rem;
     height: 2rem;
+    font-size: 4.5rem;
   }
 `;
 
 export const ProfileImageWrapper = styled.div``;
 
-export const LogoText = styled.h2`
+export const LogoText = styled(Link)`
   font-family: var(--font-pixo);
   font-size: 3.5rem;
   letter-spacing: 4px;

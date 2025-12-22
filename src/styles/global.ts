@@ -2,7 +2,8 @@ import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
   * {
-    box-sizing: border-box; 
+    box-sizing: border-box;
+    font-weight: 200;
   }
   html, body {
     margin: 0;
@@ -39,8 +40,6 @@ export const GlobalStyles = createGlobalStyle`
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.text};
     transition: background-color 0.4s ease, color 0.4s ease;
-    font-family: var(--font-inter);
-    font-weight: 200;
     background-attachment: fixed; 
   }
 `;

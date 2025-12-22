@@ -13,7 +13,6 @@ import { social } from '@/utils/content/about';
 import { backdropVariants, drawerVariants } from '@/utils/const/component';
 
 import * as S from './styles';
-import { blurDataURL } from '@/utils/functions/imageShimmer';
 
 function useMounted() {
   return useSyncExternalStore(
@@ -83,7 +82,7 @@ export default function Navigation(): JSX.Element {
         <S.SidebarContent>
           <S.SidebarHeader>
             <span>*</span>
-            <S.LogoText>2banks</S.LogoText>
+            <S.LogoText href="/">2banks</S.LogoText>
             <span>*</span>
           </S.SidebarHeader>
           <S.SidebarNav onMouseLeave={() => setHoveredPath(null)}>

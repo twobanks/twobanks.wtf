@@ -1,10 +1,10 @@
+
 import React from 'react';
 import type { Metadata } from 'next';
 import { Sedgwick_Ave_Display, Inter } from 'next/font/google';
 
 import { ThemeProvider } from '@/context/ThemeContext';
 
-import Navigation from '@/components/Navigation';
 import StyledComponentsRegistry from '@/utils/lib/registry';
 import localFont from 'next/font/local';
 
@@ -47,7 +47,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body className={`${graffitiFont.className} ${inter.variable} ${pixo.variable}`} suppressHydrationWarning={true}>
         <StyledComponentsRegistry>
           <ThemeProvider>
-            <Navigation />
+            {/* <Navigation /> */}
             {children}
           </ThemeProvider>
         </StyledComponentsRegistry>

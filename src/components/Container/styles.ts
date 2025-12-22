@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { ContainerProps } from '@/utils/types/component';
 
-
 export const Container = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
@@ -13,8 +12,8 @@ export const Container = styled.div<ContainerProps>`
   position: relative;
   z-index: 1;
   @media (min-width: 768px) {
-    padding-left: 300px; 
-  }
+    padding-left: ${({ $isHome }) => $isHome ? '0' : '300px'}; 
+  } 
 `;
 
 export const Content = styled.div`
@@ -35,14 +34,17 @@ export const ContentHeader = styled.div<ContainerProps>`
   padding: 1rem; 
   background: transparent; 
   z-index: 10;
-  border-bottom: 1px solid #12121210;
+  border-bottom: ${({ $isHome }) => $isHome ? '0' : '1px'} solid #12121210;
   display: flex;
   justify-content: ${({ $hasTabs }) => $hasTabs ? 'space-between' : 'flex-end'};
-  h2 { margin: 0; font-weight: 400; }
-  .title_theme {
+  h3 { 
+    margin: 0; 
     font-family: var(--font-pixo);
-    font-size: 2.3rem;
+    font-weight: 400;
+    font-size: 3rem;
     letter-spacing: 4px;
+  }
+  .title_theme {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
@@ -52,7 +54,8 @@ export const ContentHeader = styled.div<ContainerProps>`
 export const ContentBody = styled.div`
   flex: 1; 
   overflow-y: auto; 
-  padding: 2rem; 
+  padding: 2rem 4rem; 
+  
   
   &::-webkit-scrollbar {
     width: 6px;

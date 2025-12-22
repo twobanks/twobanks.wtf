@@ -9,10 +9,10 @@ export const TabContainer = styled.div`
   overflow-x: auto;        
   width: fit-content;
   -webkit-overflow-scrolling: touch;
-  
+  height: 50px;
   background: ${({ theme }) => theme.title === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
   padding: 0.3rem;
-  border-radius: 10px;
+  border-radius: 5px;
   &::-webkit-scrollbar {
     display: none;
   }
