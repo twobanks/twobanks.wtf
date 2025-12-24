@@ -2,7 +2,6 @@
 
 import { useEffect, useState, JSX, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
-import Image from 'next/image' 
 import Link from 'next/link'; 
 import { usePathname } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
@@ -13,6 +12,8 @@ import { social } from '@/utils/content/about';
 import { backdropVariants, drawerVariants } from '@/utils/const/component';
 
 import * as S from './styles';
+import { TwoBanksLogo } from '../TwoBanks';
+import { Logo } from '../TwoBanks/styles';
 
 function useMounted() {
   return useSyncExternalStore(
@@ -82,7 +83,7 @@ export default function Navigation(): JSX.Element {
         <S.SidebarContent>
           <S.SidebarHeader>
             <span>*</span>
-            <S.LogoText href="/">2banks</S.LogoText>
+            <Logo width={70} />
             <span>*</span>
           </S.SidebarHeader>
           <S.SidebarNav onMouseLeave={() => setHoveredPath(null)}>

@@ -37,6 +37,9 @@ export const SidebarHeader = styled.div`
     font-size: 10rem;
     height: 3rem;
   }
+  svg {
+    color: ${({ theme }) => theme.colors.menuHover};
+  }
 `;
 
 export const NavMenu = styled.nav`

@@ -60,6 +60,9 @@ export const SidebarHeader = styled.div`
     height: 2rem;
     font-size: 4.5rem;
   }
+  svg {
+    color: ${({ theme }) => theme.colors.menuHover};
+  }
 `;
 
 export const ProfileImageWrapper = styled.div``;

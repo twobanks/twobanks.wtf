@@ -4,6 +4,7 @@ import Container from '@/components/Container';
 import * as S from './styles';
 import { menuLinks } from '@/utils/content/start';
 import { useState } from 'react';
+import { Logo } from '@/components/TwoBanks/styles';
 
 export default function Start() {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Start() {
       <S.MainContainer>
         <S.SidebarHeader>
           <span>*</span>
-          <S.Title>2banks</S.Title>
+          <Logo width={300} />
           <span>*</span>
         </S.SidebarHeader>
         <S.NavContainer>
