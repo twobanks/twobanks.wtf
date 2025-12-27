@@ -8,6 +8,7 @@ import * as S from './styles'
 import useSWR from 'swr';
 import { NowPlayingSong } from '@/types/spotify';
 import fetcher from '@/utils/lib/fetcher';
+import { imageLoader } from '@/utils/functions/imageLoader';
 
 const Header = ({ page = 'home' }: { page?: Pages; }) => {
   const { data, isLoading } = useSWR<NowPlayingSong>('/api/listening-now', fetcher);
@@ -15,8 +16,8 @@ const Header = ({ page = 'home' }: { page?: Pages; }) => {
     <S.Header $page={page}>
       <S.Container>
         <div className='content'>
-          <Link href={`/`} passHref prefetch={false} title='o pai!' className='twobanks_avatar'>
-            <Image src={images.webp} alt='twobanks, o pai!' fill priority />
+          <Link href={`/`} passHref prefetch={false} title='o pai!'>
+            <Image src={images.webp} alt='twobanks, o pai!' quality={100} priority width={70} height={80} loader={imageLoader} />
           </Link>
           <S.Title>
             <Title text={conversionTitlePage(page)} page={page} />
