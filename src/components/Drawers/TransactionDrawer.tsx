@@ -1,45 +1,57 @@
-'use client';
+"use client"
 
+import { createExpense } from "@/actions/expenses";
+import { updateTransaction } from "@/actions/wallet";
 import {
   Drawer,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer';
-import { FloatingAlert } from '@/components/ui/floating-alert';
-import { TransactionDrawerProps } from '@/utils/types';
-import { useState } from 'react';
-
-
+} from "@/components/ui/drawer";
+import { FloatingAlert } from "@/components/ui/floating-alert";
+import { useDrawer } from "@/contexts/DrawerContext";
+import type { Transaction, TransactionDrawerProps } from "@/utils/types";
+import { useState } from "react";
 
 export function TransactionDrawer({
   categories,
   accounts,
-  createTransactionAction,
-}: TransactionDrawerProps) {
-  const [open, setOpen] = useState(false);
+  transaction,
+  onSuccess,
+}: TransactionDrawerProps & { transaction?: Transaction; onSuccess?: () => void }) {
+  const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [floatingAlert, setFloatingAlert] = useState<{
-    type: 'success' | 'error';
+    type: "success" | "error";
     message: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const open = activeDrawer === "transaction";
+
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
     try {
-      await createTransactionAction(formData);
-      setOpen(false);
+      if (transaction) {
+        formData.append("id", String(transaction.id));
+        await updateTransaction(formData);
+      } else {
+        formData.append("isRecurring", isRecurring ? "on" : "off");
+        await createExpense(formData);
+      }
+      closeDrawer();
       setFloatingAlert({
-        type: 'success',
-        message: 'Transação adicionada com sucesso!',
+        type: "success",
+        message: transaction ? "Transação atualizada!" : "Despesa criada!",
       });
+      onSuccess?.();
     } catch (error) {
-      console.error('Erro ao adicionar transação:', error);
+      console.error("Erro ao salvar despesa:", error);
       setFloatingAlert({
-        type: 'error',
-        message: 'Não foi possível adicionar a transação. Tente novamente.',
+        type: "error",
+        message: "Não foi possível salvar a despesa.",
       });
     } finally {
       setIsSubmitting(false);
@@ -48,25 +60,34 @@ export function TransactionDrawer({
 
   return (
     <>
-      <Drawer open={open} onOpenChange={setOpen} swipeDirection="right">
-        <DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
-          + Adicionar Transação
-        </DrawerTrigger>
+      <button
+        type="button"
+        onClick={() => {
+          setIsRecurring(false);
+          setType("expense");
+          openDrawer("transaction");
+        }}
+        className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+      >
+        {transaction ? "Editar" : "+ Adicionar Transação"}
+      </button>
+
+      <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) closeDrawer(); }} swipeDirection="right">
         <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
             <DrawerTitle className="text-xl font-semibold text-gray-100">
-              Nova Transação
+              {transaction ? "Editar Transação" : "Nova Despesa"}
             </DrawerTitle>
             <DrawerDescription className="text-sm text-gray-400 mb-4">
-              Preencha os dados da transação
+              {transaction ? "Atualize os dados da transação" : "Preencha os dados da despesa"}
             </DrawerDescription>
           </DrawerHeader>
 
           <form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Campos do formulário – mantidos iguais */}
             <input
               name="description"
               placeholder="Descrição"
+              defaultValue={transaction?.description}
               required
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -75,25 +96,31 @@ export function TransactionDrawer({
               type="number"
               step="0.01"
               placeholder="Valor"
+              defaultValue={transaction?.amount}
               required
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <select
               name="type"
+              value={type}
+              onChange={(e) => setType(e.target.value as any)}
               required
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="expense">Despesa</option>
               <option value="income">Receita</option>
+              <option value="transfer">Transferência</option>
             </select>
             <input
               name="date"
               type="date"
+              defaultValue={transaction?.date ?? new Date().toISOString().split("T")[0]}
               required
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <select
               name="categoryId"
+              defaultValue={transaction?.categoryId ?? ""}
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Sem categoria</option>
@@ -105,6 +132,7 @@ export function TransactionDrawer({
             </select>
             <select
               name="accountId"
+              defaultValue={transaction?.accountId ?? ""}
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Sem conta</option>
@@ -114,18 +142,52 @@ export function TransactionDrawer({
                 </option>
               ))}
             </select>
+
+            {!transaction && type === "expense" && (
+              <>
+                <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={isRecurring}
+                    onChange={(e) => setIsRecurring(e.target.checked)}
+                    className="rounded border-gray-700 bg-gray-800"
+                  />
+                  Despesa recorrente
+                </label>
+                {isRecurring && (
+                  <input
+                    name="dueDay"
+                    type="number"
+                    min="1"
+                    max="31"
+                    placeholder="Dia do vencimento"
+                    required
+                    className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              </>
+            )}
+
+            <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                name="paid"
+                defaultChecked={transaction?.paid ?? true}
+                className="rounded border-gray-700 bg-gray-800"
+              />
+              Pago
+            </label>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
             >
-              {isSubmitting ? 'Salvando...' : 'Salvar Transação'}
+              {isSubmitting ? "Salvando..." : "Salvar"}
             </button>
           </form>
         </DrawerContent>
       </Drawer>
 
-      {/* Alerta flutuante fora do Drawer */}
       {floatingAlert && (
         <FloatingAlert
           type={floatingAlert.type}

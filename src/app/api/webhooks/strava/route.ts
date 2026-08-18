@@ -1,6 +1,6 @@
 // src/app/api/webhooks/strava/route.ts
-import { db } from "@/db"
-import { stravaWorkouts } from "@/db/schema"
+import { db } from "@/database"
+import { stravaWorkouts } from "@/database/schema"
 import { NextResponse } from "next/server"
 
 const VERIFY_TOKEN = process.env.STRAVA_WEBHOOK_VERIFY_TOKEN || "meu_token_secreto_123"

@@ -1,5 +1,5 @@
-import { db } from "@/db"
-import { users } from "@/db/schema"
+import { db } from "@/database"
+import { users } from "@/database/schema"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"

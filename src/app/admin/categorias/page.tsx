@@ -1,0 +1,53 @@
+import { deleteCategory } from "@/actions/categories"
+import { auth } from "@/auth"
+import { CategoryDrawer } from "@/components/Drawers/CategoryDrawer"
+import { db } from "@/database"
+import { categories } from "@/database/schema"
+import { eq } from "drizzle-orm"
+import { redirect } from "next/navigation"
+
+export default async function CategoriasPage() {
+  const session = await auth()
+  if (!session?.user) redirect("/login")
+  const userId = session.user.id
+
+  const categorias = await db.query.categories.findMany({
+    where: eq(categories.userId, userId),
+    orderBy: (c, { asc }) => [asc(c.name)],
+  })
+
+  return (
+    <main className="min-h-screen bg-black text-gray-100 p-6 md:p-10">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Categorias</h1>
+          <CategoryDrawer />
+        </div>
+
+        <div className="grid gap-3">
+          {categorias.length === 0 && (
+            <p className="text-gray-500">Nenhuma categoria cadastrada.</p>
+          )}
+          {categorias.map((cat) => (
+            <div
+              key={cat.id}
+              className="bg-gray-900 p-4 rounded-xl border border-gray-800 flex justify-between items-center"
+            >
+              <div>
+                <p className="font-medium">{cat.name}</p>
+                <span className="text-sm text-gray-400">{cat.type}</span>
+              </div>
+              <div className="flex gap-2">
+                <CategoryDrawer category={cat} />
+                <form action={deleteCategory}>
+                  <input type="hidden" name="id" value={cat.id} />
+                  <button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
+                </form>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  )
+}

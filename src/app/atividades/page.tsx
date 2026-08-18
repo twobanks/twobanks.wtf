@@ -1,15 +1,15 @@
 // src/app/atividades/page.tsx
 import AtividadesFooter from "@/components/AtividadesFooter"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
-import { db } from "@/db"
-import { gear, stravaWorkouts } from "@/db/schema"
+import { db } from "@/database"
+import { gear, stravaWorkouts } from "@/database/schema"
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/utils/mocks"
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm"
 import Link from "next/link"

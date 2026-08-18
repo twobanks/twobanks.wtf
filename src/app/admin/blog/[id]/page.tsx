@@ -1,6 +1,6 @@
 import { updatePost } from "@/actions/blog"
-import { db } from "@/db"
-import { posts } from "@/db/schema"
+import { db } from "@/database"
+import { posts } from "@/database/schema"
 import { eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 

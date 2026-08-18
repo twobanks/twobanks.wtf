@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm"
+import { InferSelectModel, relations } from "drizzle-orm"
 import {
   boolean,
   date,
@@ -10,7 +10,8 @@ import {
   primaryKey,
   serial,
   text,
-  timestamp
+  timestamp,
+  uniqueIndex
 } from "drizzle-orm/pg-core"
 import { AdapterAccount } from "next-auth/adapters"
 
@@ -183,7 +184,7 @@ export const accountTypeEnum = pgEnum('account_type', [
 // Categorias (ex: Alimentação, Moradia, Lazer)
 export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(), // vincula ao usuário do NextAuth
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }), // vincula ao usuário do NextAuth
   name: text('name').notNull(),
   type: transactionTypeEnum('type').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
@@ -192,7 +193,7 @@ export const categories = pgTable('categories', {
 // Contas (carteiras, bancos, corretoras)
 export const financialAccounts = pgTable('financial_accounts', {
   id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
   type: accountTypeEnum('type').notNull(),
   initialBalance: numeric('initial_balance').default('0'),
@@ -202,21 +203,21 @@ export const financialAccounts = pgTable('financial_accounts', {
 // Transações genéricas (receitas, despesas, transferências)
 export const transactions = pgTable('transactions', {
   id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   description: text('description').notNull(),
   amount: numeric('amount').notNull(),
   type: transactionTypeEnum('type').notNull(),
   date: date('date').notNull(),
   categoryId: integer('category_id').references(() => categories.id),
   accountId: integer('account_id').references(() => financialAccounts.id),
-  paid: boolean('paid').default(true),
+  paid: boolean('paid').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });
 
 // Cartões de crédito
 export const creditCards = pgTable('credit_cards', {
   id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   name: text('name').notNull(), // Nubank, XP, etc.
   brand: text('brand'), // Visa, Master...
   creditLimit: numeric('credit_limit'),
@@ -228,7 +229,7 @@ export const creditCards = pgTable('credit_cards', {
 // Compras no cartão de crédito
 export const purchases = pgTable('purchases', {
   id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   creditCardId: integer('credit_card_id').references(() => creditCards.id),
   description: text('description').notNull(),
   totalAmount: numeric('total_amount').notNull(),
@@ -247,7 +248,7 @@ export const installments = pgTable('installments', {
   number: integer('number').notNull(), // 1, 2, 3...
   amount: numeric('amount').notNull(),
   dueDate: date('due_date').notNull(),
-  paid: boolean('paid').default(false),
+  paid: boolean('paid').notNull().default(false),
   paidAt: timestamp('paid_at'),
 });
 
@@ -293,5 +294,142 @@ export const installmentsRelations = relations(installments, ({ one }) => ({
   purchase: one(purchases, {
     fields: [installments.purchaseId],
     references: [purchases.id],
+  }),
+}));
+
+export const listTypeEnum = pgEnum("list_type", [
+  "supermercado",
+  "varejao",
+  "acougue",
+]);
+
+export const shoppingLists = pgTable("shopping_lists", {
+  id: serial('id').primaryKey(),
+  name: text("name").notNull(),
+  type: listTypeEnum("type").notNull(),
+  userId: text("user_id").notNull(), // ID do usuário vindo do Auth.js
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const shoppingItems = pgTable("shopping_items", {
+  id: serial('id').primaryKey(),
+  listId: serial("list_id")
+    .notNull()
+    .references(() => shoppingLists.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  quantity: integer("quantity").default(1),
+  unit: text("unit"),
+  checked: boolean("checked").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ShoppingList = InferSelectModel<typeof shoppingLists>;
+export type ShoppingItem = InferSelectModel<typeof shoppingItems>;
+
+// Tipo combinado para lista com itens
+export type ShoppingListWithItems = ShoppingList & {
+  items: ShoppingItem[];
+};
+
+// Tabela de despesas recorrentes
+export const recurringExpenses = pgTable("recurring_expenses", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  amount: numeric("amount").notNull(),
+  categoryId: integer("category_id").references(() => categories.id),
+  accountId: integer("account_id").references(() => financialAccounts.id),
+  dueDay: integer("due_day").notNull(), // dia do vencimento (1-31)
+  frequency: text("frequency").notNull().default("monthly"), // por enquanto só mensal
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Log de geração mensal para evitar duplicatas
+export const recurringPaymentLogs = pgTable("recurring_payment_logs", {
+  id: serial("id").primaryKey(),
+  recurringExpenseId: integer("recurring_expense_id")
+    .notNull()
+    .references(() => recurringExpenses.id, { onDelete: "cascade" }),
+  month: text("month").notNull(), // formato "YYYY-MM"
+  transactionId: integer("transaction_id")
+    .notNull()
+    .references(() => transactions.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueCombination: uniqueIndex("unique_recurring_month").on(table.recurringExpenseId, table.month),
+}));
+
+export const recurringExpensesRelations = relations(recurringExpenses, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [recurringExpenses.categoryId],
+    references: [categories.id],
+  }),
+  account: one(financialAccounts, {
+    fields: [recurringExpenses.accountId],
+    references: [financialAccounts.id],
+  }),
+  logs: many(recurringPaymentLogs),
+}));
+
+export const recurringPaymentLogsRelations = relations(recurringPaymentLogs, ({ one }) => ({
+  recurringExpense: one(recurringExpenses, {
+    fields: [recurringPaymentLogs.recurringExpenseId],
+    references: [recurringExpenses.id],
+  }),
+  transaction: one(transactions, {
+    fields: [recurringPaymentLogs.transactionId],
+    references: [transactions.id],
+  }),
+}));
+
+// Ativos de investimento
+export const assets = pgTable("assets", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  ticker: text("ticker"),
+  type: text("type").notNull().default("stock"), // stock, fii, crypto, fixed_income, other
+  currentPrice: numeric("current_price"),
+  quantity: numeric("quantity"),
+  averagePrice: numeric("average_price"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Transações de investimento
+export const investmentTransactions = pgTable("investment_transactions", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  assetId: integer("asset_id")
+    .notNull()
+    .references(() => assets.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // buy, sell, contribution, withdrawal, dividend, jcp
+  date: date("date").notNull(),
+  quantity: numeric("quantity"), // pode ser nulo para dividendos
+  price: numeric("price"),
+  amount: numeric("amount").notNull(), // valor financeiro da transação
+  fees: numeric("fees").default("0"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Relações
+export const assetsRelations = relations(assets, ({ many }) => ({
+  transactions: many(investmentTransactions),
+}));
+
+export const investmentTransactionsRelations = relations(investmentTransactions, ({ one }) => ({
+  asset: one(assets, {
+    fields: [investmentTransactions.assetId],
+    references: [assets.id],
   }),
 }));

@@ -18,12 +18,10 @@ export const menuItems = [
       {
         title: 'Treinos Propostos',
         href: '/treinos',
-        description: 'Visualize os treinos planejados na sua planilha.',
       },
       {
         title: 'Treinos Executados',
         href: '/atividades',
-        description: 'Seu histórico real puxado diretamente do Strava.',
       },
     ]
   },
@@ -34,17 +32,18 @@ export const menuItems = [
       {
         title: 'Blog',
         href: '/admin/blog',
-        description: 'Gerencie suas publicações e artigos.',
       },
       {
         title: 'Livros',
         href: '/admin/livros',
-        description: 'Sua biblioteca e anotações de leitura.',
       },
       {
         title: 'Carteira',
         href: '/admin/carteira',
-        description: 'Sua biblioteca e anotações de leitura.',
+      },
+      {
+        title: 'Lista de Compras',
+        href: '/admin/listas',
       },
     ]
   }

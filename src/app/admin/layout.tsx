@@ -1,4 +1,6 @@
 import { auth } from "@/auth"
+import { AppBreadcrumb } from "@/components/AppBreadcrumb"
+import { DrawerProvider } from "@/contexts/DrawerContext"
 import { redirect } from "next/navigation"
 
 export default async function AdminLayout({
@@ -11,5 +13,10 @@ export default async function AdminLayout({
     redirect("/") 
   }
 
-  return <>{children}</>
+  return (
+    <DrawerProvider>
+        <AppBreadcrumb />  
+        <>{children}</>
+    </DrawerProvider>
+  );
 }

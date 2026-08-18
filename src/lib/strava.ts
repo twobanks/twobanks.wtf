@@ -1,5 +1,5 @@
-import { db } from "@/db"
-import { gear, stravaWorkouts } from "@/db/schema"
+import { db } from "@/database"
+import { gear, stravaWorkouts } from "@/database/schema"
 import { eq, sql } from "drizzle-orm"
 
 async function getStravaToken() {

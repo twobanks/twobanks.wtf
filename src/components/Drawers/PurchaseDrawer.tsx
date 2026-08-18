@@ -5,10 +5,10 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
+  DrawerTitle
 } from '@/components/ui/drawer';
 import { FloatingAlert } from '@/components/ui/floating-alert';
+import { useDrawer } from '@/contexts/DrawerContext';
 import { PurchaseDrawerProps } from '@/utils/types';
 import { useState } from 'react';
 
@@ -16,23 +16,25 @@ export function PurchaseDrawer({
   categories,
   creditCards,
   createInstallmentPurchaseAction,
+  initialCreditCardId,
+  triggerLabel = "+ Adicionar Compra",
+  onSuccess,
 }: PurchaseDrawerProps) {
-  const [open, setOpen] = useState(false);
+  const { activeDrawer, openDrawer, closeDrawer } = useDrawer()
   const [floatingAlert, setFloatingAlert] = useState<{
     type: 'success' | 'error';
     message: string;
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const open = activeDrawer === "purchase"
 
-  const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true);
+   const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true)
     try {
-      await createInstallmentPurchaseAction(formData);
-      setOpen(false);
-      setFloatingAlert({
-        type: 'success',
-        message: 'Compra adicionada com sucesso!',
-      });
+      await createInstallmentPurchaseAction(formData)
+      closeDrawer()
+      setFloatingAlert({ type: "success", message: "Compra adicionada!" })
+      onSuccess?.()
     } catch (error) {
       console.error('Erro ao adicionar compra:', error);
       setFloatingAlert({
@@ -46,10 +48,14 @@ export function PurchaseDrawer({
 
   return (
     <>
-      <Drawer open={open} onOpenChange={setOpen} swipeDirection="right">
-        <DrawerTrigger className="inline-flex items-center gap-2  bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
-          + Adicionar Compra
-        </DrawerTrigger>
+      <Drawer open={open} onOpenChange={(isOpen) => !isOpen && closeDrawer()} swipeDirection="right">
+        <button
+          type="button"
+          onClick={() => openDrawer("purchase")}
+          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+        >
+          {triggerLabel}
+        </button>
         <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
             <DrawerTitle className="text-xl font-semibold text-gray-100">
@@ -64,6 +70,7 @@ export function PurchaseDrawer({
             <select
               name="creditCardId"
               required
+              defaultValue={initialCreditCardId || ""}
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Selecione o cartão</option>

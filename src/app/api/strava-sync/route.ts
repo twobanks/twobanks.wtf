@@ -1,7 +1,7 @@
 // src/app/api/strava-sync/route.ts
 import { auth } from "@/auth"
-import { db } from "@/db"
-import { stravaWorkouts } from "@/db/schema"
+import { db } from "@/database"
+import { stravaWorkouts } from "@/database/schema"
 import { and, eq } from "drizzle-orm"
 import { NextResponse } from "next/server"
 
