@@ -1,8 +1,8 @@
 import { deleteAccount } from "@/actions/accounts"
 import { auth } from "@/auth"
 import { AccountDrawer } from "@/components/Drawers/AccountDrawer"
-import { db } from "@/database"
-import { financialAccounts } from "@/database/schema"
+import { db } from "@/db"
+import { financialAccounts } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { redirect } from "next/navigation"
 

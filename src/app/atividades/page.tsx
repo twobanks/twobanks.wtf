@@ -8,8 +8,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { db } from "@/database"
-import { gear, stravaWorkouts } from "@/database/schema"
+import { db } from "@/db"
+import { gear, stravaWorkouts } from "@/db/schema"
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/utils/mocks"
 import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm"
 import Link from "next/link"

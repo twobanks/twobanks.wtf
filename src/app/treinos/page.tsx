@@ -1,6 +1,6 @@
 // src/app/treinos/page.tsx
-import { db } from "@/database"
-import { plannedWorkouts, stravaWorkouts } from "@/database/schema"
+import { db } from "@/db"
+import { plannedWorkouts, stravaWorkouts } from "@/db/schema"
 import { asc, desc, gte, like, lt } from "drizzle-orm"
 import Link from "next/link"
 

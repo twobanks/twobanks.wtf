@@ -1,8 +1,8 @@
 import { deleteCategory } from "@/actions/categories"
 import { auth } from "@/auth"
 import { CategoryDrawer } from "@/components/Drawers/CategoryDrawer"
-import { db } from "@/database"
-import { categories } from "@/database/schema"
+import { db } from "@/db"
+import { categories } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { redirect } from "next/navigation"
 

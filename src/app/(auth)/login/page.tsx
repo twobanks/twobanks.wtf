@@ -1,37 +1,88 @@
-"use client"
+"use client";
 
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+
+const usuarios = [
+  {
+    email: "twobanks@me.com",
+    nome: "Thiago",
+    avatar: "https://avatars.githubusercontent.com/u/2577611?v=4",
+  },
+  {
+    email: "stephanie.thiagoo@hotmail.com",
+    nome: "Stephanie",
+    avatar: "https://ui-avatars.com/api/?name=Stephanie&background=FC4C02&color=fff&size=128",
+  },
+];
+
+const userByEmail = (email: string) =>
+  usuarios.find((user) => user.email.toLowerCase() === email.toLowerCase());
 
 export default function LoginPage() {
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [identifier, setIdentifier] = useState("");
+  const [user, setUser] = useState<typeof usuarios[0] | null>(null);
+  const [otp, setOtp] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError(null)
+  const handleSendCode = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const email = identifier.trim();
+    if (!email) return;
 
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    setIsLoading(true);
+    setMessage("");
 
-    const response = await signIn("credentials", {
-      email,
-      password,
-      redirect: false, 
-    })
+    try {
+      const response = await fetch("/api/otp/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: email }),
+      });
 
-    if (response?.error) {
-      setError("Email ou senha incorretos.")
-      setIsLoading(false)
-    } else if (response?.ok) {
-      router.push("/")
-      router.refresh() 
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser(userByEmail(email) ?? null);
+        setMessage("Enviamos um código para o email associado.");
+      } else {
+        setMessage(data.error || "Erro ao enviar código.");
+      }
+    } catch {
+      setMessage("Erro ao enviar código.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
+
+  const handleVerifyOtp = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!user) return;
+
+    setIsLoading(true);
+    setMessage("");
+
+    const result = await signIn("credentials", {
+      identifier: user.email,
+      otp,
+      redirect: false,
+    });
+
+    setIsLoading(false);
+
+    if (result?.ok) {
+      window.location.href = "/";
+    } else {
+      setMessage("Código inválido ou expirado.");
+    }
+  };
+
+  const resetToEmailStep = () => {
+    setUser(null);
+    setOtp("");
+    setMessage("");
+  };
 
   return (
     <div className="flex w-full items-center justify-center p-4 sm:p-6 lg:p-8 dark:bg-black">
@@ -41,62 +92,89 @@ export default function LoginPage() {
             Bem-vindo de volta
           </h2>
           <p className="mt-2 text-sm text-gray-400">
-            Faça login para ver suas integrações.
+            Digite seu email para receber o código de acesso
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">
-              Email
-            </label>
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="seu@email.com"
-              className="w-full rounded-lg border border-gray-800  px-4 py-3 text-sm text-white placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">
-              Senha
-            </label>
-            <input
-              name="password"
-              type="password"
-              required
-              placeholder="••••••••"
-              className="w-full rounded-lg border border-gray-800 bg-gray-950 px-4 py-3 text-sm text-white placeholder-gray-500 transition-colors focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-            />
-          </div>
-
-          {error && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-center text-sm text-red-400">
-              {error}
+        {!user ? (
+          <form onSubmit={handleSendCode} className="space-y-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">
+                Quem é você?
+              </label>
+              <input
+                type="email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="seu@email.com"
+                required
+                autoFocus
+                className="w-full rounded-lg border border-gray-800 bg-gray-950 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-blue-500/50 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <svg className="h-4 w-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Entrando...
-              </span>
-            ) : (
-              "Entrar"
+            {message && (
+              <div className="rounded-lg border border-gray-700 bg-gray-900 p-3 text-center text-sm text-gray-300">
+                {message}
+              </div>
             )}
-          </button>
-        </form>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Enviando..." : "Enviar código"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOtp} className="space-y-6">
+            <div className="flex flex-col items-center gap-3">
+              <img
+                src={user.avatar}
+                alt={user.nome}
+                className="w-24 h-24 rounded-full object-cover border-2 border-gray-700"
+              />
+              <p className="text-sm text-gray-300">
+                Digite o código enviado para {user.email}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <input
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="Código de 6 dígitos"
+                inputMode="numeric"
+                autoFocus
+                required
+                className="w-full rounded-lg border border-gray-800 bg-gray-950 px-4 py-3 text-center text-2xl tracking-widest text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
+
+            {message && (
+              <div className="rounded-lg border border-gray-700 bg-gray-900 p-3 text-center text-sm text-gray-300">
+                {message}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoading || otp.length !== 6}
+              className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Verificando..." : "Entrar"}
+            </button>
+
+            <button
+              type="button"
+              onClick={resetToEmailStep}
+              className="w-full text-center text-sm text-gray-400 hover:text-gray-300"
+            >
+              Trocar email
+            </button>
+          </form>
+        )}
       </div>
     </div>
-  )
+  );
 }

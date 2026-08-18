@@ -1,8 +1,8 @@
 import { deleteRecurringExpense, generateMonthlyRecurring } from "@/actions/recurringExpenses"
 import { auth } from "@/auth"
 import { RecurringExpenseDrawer } from "@/components/Drawers/RecurringExpenseDrawer"
-import { db } from "@/database"
-import { categories, financialAccounts, recurringExpenses } from "@/database/schema"
+import { db } from "@/db"
+import { categories, financialAccounts, recurringExpenses } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { redirect } from "next/navigation"
 

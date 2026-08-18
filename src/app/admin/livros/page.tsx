@@ -1,7 +1,7 @@
 import { deleteBook } from "@/actions/books"
 import { DeleteButton } from "@/components/DeleteButton"
-import { db } from "@/database"
-import { books } from "@/database/schema"
+import { db } from "@/db"
+import { books } from "@/db/schema"
 import { desc } from "drizzle-orm"
 import Link from "next/link"
 

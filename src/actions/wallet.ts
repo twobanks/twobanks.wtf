@@ -1,8 +1,8 @@
 "use server"
 
 import { auth } from "@/auth"
-import { db } from "@/database"
-import { installments, purchases, transactions } from "@/database/schema"
+import { db } from "@/db"
+import { installments, purchases, transactions } from "@/db/schema"
 import { and, eq, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 

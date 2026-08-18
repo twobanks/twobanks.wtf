@@ -1,5 +1,5 @@
-import { db } from "@/database"
-import { books } from "@/database/schema"
+import { db } from "@/db"
+import { books } from "@/db/schema"
 import { desc } from "drizzle-orm"
 
 export default async function LivrosIndexPage() {

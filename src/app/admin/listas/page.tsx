@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
 import { CreateListForm } from "@/components/CreateList";
 import { ListCard } from "@/components/ListCard";
-import { db } from "@/database";
-import type { ShoppingListWithItems } from "@/database/schema";
-import { shoppingItems, shoppingLists } from "@/database/schema";
+import { db } from "@/db";
+import type { ShoppingListWithItems } from "@/db/schema";
+import { shoppingItems, shoppingLists } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 

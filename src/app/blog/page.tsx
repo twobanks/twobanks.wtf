@@ -1,5 +1,5 @@
-import { db } from "@/database"
-import { posts } from "@/database/schema"
+import { db } from "@/db"
+import { posts } from "@/db/schema"
 import { desc, eq } from "drizzle-orm"
 import Link from "next/link"
 

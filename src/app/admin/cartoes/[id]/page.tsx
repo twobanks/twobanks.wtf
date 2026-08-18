@@ -1,7 +1,7 @@
 import { toggleInstallmentPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
-import { db } from "@/database";
-import { creditCards, purchases } from "@/database/schema"; // remova installments se não usar diretamente
+import { db } from "@/db";
+import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
 import { and, eq } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";

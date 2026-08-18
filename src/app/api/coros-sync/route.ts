@@ -1,6 +1,6 @@
 import { auth } from "@/auth"
-import { db } from "@/database"
-import { plannedWorkouts } from "@/database/schema"
+import { db } from "@/db"
+import { plannedWorkouts } from "@/db/schema"
 import { NextResponse } from "next/server"
 
 function formatDateToCoros(date: Date) {

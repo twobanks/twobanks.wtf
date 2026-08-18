@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { addItem, deleteItem, deleteList, toggleItem, updateList } from "@/actions/shopping";
-import type { ShoppingListWithItems } from "@/database/schema";
+import type { ShoppingListWithItems } from "@/db/schema";
 
 const typeLabels: Record<ShoppingListWithItems["type"], string> = {
   supermercado: "Supermercado",

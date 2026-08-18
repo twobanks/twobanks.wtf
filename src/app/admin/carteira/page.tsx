@@ -3,23 +3,23 @@ import { auth } from "@/auth";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
 import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { DrawerProvider } from "@/contexts/DrawerContext";
-import { db } from "@/database";
+import { db } from "@/db";
 import {
-  categories,
-  creditCards,
-  financialAccounts,
-  purchases,
-  recurringPaymentLogs,
-  transactions,
-} from "@/database/schema";
+    categories,
+    creditCards,
+    financialAccounts,
+    purchases,
+    recurringPaymentLogs,
+    transactions,
+} from "@/db/schema";
 import { and, eq, gte, lte, not, notInArray } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";

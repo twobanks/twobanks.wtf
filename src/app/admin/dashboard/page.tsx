@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import { CategoryExpenseChart } from "@/components/Charts/CategoryExpenseChart";
 import { MonthlyCashFlowChart } from "@/components/Charts/MonthlyCashFlowChart";
-import { db } from "@/database";
-import { transactions } from "@/database/schema";
+import { db } from "@/db";
+import { transactions } from "@/db/schema";
 import { and, eq, gte, lte } from "drizzle-orm";
 import { redirect } from "next/navigation";
 

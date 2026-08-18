@@ -1,14 +1,14 @@
 import { auth } from "@/auth";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
-import { db } from "@/database";
-import { creditCards, purchases } from "@/database/schema";
+import { db } from "@/db";
+import { creditCards, purchases } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { redirect } from "next/navigation";

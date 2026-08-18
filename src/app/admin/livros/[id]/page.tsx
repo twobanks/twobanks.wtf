@@ -1,6 +1,6 @@
 import { updateBook } from "@/actions/books"
-import { db } from "@/database"
-import { books } from "@/database/schema"
+import { db } from "@/db"
+import { books } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { notFound } from "next/navigation"
 

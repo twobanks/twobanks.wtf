@@ -1,4 +1,4 @@
-import { InferSelectModel, relations } from "drizzle-orm"
+import { InferSelectModel, relations } from "drizzle-orm";
 import {
   boolean,
   date,
@@ -12,8 +12,8 @@ import {
   text,
   timestamp,
   uniqueIndex
-} from "drizzle-orm/pg-core"
-import { AdapterAccount } from "next-auth/adapters"
+} from "drizzle-orm/pg-core";
+import { AdapterAccount } from "next-auth/adapters";
 
 export const users = pgTable("user", {
   id: text("id")
@@ -24,7 +24,19 @@ export const users = pgTable("user", {
   image: text("image"),
   password: text("password"),
   role: text("role").default("Atleta"),
+  phone: text("phone"), 
 })
+
+export const otpCodes = pgTable("otp_codes", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  codeHash: text("code_hash").notNull(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+  consumedAt: timestamp("consumed_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
 
 export const accounts = pgTable(
   "account",
