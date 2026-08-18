@@ -3,33 +3,22 @@ import { otpCodes, users } from "@/db/schema";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const OTP_EXPIRATION_MINUTES = 5;
-const OTP_LENGTH = 6;
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-const SMTP_FROM = process.env.SMTP_FROM ?? process.env.SMTP_USER;
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 async function sendOtpEmail(to: string, code: string): Promise<void> {
-  await transporter.sendMail({
-    from: SMTP_FROM,
+  await resend.emails.send({
+    from: FROM_EMAIL,
     to,
     subject: "Seu código de acesso twobanks",
-    text: `Seu código de acesso é: ${code}`,
     html: `<p>Seu código de acesso é:</p><h2>${code}</h2><p>Válido por ${OTP_EXPIRATION_MINUTES} minutos.</p>`,
   });
 }
@@ -49,7 +38,6 @@ export async function POST(req: Request) {
       .from(users)
       .where(eq(users.email, normalizedEmail));
 
-    // Resposta neutra: não revela se o email existe
     if (!user || !user.email) {
       return NextResponse.json({ success: true });
     }
@@ -68,7 +56,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Erro ao processar OTP:", error);
+    console.error("Erro ao enviar email:", error);
     return NextResponse.json({ error: "Falha ao enviar o código." }, { status: 500 });
   }
 }
