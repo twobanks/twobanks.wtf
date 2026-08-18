@@ -11,8 +11,8 @@ const usuarios = [
   },
   {
     email: "stephanie.thiagoo@hotmail.com",
-    nome: "Stephanie",
-    avatar: "https://ui-avatars.com/api/?name=Stephanie&background=FC4C02&color=fff&size=128",
+    nome: "Tefa",
+    avatar: "https://snipboard.io/wTqQ0S.jpg",
   },
 ];
 
