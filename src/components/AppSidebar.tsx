@@ -3,22 +3,18 @@
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
+  SidebarMenuItem
 } from "@/components/ui/sidebar"
-import { deslogar } from "@/lib/actions"
 import {
   CreditCard,
   FileText,
   Landmark,
-  LayoutDashboard,
-  LogOut,
   ShoppingBasket,
   TrendingUp,
   Wallet
@@ -27,13 +23,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 const financeiroItems = [
-  { title: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { title: "Carteira", href: "/admin/carteira", icon: Wallet },
-  { title: "Cartões", href: "/admin/cartoes", icon: CreditCard },
-  { title: "Faturas", href: "/admin/faturas", icon: FileText },
-  { title: "Contas", href: "/admin/contas", icon: Landmark },
-  { title: "Investimentos", href: "/admin/investimentos", icon: TrendingUp },
-  { title: "Lista de Compras", href: "/admin/lista", icon: ShoppingBasket  },
+  { title: "Cartões", href: "/admin/carteira/cartoes", icon: CreditCard },
+  { title: "Faturas", href: "/admin/carteira/faturas", icon: FileText },
+  { title: "Contas", href: "/admin/carteira/contas", icon: Landmark },
+  { title: "Investimentos", href: "/admin/carteira/investimentos", icon: TrendingUp },
+  { title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket  },
 ]
 
 interface AppSidebarProps {
@@ -73,18 +68,6 @@ export function AppSidebar({ variant = "sidebar" }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        <form action={deslogar}>
-          <button
-            type="submit"
-            className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-500 hover:bg-sidebar-accent hover:text-red-600 transition-colors"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Sair</span>
-          </button>
-        </form>
-      </SidebarFooter>
     </Sidebar>
   )
 }

@@ -2,6 +2,7 @@ import { createInstallmentPurchase } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
 import { MonthYearPicker } from "@/components/month-year-picker";
+import { SummaryCards } from "@/components/SummaryCards";
 import { CreditCardsSection } from "@/components/Tables/credit-cards-section";
 import { ObraTransactionsTable } from "@/components/Tables/obra-transactions-table";
 import { OtherExpensesTable } from "@/components/Tables/other-expenses-table";
@@ -181,10 +182,26 @@ export default async function CarteiraPage({
     })
   );
 
+  // Calcular totais do mês
+  const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
+
+  const totalDespesas =
+    outrasDespesas.reduce((sum, t) => sum + Number(t.amount), 0) +
+    obraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
+    logsDoMes.reduce((sum, log) => sum + Number(log.recurringExpense?.amount || 0), 0) +
+    cartoesComFatura.reduce((sum, c) => sum + c.total, 0);
+
+  const saldo = totalReceitas - totalDespesas;
+
   return (
     <DrawerProvider>
       <DrawerInitializer drawerOpen={open} />
-      <div className="space-y-12 w-full">
+        <SummaryCards
+          totalReceitas={totalReceitas}
+          totalDespesas={totalDespesas}
+          saldo={saldo}
+          mes={`${faturaMesNum}/${faturaAno}`}
+        />
         <Tabs defaultValue="all" className="flex flex-col w-full space-y-2">
           <Card className="@container/card flex flex-row items-center px-4 justify-between flex-wrap gap-2">
             <TabsList className="flex-wrap">
@@ -319,7 +336,6 @@ export default async function CarteiraPage({
             </section>
           </TabsContent>
         </Tabs>
-      </div>
     </DrawerProvider>
   );
 }
