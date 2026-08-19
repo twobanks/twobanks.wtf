@@ -3,7 +3,8 @@ import { auth } from "@/auth"
 import { CategoryDrawer } from "@/components/Drawers/CategoryDrawer"
 import { db } from "@/db"
 import { categories } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
 import { redirect } from "next/navigation"
 
 export default async function CategoriasPage() {
@@ -11,8 +12,14 @@ export default async function CategoriasPage() {
   if (!session?.user) redirect("/login")
   const userId = session.user.id
 
+  const householdIds = await getUserHouseholdIds(userId)
+
+  const where = householdIds.length > 0
+    ? or(eq(categories.userId, userId), inArray(categories.householdId, householdIds))
+    : eq(categories.userId, userId)
+
   const categorias = await db.query.categories.findMany({
-    where: eq(categories.userId, userId),
+    where,
     orderBy: (c, { asc }) => [asc(c.name)],
   })
 
@@ -20,7 +27,6 @@ export default async function CategoriasPage() {
     <main className="min-h-screen bg-black text-gray-100 p-6 md:p-10">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Categorias</h1>
           <CategoryDrawer />
         </div>
 

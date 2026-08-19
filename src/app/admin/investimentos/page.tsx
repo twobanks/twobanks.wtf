@@ -4,7 +4,8 @@ import { AssetDrawer } from "@/components/Drawers/AssetDrawer"
 import { InvestmentTransactionDrawer } from "@/components/Drawers/InvestmentTransactionDrawer"
 import { db } from "@/db"
 import { assets, investmentTransactions } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
 import { redirect } from "next/navigation"
 
 export default async function InvestimentosPage() {
@@ -12,13 +13,23 @@ export default async function InvestimentosPage() {
   if (!session?.user) redirect("/login")
   const userId = session.user.id
 
+  const householdIds = await getUserHouseholdIds(userId)
+
+  const whereAssets = householdIds.length > 0
+    ? or(eq(assets.userId, userId), inArray(assets.householdId, householdIds))
+    : eq(assets.userId, userId)
+
+  const whereTransactions = householdIds.length > 0
+    ? or(eq(investmentTransactions.userId, userId), inArray(investmentTransactions.householdId, householdIds))
+    : eq(investmentTransactions.userId, userId)
+
   const ativos = await db.query.assets.findMany({
-    where: eq(assets.userId, userId),
+    where: whereAssets,
     orderBy: (a, { asc }) => [asc(a.name)],
   })
 
   const transacoes = await db.query.investmentTransactions.findMany({
-    where: eq(investmentTransactions.userId, userId),
+    where: whereTransactions,
     with: { asset: true },
     orderBy: (t, { desc }) => [desc(t.date), desc(t.createdAt)],
     limit: 50,
@@ -31,7 +42,6 @@ export default async function InvestimentosPage() {
     const qtd = Number(ativo.quantity) || 0
     const precoAtual = Number(ativo.currentPrice) || Number(ativo.averagePrice) || 0
     totalPatrimonio += qtd * precoAtual
-    // total investido aproximado: quantidade * preço médio
     totalInvestido += qtd * (Number(ativo.averagePrice) || 0)
   })
 
@@ -40,14 +50,12 @@ export default async function InvestimentosPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Investimentos</h1>
         <div className="flex gap-2">
           <AssetDrawer />
           <InvestmentTransactionDrawer assets={ativos} />
         </div>
       </div>
 
-      {/* Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
           <p className="text-sm text-gray-400">Patrimônio total</p>
@@ -65,7 +73,6 @@ export default async function InvestimentosPage() {
         </div>
       </div>
 
-      {/* Lista de ativos */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-200">Ativos</h2>
         <div className="space-y-3">
@@ -100,7 +107,6 @@ export default async function InvestimentosPage() {
         </div>
       </section>
 
-      {/* Histórico de transações */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-200">Últimas Transações</h2>
         <div className="space-y-3">

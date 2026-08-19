@@ -1,50 +1,58 @@
 import { createInstallmentPurchase } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
-import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import { MonthYearPicker } from "@/components/month-year-picker";
+import { CreditCardsSection } from "@/components/Tables/credit-cards-section";
+import { ObraTransactionsTable } from "@/components/Tables/obra-transactions-table";
+import { OtherExpensesTable } from "@/components/Tables/other-expenses-table";
+import { RecurringExpensesTable } from "@/components/Tables/recurring-expenses-table";
+import { TransactionsTable } from "@/components/Tables/transactions-table";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DrawerProvider } from "@/contexts/DrawerContext";
 import { db } from "@/db";
 import {
-    categories,
-    creditCards,
-    financialAccounts,
-    purchases,
-    recurringPaymentLogs,
-    transactions,
+  categories,
+  creditCards,
+  financialAccounts,
+  purchases,
+  recurringPaymentLogs,
+  transactions,
 } from "@/db/schema";
-import { and, eq, gte, lte, not, notInArray } from "drizzle-orm";
-import Link from "next/link";
+import { getUserHouseholdIds } from "@/lib/household";
+import { and, eq, gte, inArray, lte, not, notInArray, or } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export default async function CarteiraPage({
   searchParams,
 }: {
-  searchParams: Promise<{  open?: string; mes?: string }>;
+  searchParams: Promise<{ open?: string; mes?: string }>;
 }) {
   const { open, mes } = await searchParams;
   const session = await auth();
   if (!session?.user) redirect("/login");
   const userId = session.user.id;
 
+  const householdIds = await getUserHouseholdIds(userId);
+
+  const accessCondition = (table: any) => {
+    const conditions = [eq(table.userId, userId)];
+    if (householdIds.length > 0) {
+      conditions.push(inArray(table.householdId, householdIds));
+    }
+    return conditions.length > 1 ? or(...conditions) : conditions[0];
+  };
+
   const categorias = await db.query.categories.findMany({
-    where: eq(categories.userId, userId),
+    where: accessCondition(categories),
   });
   const accounts = await db.query.financialAccounts.findMany({
-    where: eq(financialAccounts.userId, userId),
+    where: accessCondition(financialAccounts),
   });
   const cartoes = await db.query.creditCards.findMany({
     where: eq(creditCards.userId, userId),
   });
 
-  // Determina o mês/ano global (padrão: mês atual)
   const now = new Date();
   let faturaAno = now.getFullYear();
   let faturaMesNum = now.getMonth() + 1; // 1-12
@@ -62,7 +70,6 @@ export default async function CarteiraPage({
   const firstDayStr = primeiroDia.toISOString().split("T")[0];
   const lastDayStr = ultimoDia.toISOString().split("T")[0];
 
-  // Funções auxiliares para navegação
   function getPreviousMonth(year: number, month: number) {
     const date = new Date(year, month - 1, 1);
     date.setMonth(date.getMonth() - 1);
@@ -74,10 +81,9 @@ export default async function CarteiraPage({
     return { year: date.getFullYear(), month: date.getMonth() + 1 };
   }
 
-  // Receitas do mês
   const receitasDoMes = await db.query.transactions.findMany({
     where: and(
-      eq(transactions.userId, userId),
+      accessCondition(transactions),
       eq(transactions.type, "income"),
       gte(transactions.date, firstDayStr),
       lte(transactions.date, lastDayStr)
@@ -86,8 +92,7 @@ export default async function CarteiraPage({
     orderBy: (t, { desc }) => [desc(t.date)],
   });
 
-  // Despesas recorrentes do mês (via logs)
-  const logsDoMes = await db.query.recurringPaymentLogs.findMany({
+  const allLogsDoMes = await db.query.recurringPaymentLogs.findMany({
     where: eq(recurringPaymentLogs.month, `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`),
     with: {
       recurringExpense: {
@@ -97,16 +102,19 @@ export default async function CarteiraPage({
     },
   });
 
+  const logsDoMes = allLogsDoMes.filter(log => {
+    const expense = log.recurringExpense;
+    return expense.userId === userId || (expense.householdId && householdIds.includes(expense.householdId));
+  });
+
   const recurringTransactionIds = logsDoMes.map((log) => log.transactionId);
 
-  // Categoria "Obra"
   const obraCategory = categorias.find((c) => c.name.toLowerCase().includes("obra"));
 
-  // Despesas de obra do mês
   const obraTransactions = obraCategory
     ? await db.query.transactions.findMany({
         where: and(
-          eq(transactions.userId, userId),
+          accessCondition(transactions),
           eq(transactions.categoryId, obraCategory.id),
           eq(transactions.type, "expense"),
           gte(transactions.date, firstDayStr),
@@ -117,9 +125,8 @@ export default async function CarteiraPage({
       })
     : [];
 
-  // Outras despesas avulsas (excluindo obra e recorrentes)
   const avulsasConditions = [
-    eq(transactions.userId, userId),
+    accessCondition(transactions),
     eq(transactions.type, "expense"),
     gte(transactions.date, firstDayStr),
     lte(transactions.date, lastDayStr),
@@ -138,7 +145,6 @@ export default async function CarteiraPage({
     orderBy: (t, { desc }) => [desc(t.date)],
   });
 
-  // Cartões de crédito: faturas do mês selecionado
   const cartoesComFatura = await Promise.all(
     cartoes.map(async (cartao) => {
       const compras = await db.query.purchases.findMany({
@@ -175,314 +181,144 @@ export default async function CarteiraPage({
     })
   );
 
-  const formatCurrency = (value: number) =>
-    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-  const formatDate = (iso: string) => {
-    const [y, m, d] = iso.split("-");
-    return `${d}/${m}/${y}`;
-  };
-
   return (
     <DrawerProvider>
       <DrawerInitializer drawerOpen={open} />
       <div className="space-y-12 w-full">
-        {/* Cabeçalho com navegação de mês e botões */}
-        <div className="flex flex-wrap justify-between items-center gap-4">
-          <h1 className="text-3xl font-bold tracking-tight">Controle dos Gastos</h1>
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href={`/admin/carteira?mes=${getPreviousMonth(faturaAno, faturaMesNum).year}-${String(getPreviousMonth(faturaAno, faturaMesNum).month).padStart(2, "0")}`}
-              className="text-gray-400 hover:text-white"
-            >
-              ←
-            </Link>
-            <span className="text-lg font-medium">
-              {new Date(faturaAno, faturaMesNum - 1, 1).toLocaleDateString("pt-BR", {
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-            <Link
-              href={`/admin/carteira?mes=${getNextMonth(faturaAno, faturaMesNum).year}-${String(getNextMonth(faturaAno, faturaMesNum).month).padStart(2, "0")}`}
-              className="text-gray-400 hover:text-white"
-            >
-              →
-            </Link>
-          </div>
-        </div>
+        <Tabs defaultValue="all" className="flex flex-col w-full space-y-2">
+          <Card className="@container/card flex flex-row items-center px-4 justify-between flex-wrap gap-2">
+            <TabsList className="flex-wrap">
+              <TabsTrigger value="all">Todas</TabsTrigger>
+              <TabsTrigger value="receitas">Receitas</TabsTrigger>
+              <TabsTrigger value="recorrentes">Contas de Casa</TabsTrigger>
+              <TabsTrigger value="contas">Despesas</TabsTrigger>
+              <TabsTrigger value="obra">Construção</TabsTrigger>
+              <TabsTrigger value="cartoes">Cartões de Crédito</TabsTrigger>
+            </TabsList>
+            <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+          </Card>
 
-        {/* Card: Receitas do Mês */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-200">Receitas do Mês</h2>
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-            {receitasDoMes.length === 0 ? (
-              <p className="text-gray-500">Nenhuma receita neste mês.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead>Conta</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
-                    <TableHead className="text-right">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {receitasDoMes.map((receita) => (
-                    <TableRow key={receita.id}>
-                      <TableCell>{receita.description}</TableCell>
-                      <TableCell>{formatDate(receita.date)}</TableCell>
-                      <TableCell>{receita.category?.name || "Sem categoria"}</TableCell>
-                      <TableCell>{receita.account?.name || "Sem conta"}</TableCell>
-                      <TableCell className="text-right text-green-400">
-                        +{formatCurrency(Number(receita.amount))}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {receita.paid ? (
-                          <span className="text-green-400">Recebido</span>
-                        ) : (
-                          <span className="text-yellow-400">Pendente</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-        </section>
-
-        {/* Card: Contas de Casa (Recorrentes) */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-200">Contas de Casa (Recorrentes)</h2>
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-            {logsDoMes.length === 0 ? (
-              <p className="text-gray-500">
-                Nenhuma despesa recorrente gerada para este mês.{" "}
-                <Link href="/admin/recorrentes" className="text-blue-400 hover:underline">
-                  Gerar transações
-                </Link>
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Vencimento</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead>Conta</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
-                    <TableHead className="text-right">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {logsDoMes.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell>{log.recurringExpense.name}</TableCell>
-                      <TableCell>{formatDate(log.transaction.date)}</TableCell>
-                      <TableCell>{log.recurringExpense.category?.name || "Sem categoria"}</TableCell>
-                      <TableCell>{log.recurringExpense.account?.name || "Sem conta"}</TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(Number(log.transaction.amount))}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {log.transaction.paid ? (
-                          <span className="text-green-400">Pago</span>
-                        ) : (
-                          <span className="text-yellow-400">Pendente</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-        </section>
-
-        {/* Card: Contas de Casa (Avulsas) */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-200">Contas de Casa</h2>
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-            {outrasDespesas.length === 0 ? (
-              <p className="text-gray-500">Nenhuma despesa avulsa neste mês.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead>Conta</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
-                    <TableHead className="text-right">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {outrasDespesas.map((despesa) => (
-                    <TableRow key={despesa.id}>
-                      <TableCell>{despesa.description}</TableCell>
-                      <TableCell>{formatDate(despesa.date)}</TableCell>
-                      <TableCell>{despesa.category?.name || "Sem categoria"}</TableCell>
-                      <TableCell>{despesa.account?.name || "Sem conta"}</TableCell>
-                      <TableCell className="text-right">
-                        {formatCurrency(Number(despesa.amount))}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {despesa.paid ? (
-                          <span className="text-green-400">Pago</span>
-                        ) : (
-                          <span className="text-yellow-400">Pendente</span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-        </section>
-
-        {/* Card: Obra (Gastos Temporários) */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-200">Obra (Gastos Temporários)</h2>
-          <div className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-            {!obraCategory ? (
-              <p className="text-gray-500">Crie uma categoria chamada "Obra" para agrupar esses gastos.</p>
-            ) : obraTransactions.length === 0 ? (
-              <p className="text-gray-500">Nenhum gasto de obra neste mês.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead>Data</TableHead>
-                    <TableHead>Categoria</TableHead>
-                    <TableHead className="text-right">Valor</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {obraTransactions.map((transacao) => (
-                    <TableRow key={transacao.id}>
-                      <TableCell>{transacao.description}</TableCell>
-                      <TableCell>{formatDate(transacao.date)}</TableCell>
-                      <TableCell>{transacao.category?.name}</TableCell>
-                      <TableCell className="text-right text-red-400">
-                        -{formatCurrency(Number(transacao.amount))}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </div>
-        </section>
-
-        {/* Card: Cartões de Crédito */}
-        <section className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-200">Cartões de Crédito</h2>
-          <div className="grid grid-cols-1 gap-6">
-            {cartoesComFatura.length === 0 ? (
-              <p className="text-gray-500">Nenhum cartão cadastrado.</p>
-            ) : (
-              cartoesComFatura.map(({ cartao, parcelas, total, pago }) => {
-                let vencimento = null;
-                if (cartao.dueDay) {
-                  const dataVenc = new Date(faturaAno, faturaMesNum - 1, cartao.dueDay);
-                  if (dataVenc.getMonth() !== faturaMesNum - 1) {
-                    dataVenc.setDate(0);
-                    dataVenc.setMonth(faturaMesNum - 1);
-                    dataVenc.setDate(new Date(faturaAno, faturaMesNum, 0).getDate());
-                  }
-                  vencimento = dataVenc.toLocaleDateString("pt-BR");
-                }
-
-                const statusFatura = total === 0 ? "Sem gastos" : pago >= total ? "Fechada" : "Aberta";
-
-                return (
-                  <div key={cartao.id} className="bg-gray-900 rounded-xl border border-gray-800 p-5">
-                    <div className="flex flex-wrap justify-between items-start mb-4 gap-4">
-                      <div>
-                        <h3 className="text-lg font-semibold">{cartao.name}</h3>
-                        {cartao.brand && (
-                          <span className="text-sm text-gray-400">{cartao.brand}</span>
-                        )}
-                        <p className="text-sm text-gray-400 mt-1">
-                          Fatura de{" "}
-                          {new Date(faturaAno, faturaMesNum - 1, 1).toLocaleDateString("pt-BR", {
-                            month: "long",
-                            year: "numeric",
-                          })}
-                          {vencimento && (
-                            <>
-                              {" "}· Vencimento: <span className="text-white">{vencimento}</span>
-                            </>
-                          )}
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-1 text-right">
-                        <p className="text-sm text-gray-400">
-                          Total: <span className="text-white font-medium">{formatCurrency(total)}</span>
-                        </p>
-                        <span
-                          className={`mt-1 px-2 py-1 rounded-full text-xs font-medium ${
-                            statusFatura === "Fechada"
-                              ? "bg-green-900/40 text-green-300"
-                              : statusFatura === "Aberta"
-                              ? "bg-yellow-900/40 text-yellow-300"
-                              : "bg-gray-800 text-gray-400"
-                          }`}
-                        >
-                          {statusFatura}
-                        </span>
-                      </div>
-                    </div>
-
-                    {parcelas.length === 0 ? (
-                      <p className="text-gray-500">Nenhuma parcela neste mês.</p>
-                    ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Nome</TableHead>
-                            <TableHead>Parcelas</TableHead>
-                            <TableHead className="text-right">Valor</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {parcelas.map((parcela) => (
-                            <TableRow key={parcela.id}>
-                              <TableCell>{parcela.purchaseDescription}</TableCell>
-                              <TableCell>
-                                {parcela.number} de {parcela.totalInstallments}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {formatCurrency(Number(parcela.amount))}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    )}
-                    {statusFatura === "Aberta" && (
-                      <div className="flex justify-end mt-4">
-                        <PurchaseDrawer
-                          categories={categorias}
-                          creditCards={cartoes}
-                          createInstallmentPurchaseAction={createInstallmentPurchase}
-                          initialCreditCardId={cartao.id}
-                          triggerLabel="Adicionar despesas"
-                        />
-                      </div>
-                    )}
+          <TabsContent value="all" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <section className="space-y-4 min-w-0">
+                <Card className="@container/card h-full">
+                  <div className="@container/table rounded-xl p-5">
+                    <TransactionsTable transactions={receitasDoMes} />
                   </div>
-                );
-              })
-            )}
-          </div>
-        </section>
+                </Card>
+              </section>
+
+              <section className="space-y-4 min-w-0">
+                <Card className="@container/card h-full">
+                  <div className="@container/table rounded-xl p-5">
+                    <RecurringExpensesTable logs={logsDoMes} />
+                  </div>
+                </Card>
+              </section>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <section className="space-y-4 min-w-0">
+                <Card className="@container/card h-full">
+                  <div className="@container/table rounded-xl p-5">
+                    <OtherExpensesTable expenses={outrasDespesas} />
+                  </div>
+                </Card>
+              </section>
+
+              <section className="space-y-4 min-w-0">
+                <Card className="@container/card h-full">
+                  <div className="@container/table rounded-xl p-5">
+                    <ObraTransactionsTable
+                      obraCategoryExists={!!obraCategory}
+                      transactions={obraTransactions}
+                    />
+                  </div>
+                </Card>
+              </section>
+            </div>
+
+            <section className="space-y-4">
+              <Card className="@container/card">
+                <div className="@container/table rounded-xl p-5">
+                  <CreditCardsSection
+                    cartoesComFatura={cartoesComFatura}
+                    categorias={categorias}
+                    cartoes={cartoes}
+                    createInstallmentPurchaseAction={createInstallmentPurchase}
+                    faturaAno={faturaAno}
+                    faturaMesNum={faturaMesNum}
+                  />
+                </div>
+              </Card>
+            </section>
+          </TabsContent>
+
+          {/* Aba Receitas */}
+          <TabsContent value="receitas">
+            <section className="space-y-4">
+              <Card className="@container/card h-full">
+                <div className="@container/table rounded-xl p-5">
+                  <TransactionsTable transactions={receitasDoMes} />
+                </div>
+              </Card>
+            </section>
+          </TabsContent>
+
+          {/* Aba Contas de Casa (Recorrente) */}
+          <TabsContent value="recorrentes">
+            <section className="space-y-4">
+              <Card className="@container/card h-full">
+                <div className="@container/table rounded-xl p-5">
+                  <RecurringExpensesTable logs={logsDoMes} />
+                </div>
+              </Card>
+            </section>
+          </TabsContent>
+
+          {/* Aba Contas de Casa */}
+          <TabsContent value="contas">
+            <section className="space-y-4">
+              <Card className="@container/card h-full">
+                <div className="@container/table rounded-xl p-5">
+                  <OtherExpensesTable expenses={outrasDespesas} />
+                </div>
+              </Card>
+            </section>
+          </TabsContent>
+
+          {/* Aba Obra */}
+          <TabsContent value="obra">
+            <section className="space-y-4">
+              <Card className="@container/card h-full">
+                <div className="@container/table rounded-xl p-5">
+                  <ObraTransactionsTable
+                    obraCategoryExists={!!obraCategory}
+                    transactions={obraTransactions}
+                  />
+                </div>
+              </Card>
+            </section>
+          </TabsContent>
+
+          {/* Aba Cartões de Crédito */}
+          <TabsContent value="cartoes">
+            <section className="space-y-4">
+              <Card className="@container/card">
+                <div className="@container/table rounded-xl p-5">
+                  <CreditCardsSection
+                    cartoesComFatura={cartoesComFatura}
+                    categorias={categorias}
+                    cartoes={cartoes}
+                    createInstallmentPurchaseAction={createInstallmentPurchase}
+                    faturaAno={faturaAno}
+                    faturaMesNum={faturaMesNum}
+                  />
+                </div>
+              </Card>
+            </section>
+          </TabsContent>
+        </Tabs>
       </div>
     </DrawerProvider>
   );

@@ -36,7 +36,6 @@ export default async function ListasPage() {
     <main className="min-h-screen w-full bg-black text-gray-100 p-4 md:p-10">
       <div className="w-full mx-auto space-y-12">
         <div className="flex justify-between w-full items-center">
-          <h1 className="text-3xl font-bold tracking-tight">Lista de Compras</h1>
           <CreateListForm />
         </div>
 

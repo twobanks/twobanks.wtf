@@ -1,11 +1,11 @@
 import { auth } from "@/auth";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema";
@@ -104,8 +104,6 @@ export default async function FaturasPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Faturas de Cartão de Crédito</h1>
-
       <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
         {faturas.length === 0 ? (
           <p className="text-gray-500">Nenhuma fatura encontrada.</p>

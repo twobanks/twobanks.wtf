@@ -3,13 +3,21 @@ import { CategoryExpenseChart } from "@/components/Charts/CategoryExpenseChart";
 import { MonthlyCashFlowChart } from "@/components/Charts/MonthlyCashFlowChart";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
-import { and, eq, gte, lte } from "drizzle-orm";
+import { getUserHouseholdIds } from "@/lib/household";
+import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
   const userId = session.user.id;
+
+  const householdIds = await getUserHouseholdIds(userId);
+
+  // Condição de acesso para transações (compartilhadas)
+  const acessoTransacoes = householdIds.length > 0
+    ? or(eq(transactions.userId, userId), inArray(transactions.householdId, householdIds))
+    : eq(transactions.userId, userId);
 
   // Definir período: mês atual e últimos 6 meses
   const now = new Date();
@@ -18,13 +26,12 @@ export default async function DashboardPage() {
 
   const firstDayCurrentMonth = new Date(currentYear, currentMonth, 1);
   const lastDayCurrentMonth = new Date(currentYear, currentMonth + 1, 0);
+  const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1);
 
-  const sixMonthsAgo = new Date(currentYear, currentMonth - 5, 1); // inclui mês atual
-
-  // Buscar transações do usuário nos últimos 6 meses (incluindo atual)
+  // Buscar transações do usuário e dos households nos últimos 6 meses
   const allTransactions = await db.query.transactions.findMany({
     where: and(
-      eq(transactions.userId, userId),
+      acessoTransacoes,
       gte(transactions.date, sixMonthsAgo.toISOString().split("T")[0]),
       lte(transactions.date, lastDayCurrentMonth.toISOString().split("T")[0])
     ),
@@ -47,7 +54,7 @@ export default async function DashboardPage() {
     .reduce((sum, t) => sum + Number(t.amount), 0);
   const balance = totalIncome - totalExpense;
 
-  // Dados para gráfico de gastos por categoria (mês atual)
+  // Gastos por categoria (mês atual)
   const expenseByCategoryMap = new Map<string, number>();
   currentMonthTransactions
     .filter((t) => t.type === "expense")
@@ -61,7 +68,7 @@ export default async function DashboardPage() {
     ([name, value]) => ({ name, value })
   );
 
-  // Dados para gráfico de fluxo mensal (últimos 6 meses)
+  // Fluxo mensal (últimos 6 meses)
   const monthlyData = [];
   for (let i = 5; i >= 0; i--) {
     const targetMonth = new Date(currentYear, currentMonth - i, 1);
@@ -89,9 +96,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold">Dashboard Financeiro</h1>
-
-      {/* Cards de resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
           <p className="text-sm text-gray-400">Receitas do mês</p>
@@ -117,7 +121,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
           <h2 className="text-xl font-semibold mb-4">Fluxo Mensal (6 meses)</h2>

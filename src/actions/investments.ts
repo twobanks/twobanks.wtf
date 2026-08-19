@@ -3,10 +3,10 @@
 import { auth } from "@/auth"
 import { db } from "@/db"
 import { assets, investmentTransactions } from "@/db/schema"
-import { and, eq } from "drizzle-orm"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
-// CRUD de ativos
 export async function createAsset(formData: FormData) {
   const session = await auth()
   if (!session?.user) throw new Error("Não autorizado")
@@ -21,8 +21,11 @@ export async function createAsset(formData: FormData) {
 
   if (!name || !type) throw new Error("Dados inválidos")
 
+  const householdId = await getPrimaryHouseholdId(userId)
+
   await db.insert(assets).values({
     userId,
+    householdId,
     name,
     ticker,
     type,
@@ -49,6 +52,12 @@ export async function updateAsset(formData: FormData) {
 
   if (!id || !name || !type) throw new Error("Dados inválidos")
 
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(assets.userId, userId),
+    householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+  )
+
   await db.update(assets)
     .set({
       name,
@@ -58,7 +67,7 @@ export async function updateAsset(formData: FormData) {
       quantity: quantity ? quantity.toFixed(2) : null,
       averagePrice: averagePrice ? averagePrice.toFixed(2) : null,
     })
-    .where(and(eq(assets.id, id), eq(assets.userId, userId)))
+    .where(and(eq(assets.id, id), canAccess))
 
   revalidatePath("/admin/investimentos")
 }
@@ -71,13 +80,18 @@ export async function deleteAsset(formData: FormData) {
   const id = Number(formData.get("id"))
   if (!id) throw new Error("ID inválido")
 
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(assets.userId, userId),
+    householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+  )
+
   await db.delete(assets)
-    .where(and(eq(assets.id, id), eq(assets.userId, userId)))
+    .where(and(eq(assets.id, id), canAccess))
 
   revalidatePath("/admin/investimentos")
 }
 
-// Lançamento de transação de investimento
 export async function createInvestmentTransaction(formData: FormData) {
   const session = await auth()
   if (!session?.user) throw new Error("Não autorizado")
@@ -94,8 +108,25 @@ export async function createInvestmentTransaction(formData: FormData) {
 
   if (!assetId || !type || !date || isNaN(amount)) throw new Error("Dados inválidos")
 
+  // Busca o ativo e verifica acesso (próprio ou compartilhado)
+  const householdIds = await getUserHouseholdIds(userId)
+  const [asset] = await db.select().from(assets).where(
+    and(
+      eq(assets.id, assetId),
+      or(
+        eq(assets.userId, userId),
+        householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+      )
+    )
+  ).limit(1)
+
+  if (!asset) throw new Error("Ativo não encontrado ou sem permissão")
+
+  const householdId = asset.householdId ?? null
+
   await db.insert(investmentTransactions).values({
     userId,
+    householdId,
     assetId,
     type,
     date: date.toISOString().split("T")[0],
@@ -108,19 +139,20 @@ export async function createInvestmentTransaction(formData: FormData) {
 
   // Atualizar quantidade média e preço médio do ativo (se aplicável)
   if (type === "buy" && quantity && price) {
-    const [asset] = await db.select().from(assets).where(eq(assets.id, assetId))
-    if (asset) {
-      const oldQuantity = Number(asset.quantity) || 0
-      const oldAverage = Number(asset.averagePrice) || 0
-      const newQuantity = oldQuantity + quantity
-      const newAverage = ((oldQuantity * oldAverage) + (quantity * price)) / newQuantity
-      await db.update(assets)
-        .set({
-          quantity: newQuantity.toFixed(2),
-          averagePrice: newAverage.toFixed(2),
-        })
-        .where(eq(assets.id, assetId))
-    }
+    const oldQuantity = Number(asset.quantity) || 0
+    const oldAverage = Number(asset.averagePrice) || 0
+    const newQuantity = oldQuantity + quantity
+    const newAverage = ((oldQuantity * oldAverage) + (quantity * price)) / newQuantity
+
+    await db.update(assets)
+      .set({
+        quantity: newQuantity.toFixed(2),
+        averagePrice: newAverage.toFixed(2),
+      })
+      .where(and(eq(assets.id, assetId), or(
+        eq(assets.userId, userId),
+        householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+      )))
   }
 
   revalidatePath("/admin/investimentos")
@@ -134,8 +166,14 @@ export async function deleteInvestmentTransaction(formData: FormData) {
   const id = Number(formData.get("id"))
   if (!id) throw new Error("ID inválido")
 
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(investmentTransactions.userId, userId),
+    householdIds.length > 0 ? inArray(investmentTransactions.householdId, householdIds) : undefined
+  )
+
   await db.delete(investmentTransactions)
-    .where(and(eq(investmentTransactions.id, id), eq(investmentTransactions.userId, userId)))
+    .where(and(eq(investmentTransactions.id, id), canAccess))
 
   revalidatePath("/admin/investimentos")
 }

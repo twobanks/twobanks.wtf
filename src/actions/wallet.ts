@@ -3,7 +3,8 @@
 import { auth } from "@/auth"
 import { db } from "@/db"
 import { installments, purchases, transactions } from "@/db/schema"
-import { and, eq, inArray } from "drizzle-orm"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 export async function createTransaction(formData: FormData) {
@@ -22,6 +23,8 @@ export async function createTransaction(formData: FormData) {
   if (!description || isNaN(amount) || !date) {
     throw new Error("Dados inválidos")
   }
+
+  const householdId = await getPrimaryHouseholdId(userId)
 
   await db.insert(transactions).values({
     userId,
@@ -57,6 +60,12 @@ export async function createInstallmentPurchase(formData: FormData) {
     throw new Error("Dados inválidos")
   }
 
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(transactions.userId, userId),
+    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
+  )
+
   const [purchase] = await db.insert(purchases).values({
     userId,
     creditCardId,
@@ -90,6 +99,8 @@ export async function createInstallmentPurchase(formData: FormData) {
 export async function updateTransaction(formData: FormData) {
   const session = await auth()
   if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
   const id = Number(formData.get("id"))
   const description = String(formData.get("description"))
   const amount = Number(formData.get("amount"))
@@ -97,14 +108,17 @@ export async function updateTransaction(formData: FormData) {
   const date = new Date(String(formData.get("date")))
   const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
   const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
-  const paid = formData.get("paid") === "on" ? true : false
+  const paid = formData.get("paid") === "on"
 
-  if (!id || !description || isNaN(amount) || !date) {
-    throw new Error("Dados inválidos")
-  }
+  if (!id || !description || isNaN(amount) || !date) throw new Error("Dados inválidos")
 
-  await db
-    .update(transactions)
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(transactions.userId, userId),
+    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
+  )
+
+  await db.update(transactions)
     .set({
       description,
       amount: amount.toFixed(2),
@@ -114,7 +128,7 @@ export async function updateTransaction(formData: FormData) {
       accountId,
       paid,
     })
-    .where(eq(transactions.id, id))
+    .where(and(eq(transactions.id, id), canAccess))
 
   revalidatePath("/admin/carteira")
 }
@@ -122,11 +136,19 @@ export async function updateTransaction(formData: FormData) {
 export async function deleteTransaction(formData: FormData) {
   const session = await auth()
   if (!session?.user) throw new Error("Não autorizado")
-  const id = Number(formData.get("id"))
+  const userId = session.user.id
 
+  const id = Number(formData.get("id"))
   if (!id) throw new Error("ID inválido")
 
-  await db.delete(transactions).where(eq(transactions.id, id))
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(transactions.userId, userId),
+    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
+  )
+
+  await db.delete(transactions)
+    .where(and(eq(transactions.id, id), canAccess))
 
   revalidatePath("/admin/carteira")
 }

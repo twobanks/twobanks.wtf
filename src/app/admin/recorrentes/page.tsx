@@ -1,36 +1,52 @@
-import { deleteRecurringExpense, generateMonthlyRecurring } from "@/actions/recurringExpenses"
-import { auth } from "@/auth"
-import { RecurringExpenseDrawer } from "@/components/Drawers/RecurringExpenseDrawer"
-import { db } from "@/db"
-import { categories, financialAccounts, recurringExpenses } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { redirect } from "next/navigation"
+import { deleteRecurringExpense, generateMonthlyRecurring } from "@/actions/recurringExpenses";
+import { auth } from "@/auth";
+import { RecurringExpenseDrawer } from "@/components/Drawers/RecurringExpenseDrawer";
+import { db } from "@/db";
+import { categories, financialAccounts, recurringExpenses } from "@/db/schema";
+import { getUserHouseholdIds } from "@/lib/household";
+import { eq, inArray, or } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export default async function RecorrentesPage() {
-  const session = await auth()
-  if (!session?.user) redirect("/login")
-  const userId = session.user.id
+  const session = await auth();
+  if (!session?.user) redirect("/login");
+  const userId = session.user.id;
+
+  const householdIds = await getUserHouseholdIds(userId);
+
+  // Condição de acesso para despesas recorrentes (compartilhadas)
+  const acessoRecorrentes = householdIds.length > 0
+    ? or(eq(recurringExpenses.userId, userId), inArray(recurringExpenses.householdId, householdIds))
+    : eq(recurringExpenses.userId, userId);
 
   const despesas = await db.query.recurringExpenses.findMany({
-    where: eq(recurringExpenses.userId, userId),
+    where: acessoRecorrentes,
     with: {
       category: true,
       account: true,
     },
     orderBy: (d, { asc }) => [asc(d.name)],
-  })
+  });
+
+  // Categorias e contas também podem ser compartilhadas
+  const acessoCategorias = householdIds.length > 0
+    ? or(eq(categories.userId, userId), inArray(categories.householdId, householdIds))
+    : eq(categories.userId, userId);
+
+  const acessoContas = householdIds.length > 0
+    ? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
+    : eq(financialAccounts.userId, userId);
 
   const categorias = await db.query.categories.findMany({
-    where: eq(categories.userId, userId),
-  })
+    where: acessoCategorias,
+  });
   const contas = await db.query.financialAccounts.findMany({
-    where: eq(financialAccounts.userId, userId),
-  })
+    where: acessoContas,
+  });
 
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Despesas Recorrentes</h1>
         <div className="flex gap-2">
           <form action={generateMonthlyRecurring}>
             <button
@@ -81,5 +97,5 @@ export default async function RecorrentesPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -20,7 +20,6 @@ export default async function CartoesPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Cartões de Crédito</h1>
         <CreditCardDrawer />
       </div>
 

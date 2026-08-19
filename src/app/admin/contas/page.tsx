@@ -3,7 +3,8 @@ import { auth } from "@/auth"
 import { AccountDrawer } from "@/components/Drawers/AccountDrawer"
 import { db } from "@/db"
 import { financialAccounts } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
 import { redirect } from "next/navigation"
 
 export default async function ContasPage() {
@@ -11,8 +12,14 @@ export default async function ContasPage() {
   if (!session?.user) redirect("/login")
   const userId = session.user.id
 
+  const householdIds = await getUserHouseholdIds(userId)
+
+  const where = householdIds.length > 0
+    ? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
+    : eq(financialAccounts.userId, userId)
+
   const contas = await db.query.financialAccounts.findMany({
-    where: eq(financialAccounts.userId, userId),
+    where,
     orderBy: (a, { asc }) => [asc(a.name)],
   })
 
@@ -20,7 +27,6 @@ export default async function ContasPage() {
     <main className="min-h-screen bg-black text-gray-100 p-6 md:p-10">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Contas Financeiras</h1>
           <AccountDrawer />
         </div>
 
