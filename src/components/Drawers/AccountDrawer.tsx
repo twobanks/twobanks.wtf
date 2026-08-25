@@ -10,20 +10,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
+import { AccountDrawerProps } from "@/utils/types"
 import { useState } from "react"
-
-// Interface atualizada para aceitar null em initialBalance
-interface FinancialAccount {
-  id: number
-  name: string
-  type: "checking" | "savings" | "cash" | "investment" | "other"
-  initialBalance: string | null
-}
-
-interface AccountDrawerProps {
-  account?: FinancialAccount
-  onSuccess?: () => void
-}
 
 export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
   const [open, setOpen] = useState(false)

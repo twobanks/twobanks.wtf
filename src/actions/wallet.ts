@@ -35,6 +35,7 @@ export async function createTransaction(formData: FormData) {
     categoryId,
     accountId,
     paid: true,
+    source: "manual",
   })
 
   revalidatePath("/admin/carteira")
@@ -218,4 +219,26 @@ export async function markInvoiceAsPaid(formData: FormData) {
     .where(inArray(installments.id, ids))
 
   revalidatePath("/admin/cartoes/[id]", "page")
+}
+
+export async function markTransactionAsPaid(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  // Verifica se a transação pertence ao usuário ou household
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(transactions.userId, userId),
+    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
+  )
+
+  await db.update(transactions)
+    .set({ paid: true })
+    .where(and(eq(transactions.id, id), canAccess))
+
+  revalidatePath("/admin/carteira")
 }

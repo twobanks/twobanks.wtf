@@ -39,6 +39,11 @@ export function MonthYearPicker({ ano, mes }: Props) {
   );
   const [selectedAno, setSelectedAno] = React.useState(String(ano));
 
+  // Obtém o nome do mês por extenso (ex: AGOSTO)
+  const nomeMes = new Date(ano, mes - 1, 1)
+    .toLocaleDateString("pt-BR", { month: "long" })
+    .toUpperCase();
+
   function aplicar() {
     const params = new URLSearchParams(searchParams.toString());
     params.set("mes", `${selectedAno}-${selectedMes}`);
@@ -50,7 +55,7 @@ export function MonthYearPicker({ ano, mes }: Props) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50  bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 min-w-[140px]">
         <CalendarIcon className="h-4 w-4" />
-        {String(mes).padStart(2, "0")}/{ano}
+        {nomeMes}/{ano}
       </PopoverTrigger>
 
       <PopoverContent className="w-auto p-4" align="center">
@@ -67,7 +72,9 @@ export function MonthYearPicker({ ano, mes }: Props) {
             <SelectContent>
               {MESES.map((m) => (
                 <SelectItem key={m} value={m}>
-                  {m}
+                  {new Date(Number(selectedAno), Number(m) - 1, 1)
+                    .toLocaleDateString("pt-BR", { month: "long" })
+                    .toUpperCase()}
                 </SelectItem>
               ))}
             </SelectContent>

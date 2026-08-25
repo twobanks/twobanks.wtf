@@ -10,13 +10,8 @@ import {
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
 import { useDrawer } from "@/contexts/DrawerContext"
-import type { CreditCard } from "@/utils/types"
+import type { CreditCardDrawerProps } from "@/utils/types"
 import { useState } from "react"
-
-interface CreditCardDrawerProps {
-  creditCard?: CreditCard
-  onSuccess?: () => void
-}
 
 export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProps) {
   const { activeDrawer, openDrawer, closeDrawer } = useDrawer()

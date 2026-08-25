@@ -1,24 +1,11 @@
 "use client"
 
 import { createExpense, updateExpense } from "@/actions/expenses"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
-import { FloatingAlert } from "@/components/ui/floating-alert"
 import { useDrawer } from "@/contexts/DrawerContext"
-import type { Category, FinancialAccount, Transaction } from "@/utils/types"
+import { ExpenseDrawerProps } from "@/utils/types"
 import { useState } from "react"
-
-interface ExpenseDrawerProps {
-  categories: Category[]
-  accounts: FinancialAccount[]
-  expense?: Transaction
-  onSuccess?: () => void
-}
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "../ui/drawer"
+import { FloatingAlert } from "../ui/floating-alert"
 
 export function ExpenseDrawer({ categories, accounts, expense, onSuccess }: ExpenseDrawerProps) {
   const { activeDrawer, openDrawer, closeDrawer } = useDrawer()

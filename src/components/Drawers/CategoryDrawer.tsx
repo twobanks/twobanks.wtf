@@ -9,29 +9,16 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
-import { useDrawer } from "@/contexts/DrawerContext"
+import { CategoryDrawerProps } from "@/utils/types"
 import { useState } from "react"
 
-interface Category {
-  id: number
-  name: string
-  type: "expense" | "income" | "transfer"
-}
-
-interface CategoryDrawerProps {
-  category?: Category
-  onSuccess?: () => void
-}
-
 export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
-  const { activeDrawer, openDrawer, closeDrawer } = useDrawer()
+  const [open, setOpen] = useState(false)   // estado local
   const [floatingAlert, setFloatingAlert] = useState<{
     type: "success" | "error"
     message: string
   } | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const open = activeDrawer === "category"
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true)
@@ -42,7 +29,7 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
       } else {
         await createCategory(formData)
       }
-      closeDrawer()
+      setOpen(false)
       setFloatingAlert({
         type: "success",
         message: category ? "Categoria atualizada!" : "Categoria criada!",
@@ -63,7 +50,7 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
     <>
       <button
         type="button"
-        onClick={() => openDrawer("category")}
+        onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
       >
         {category ? "Editar" : "+ Nova Categoria"}
@@ -71,9 +58,7 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
 
       <Drawer
         open={open}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) closeDrawer()
-        }}
+        onOpenChange={setOpen}
       >
         <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
@@ -95,13 +80,13 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
             />
             <select
               name="type"
-              defaultValue={category?.type}
+              defaultValue={category?.type ?? "expense"}
               required
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="expense">Despesa</option>
               <option value="income">Receita</option>
-              <option value="transfer">Transferência</option>
+              {/* Remova "transfer" se não for suportado pela action */}
             </select>
             <button
               type="submit"

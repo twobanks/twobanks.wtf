@@ -10,14 +10,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
-import type { Asset } from "@/utils/types"
+import type { InvestmentTransactionDrawerProps } from "@/utils/types"
 import { useState } from "react"
-
-interface InvestmentTransactionDrawerProps {
-  assets: Asset[]
-  selectedAssetId?: number
-  onSuccess?: () => void
-}
 
 export function InvestmentTransactionDrawer({
   assets,

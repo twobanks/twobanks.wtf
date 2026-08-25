@@ -10,16 +10,10 @@ import {
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
 import { useDrawer } from "@/contexts/DrawerContext"
-import type { Category, FinancialAccount } from "@/utils/types"
+import { IncomeDrawerProps } from "@/utils/types"
 import { useState } from "react"
 
-interface IncomeDrawerProps {
-  categories: Category[]
-  accounts: FinancialAccount[]
-  onSuccess?: () => void
-}
-
-export function IncomeDrawer({ categories, accounts, onSuccess }: IncomeDrawerProps) {
+export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
   const { activeDrawer, openDrawer, closeDrawer } = useDrawer()
   const [floatingAlert, setFloatingAlert] = useState<{
     type: "success" | "error"
@@ -62,7 +56,7 @@ export function IncomeDrawer({ categories, accounts, onSuccess }: IncomeDrawerPr
       </button>
 
       <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) closeDrawer() }} swipeDirection="right">
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-4 shadow-xl">
           <DrawerHeader>
             <DrawerTitle className="text-xl font-semibold text-gray-100">
               Nova Receita
@@ -94,43 +88,12 @@ export function IncomeDrawer({ categories, accounts, onSuccess }: IncomeDrawerPr
               defaultValue={new Date().toISOString().split("T")[0]}
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <select
-              name="categoryId"
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Sem categoria</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="accountId"
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="">Sem conta</option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name}
-                </option>
-              ))}
-            </select>
-            <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
-              <input
-                type="checkbox"
-                name="paid"
-                defaultChecked
-                className="rounded border-gray-700 bg-gray-800"
-              />
-              Recebido
-            </label>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="md:col-span-2 bg-green-600 hover:bg-green-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+              className="md:col-span-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
             >
-              {isSubmitting ? "Salvando..." : "Salvar"}
+              {isSubmitting ? "Salvando..." : "Nova Receita"}
             </button>
           </form>
         </DrawerContent>

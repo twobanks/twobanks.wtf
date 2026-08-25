@@ -82,10 +82,10 @@ export default async function CarteiraPage({
     return { year: date.getFullYear(), month: date.getMonth() + 1 };
   }
 
-  const receitasDoMes = await db.query.transactions.findMany({
+  // Consulta unificada de todas as transações do mês
+  const allTransactions = await db.query.transactions.findMany({
     where: and(
       accessCondition(transactions),
-      eq(transactions.type, "income"),
       gte(transactions.date, firstDayStr),
       lte(transactions.date, lastDayStr)
     ),
@@ -93,6 +93,10 @@ export default async function CarteiraPage({
     orderBy: (t, { desc }) => [desc(t.date)],
   });
 
+  const receitasDoMes = allTransactions.filter((t) => t.type === "income");
+  const despesas = allTransactions.filter((t) => t.type === "expense");
+
+  // Logs de despesas recorrentes
   const allLogsDoMes = await db.query.recurringPaymentLogs.findMany({
     where: eq(recurringPaymentLogs.month, `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`),
     with: {
@@ -182,160 +186,168 @@ export default async function CarteiraPage({
     })
   );
 
-  // Calcular totais do mês
+  // Totais
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
-
   const totalDespesas =
     outrasDespesas.reduce((sum, t) => sum + Number(t.amount), 0) +
     obraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
     logsDoMes.reduce((sum, log) => sum + Number(log.recurringExpense?.amount || 0), 0) +
     cartoesComFatura.reduce((sum, c) => sum + c.total, 0);
-
   const saldo = totalReceitas - totalDespesas;
 
   return (
     <DrawerProvider>
       <DrawerInitializer drawerOpen={open} />
-        <SummaryCards
-          totalReceitas={totalReceitas}
-          totalDespesas={totalDespesas}
-          saldo={saldo}
-          mes={`${faturaMesNum}/${faturaAno}`}
-        />
-        <Tabs defaultValue="all" className="flex flex-col w-full space-y-2">
-          <Card className="@container/card flex flex-row items-center px-4 justify-between flex-wrap gap-2">
-            <TabsList className="flex-wrap">
-              <TabsTrigger value="all">Todas</TabsTrigger>
-              <TabsTrigger value="receitas">Receitas</TabsTrigger>
-              <TabsTrigger value="recorrentes">Contas de Casa</TabsTrigger>
-              <TabsTrigger value="contas">Despesas</TabsTrigger>
-              <TabsTrigger value="obra">Construção</TabsTrigger>
-              <TabsTrigger value="cartoes">Cartões de Crédito</TabsTrigger>
-            </TabsList>
-            <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
-          </Card>
+      <SummaryCards
+        totalReceitas={totalReceitas}
+        totalDespesas={totalDespesas}
+        saldo={saldo}
+        mes={`${faturaMesNum}/${faturaAno}`}
+      />
+      <Tabs defaultValue="all" className="flex flex-col w-full space-y-2">
+        <Card className="@container/card flex flex-row items-center px-4 justify-between flex-wrap gap-2">
+          <TabsList className="flex-wrap">
+            <TabsTrigger value="all">Todas</TabsTrigger>
+            <TabsTrigger value="receitas">Receitas</TabsTrigger>
+            <TabsTrigger value="recorrentes">Contas de Casa</TabsTrigger>
+            <TabsTrigger value="contas">Despesas</TabsTrigger>
+            <TabsTrigger value="obra">Construção</TabsTrigger>
+            <TabsTrigger value="cartoes">Cartões de Crédito</TabsTrigger>
+          </TabsList>
+          <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+        </Card>
 
-          <TabsContent value="all" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <section className="space-y-4 min-w-0">
-                <Card className="@container/card h-full">
-                  <div className="@container/table rounded-xl p-5">
-                    <TransactionsTable transactions={receitasDoMes} />
-                  </div>
-                </Card>
-              </section>
-
-              <section className="space-y-4 min-w-0">
-                <Card className="@container/card h-full">
-                  <div className="@container/table rounded-xl p-5">
-                    <RecurringExpensesTable logs={logsDoMes} />
-                  </div>
-                </Card>
-              </section>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <section className="space-y-4 min-w-0">
-                <Card className="@container/card h-full">
-                  <div className="@container/table rounded-xl p-5">
-                    <OtherExpensesTable expenses={outrasDespesas} />
-                  </div>
-                </Card>
-              </section>
-
-              <section className="space-y-4 min-w-0">
-                <Card className="@container/card h-full">
-                  <div className="@container/table rounded-xl p-5">
-                    <ObraTransactionsTable
-                      obraCategoryExists={!!obraCategory}
-                      transactions={obraTransactions}
-                    />
-                  </div>
-                </Card>
-              </section>
-            </div>
-
-            <section className="space-y-4">
-              <Card className="@container/card">
-                <div className="@container/table rounded-xl p-5">
-                  <CreditCardsSection
-                    cartoesComFatura={cartoesComFatura}
-                    categorias={categorias}
-                    cartoes={cartoes}
-                    createInstallmentPurchaseAction={createInstallmentPurchase}
-                    faturaAno={faturaAno}
-                    faturaMesNum={faturaMesNum}
-                  />
-                </div>
-              </Card>
-            </section>
-          </TabsContent>
-
-          {/* Aba Receitas */}
-          <TabsContent value="receitas">
-            <section className="space-y-4">
-              <Card className="@container/card h-full">
-                <div className="@container/table rounded-xl p-5">
+        <TabsContent value="all" className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <section className="space-y-4 min-w-0">
+              <Card className="@container/card h-full p-0">
+                <div className="@container/table rounded-xl p-4">
                   <TransactionsTable transactions={receitasDoMes} />
                 </div>
               </Card>
             </section>
-          </TabsContent>
 
-          {/* Aba Contas de Casa (Recorrente) */}
-          <TabsContent value="recorrentes">
-            <section className="space-y-4">
-              <Card className="@container/card h-full">
-                <div className="@container/table rounded-xl p-5">
-                  <RecurringExpensesTable logs={logsDoMes} />
+            <section className="space-y-4 min-w-0">
+              <Card className="@container/card h-full p-0">
+                <div className="@container/table rounded-xl p-4">
+                  <RecurringExpensesTable
+                    logs={logsDoMes}
+                    categories={categorias}
+                    accounts={accounts}
+                  />
                 </div>
               </Card>
             </section>
-          </TabsContent>
+          </div>
 
-          {/* Aba Contas de Casa */}
-          <TabsContent value="contas">
-            <section className="space-y-4">
-              <Card className="@container/card h-full">
-                <div className="@container/table rounded-xl p-5">
-                  <OtherExpensesTable expenses={outrasDespesas} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <section className="space-y-4 min-w-0">
+              <Card className="@container/card h-full p-0">
+                <div className="@container/table rounded-xl p-4">
+                  <OtherExpensesTable
+                    expenses={outrasDespesas}
+                    categories={categorias}
+                    accounts={accounts}
+                  />
                 </div>
               </Card>
             </section>
-          </TabsContent>
 
-          {/* Aba Obra */}
-          <TabsContent value="obra">
-            <section className="space-y-4">
-              <Card className="@container/card h-full">
-                <div className="@container/table rounded-xl p-5">
+            <section className="space-y-4 min-w-0">
+              <Card className="@container/card h-full p-0">
+                <div className="@container/table rounded-xl p-4">
                   <ObraTransactionsTable
                     obraCategoryExists={!!obraCategory}
                     transactions={obraTransactions}
+                    categories={categorias}
+                    accounts={accounts}
                   />
                 </div>
               </Card>
             </section>
-          </TabsContent>
+          </div>
 
-          {/* Aba Cartões de Crédito */}
-          <TabsContent value="cartoes">
-            <section className="space-y-4">
-              <Card className="@container/card">
-                <div className="@container/table rounded-xl p-5">
-                  <CreditCardsSection
-                    cartoesComFatura={cartoesComFatura}
-                    categorias={categorias}
-                    cartoes={cartoes}
-                    createInstallmentPurchaseAction={createInstallmentPurchase}
-                    faturaAno={faturaAno}
-                    faturaMesNum={faturaMesNum}
-                  />
-                </div>
-              </Card>
-            </section>
-          </TabsContent>
-        </Tabs>
+          <section className="space-y-4">
+            <Card className="@container/card">
+              <div className="@container/table rounded-xl p-5">
+                <CreditCardsSection
+                  cartoesComFatura={cartoesComFatura}
+                  categorias={categorias}
+                  cartoes={cartoes}
+                  createInstallmentPurchaseAction={createInstallmentPurchase}
+                  faturaAno={faturaAno}
+                  faturaMesNum={faturaMesNum}
+                />
+              </div>
+            </Card>
+          </section>
+        </TabsContent>
+
+        {/* Aba Receitas */}
+        <TabsContent value="receitas">
+          <Card className="@container/card h-full">
+            <div className="@container/table rounded-xl p-5">
+              <TransactionsTable transactions={receitasDoMes} />
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Aba Contas de Casa (Recorrente) */}
+        <TabsContent value="recorrentes">
+          <Card className="@container/card h-full">
+            <div className="@container/table rounded-xl p-5">
+              <RecurringExpensesTable
+                logs={logsDoMes}
+                categories={categorias}
+                accounts={accounts}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Aba Despesas */}
+        <TabsContent value="contas">
+          <Card className="@container/card h-full">
+            <div className="@container/table rounded-xl p-5">
+              <OtherExpensesTable
+                expenses={outrasDespesas}
+                categories={categorias}
+                accounts={accounts}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Aba Obra */}
+        <TabsContent value="obra">
+          <Card className="@container/card h-full">
+            <div className="@container/table rounded-xl p-5">
+              <ObraTransactionsTable
+                obraCategoryExists={!!obraCategory}
+                transactions={obraTransactions}
+                categories={categorias}
+                accounts={accounts}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* Aba Cartões de Crédito */}
+        <TabsContent value="cartoes">
+          <Card className="@container/card">
+            <div className="@container/table rounded-xl p-5">
+              <CreditCardsSection
+                cartoesComFatura={cartoesComFatura}
+                categorias={categorias}
+                cartoes={cartoes}
+                createInstallmentPurchaseAction={createInstallmentPurchase}
+                faturaAno={faturaAno}
+                faturaMesNum={faturaMesNum}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </DrawerProvider>
   );
 }

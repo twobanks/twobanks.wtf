@@ -219,11 +219,12 @@ export const financialAccounts = pgTable('financial_accounts', {
 export const transactions = pgTable('transactions', {
   id: serial('id').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }), // NOVA
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }),
   description: text('description').notNull(),
   amount: numeric('amount').notNull(),
   type: transactionTypeEnum('type').notNull(),
   date: date('date').notNull(),
+  source: text('source').notNull().default('manual'), // NOVA COLUNA
   categoryId: integer('category_id').references(() => categories.id),
   accountId: integer('account_id').references(() => financialAccounts.id),
   paid: boolean('paid').notNull().default(true),

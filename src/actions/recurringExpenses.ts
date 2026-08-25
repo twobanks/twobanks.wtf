@@ -135,6 +135,7 @@ export async function generateMonthlyRecurring(formData: FormData) {
       amount: despesa.amount,
       type: "expense",
       date: dueDate.toISOString().split("T")[0],
+      source: "recurring",
       categoryId: despesa.categoryId,
       accountId: despesa.accountId,
       paid: false,

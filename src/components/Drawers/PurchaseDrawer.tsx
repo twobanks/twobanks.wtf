@@ -52,9 +52,10 @@ export function PurchaseDrawer({ creditCards, createInstallmentPurchaseAction, t
   return (
     <>
       <Drawer open={open} onOpenChange={(isOpen) => !isOpen && closeDrawer()} swipeDirection="right">
-        <Button type="button" onClick={() => openDrawer('purchase')}>
+        <button
+        type="button" onClick={() => openDrawer('purchase')} className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
           {triggerLabel}
-        </Button>
+        </button>
         <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-4 shadow-xl">
           <DrawerHeader className="p-0">
             <DrawerTitle className="text-xl font-semibold text-gray-100">

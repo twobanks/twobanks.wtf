@@ -10,15 +10,10 @@ import {
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
 import { useDrawer } from "@/contexts/DrawerContext"
-import type { Category, FinancialAccount, RecurringExpense } from "@/utils/types"
+import type { RecurringExpenseDrawerProps } from "@/utils/types"
 import { useState } from "react"
 
-interface RecurringExpenseDrawerProps {
-  recurringExpense?: RecurringExpense
-  categories?: Category[]
-  accounts?: FinancialAccount[]
-  onSuccess?: () => void
-}
+
 
 export function RecurringExpenseDrawer({
   categories,

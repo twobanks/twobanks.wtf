@@ -152,7 +152,7 @@ export interface RecurringExpense {
   account?: FinancialAccount | null;
 }
 
-interface RecurringExpenseDrawerProps {
+export interface RecurringExpenseDrawerProps {
   recurringExpense?: RecurringExpense
   categories?: Category[]
   accounts?: FinancialAccount[]
@@ -192,4 +192,129 @@ export interface InvestmentTransactionDrawerProps {
   assetId?: number;
   transaction?: InvestmentTransaction;
   onSuccess?: () => void;
+}
+
+export interface ObraTransactionsTableProps {
+  obraCategoryExists: boolean
+  transactions: Transaction[]
+  categories: Category[]
+  accounts: FinancialAccount[]
+}
+
+export interface Parcela {
+  id: number
+  purchaseDescription: string
+  number: number
+  totalInstallments: number
+  amount: string
+  paid: boolean
+  dueDate: string
+}
+
+export interface CartaoFatura {
+  cartao: CreditCard
+  parcelas: Parcela[]
+  total: number
+  pago: number
+}
+
+export interface CreditCardsSectionProps {
+  cartoesComFatura: CartaoFatura[]
+  categorias: Category[]
+  cartoes: CreditCard[]
+  createInstallmentPurchaseAction: (
+    formData: FormData
+  ) => Promise<void>
+  faturaAno: number
+  faturaMesNum: number
+}
+
+export interface OtherExpensesTableProps {
+  expenses: Transaction[]
+  categories: Category[]
+  accounts: FinancialAccount[]
+}
+
+export interface RecurringLog {
+  id: number
+  transaction: {
+    id: number
+    date: string
+    amount: string
+    paid: boolean
+  }
+  recurringExpense: {
+    name: string
+    category?: { name: string } | null
+    account?: { name: string } | null
+  }
+}
+
+export interface RecurringExpensesTableProps {
+  logs: RecurringLog[]
+  categories: Category[]
+  accounts: FinancialAccount[]
+}
+
+export interface TableActionsProps {
+  id: number
+  editHref?: string
+  onEdit?: () => void
+  onDelete?: (id: number) => void
+  onPay?: () => void
+  isPaid?: boolean
+}
+
+export interface TransactionsTableProps {
+  transactions: Transaction[]
+}
+
+export interface FinancialAccount {
+  id: number
+  name: string
+  type: "checking" | "savings" | "cash" | "investment" | "other"
+  initialBalance: string | null
+}
+
+export interface AccountDrawerProps {
+  account?: FinancialAccount
+  onSuccess?: () => void
+}
+
+export interface AssetDrawerProps {
+  asset?: Asset
+  onSuccess?: () => void
+}
+
+export interface Category {
+  id: number
+  name: string
+  type: "expense" | "income" | "transfer"
+}
+
+export interface CategoryDrawerProps {
+  category?: Category
+  onSuccess?: () => void
+}
+
+export interface CreditCardDrawerProps {
+  creditCard?: CreditCard
+  onSuccess?: () => void
+}
+
+export interface ExpenseDrawerProps {
+  categories: Category[]
+  accounts: FinancialAccount[]
+  expense?: Transaction
+  onSuccess?: () => void
+}
+
+export interface IncomeDrawerProps {
+  onSuccess?: () => void
+}
+
+export interface InvestmentTransactionDrawerProps {
+  assets: Asset[]
+  selectedAssetId?: number
+  onSuccess?: () => void
 }

@@ -10,13 +10,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import { FloatingAlert } from "@/components/ui/floating-alert"
-import type { Asset } from "@/utils/types"
+import type { AssetDrawerProps } from "@/utils/types"
 import { useState } from "react"
-
-interface AssetDrawerProps {
-  asset?: Asset
-  onSuccess?: () => void
-}
 
 export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
   const [open, setOpen] = useState(false)
