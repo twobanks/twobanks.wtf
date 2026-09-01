@@ -60,7 +60,7 @@ export default function Navbar({
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="font-extrabold text-xl tracking-tight">
-                  twobanks<span className="text-[#FC4C02]">.</span>
+                  BANKS<span className="text-[#FC4C02]">.</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -89,7 +89,7 @@ export default function Navbar({
           </NavigationMenu>
         ) : (
           <Link href="/" className="mr-8 font-extrabold text-xl tracking-tight">
-            twobanks<span className="text-[#FC4C02]">.</span>
+            BANKS<span className="text-[#FC4C02]">.</span>
           </Link>
         )}
 

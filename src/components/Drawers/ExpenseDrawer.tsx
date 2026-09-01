@@ -55,7 +55,7 @@ export function ExpenseDrawer({ categories, accounts, expense, onSuccess }: Expe
         }}
         className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
       >
-        {expense ? "Editar" : "+ Adicionar Despesa"}
+        {expense ? "Editar" : "+"}
       </button>
 
       <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) closeDrawer() }} swipeDirection="right">

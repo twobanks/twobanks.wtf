@@ -13,8 +13,6 @@ import { useDrawer } from "@/contexts/DrawerContext"
 import type { RecurringExpenseDrawerProps } from "@/utils/types"
 import { useState } from "react"
 
-
-
 export function RecurringExpenseDrawer({
   categories,
   accounts,
@@ -30,9 +28,19 @@ export function RecurringExpenseDrawer({
 
   const open = activeDrawer === "recurring"
 
+  const defaultStartMonth = (() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  })()
+
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true)
     try {
+      // Garantir que o campo startMonth esteja presente (se não, usar padrão)
+      if (!formData.get("startMonth")) {
+        formData.set("startMonth", defaultStartMonth)
+      }
+
       if (recurringExpense) {
         formData.append("id", String(recurringExpense.id))
         await updateRecurringExpense(formData)
@@ -109,6 +117,17 @@ export function RecurringExpenseDrawer({
               required
               className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+
+            {!recurringExpense && (
+              <input
+                name="startMonth"
+                type="month"
+                defaultValue={defaultStartMonth}
+                required
+                className="..."
+              />
+            )}
+
             <select
               name="categoryId"
               defaultValue={recurringExpense?.categoryId ?? ""}
@@ -129,15 +148,19 @@ export function RecurringExpenseDrawer({
                 <option key={acc.id} value={acc.id}>{acc.name}</option>
               ))}
             </select>
+
+            {/* Checkbox corrigido: valor explícito "true" */}
             <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
               <input
                 type="checkbox"
                 name="active"
+                value="true"
                 defaultChecked={recurringExpense?.active ?? true}
                 className="rounded border-gray-700 bg-gray-800"
               />
               Ativa
             </label>
+
             <button
               type="submit"
               disabled={isSubmitting}

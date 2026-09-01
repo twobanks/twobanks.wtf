@@ -150,6 +150,7 @@ export interface RecurringExpense {
   frequency: string;
   category?: Category | null;
   account?: FinancialAccount | null;
+  startMonth?: string;
 }
 
 export interface RecurringExpenseDrawerProps {
@@ -227,6 +228,7 @@ export interface CreditCardsSectionProps {
   ) => Promise<void>
   faturaAno: number
   faturaMesNum: number
+  payInvoiceAction?: (formData: FormData) => Promise<void>;
 }
 
 export interface OtherExpensesTableProps {
@@ -318,3 +320,24 @@ export interface InvestmentTransactionDrawerProps {
   selectedAssetId?: number
   onSuccess?: () => void
 }
+
+export interface SummaryCardsProps {
+  totalReceitas: number;
+  totalDespesas: number;
+  saldo: number;
+  mes: string;
+  receitasVariacao?: number | null;
+  despesasVariacao?: number | null;
+  saldoVariacao?: number | null;
+}
+
+export type UnifiedExpense = {
+  id: number;
+  description: string;
+  amount: number;
+  paid: boolean;
+  isRecurring: boolean;
+  categoryId?: number | null;
+  accountId?: number | null;
+  date?: string;
+};

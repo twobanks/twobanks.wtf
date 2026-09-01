@@ -1,12 +1,11 @@
-import { createInstallmentPurchase } from "@/actions/wallet";
+import { createInstallmentPurchase, markInvoiceAsPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
 import { MonthYearPicker } from "@/components/month-year-picker";
 import { SummaryCards } from "@/components/SummaryCards";
 import { CreditCardsSection } from "@/components/Tables/credit-cards-section";
+import { ExpensesTable } from "@/components/Tables/expenses-table";
 import { ObraTransactionsTable } from "@/components/Tables/obra-transactions-table";
-import { OtherExpensesTable } from "@/components/Tables/other-expenses-table";
-import { RecurringExpensesTable } from "@/components/Tables/recurring-expenses-table";
 import { TransactionsTable } from "@/components/Tables/transactions-table";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,11 +16,10 @@ import {
   creditCards,
   financialAccounts,
   purchases,
-  recurringPaymentLogs,
   transactions,
 } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
-import { and, eq, gte, inArray, lte, not, notInArray, or } from "drizzle-orm";
+import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
 import { redirect } from "next/navigation";
 
 export default async function CarteiraPage({
@@ -56,7 +54,7 @@ export default async function CarteiraPage({
 
   const now = new Date();
   let faturaAno = now.getFullYear();
-  let faturaMesNum = now.getMonth() + 1; // 1-12
+  let faturaMesNum = now.getMonth() + 1;
 
   if (mes) {
     const [ano, mesNum] = mes.split("-").map(Number);
@@ -76,11 +74,6 @@ export default async function CarteiraPage({
     date.setMonth(date.getMonth() - 1);
     return { year: date.getFullYear(), month: date.getMonth() + 1 };
   }
-  function getNextMonth(year: number, month: number) {
-    const date = new Date(year, month - 1, 1);
-    date.setMonth(date.getMonth() + 1);
-    return { year: date.getFullYear(), month: date.getMonth() + 1 };
-  }
 
   // Consulta unificada de todas as transações do mês
   const allTransactions = await db.query.transactions.findMany({
@@ -94,62 +87,32 @@ export default async function CarteiraPage({
   });
 
   const receitasDoMes = allTransactions.filter((t) => t.type === "income");
-  const despesas = allTransactions.filter((t) => t.type === "expense");
-
-  // Logs de despesas recorrentes
-  const allLogsDoMes = await db.query.recurringPaymentLogs.findMany({
-    where: eq(recurringPaymentLogs.month, `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`),
-    with: {
-      recurringExpense: {
-        with: { category: true, account: true },
-      },
-      transaction: true,
-    },
-  });
-
-  const logsDoMes = allLogsDoMes.filter(log => {
-    const expense = log.recurringExpense;
-    return expense.userId === userId || (expense.householdId && householdIds.includes(expense.householdId));
-  });
-
-  const recurringTransactionIds = logsDoMes.map((log) => log.transactionId);
 
   const obraCategory = categorias.find((c) => c.name.toLowerCase().includes("obra"));
 
+  // Transações de obra (todas as despesas com categoria obra)
   const obraTransactions = obraCategory
-    ? await db.query.transactions.findMany({
-        where: and(
-          accessCondition(transactions),
-          eq(transactions.categoryId, obraCategory.id),
-          eq(transactions.type, "expense"),
-          gte(transactions.date, firstDayStr),
-          lte(transactions.date, lastDayStr)
-        ),
-        with: { category: true, account: true },
-        orderBy: (t, { desc }) => [desc(t.date)],
-      })
+    ? allTransactions.filter(
+        (t) => t.type === "expense" && t.categoryId === obraCategory.id
+      )
     : [];
 
-  const avulsasConditions = [
-    accessCondition(transactions),
-    eq(transactions.type, "expense"),
-    gte(transactions.date, firstDayStr),
-    lte(transactions.date, lastDayStr),
-  ];
+  // Despesas que não são de obra (inclui avulsas e recorrentes)
+  const outrasDespesas = allTransactions.filter(
+    (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
+  ).map((t) => ({
+    id: t.id,
+    description: t.description,
+    amount: Number(t.amount),
+    paid: t.paid,
+    isRecurring: t.source === "recurring",
+    // Campos opcionais para o drawer de edição (não usados agora)
+    categoryId: t.categoryId,
+    accountId: t.accountId,
+    date: t.date,
+  }));
 
-  if (obraCategory) {
-    avulsasConditions.push(not(eq(transactions.categoryId, obraCategory.id)));
-  }
-  if (recurringTransactionIds.length > 0) {
-    avulsasConditions.push(notInArray(transactions.id, recurringTransactionIds));
-  }
-
-  const outrasDespesas = await db.query.transactions.findMany({
-    where: and(...avulsasConditions),
-    with: { category: true, account: true },
-    orderBy: (t, { desc }) => [desc(t.date)],
-  });
-
+  // Cartões de crédito
   const cartoesComFatura = await Promise.all(
     cartoes.map(async (cartao) => {
       const compras = await db.query.purchases.findMany({
@@ -189,11 +152,72 @@ export default async function CarteiraPage({
   // Totais
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
   const totalDespesas =
-    outrasDespesas.reduce((sum, t) => sum + Number(t.amount), 0) +
+    outrasDespesas.reduce((sum, t) => sum + t.amount, 0) +
     obraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
-    logsDoMes.reduce((sum, log) => sum + Number(log.recurringExpense?.amount || 0), 0) +
     cartoesComFatura.reduce((sum, c) => sum + c.total, 0);
   const saldo = totalReceitas - totalDespesas;
+
+  // ========== MÊS ANTERIOR ==========
+  const prev = getPreviousMonth(faturaAno, faturaMesNum);
+  const prevPrimeiroDia = new Date(prev.year, prev.month - 1, 1);
+  const prevUltimoDia = new Date(prev.year, prev.month, 0);
+  const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
+  const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
+
+  const prevAllTransactions = await db.query.transactions.findMany({
+    where: and(
+      accessCondition(transactions),
+      gte(transactions.date, prevFirstDayStr),
+      lte(transactions.date, prevLastDayStr)
+    ),
+    with: { category: true, account: true },
+  });
+
+  const prevReceitas = prevAllTransactions.filter((t) => t.type === "income");
+  const prevObraTransactions = obraCategory
+    ? prevAllTransactions.filter(
+        (t) => t.type === "expense" && t.categoryId === obraCategory.id
+      )
+    : [];
+  const prevOutrasDespesas = prevAllTransactions.filter(
+    (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
+  );
+
+  const prevCartoesComFatura = await Promise.all(
+    cartoes.map(async (cartao) => {
+      const compras = await db.query.purchases.findMany({
+        where: and(eq(purchases.creditCardId, cartao.id), eq(purchases.userId, userId)),
+        with: { installments: true },
+      });
+      const parcelasDoMes = compras.flatMap((compra) =>
+        compra.installments
+          .filter((parcela) => {
+            const dueDate = new Date(parcela.dueDate + "T00:00:00");
+            return dueDate >= prevPrimeiroDia && dueDate <= prevUltimoDia;
+          })
+          .map((parcela) => parcela)
+      );
+      const total = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0);
+      return total;
+    })
+  );
+  const prevTotalCartoes = prevCartoesComFatura.reduce((sum, total) => sum + total, 0);
+
+  const prevTotalReceitas = prevReceitas.reduce((sum, t) => sum + Number(t.amount), 0);
+  const prevTotalDespesas =
+    prevOutrasDespesas.reduce((sum, t) => sum + Number(t.amount), 0) +
+    prevObraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
+    prevTotalCartoes;
+  const prevSaldo = prevTotalReceitas - prevTotalDespesas;
+
+  const calcVariacao = (atual: number, anterior: number): number | null => {
+    if (anterior === 0) return null;
+    return ((atual - anterior) / Math.abs(anterior)) * 100;
+  };
+
+  const receitasVariacao = calcVariacao(totalReceitas, prevTotalReceitas);
+  const despesasVariacao = calcVariacao(totalDespesas, prevTotalDespesas);
+  const saldoVariacao = calcVariacao(saldo, prevSaldo);
 
   return (
     <DrawerProvider>
@@ -203,14 +227,16 @@ export default async function CarteiraPage({
         totalDespesas={totalDespesas}
         saldo={saldo}
         mes={`${faturaMesNum}/${faturaAno}`}
+        receitasVariacao={receitasVariacao}
+        despesasVariacao={despesasVariacao}
+        saldoVariacao={saldoVariacao}
       />
       <Tabs defaultValue="all" className="flex flex-col w-full space-y-2">
         <Card className="@container/card flex flex-row items-center px-4 justify-between flex-wrap gap-2">
           <TabsList className="flex-wrap">
             <TabsTrigger value="all">Todas</TabsTrigger>
             <TabsTrigger value="receitas">Receitas</TabsTrigger>
-            <TabsTrigger value="recorrentes">Contas de Casa</TabsTrigger>
-            <TabsTrigger value="contas">Despesas</TabsTrigger>
+            <TabsTrigger value="despesas">Despesas</TabsTrigger>
             <TabsTrigger value="obra">Construção</TabsTrigger>
             <TabsTrigger value="cartoes">Cartões de Crédito</TabsTrigger>
           </TabsList>
@@ -230,8 +256,8 @@ export default async function CarteiraPage({
             <section className="space-y-4 min-w-0">
               <Card className="@container/card h-full p-0">
                 <div className="@container/table rounded-xl p-4">
-                  <RecurringExpensesTable
-                    logs={logsDoMes}
+                  <ExpensesTable
+                    expenses={outrasDespesas}
                     categories={categorias}
                     accounts={accounts}
                   />
@@ -241,18 +267,6 @@ export default async function CarteiraPage({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <section className="space-y-4 min-w-0">
-              <Card className="@container/card h-full p-0">
-                <div className="@container/table rounded-xl p-4">
-                  <OtherExpensesTable
-                    expenses={outrasDespesas}
-                    categories={categorias}
-                    accounts={accounts}
-                  />
-                </div>
-              </Card>
-            </section>
-
             <section className="space-y-4 min-w-0">
               <Card className="@container/card h-full p-0">
                 <div className="@container/table rounded-xl p-4">
@@ -277,6 +291,7 @@ export default async function CarteiraPage({
                   createInstallmentPurchaseAction={createInstallmentPurchase}
                   faturaAno={faturaAno}
                   faturaMesNum={faturaMesNum}
+                  payInvoiceAction={markInvoiceAsPaid}
                 />
               </div>
             </Card>
@@ -292,24 +307,11 @@ export default async function CarteiraPage({
           </Card>
         </TabsContent>
 
-        {/* Aba Contas de Casa (Recorrente) */}
-        <TabsContent value="recorrentes">
+        {/* Aba Despesas (unificada) */}
+        <TabsContent value="despesas">
           <Card className="@container/card h-full">
             <div className="@container/table rounded-xl p-5">
-              <RecurringExpensesTable
-                logs={logsDoMes}
-                categories={categorias}
-                accounts={accounts}
-              />
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Aba Despesas */}
-        <TabsContent value="contas">
-          <Card className="@container/card h-full">
-            <div className="@container/table rounded-xl p-5">
-              <OtherExpensesTable
+              <ExpensesTable
                 expenses={outrasDespesas}
                 categories={categorias}
                 accounts={accounts}
@@ -343,6 +345,7 @@ export default async function CarteiraPage({
                 createInstallmentPurchaseAction={createInstallmentPurchase}
                 faturaAno={faturaAno}
                 faturaMesNum={faturaMesNum}
+                payInvoiceAction={markInvoiceAsPaid}
               />
             </div>
           </Card>

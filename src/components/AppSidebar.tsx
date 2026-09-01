@@ -45,7 +45,7 @@ export function AppSidebar({ variant = "sidebar" }: AppSidebarProps) {
           href="/"
           className="flex items-center gap-2 font-extrabold text-xl tracking-tight"
         >
-          twobanks<span className="text-[#FC4C02]">.</span>
+          BANKS<span className="text-[#FC4C02]">.</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>

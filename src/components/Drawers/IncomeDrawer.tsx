@@ -52,7 +52,7 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         onClick={() => openDrawer("income")}
         className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
       >
-        + Adicionar Receita
+        + 
       </button>
 
       <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) closeDrawer() }} swipeDirection="right">
