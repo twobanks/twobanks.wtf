@@ -88,7 +88,7 @@ export function CreditCardsSection({
 
             return (
               <AccordionItem key={cartao.id} value={String(cartao.id)}>
-                <AccordionTrigger>
+                <AccordionTrigger className="hover:bg-transparent hover:no-underline">
                   <div className="flex w-full items-center justify-between gap-4 pr-2">
                     <div className="flex items-center gap-2">
                       {cartao.brand && (
@@ -158,13 +158,13 @@ export function CreditCardsSection({
                   </div>
 
                   {parcelas.length === 0 ? (
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground hover:bg-transparent">
                       Nenhuma parcela neste mês.
                     </p>
                   ) : (
                     <Table>
                       <TableHeader>
-                        <TableRow>
+                        <TableRow className="hover:bg-transparent">
                           <TableHead>Nome</TableHead>
                           <TableHead>Parcelas</TableHead>
                           <TableHead className="text-right">Valor</TableHead>
@@ -172,7 +172,7 @@ export function CreditCardsSection({
                       </TableHeader>
                       <TableBody>
                         {parcelas.map((parcela) => (
-                          <TableRow key={parcela.id}>
+                          <TableRow key={parcela.id} className="hover:bg-transparent">
                             <TableCell className="font-medium">
                               {parcela.purchaseDescription}
                             </TableCell>

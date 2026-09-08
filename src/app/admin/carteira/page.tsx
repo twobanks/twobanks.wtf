@@ -244,7 +244,7 @@ export default async function CarteiraPage({
         </Card>
 
         <TabsContent value="all" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <section className="space-y-4 min-w-0">
               <Card className="@container/card h-full p-0">
                 <div className="@container/table rounded-xl p-4">
@@ -266,7 +266,7 @@ export default async function CarteiraPage({
             </section>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <section className="space-y-4 min-w-0">
               <Card className="@container/card h-full p-0">
                 <div className="@container/table rounded-xl p-4">

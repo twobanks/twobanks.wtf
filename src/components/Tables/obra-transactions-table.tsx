@@ -62,14 +62,14 @@ export function ObraTransactionsTable({
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={4} className="h-24 text-center">
                   Nenhum gasto de obra neste mês.
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} className="hover:bg-transparent">
                   <TableCell className="font-medium">
                     {transaction.description}
                   </TableCell>

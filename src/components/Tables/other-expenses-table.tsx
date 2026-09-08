@@ -53,14 +53,14 @@ export function OtherExpensesTable({
           </TableHeader>
           <TableBody>
             {expenses.length === 0 ? (
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={4} className="h-24 text-center">
                   Nenhuma despesa encontrada.
                 </TableCell>
               </TableRow>
             ) : (
               expenses.map((expense) => (
-                <TableRow key={expense.id}>
+                <TableRow key={expense.id} className="hover:bg-transparent">
                   <TableCell className="font-medium">
                     {expense.description}
                   </TableCell>

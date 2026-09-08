@@ -46,14 +46,14 @@ export function TransactionsTable({
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={3} className="h-24 text-center">
                   Nenhuma transação encontrada.
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} className="hover:bg-transparent">
                   <TableCell className="font-medium">
                     {transaction.description}
                   </TableCell>

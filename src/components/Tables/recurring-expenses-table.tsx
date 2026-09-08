@@ -51,14 +51,14 @@ export function RecurringExpensesTable({
           </TableHeader>
           <TableBody>
             {logs.length === 0 ? (
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={4} className="h-24 text-center">
                   Nenhuma despesa recorrente encontrada.
                 </TableCell>
               </TableRow>
             ) : (
               logs.map((log) => (
-                <TableRow key={log.id}>
+                <TableRow key={log.id} className="hover:bg-transparent">
                   <TableCell className="font-medium">
                     {log.recurringExpense.name}
                   </TableCell>
