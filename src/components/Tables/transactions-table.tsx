@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { IncomeDrawer } from "@/components/Drawers/IncomeDrawer";
 import {
@@ -9,19 +9,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
 import type { TransactionsTableProps } from "@/utils/types";
 import { BanknoteArrowUp } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TableActions } from "./table-actions";
 
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
+export function TransactionsTable({ transactions }: TransactionsTableProps) {
+  const router = useRouter();
+  const { visible } = useVisibility(); // Obtém o estado global
 
-export function TransactionsTable({
-  transactions,
-}: TransactionsTableProps) {
-  const router = useRouter()
+  // Função que usa o estado visible
+  const formatCurrency = (value: number): string => {
+    if (!visible) return "R$ ••••••";
+    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
 
   return (
     <div className="w-full flex-col justify-start gap-6">
@@ -61,7 +63,10 @@ export function TransactionsTable({
                     {formatCurrency(Number(transaction.amount))}
                   </TableCell>
                   <TableCell className="flex items-center justify-end">
-                    <TableActions id={transaction.id} editHref={`/admin/carteira/${transaction.id}/editar`}/>
+                    <TableActions
+                      id={transaction.id}
+                      editHref={`/admin/carteira/${transaction.id}/editar`}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -70,5 +75,5 @@ export function TransactionsTable({
         </Table>
       </div>
     </div>
-  )
+  );
 }

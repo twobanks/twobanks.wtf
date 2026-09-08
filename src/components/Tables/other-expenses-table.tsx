@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -8,23 +8,28 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { OtherExpensesTableProps } from "@/utils/types"
-import { BanknoteArrowDown } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { ExpenseDrawer } from "../Drawers/ExpenseDrawer"
-import { TableActions } from "./table-actions"
+} from "@/components/ui/table";
+import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import type { OtherExpensesTableProps } from "@/utils/types";
+import { BanknoteArrowDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ExpenseDrawer } from "../Drawers/ExpenseDrawer";
+import { TableActions } from "./table-actions";
 
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
-
-export function OtherExpensesTable({ 
+export function OtherExpensesTable({
   expenses,
   categories,
-  accounts 
+  accounts,
 }: OtherExpensesTableProps) {
-  const router = useRouter()
+  const router = useRouter();
+  const { visible } = useVisibility(); // Obtém o estado global
+
+  // Função que usa o estado visible
+  const formatCurrency = (value: number): string => {
+    if (!visible) return "R$ ••••••";
+    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
   return (
     <div className="w-full flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
@@ -94,5 +99,5 @@ export function OtherExpensesTable({
         </Table>
       </div>
     </div>
-  )
+  );
 }

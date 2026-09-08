@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer"
+import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 import {
   Table,
   TableBody,
@@ -14,14 +14,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { CreditCardsSectionProps } from "@/utils/types"
-import { CreditCardIcon } from "lucide-react"
-import { CreditCardBrand } from "../CreditCardBrand"
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
+} from "@/components/ui/table";
+import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import type { CreditCardsSectionProps } from "@/utils/types";
+import { CreditCardIcon } from "lucide-react";
+import { CreditCardBrand } from "../CreditCardBrand";
 
 export function CreditCardsSection({
   cartoesComFatura,
@@ -32,13 +29,20 @@ export function CreditCardsSection({
   faturaMesNum,
   payInvoiceAction,
 }: CreditCardsSectionProps) {
+  const { visible } = useVisibility(); // Hook chamado antes de qualquer return condicional
+
+  const formatCurrency = (value: number): string => {
+    if (!visible) return "R$ ••••••";
+    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
   const handlePayInvoice = async (cardId: string) => {
-    if (!payInvoiceAction) return
-    const formData = new FormData()
-    formData.set("cardId", String(cardId))
-    formData.set("month", `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`)
-    await payInvoiceAction(formData)
-  }
+    if (!payInvoiceAction) return;
+    const formData = new FormData();
+    formData.set("cardId", String(cardId));
+    formData.set("month", `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`);
+    await payInvoiceAction(formData);
+  };
 
   return (
     <div className="w-full flex-col justify-start gap-6">
@@ -63,28 +67,28 @@ export function CreditCardsSection({
         <Accordion className="space-y-4">
           {cartoesComFatura.map(({ cartao, parcelas, total, pago }) => {
             // Normalização segura para números
-            const creditLimit = cartao.creditLimit != null ? Number(cartao.creditLimit) : null
-            const closingDay = cartao.closingDay != null ? Number(cartao.closingDay) : null
-            const dueDay = cartao.dueDay != null ? Number(cartao.dueDay) : null
+            const creditLimit = cartao.creditLimit != null ? Number(cartao.creditLimit) : null;
+            const closingDay = cartao.closingDay != null ? Number(cartao.closingDay) : null;
+            const dueDay = cartao.dueDay != null ? Number(cartao.dueDay) : null;
 
-            const hasCreditLimit = creditLimit !== null && !Number.isNaN(creditLimit)
-            const hasClosingDay = closingDay !== null && !Number.isNaN(closingDay)
-            const hasDueDay = dueDay !== null && !Number.isNaN(dueDay) && dueDay > 0
+            const hasCreditLimit = creditLimit !== null && !Number.isNaN(creditLimit);
+            const hasClosingDay = closingDay !== null && !Number.isNaN(closingDay);
+            const hasDueDay = dueDay !== null && !Number.isNaN(dueDay) && dueDay > 0;
 
             // Cálculo do vencimento
-            let vencimento: string | null = null
+            let vencimento: string | null = null;
             if (hasDueDay) {
-              const dataVenc = new Date(faturaAno, faturaMesNum - 1, dueDay!)
+              const dataVenc = new Date(faturaAno, faturaMesNum - 1, dueDay!);
               if (dataVenc.getMonth() !== faturaMesNum - 1) {
-                dataVenc.setDate(0)
-                dataVenc.setMonth(faturaMesNum - 1)
-                dataVenc.setDate(new Date(faturaAno, faturaMesNum, 0).getDate())
+                dataVenc.setDate(0);
+                dataVenc.setMonth(faturaMesNum - 1);
+                dataVenc.setDate(new Date(faturaAno, faturaMesNum, 0).getDate());
               }
-              vencimento = dataVenc.toLocaleDateString("pt-BR")
+              vencimento = dataVenc.toLocaleDateString("pt-BR");
             }
 
             const statusFatura =
-              total === 0 ? "Sem gastos" : pago >= total ? "Fechada" : "Aberta"
+              total === 0 ? "Sem gastos" : pago >= total ? "Fechada" : "Aberta";
 
             return (
               <AccordionItem key={cartao.id} value={String(cartao.id)}>
@@ -125,8 +129,8 @@ export function CreditCardsSection({
                           role="button"
                           tabIndex={0}
                           onClick={(e) => {
-                            e.stopPropagation()
-                            handlePayInvoice(String(cartao.id)) // Conversão para string
+                            e.stopPropagation();
+                            handlePayInvoice(String(cartao.id));
                           }}
                           className="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium rounded-md"
                         >
@@ -189,10 +193,10 @@ export function CreditCardsSection({
                   )}
                 </AccordionContent>
               </AccordionItem>
-            )
+            );
           })}
         </Accordion>
       )}
     </div>
-  )
+  );
 }

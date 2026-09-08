@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -8,16 +8,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { ObraTransactionsTableProps } from "@/utils/types"
-import { HardHat } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { ExpenseDrawer } from "../Drawers/ExpenseDrawer"
-import { TableActions } from "./table-actions"
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
+} from "@/components/ui/table";
+import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import type { ObraTransactionsTableProps } from "@/utils/types";
+import { HardHat } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ExpenseDrawer } from "../Drawers/ExpenseDrawer";
+import { TableActions } from "./table-actions";
 
 export function ObraTransactionsTable({
   obraCategoryExists,
@@ -25,6 +22,8 @@ export function ObraTransactionsTable({
   categories,
   accounts,
 }: ObraTransactionsTableProps) {
+  const { visible } = useVisibility(); // Hook deve ser chamado antes de qualquer return condicional
+
   if (!obraCategoryExists) {
     return (
       <div className="space-y-4">
@@ -35,9 +34,25 @@ export function ObraTransactionsTable({
           Crie uma categoria chamada "Obra" para agrupar esses gastos.
         </p>
       </div>
-    )
+    );
   }
-  const router = useRouter()
+
+  const router = useRouter();
+
+  // Função que usa o estado visible
+  const formatCurrency = (value: number): string => {
+    if (!visible) return "R$ ••••••";
+    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  // Função para exibir o valor com sinal negativo e cor condicional
+  const renderAmount = (amount: number) => {
+    if (!visible) {
+      return <span className="text-foreground">-R$ ••••••</span>;
+    }
+    return <span className="text-red-500">-{formatCurrency(amount)}</span>;
+  };
+
   return (
     <div className="w-full flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
@@ -73,8 +88,8 @@ export function ObraTransactionsTable({
                   <TableCell className="font-medium">
                     {transaction.description}
                   </TableCell>
-                  <TableCell className="text-right font-medium text-red-500">
-                    -{formatCurrency(Number(transaction.amount))}
+                  <TableCell className="text-right font-medium">
+                    {renderAmount(Number(transaction.amount))}
                   </TableCell>
                   <TableCell className="text-right">
                     {transaction.paid ? (
@@ -97,5 +112,5 @@ export function ObraTransactionsTable({
         </Table>
       </div>
     </div>
-  )
+  );
 }

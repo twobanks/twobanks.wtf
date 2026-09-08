@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { ExpenseDrawer } from "@/components/Drawers/ExpenseDrawer"; // Ajuste o caminho conforme necessário
+import { ExpenseDrawer } from "@/components/Drawers/ExpenseDrawer";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -10,21 +10,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
 import type { RecurringExpensesTableProps } from "@/utils/types";
 import { Landmark } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { TableActions } from "./table-actions"; // Ajuste o caminho conforme necessário
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
+import { TableActions } from "./table-actions";
 
 export function RecurringExpensesTable({
   logs,
   categories,
   accounts,
 }: RecurringExpensesTableProps) {
-  const router = useRouter()
+  const router = useRouter();
+  const { visible } = useVisibility(); // Obtém o estado global
+
+  // Função que usa o estado visible
+  const formatCurrency = (value: number): string => {
+    if (!visible) return "R$ ••••••";
+    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
 
   return (
     <div className="w-full flex-col justify-start gap-6">
@@ -86,5 +90,5 @@ export function RecurringExpensesTable({
         </Table>
       </div>
     </div>
-  )
+  );
 }
