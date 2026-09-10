@@ -1,175 +1,238 @@
-"use client"
+'use client';
 
-import { createExpense, updateExpense } from "@/actions/expenses"
-import { useDrawer } from "@/contexts/DrawerContext"
-import { ExpenseDrawerProps } from "@/utils/types"
-import { useState } from "react"
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "../ui/drawer"
-import { FloatingAlert } from "../ui/floating-alert"
+import { createExpense, updateExpense } from '@/actions/expenses';
+import {
+  DrawerAlert,
+  drawerFieldClass,
+  drawerSelectContentClass,
+  drawerSelectItemClass,
+  drawerSelectTriggerClass,
+  DrawerShell,
+} from '@/components/Drawers/drawer-shell';
+import {
+  MonthYearPicker,
+  toFirstDayOfMonth,
+} from '@/components/month-year-select';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { ExpenseDrawerProps } from '@/utils/types';
+import { useEffect, useMemo, useState } from 'react';
 
-export function ExpenseDrawer({ categories, accounts, expense, onSuccess }: ExpenseDrawerProps) {
-  const { activeDrawer, openDrawer, closeDrawer } = useDrawer()
-  const [isRecurring, setIsRecurring] = useState(false)
-  const [floatingAlert, setFloatingAlert] = useState<{
-    type: "success" | "error"
-    message: string
-  } | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+const CATEGORY_PLACEHOLDER = '__category_placeholder__';
 
-  const open = activeDrawer === "expense"
+function splitYearMonth(date?: string | null) {
+  if (!date) return { year: '', month: '' };
+  const [y, m] = date.split('-');
+  return { year: y ?? '', month: m ?? '' };
+}
+
+function currentYearMonth() {
+  const now = new Date();
+  return {
+    year: String(now.getFullYear()),
+    month: String(now.getMonth() + 1).padStart(2, '0'),
+  };
+}
+
+export function ExpenseDrawer({
+  categories,
+  expense,
+  onSuccess,
+}: ExpenseDrawerProps) {
+  const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [alert, setAlert] = useState<DrawerAlert>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categoryId, setCategoryId] = useState(
+    expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
+  );
+
+  const initial = expense ? splitYearMonth(expense.date) : currentYearMonth();
+  const [dueMonth, setDueMonth] = useState(initial.month);
+  const [dueYear, setDueYear] = useState(initial.year);
+
+  const open = activeDrawer === 'expense';
+
+  const categoryItems = useMemo(
+    () => [
+      { label: 'Sem categoria', value: CATEGORY_PLACEHOLDER },
+      ...categories.map((c) => ({ label: c.name, value: String(c.id) })),
+    ],
+    [categories],
+  );
+
+  useEffect(() => {
+    if (!open) {
+      setIsRecurring(false);
+      setAlert(null);
+      setCategoryId(
+        expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
+      );
+      const next = expense ? splitYearMonth(expense.date) : currentYearMonth();
+      setDueMonth(next.month);
+      setDueYear(next.year);
+    }
+  }, [open, expense]);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true)
+    formData.set(
+      'categoryId',
+      categoryId === CATEGORY_PLACEHOLDER ? '' : categoryId,
+    );
+
+    const isoDate = toFirstDayOfMonth(dueYear, dueMonth);
+    if (!isoDate) {
+      setAlert({ type: 'error', message: 'Selecione o mês e o ano da despesa.' });
+      return;
+    }
+    formData.set('date', isoDate);
+
+    setIsSubmitting(true);
     try {
       if (expense) {
-        formData.append("id", String(expense.id))
-        await updateExpense(formData)
+        formData.append('id', String(expense.id));
+        await updateExpense(formData);
       } else {
-        formData.append("isRecurring", isRecurring ? "on" : "off")
-        await createExpense(formData)
+        formData.append('isRecurring', isRecurring ? 'on' : 'off');
+        await createExpense(formData);
       }
-      closeDrawer()
-      setFloatingAlert({
-        type: "success",
-        message: expense ? "Despesa atualizada!" : "Despesa criada!",
-      })
-      onSuccess?.()
+      closeDrawer();
+      setAlert({
+        type: 'success',
+        message: expense ? 'Despesa atualizada!' : 'Despesa criada!',
+      });
+      onSuccess?.();
     } catch (error) {
-      console.error("Erro ao salvar despesa:", error)
-      setFloatingAlert({
-        type: "error",
-        message: "Não foi possível salvar a despesa.",
-      })
+      console.error('Erro ao salvar despesa:', error);
+      setAlert({ type: 'error', message: 'Não foi possível salvar a despesa.' });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
+
+  const isCategoryPlaceholder = categoryId === CATEGORY_PLACEHOLDER;
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => {
-          setIsRecurring(false)
-          openDrawer("expense")
-        }}
-        className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+    <DrawerShell
+      open={open}
+      onClose={closeDrawer}
+      formKey={expense?.id ?? 'new'}
+      title={expense ? 'Editar Despesa' : 'Nova Despesa'}
+      description={expense ? 'Atualize os dados da despesa' : 'Preencha os dados da despesa'}
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitLabel={expense ? 'Salvar alterações' : 'Criar despesa'}
+      alert={alert}
+      onAlertClose={() => setAlert(null)}
+      trigger={
+        <button
+          type="button"
+          onClick={() => {
+            setIsRecurring(false);
+            openDrawer('expense');
+          }}
+          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+        >
+          {expense ? 'Editar' : '+'}
+        </button>
+      }
+    >
+      <Input
+        name="description"
+        placeholder="Descrição"
+        defaultValue={expense?.description}
+        required
+        className={drawerFieldClass}
+      />
+      <Input
+        name="amount"
+        type="number"
+        step="0.01"
+        placeholder="Valor"
+        defaultValue={expense?.amount}
+        required
+        className={drawerFieldClass}
+      />
+
+      <MonthYearPicker
+        month={dueMonth}
+        year={dueYear}
+        onMonthChange={setDueMonth}
+        onYearChange={setDueYear}
+        className="md:col-span-2"
+      />
+
+      <Select
+        items={categoryItems}
+        value={categoryId}
+        onValueChange={(v) => setCategoryId(v ?? CATEGORY_PLACEHOLDER)}
       >
-        {expense ? "Editar" : "+"}
-      </button>
+        <SelectTrigger
+          className={`${drawerSelectTriggerClass} ${isCategoryPlaceholder ? 'text-gray-500' : ''}`}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className={drawerSelectContentClass + ' max-h-72'}>
+          <SelectItem
+            value={CATEGORY_PLACEHOLDER}
+            className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+          >
+            Sem categoria
+          </SelectItem>
+          {categories.map((cat) => (
+            <SelectItem
+              key={cat.id}
+              value={String(cat.id)}
+              className={drawerSelectItemClass}
+            >
+              {cat.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      <Drawer open={open} onOpenChange={(isOpen) => { if (!isOpen) closeDrawer() }} swipeDirection="right">
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
-          <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
-              {expense ? "Editar Despesa" : "Nova Despesa"}
-            </DrawerTitle>
-            <DrawerDescription className="text-sm text-gray-400 mb-4">
-              {expense ? "Atualize os dados da despesa" : "Preencha os dados da despesa"}
-            </DrawerDescription>
-          </DrawerHeader>
-
-          <form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {!expense && (
+        <>
+          <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 cursor-pointer select-none">
             <input
-              name="description"
-              placeholder="Descrição"
-              defaultValue={expense?.description}
-              required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="size-4 rounded border-gray-600 bg-gray-900 accent-emerald-500"
             />
-            <input
-              name="amount"
+            Despesa recorrente
+          </label>
+
+          {isRecurring && (
+            <Input
+              name="dueDay"
               type="number"
-              step="0.01"
-              placeholder="Valor"
-              defaultValue={expense?.amount}
+              min="1"
+              max="31"
+              placeholder="Dia do vencimento (1–31)"
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={drawerFieldClass + ' md:col-span-2'}
             />
-            <input
-              name="date"
-              type="date"
-              defaultValue={expense?.date ?? new Date().toISOString().split("T")[0]}
-              required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <select
-              name="categoryId"
-              defaultValue={expense?.categoryId ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Sem categoria</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            <select
-              name="accountId"
-              defaultValue={expense?.accountId ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Sem conta</option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.name}
-                </option>
-              ))}
-            </select>
-
-            {!expense && (
-              <>
-                <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
-                  <input
-                    type="checkbox"
-                    checked={isRecurring}
-                    onChange={(e) => setIsRecurring(e.target.checked)}
-                    className="rounded border-gray-700 bg-gray-800"
-                  />
-                  Despesa recorrente
-                </label>
-                {isRecurring && (
-                  <input
-                    name="dueDay"
-                    type="number"
-                    min="1"
-                    max="31"
-                    placeholder="Dia do vencimento"
-                    required
-                    className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                )}
-              </>
-            )}
-
-            <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
-              <input
-                type="checkbox"
-                name="paid"
-                defaultChecked={expense?.paid ?? true}
-                className="rounded border-gray-700 bg-gray-800"
-              />
-              Pago
-            </label>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {isSubmitting ? "Salvando..." : "Salvar"}
-            </button>
-          </form>
-        </DrawerContent>
-      </Drawer>
-
-      {floatingAlert && (
-        <FloatingAlert
-          type={floatingAlert.type}
-          message={floatingAlert.message}
-          onClose={() => setFloatingAlert(null)}
-        />
+          )}
+        </>
       )}
-    </>
-  )
+
+      <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          name="paid"
+          defaultChecked={expense?.paid ?? false}
+          className="size-4 rounded border-gray-600 bg-gray-900 accent-emerald-500"
+        />
+        Pago
+      </label>
+    </DrawerShell>
+  );
 }
