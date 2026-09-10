@@ -1,5 +1,6 @@
 import { InferSelectModel, relations } from "drizzle-orm";
 import {
+  AnyPgColumn,
   boolean,
   date,
   integer,
@@ -216,6 +217,7 @@ export const financialAccounts = pgTable('financial_accounts', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// src/db/schema.ts
 export const transactions = pgTable('transactions', {
   id: serial('id').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
@@ -224,11 +226,23 @@ export const transactions = pgTable('transactions', {
   amount: numeric('amount').notNull(),
   type: transactionTypeEnum('type').notNull(),
   date: date('date').notNull(),
-  source: text('source').notNull().default('manual'), // NOVA COLUNA
+  source: text('source').notNull().default('manual'),
   categoryId: integer('category_id').references(() => categories.id),
   accountId: integer('account_id').references(() => financialAccounts.id),
   paid: boolean('paid').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
+
+  // ─── Novos campos ───────────────────────────────────────────────
+  // Marca a linha "semente" que iniciou a série recorrente.
+  // Filhos têm isRecurring = false.
+  isRecurring: boolean('is_recurring').notNull().default(false),
+
+  // Aponta para a linha-semente. Null na semente; preenchido em cada cópia.
+  // onDelete cascade: se a semente morre, o histórico inteiro vai junto.
+  recurringParentId: integer('recurring_parent_id').references(
+    (): AnyPgColumn => transactions.id,
+    { onDelete: 'cascade' },
+  ),
 });
 
 export const recurringExpenses = pgTable("recurring_expenses", {
