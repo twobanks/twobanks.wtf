@@ -48,6 +48,7 @@ export function ExpenseDrawer({
 }: ExpenseDrawerProps) {
   const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
   const [isRecurring, setIsRecurring] = useState(false);
+  const [recurringMonths, setRecurringMonths] = useState(12);
   const [alert, setAlert] = useState<DrawerAlert>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categoryId, setCategoryId] = useState(
@@ -71,6 +72,7 @@ export function ExpenseDrawer({
   useEffect(() => {
     if (!open) {
       setIsRecurring(false);
+      setRecurringMonths(12);
       setAlert(null);
       setCategoryId(
         expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
@@ -101,12 +103,17 @@ export function ExpenseDrawer({
         await updateExpense(formData);
       } else {
         formData.append('isRecurring', isRecurring ? 'on' : 'off');
+        formData.append('recurringMonths', String(recurringMonths));
         await createExpense(formData);
       }
       closeDrawer();
       setAlert({
         type: 'success',
-        message: expense ? 'Despesa atualizada!' : 'Despesa criada!',
+        message: expense
+          ? 'Despesa atualizada!'
+          : isRecurring
+            ? `Despesa recorrente criada (${recurringMonths} meses)!`
+            : 'Despesa criada!',
       });
       onSuccess?.();
     } catch (error) {
@@ -125,7 +132,9 @@ export function ExpenseDrawer({
       onClose={closeDrawer}
       formKey={expense?.id ?? 'new'}
       title={expense ? 'Editar Despesa' : 'Nova Despesa'}
-      description={expense ? 'Atualize os dados da despesa' : 'Preencha os dados da despesa'}
+      description={
+        expense ? 'Atualize os dados da despesa' : 'Preencha os dados da despesa'
+      }
       onSubmit={handleSubmit}
       isSubmitting={isSubmitting}
       submitLabel={expense ? 'Salvar alterações' : 'Criar despesa'}
@@ -175,7 +184,9 @@ export function ExpenseDrawer({
         onValueChange={(v) => setCategoryId(v ?? CATEGORY_PLACEHOLDER)}
       >
         <SelectTrigger
-          className={`${drawerSelectTriggerClass} ${isCategoryPlaceholder ? 'text-gray-500' : ''}`}
+          className={`${drawerSelectTriggerClass} ${
+            isCategoryPlaceholder ? 'text-gray-500' : ''
+          }`}
         >
           <SelectValue />
         </SelectTrigger>
@@ -211,15 +222,32 @@ export function ExpenseDrawer({
           </label>
 
           {isRecurring && (
-            <Input
-              name="dueDay"
-              type="number"
-              min="1"
-              max="31"
-              placeholder="Dia do vencimento (1–31)"
-              required
-              className={drawerFieldClass + ' md:col-span-2'}
-            />
+            <div className="md:col-span-2 grid grid-cols-1 gap-2">
+              <label className="text-sm text-gray-400">
+                Repetir por quantos meses?
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {[6, 12, 24, 36].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setRecurringMonths(n)}
+                    className={`h-10 px-4 rounded-lg border text-sm transition-colors ${
+                      recurringMonths === n
+                        ? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-300'
+                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                    }`}
+                  >
+                    {n}x
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Serão criadas {recurringMonths} despesas idênticas, uma por
+                mês. Você poderá editar o valor de cada mês individualmente
+                depois.
+              </p>
+            </div>
           )}
         </>
       )}
