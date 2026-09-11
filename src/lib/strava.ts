@@ -78,7 +78,6 @@ export async function fetchAndSaveStravaDetails(id: string, atividadeAtual: any)
       isDetailed: 1
     }
   } catch (error) {
-    console.error(`Erro ao buscar detalhes da atividade ${id}:`, error)
     return atividadeAtual 
   }
 }

@@ -64,7 +64,6 @@ export default function StravaMap({
         bounds: b,
       }
     } catch (e) {
-      console.error("Erro ao decodificar polyline:", e)
       return { coordinates: [], startPoint: null, endPoint: null, bounds: null }
     }
   }, [mapPolyline])

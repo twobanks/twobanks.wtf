@@ -54,7 +54,6 @@ export function RecurringExpenseDrawer({
       })
       onSuccess?.()
     } catch (error) {
-      console.error("Erro ao salvar despesa recorrente:", error)
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar a despesa.",

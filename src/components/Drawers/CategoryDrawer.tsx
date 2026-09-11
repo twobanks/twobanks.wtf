@@ -36,7 +36,6 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
       })
       onSuccess?.()
     } catch (error) {
-      console.error("Erro ao salvar categoria:", error)
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar a categoria.",

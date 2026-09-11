@@ -36,7 +36,6 @@ export function InvestmentTransactionDrawer({
       })
       onSuccess?.()
     } catch (error) {
-      console.error("Erro ao lançar transação:", error)
       setFloatingAlert({
         type: "error",
         message: "Não foi possível lançar a transação.",

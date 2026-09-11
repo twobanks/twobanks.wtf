@@ -81,7 +81,10 @@ export interface Transaction {
   paid: boolean
   category?: Category | null
   account?: FinancialAccount | null
+  isRecurring: boolean;
+  recurringParentId: number | null;
 }
+
 
 export interface CreditCard {
   id: number
@@ -304,11 +307,25 @@ export interface CreditCardDrawerProps {
   onSuccess?: () => void
 }
 
+// src/utils/types.ts
+export interface EditableExpense {
+  id: number;
+  description: string;
+  amount: number;
+  paid: boolean;
+  date?: string;
+  categoryId?: number | null;   // ← adiciona undefined
+  accountId?: number | null;    // ← adiciona undefined
+  isRecurring: boolean;
+  recurringParentId?: number | null;
+}
+
 export interface ExpenseDrawerProps {
   categories: Category[]
   accounts: FinancialAccount[]
-  expense?: Transaction
+  expense?: EditableExpense
   onSuccess?: () => void
+  onNew?: () => void;
 }
 
 export interface IncomeDrawerProps {
@@ -337,7 +354,9 @@ export type UnifiedExpense = {
   amount: number;
   paid: boolean;
   isRecurring: boolean;
+  recurringParentId: number | null;
   categoryId?: number | null;
   accountId?: number | null;
   date?: string;
 };
+

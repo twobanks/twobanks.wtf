@@ -37,7 +37,6 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
       })
       onSuccess?.()
     } catch (error) {
-      console.error("Erro ao salvar ativo:", error)
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar o ativo.",

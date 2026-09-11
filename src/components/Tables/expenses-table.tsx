@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -8,30 +8,33 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
-import { UnifiedExpense } from "@/utils/types";
-import { BanknoteArrowDown, Repeat } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { ExpenseDrawer } from "../Drawers/ExpenseDrawer";
-import { TableActions } from "./table-actions";
+} from '@/components/ui/table';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { useVisibility } from '@/contexts/VisibilityContext';
+import { UnifiedExpense } from '@/utils/types';
+import { BanknoteArrowDown, Repeat } from 'lucide-react';
+import { TableActions } from './table-actions';
 
-export function ExpensesTable({
-  expenses,
-  categories,
-  accounts,
-}: {
-  expenses: UnifiedExpense[];
-  categories: any[];
-  accounts: any[];
-}) {
-  const router = useRouter();
-  const { visible } = useVisibility(); // Obtém o estado global
+export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
+  const { visible } = useVisibility();
+  const { openDrawer, setEditingExpense } = useDrawer();
 
-  // Função que usa o estado visible
+  const handleEdit = (expense: UnifiedExpense) => {
+    setEditingExpense(expense);
+    openDrawer('expense');
+  };
+
+  const handleNew = () => {
+    setEditingExpense(null);
+    openDrawer('expense');
+  };
+
   const formatCurrency = (value: number): string => {
-    if (!visible) return "R$ ••••••";
-    return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    if (!visible) return 'R$ ••••••';
+    return value.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
   };
 
   return (
@@ -43,11 +46,14 @@ export function ExpensesTable({
             Despesas
           </h1>
         </div>
-        <ExpenseDrawer
-          categories={categories}
-          accounts={accounts}
-          onSuccess={() => router.refresh()}
-        />
+
+        <button
+          type="button"
+          onClick={handleNew}
+          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+        >
+          +
+        </button>
       </div>
 
       <div className="overflow-hidden rounded-lg border mt-6">
@@ -69,40 +75,57 @@ export function ExpensesTable({
                 </TableCell>
               </TableRow>
             ) : (
-              expenses.map((expense) => (
-                <TableRow key={expense.id} className="hover:bg-transparent">
-                  <TableCell className="font-medium">
-                    {expense.description}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(expense.amount)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {expense.isRecurring ? (
-                      <Badge variant="secondary" className="gap-1">
-                        <Repeat className="h-3 w-3" />
-                        Recorrente
-                      </Badge>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {expense.paid ? (
-                      <Badge variant="outline" className="text-green-500 border-green-500/50">
-                        Pago
-                      </Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-yellow-500 border-yellow-500/50">
-                        Pendente
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="flex items-center justify-end">
-                    <TableActions id={expense.id} isPaid={expense.paid} />
-                  </TableCell>
-                </TableRow>
-              ))
+              expenses.map((expense) => {
+                const isRecurring =
+                  Boolean(expense.isRecurring) ||
+                  Boolean(expense.recurringParentId);
+
+                return (
+                  <TableRow key={expense.id} className="hover:bg-transparent">
+                    <TableCell className="font-medium">
+                      {expense.description}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(expense.amount)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {isRecurring ? (
+                        <Badge variant="secondary" className="gap-1">
+                          <Repeat className="h-3 w-3" />
+                          Recorrente
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {expense.paid ? (
+                        <Badge
+                          variant="outline"
+                          className="text-green-500 border-green-500/50"
+                        >
+                          Pago
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="text-yellow-500 border-yellow-500/50"
+                        >
+                          Pendente
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="flex items-center justify-end">
+                      <TableActions
+                        id={expense.id}
+                        isPaid={expense.paid}
+                        isRecurring={isRecurring}
+                        onEdit={() => handleEdit(expense)}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

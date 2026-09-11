@@ -37,7 +37,6 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
       })
       onSuccess?.()
     } catch (error) {
-      console.error("Erro ao salvar conta:", error)
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar a conta.",

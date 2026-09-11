@@ -1,42 +1,56 @@
-// src/contexts/DrawerContext.tsx
-"use client"
+'use client';
 
-import { createContext, ReactNode, useContext, useState } from "react"
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 
-type DrawerType =
-  | "expense"
-  | "income"
-  | "purchase"
-  | "recurring"
-  | "creditCard"
-  | "category"
-  | null
+type DrawerKey = 'purchase' | 'income' | 'expense' | null;
 
-interface DrawerContextType {
-  activeDrawer: DrawerType
-  openDrawer: (drawer: DrawerType) => void
-  closeDrawer: () => void
+interface DrawerContextValue {
+  activeDrawer: DrawerKey;
+  openDrawer: (key: DrawerKey) => void;
+  closeDrawer: () => void;
+  editingExpense: any | null;
+  setEditingExpense: (expense: any | null) => void;
 }
 
-const DrawerContext = createContext<DrawerContextType | undefined>(undefined)
+const DrawerContext = createContext<DrawerContextValue | null>(null);
 
 export function DrawerProvider({ children }: { children: ReactNode }) {
-  const [activeDrawer, setActiveDrawer] = useState<DrawerType>(null)
+  const [activeDrawer, setActiveDrawer] = useState<DrawerKey>(null);
+  const [editingExpense, setEditingExpense] = useState<any | null>(null);
 
-  const openDrawer = (drawer: DrawerType) => setActiveDrawer(drawer)
-  const closeDrawer = () => setActiveDrawer(null)
+  const openDrawer = useCallback((key: DrawerKey) => {
+    setActiveDrawer(key);
+  }, []);
+
+  const closeDrawer = useCallback(() => {
+    setActiveDrawer(null);
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      activeDrawer,
+      openDrawer,
+      closeDrawer,
+      editingExpense,
+      setEditingExpense,
+    }),
+    [activeDrawer, openDrawer, closeDrawer, editingExpense],
+  );
 
   return (
-    <DrawerContext.Provider value={{ activeDrawer, openDrawer, closeDrawer }}>
-      {children}
-    </DrawerContext.Provider>
-  )
+    <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
+  );
 }
 
 export function useDrawer() {
-  const context = useContext(DrawerContext)
-  if (context === undefined) {
-    throw new Error("useDrawer must be used within a DrawerProvider")
-  }
-  return context
+  const ctx = useContext(DrawerContext);
+  if (!ctx) throw new Error('useDrawer precisa estar dentro de <DrawerProvider>');
+  return ctx;
 }

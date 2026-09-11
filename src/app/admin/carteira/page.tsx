@@ -1,5 +1,6 @@
 import { createInstallmentPurchase, markInvoiceAsPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
+import { CarteiraDrawersHost } from "@/components/Drawers/carteira-drawers-host";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
 import { MonthYearPicker } from "@/components/month-year-picker";
 import { SummaryCards } from "@/components/SummaryCards";
@@ -106,7 +107,7 @@ export default async function CarteiraPage({
     amount: Number(t.amount),
     paid: t.paid,
     isRecurring: t.source === "recurring",
-    // Campos opcionais para o drawer de edição (não usados agora)
+    recurringParentId: t.recurringParentId,
     categoryId: t.categoryId,
     accountId: t.accountId,
     date: t.date,
@@ -256,11 +257,7 @@ export default async function CarteiraPage({
             <section className="space-y-4 min-w-0">
               <Card className="@container/card h-full p-0">
                 <div className="@container/table rounded-xl p-4">
-                  <ExpensesTable
-                    expenses={outrasDespesas}
-                    categories={categorias}
-                    accounts={accounts}
-                  />
+                  <ExpensesTable expenses={outrasDespesas} />
                 </div>
               </Card>
             </section>
@@ -311,11 +308,7 @@ export default async function CarteiraPage({
         <TabsContent value="despesas">
           <Card className="@container/card h-full">
             <div className="@container/table rounded-xl p-5">
-              <ExpensesTable
-                expenses={outrasDespesas}
-                categories={categorias}
-                accounts={accounts}
-              />
+              <ExpensesTable expenses={outrasDespesas} />
             </div>
           </Card>
         </TabsContent>
@@ -351,6 +344,7 @@ export default async function CarteiraPage({
           </Card>
         </TabsContent>
       </Tabs>
+      <CarteiraDrawersHost categories={categorias} accounts={accounts} />
     </DrawerProvider>
   );
 }

@@ -77,7 +77,6 @@ export function PurchaseDrawer({
       setAlert({ type: 'success', message: 'Compra adicionada!' });
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao adicionar compra:', error);
       setAlert({
         type: 'error',
         message: 'Não foi possível adicionar a compra. Verifique os dados e tente novamente.',

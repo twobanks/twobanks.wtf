@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { useDrawer } from '@/contexts/DrawerContext';
 import { ExpenseDrawerProps } from '@/utils/types';
+import { Repeat } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const CATEGORY_PLACEHOLDER = '__category_placeholder__';
@@ -45,6 +46,7 @@ export function ExpenseDrawer({
   categories,
   expense,
   onSuccess,
+  onNew
 }: ExpenseDrawerProps) {
   const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
   const [isRecurring, setIsRecurring] = useState(false);
@@ -70,18 +72,22 @@ export function ExpenseDrawer({
   );
 
   useEffect(() => {
-    if (!open) {
-      setIsRecurring(false);
-      setRecurringMonths(12);
-      setAlert(null);
-      setCategoryId(
-        expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
-      );
-      const next = expense ? splitYearMonth(expense.date) : currentYearMonth();
+    if (!open) return;
+    if (expense) {
+      const next = splitYearMonth(expense.date);
       setDueMonth(next.month);
       setDueYear(next.year);
+      setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
+    } else {
+      setIsRecurring(false);
+      setRecurringMonths(12);
+      setCategoryId(CATEGORY_PLACEHOLDER);
+      const now = currentYearMonth();
+      setDueMonth(now.month);
+      setDueYear(now.year);
     }
   }, [open, expense]);
+
 
   const handleSubmit = async (formData: FormData) => {
     formData.set(
@@ -117,7 +123,6 @@ export function ExpenseDrawer({
       });
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao salvar despesa:', error);
       setAlert({ type: 'error', message: 'Não foi possível salvar a despesa.' });
     } finally {
       setIsSubmitting(false);
@@ -140,19 +145,17 @@ export function ExpenseDrawer({
       submitLabel={expense ? 'Salvar alterações' : 'Criar despesa'}
       alert={alert}
       onAlertClose={() => setAlert(null)}
-      trigger={
-        <button
-          type="button"
-          onClick={() => {
-            setIsRecurring(false);
-            openDrawer('expense');
-          }}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
-        >
-          {expense ? 'Editar' : '+'}
-        </button>
-      }
+      // trigger removido — quem abre é o host via evento
     >
+      {expense && (expense.isRecurring || expense.recurringParentId) && (
+        <div className="md:col-span-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 flex items-start gap-2">
+          <Repeat className="size-4 mt-0.5 shrink-0" />
+          <span>
+            Esta despesa faz parte de uma <strong>série recorrente</strong>. As
+            alterações serão aplicadas neste mês e nos meses seguintes.
+          </span>
+        </div>
+      )}
       <Input
         name="description"
         placeholder="Descrição"

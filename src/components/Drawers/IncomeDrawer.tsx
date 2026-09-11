@@ -70,7 +70,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
       });
       onSuccess?.();
     } catch (error) {
-      console.error('Erro ao salvar receita:', error);
       setAlert({
         type: 'error',
         message: 'Não foi possível salvar a receita.',

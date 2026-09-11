@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { installments, purchases, transactions } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
-import { and, eq, inArray, or } from "drizzle-orm"
+import { and, eq, gte, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 const DEFAULT_RECURRING_MONTHS = 12;
@@ -166,23 +166,47 @@ export async function updateTransaction(formData: FormData) {
 }
 
 export async function deleteTransaction(formData: FormData) {
-  const session = await auth()
-  if (!session?.user) throw new Error("Não autorizado")
-  const userId = session.user.id
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
 
-  const id = Number(formData.get("id"))
-  if (!id) throw new Error("ID inválido")
+  const id = Number(formData.get('id'));
+  if (!id) throw new Error('ID inválido');
 
-  const householdIds = await getUserHouseholdIds(userId)
-  const canAccess = or(
-    eq(transactions.userId, userId),
-    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
-  )
+  // 1) Descobre se a linha faz parte de uma série
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
 
-  await db.delete(transactions)
-    .where(and(eq(transactions.id, id), canAccess))
+  if (!tx) throw new Error('Transação não encontrada');
 
-  revalidatePath("/admin/carteira")
+  const seedId = tx.isRecurring ? tx.id : tx.recurringParentId;
+
+  if (seedId) {
+    // 2) Série: apaga do mês clicado em diante
+    //    - Se clicou na semente (date mais antiga), apaga tudo
+    //    - Se clicou numa cópia, preserva os meses anteriores
+    await db.delete(transactions).where(
+      and(
+        eq(transactions.userId, userId),
+        or(
+          eq(transactions.id, seedId),
+          eq(transactions.recurringParentId, seedId),
+        ),
+        gte(transactions.date, tx.date),
+      ),
+    );
+  } else {
+    // Avulsa: apaga só ela
+    await db
+      .delete(transactions)
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
 }
 
 export async function toggleInstallmentPaid(formData: FormData) {
@@ -290,4 +314,74 @@ export async function deleteRecurringSeries(seedId: number) {
     );
 
   revalidatePath('/admin/carteira');
+}
+
+export async function updateExpense(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
+
+  const id = Number(formData.get('id'));
+  const description = String(formData.get('description') ?? '').trim();
+  const amount = Number(formData.get('amount'));
+  const dateStr = String(formData.get('date') ?? '');
+  const date = new Date(dateStr);
+  const categoryId = formData.get('categoryId')
+    ? Number(formData.get('categoryId'))
+    : null;
+  const accountId = formData.get('accountId')
+    ? Number(formData.get('accountId'))
+    : null;
+  const paid = formData.get('paid') === 'on';
+
+  if (!id || !description || isNaN(amount) || isNaN(date.getTime())) {
+    throw new Error('Dados inválidos');
+  }
+
+  // 1) Descobre se é série
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
+
+  if (!tx) throw new Error('Transação não encontrada');
+
+  const seedId = tx.isRecurring ? tx.id : tx.recurringParentId;
+
+  // Campos que sempre mudam
+  const patch = {
+    description,
+    amount: amount.toFixed(2),
+    categoryId,
+    accountId,
+    paid,
+  };
+
+  if (seedId) {
+    // 2) Série: atualiza do mês clicado em diante.
+    //    NÃO mexe na `date` — os meses ficam fixos para não bagunçar a série.
+    await db
+      .update(transactions)
+      .set(patch)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          or(
+            eq(transactions.id, seedId),
+            eq(transactions.recurringParentId, seedId),
+          ),
+          gte(transactions.date, tx.date),
+        ),
+      );
+  } else {
+    // 3) Avulsa: atualiza tudo, inclusive a data
+    await db
+      .update(transactions)
+      .set({ ...patch, date: date.toISOString().split('T')[0] })
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
 }

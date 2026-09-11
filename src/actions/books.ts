@@ -12,7 +12,6 @@ export async function getBooks() {
     const data = await db.select().from(books).orderBy(desc(books.createdAt))
     return data
   } catch (error) {
-    console.error("Erro ao buscar livros:", error)
     return []
   }
 }

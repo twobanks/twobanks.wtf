@@ -88,16 +88,6 @@ export async function createRecurringExpense(formData: FormData) {
     }
   }
 
-  console.log("Dados recebidos no createRecurringExpense:", {
-  name,
-  amount,
-  dueDay,
-  categoryId,
-  accountId,
-  active,
-  startMonth,
-});
-
   revalidatePath("/admin/recorrentes")
   revalidatePath("/admin/carteira")
 }

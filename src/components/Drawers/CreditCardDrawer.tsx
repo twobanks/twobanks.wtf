@@ -39,7 +39,6 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
       })
       onSuccess?.()
     } catch (error) {
-      console.error("Erro ao salvar cartão:", error)
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar o cartão.",
