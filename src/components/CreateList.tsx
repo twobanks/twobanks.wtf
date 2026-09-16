@@ -1,6 +1,7 @@
 "use client";
 
 import { createList } from "@/actions/shopping";
+import { Plus } from "lucide-react"; // Lembre-se de importar do lucide-react
 import { useFormStatus } from "react-dom";
 
 function SubmitButton() {
@@ -9,9 +10,10 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="inline-flex items-center justify-center gap-2 bg-zinc-100 hover:bg-white text-zinc-900 font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto h-10"
     >
-      {pending ? "Criando..." : "Criar lista"}
+      <Plus size={16} />
+      {pending ? "Criando..." : "Nova lista"}
     </button>
   );
 }
@@ -20,11 +22,10 @@ export function CreateListForm() {
   return (
     <form
       action={createList}
-      className="bg-gray-900 border border-gray-800 p-4 rounded-xl shadow-sm space-y-3"
+      className="w-full bg-zinc-900/40 border border-zinc-800/80 p-4 rounded-xl flex flex-col md:flex-row md:items-end gap-4"
     >
-      <h2 className="text-lg font-semibold text-gray-200">Nova lista</h2>
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">
+      <div className="flex-1">
+        <label htmlFor="name" className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">
           Nome da lista
         </label>
         <input
@@ -32,18 +33,18 @@ export function CreateListForm() {
           name="name"
           required
           placeholder="Ex: Compras da semana"
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full h-10 bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all"
         />
       </div>
-      <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-300 mb-1">
-          Tipo
+      <div className="w-full md:w-48">
+        <label htmlFor="type" className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">
+          Categoria
         </label>
         <select
           id="type"
           name="type"
           required
-          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full h-10 bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all appearance-none"
         >
           <option value="supermercado">Supermercado</option>
           <option value="varejao">Varejão</option>

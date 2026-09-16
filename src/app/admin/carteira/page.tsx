@@ -223,64 +223,119 @@ export default async function CarteiraPage({
   return (
     <DrawerProvider>
       <DrawerInitializer drawerOpen={open} />
-      <SummaryCards
-        totalReceitas={totalReceitas}
-        totalDespesas={totalDespesas}
-        saldo={saldo}
-        mes={`${faturaMesNum}/${faturaAno}`}
-        receitasVariacao={receitasVariacao}
-        despesasVariacao={despesasVariacao}
-        saldoVariacao={saldoVariacao}
-      />
-      <Tabs defaultValue="all" className="flex flex-col w-full space-y-2">
-        <Card className="@container/card flex flex-row items-center px-4 justify-between flex-wrap gap-2">
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="all">Todas</TabsTrigger>
-            <TabsTrigger value="receitas">Receitas</TabsTrigger>
-            <TabsTrigger value="despesas">Despesas</TabsTrigger>
-            <TabsTrigger value="obra">Construção</TabsTrigger>
-            <TabsTrigger value="cartoes">Cartões de Crédito</TabsTrigger>
-          </TabsList>
-          <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
-        </Card>
+      
+      {/* O SummaryCards agora precisa ser atualizado internamente para não usar bg-gray-900, 
+          mas o wrapper externo space-y ajuda no espaçamento */}
+      <div className="space-y-6">
+        <SummaryCards
+          totalReceitas={totalReceitas}
+          totalDespesas={totalDespesas}
+          saldo={saldo}
+          mes={`${faturaMesNum}/${faturaAno}`}
+          receitasVariacao={receitasVariacao}
+          despesasVariacao={despesasVariacao}
+          saldoVariacao={saldoVariacao}
+        />
+        
+        <Tabs defaultValue="all" className="flex flex-col w-full space-y-4">
+          <Card className="flex flex-row items-center p-3 justify-between flex-wrap gap-3 bg-zinc-900/40 border-zinc-800/80 shadow-none">
+            <TabsList className="flex-wrap bg-zinc-800/50">
+              <TabsTrigger value="all" className="data-[state=active]:bg-zinc-700">Todas</TabsTrigger>
+              <TabsTrigger value="receitas" className="data-[state=active]:bg-zinc-700">Receitas</TabsTrigger>
+              <TabsTrigger value="despesas" className="data-[state=active]:bg-zinc-700">Despesas</TabsTrigger>
+              <TabsTrigger value="obra" className="data-[state=active]:bg-zinc-700">Construção</TabsTrigger>
+              <TabsTrigger value="cartoes" className="data-[state=active]:bg-zinc-700">Cartões</TabsTrigger>
+            </TabsList>
+            <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+          </Card>
 
-        <TabsContent value="all" className="space-y-4">
-          <div className="grid grid-cols-1 gap-4">
-            <section className="space-y-4 min-w-0">
-              <Card className="@container/card h-full p-0">
-                <div className="@container/table rounded-xl p-4">
-                  <TransactionsTable transactions={receitasDoMes} />
-                </div>
-              </Card>
-            </section>
+          <TabsContent value="all" className="space-y-6 mt-0">
+            <div className="grid grid-cols-1 gap-6">
+              <section className="space-y-3 min-w-0">
+                <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                  <div className="p-0 sm:p-2">
+                    <TransactionsTable transactions={receitasDoMes} />
+                  </div>
+                </Card>
+              </section>
 
-            <section className="space-y-4 min-w-0">
-              <Card className="@container/card h-full p-0">
-                <div className="@container/table rounded-xl p-4">
-                  <ExpensesTable expenses={outrasDespesas} />
-                </div>
-              </Card>
-            </section>
-          </div>
+              <section className="space-y-3 min-w-0">
+                <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                  <div className="p-0 sm:p-2">
+                    <ExpensesTable expenses={outrasDespesas} />
+                  </div>
+                </Card>
+              </section>
+            </div>
 
-          <div className="grid grid-cols-1 gap-4">
-            <section className="space-y-4 min-w-0">
-              <Card className="@container/card h-full p-0">
-                <div className="@container/table rounded-xl p-4">
-                  <ObraTransactionsTable
-                    obraCategoryExists={!!obraCategory}
-                    transactions={obraTransactions}
-                    categories={categorias}
-                    accounts={accounts}
+            <div className="grid grid-cols-1 gap-6">
+              <section className="space-y-3 min-w-0">
+                <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                  <div className="p-0 sm:p-2">
+                    <ObraTransactionsTable
+                      obraCategoryExists={!!obraCategory}
+                      transactions={obraTransactions}
+                      categories={categorias}
+                      accounts={accounts}
+                    />
+                  </div>
+                </Card>
+              </section>
+            </div>
+
+            <section className="space-y-3">
+              <Card className="bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                <div className="p-0 sm:p-2">
+                  <CreditCardsSection
+                    cartoesComFatura={cartoesComFatura}
+                    categorias={categorias}
+                    cartoes={cartoes}
+                    createInstallmentPurchaseAction={createInstallmentPurchase}
+                    faturaAno={faturaAno}
+                    faturaMesNum={faturaMesNum}
+                    payInvoiceAction={markInvoiceAsPaid}
                   />
                 </div>
               </Card>
             </section>
-          </div>
+          </TabsContent>
 
-          <section className="space-y-4">
-            <Card className="@container/card">
-              <div className="@container/table rounded-xl p-5">
+          {/* Aba Receitas */}
+          <TabsContent value="receitas" className="mt-0">
+            <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+              <div className="p-0 sm:p-2">
+                <TransactionsTable transactions={receitasDoMes} />
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Aba Despesas (unificada) */}
+          <TabsContent value="despesas" className="mt-0">
+            <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+              <div className="p-0 sm:p-2">
+                <ExpensesTable expenses={outrasDespesas} />
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Aba Obra */}
+          <TabsContent value="obra" className="mt-0">
+            <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+              <div className="p-0 sm:p-2">
+                <ObraTransactionsTable
+                  obraCategoryExists={!!obraCategory}
+                  transactions={obraTransactions}
+                  categories={categorias}
+                  accounts={accounts}
+                />
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Aba Cartões de Crédito */}
+          <TabsContent value="cartoes" className="mt-0">
+            <Card className="bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+              <div className="p-0 sm:p-2">
                 <CreditCardsSection
                   cartoesComFatura={cartoesComFatura}
                   categorias={categorias}
@@ -292,58 +347,9 @@ export default async function CarteiraPage({
                 />
               </div>
             </Card>
-          </section>
-        </TabsContent>
-
-        {/* Aba Receitas */}
-        <TabsContent value="receitas">
-          <Card className="@container/card h-full">
-            <div className="@container/table rounded-xl p-5">
-              <TransactionsTable transactions={receitasDoMes} />
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Aba Despesas (unificada) */}
-        <TabsContent value="despesas">
-          <Card className="@container/card h-full">
-            <div className="@container/table rounded-xl p-5">
-              <ExpensesTable expenses={outrasDespesas} />
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Aba Obra */}
-        <TabsContent value="obra">
-          <Card className="@container/card h-full">
-            <div className="@container/table rounded-xl p-5">
-              <ObraTransactionsTable
-                obraCategoryExists={!!obraCategory}
-                transactions={obraTransactions}
-                categories={categorias}
-                accounts={accounts}
-              />
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* Aba Cartões de Crédito */}
-        <TabsContent value="cartoes">
-          <Card className="@container/card">
-            <div className="@container/table rounded-xl p-5">
-              <CreditCardsSection
-                cartoesComFatura={cartoesComFatura}
-                categorias={categorias}
-                cartoes={cartoes}
-                createInstallmentPurchaseAction={createInstallmentPurchase}
-                faturaAno={faturaAno}
-                faturaMesNum={faturaMesNum}
-                payInvoiceAction={markInvoiceAsPaid}
-              />
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
+      </div>
       <CarteiraDrawersHost categories={categorias} accounts={accounts} />
     </DrawerProvider>
   );

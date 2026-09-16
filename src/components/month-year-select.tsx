@@ -24,8 +24,9 @@ const MONTHS = [
   { label: 'Dezembro',  value: '12' },
 ] as const;
 
+// Atualizado para usar a paleta zinc em vez de gray
 const defaultTriggerClass =
-  '!h-12 w-full bg-gray-800 border border-gray-700 px-4 py-0 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition-colors flex items-center [&>span]:truncate data-[placeholder]:text-gray-500';
+  '!h-12 w-full bg-zinc-800/50 border border-zinc-700/50 px-4 py-0 rounded-lg text-zinc-200 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-colors flex items-center [&>span]:truncate data-[placeholder]:text-zinc-500';
 
 export interface MonthYearPickerProps {
   month: string;
@@ -71,12 +72,12 @@ export function MonthYearPicker({
         <SelectTrigger className={triggerClassName}>
           <SelectValue placeholder="Mês" />
         </SelectTrigger>
-        <SelectContent className="bg-gray-800 border-gray-700 text-gray-200 max-h-72">
+        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200 max-h-72">
           {MONTHS.map((m) => (
             <SelectItem
               key={m.value}
               value={m.value}
-              className="focus:bg-gray-700 focus:text-gray-100"
+              className="focus:bg-zinc-800 focus:text-zinc-100"
             >
               {m.label}
             </SelectItem>
@@ -93,12 +94,12 @@ export function MonthYearPicker({
         <SelectTrigger className={triggerClassName}>
           <SelectValue placeholder="Ano" />
         </SelectTrigger>
-        <SelectContent className="bg-gray-800 border-gray-700 text-gray-200">
+        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
           {yearOptions.map((y) => (
             <SelectItem
               key={y.value}
               value={y.value}
-              className="focus:bg-gray-700 focus:text-gray-100"
+              className="focus:bg-zinc-800 focus:text-zinc-100"
             >
               {y.label}
             </SelectItem>
@@ -113,7 +114,6 @@ export function toFirstDayOfMonth(year: string, month: string): string | null {
   if (!year || !month) return null;
   return `${year}-${month}-01`;
 }
-
 
 export function formatMonthYearLabel(year: string, month: string): string {
   if (!year || !month) return '';

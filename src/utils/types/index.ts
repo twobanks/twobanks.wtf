@@ -90,6 +90,7 @@ export interface CreditCard {
   id: number
   name: string
   // outros campos opcionais conforme schema
+  lastFourDigits?: string | null
 }
 
 export interface TransactionDrawerProps {

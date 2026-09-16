@@ -293,11 +293,12 @@ export const investmentTransactions = pgTable("investment_transactions", {
 export const creditCards = pgTable('credit_cards', {
   id: serial('id').primaryKey(),
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  name: text('name').notNull(), // Nubank, XP, etc.
-  brand: text('brand'), // Visa, Master...
+  name: text('name').notNull(),
+  brand: text('brand'),
+  lastFourDigits: text('last_four_digits'), // <-- NOVA COLUNA AQUI
   creditLimit: numeric('credit_limit'),
-  dueDay: integer('due_day'), // dia do vencimento
-  closingDay: integer('closing_day'), // dia do fechamento da fatura
+  dueDay: integer('due_day'),
+  closingDay: integer('closing_day'),
   createdAt: timestamp('created_at').defaultNow(),
 });
 

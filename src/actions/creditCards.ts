@@ -16,6 +16,7 @@ export async function createCreditCard(formData: FormData) {
   const creditLimit = Number(formData.get("creditLimit") || 0)
   const dueDay = Number(formData.get("dueDay") || 0)
   const closingDay = Number(formData.get("closingDay") || 0)
+  const lastFourDigits = formData.get("lastFourDigits") as string | null;
 
   if (!name) throw new Error("Nome é obrigatório")
 
@@ -23,6 +24,7 @@ export async function createCreditCard(formData: FormData) {
     userId,
     name,
     brand: brand || null,
+    lastFourDigits: lastFourDigits || null,
     creditLimit: creditLimit > 0 ? creditLimit.toFixed(2) : null,
     dueDay: dueDay > 0 ? dueDay : null,
     closingDay: closingDay > 0 ? closingDay : null,

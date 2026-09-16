@@ -145,10 +145,9 @@ export function ExpenseDrawer({
       submitLabel={expense ? 'Salvar alterações' : 'Criar despesa'}
       alert={alert}
       onAlertClose={() => setAlert(null)}
-      // trigger removido — quem abre é o host via evento
     >
       {expense && (expense.isRecurring || expense.recurringParentId) && (
-        <div className="md:col-span-2 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 flex items-start gap-2">
+        <div className="md:col-span-2 rounded-lg border border-sidebar-ring/40 bg-sidebar-accent/40 px-4 py-3 text-sm text-sidebar-foreground flex items-start gap-2">
           <Repeat className="size-4 mt-0.5 shrink-0" />
           <span>
             Esta despesa faz parte de uma <strong>série recorrente</strong>. As
@@ -188,7 +187,7 @@ export function ExpenseDrawer({
       >
         <SelectTrigger
           className={`${drawerSelectTriggerClass} ${
-            isCategoryPlaceholder ? 'text-gray-500' : ''
+            isCategoryPlaceholder ? 'text-sidebar-foreground/50' : ''
           }`}
         >
           <SelectValue />
@@ -214,7 +213,7 @@ export function ExpenseDrawer({
 
       {!expense && (
         <>
-          <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 cursor-pointer select-none">
+          <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-sidebar-accent border border-sidebar-border text-sm text-sidebar-foreground cursor-pointer select-none">
             <input
               type="checkbox"
               checked={isRecurring}
@@ -237,8 +236,8 @@ export function ExpenseDrawer({
                     onClick={() => setRecurringMonths(n)}
                     className={`h-10 px-4 rounded-lg border text-sm transition-colors ${
                       recurringMonths === n
-                        ? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-300'
-                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
+                        ? 'bg-sidebar-accent border-sidebar-ring text-sidebar-foreground'
+                        : 'bg-sidebar-accent/40 border-sidebar-border text-sidebar-foreground/70 hover:bg-sidebar-accent/60'
                     }`}
                   >
                     {n}x
@@ -255,12 +254,12 @@ export function ExpenseDrawer({
         </>
       )}
 
-      <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-gray-800 border border-gray-700 text-sm text-gray-200 cursor-pointer select-none">
+      <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-sidebar-accent border border-sidebar-border text-sm text-sidebar-foreground cursor-pointer select-none">
         <input
           type="checkbox"
           name="paid"
           defaultChecked={expense?.paid ?? false}
-          className="size-4 rounded border-gray-600 bg-gray-900 accent-emerald-500"
+          className="size-4 rounded border-sidebar-border bg-sidebar accent-[#FC4C02]"
         />
         Pago
       </label>

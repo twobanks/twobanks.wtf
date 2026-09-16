@@ -33,22 +33,23 @@ export default async function ListasPage() {
   );
 
   return (
-    <main className="min-h-screen w-full bg-black text-gray-100 p-4 md:p-10">
-      <div className="w-full mx-auto space-y-12">
-        <div className="flex justify-between w-full items-center">
-          <CreateListForm />
-        </div>
-
-        {listsWithItems.length === 0 ? (
-          <p className="text-gray-500">Nenhuma lista criada ainda.</p>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {listsWithItems.map((list) => (
-              <ListCard key={list.id} list={list} />
-            ))}
-          </div>
-        )}
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        {/* O formulário/botão de criar lista renderiza aqui */}
+        <CreateListForm />
       </div>
-    </main>
+
+      {listsWithItems.length === 0 ? (
+        <div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
+          <p className="text-zinc-500">Nenhuma lista criada ainda.</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {listsWithItems.map((list) => (
+            <ListCard key={list.id} list={list} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+// src/components/Drawers/drawer-shell.tsx
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -11,17 +12,24 @@ import {
 import { FloatingAlert } from '@/components/ui/floating-alert';
 import { ReactNode } from 'react';
 
+// ─── Classes exportadas — todas baseadas nos tokens do sidebar ────────────
 export const drawerFieldClass =
-  'h-12 w-full bg-gray-800 border border-gray-700 px-4 rounded-lg placeholder:text-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition-colors';
+  'h-12 w-full bg-sidebar-accent border border-sidebar-border px-4 rounded-lg ' +
+  'placeholder:text-sidebar-foreground/40 text-sidebar-foreground ' +
+  'focus:outline-none focus:ring-2 focus:ring-sidebar-ring focus:border-sidebar-ring ' +
+  'transition-colors';
 
 export const drawerSelectTriggerClass =
-  '!h-12 w-full bg-gray-800 border border-gray-700 px-4 py-0 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition-colors flex items-center [&>span]:truncate data-[placeholder]:text-gray-500';
+  '!h-12 w-full bg-sidebar-accent border border-sidebar-border px-4 py-0 rounded-lg ' +
+  'text-sidebar-foreground focus:outline-none focus:ring-2 focus:ring-sidebar-ring focus:border-sidebar-ring ' +
+  'transition-colors flex items-center [&>span]:truncate ' +
+  'data-[placeholder]:text-sidebar-foreground/40';
 
 export const drawerSelectContentClass =
-  'bg-gray-800 border-gray-700 text-gray-200';
+  'bg-sidebar border-sidebar-border text-sidebar-foreground';
 
 export const drawerSelectItemClass =
-  'focus:bg-gray-700 focus:text-gray-100';
+  'focus:bg-sidebar-accent focus:text-sidebar-accent-foreground';
 
 export type DrawerAlert = {
   type: 'success' | 'error';
@@ -74,18 +82,32 @@ export function DrawerShell({
         }}
         swipeDirection={swipeDirection}
       >
-        <DrawerContent className="!p-0 !mt-0 bg-gray-900 border-t border-gray-800 rounded-t-2xl shadow-xl flex flex-col h-[100dvh]">
-          <DrawerHeader className="!p-6 !pb-5 space-y-1.5 border-b border-gray-800 shrink-0">
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
+        <DrawerContent
+          className="
+            !p-0 !mt-0 h-[100dvh] flex flex-col
+            bg-sidebar text-sidebar-foreground
+            border-t border-sidebar-border
+            rounded-t-2xl shadow-xl
+          "
+        >
+          {/* Bloco 1: Header */}
+          <DrawerHeader
+            className="
+              !p-6 !pb-5 space-y-1.5 shrink-0
+              border-b border-sidebar-border
+            "
+          >
+            <DrawerTitle className="text-xl font-semibold text-sidebar-foreground">
               {title}
             </DrawerTitle>
             {description && (
-              <DrawerDescription className="text-sm text-gray-400">
+              <DrawerDescription className="text-sm text-sidebar-foreground/60">
                 {description}
               </DrawerDescription>
             )}
           </DrawerHeader>
 
+          {/* Bloco 2 + 3: Form */}
           <form
             key={formKey}
             action={onSubmit}
@@ -95,12 +117,25 @@ export function DrawerShell({
               {children}
             </div>
 
-            <div className="p-6 pt-4 border-t border-gray-800 shrink-0 bg-gray-900 space-y-3">
+            <div
+              className="
+                p-6 pt-4 space-y-3 shrink-0
+                border-t border-sidebar-border
+                bg-sidebar
+              "
+            >
               {footerExtra}
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-12 bg-white hover:bg-gray-200 text-gray-900 font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="
+                  w-full h-12 font-medium rounded-lg
+                  bg-sidebar-accent text-sidebar-accent-foreground
+                  hover:bg-sidebar-accent/80
+                  ring-1 ring-sidebar-border
+                  transition-colors
+                  disabled:opacity-50 disabled:cursor-not-allowed
+                "
               >
                 {isSubmitting ? submitLabelLoading : submitLabel}
               </Button>
