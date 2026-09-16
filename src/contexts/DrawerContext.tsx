@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 
-type DrawerKey = 'purchase' | 'income' | 'expense' | "creditCard" | null;
+type DrawerKey = 'purchase' | 'income' | 'expense' | "creditCard" | "recurring" | "category" | null;
 
 interface DrawerContextValue {
   activeDrawer: DrawerKey;
