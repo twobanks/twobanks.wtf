@@ -19,7 +19,34 @@ async function sendOtpEmail(to: string, code: string): Promise<void> {
     from: FROM_EMAIL,
     to,
     subject: "Seu código de acesso twobanks",
-    html: `<p>Seu código de acesso é:</p><h2>${code}</h2><p>Válido por ${OTP_EXPIRATION_MINUTES} minutos.</p>`,
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #09090b; padding: 40px 0; color: #fafafa;">
+        <div style="max-width: 440px; margin: 0 auto; background-color: #18181b; padding: 32px; border-radius: 16px; border: 1px solid #27272a; text-align: center;">
+          
+          <!-- Logotipo em Tipografia Centralizada (Substitui a imagem com perfeição) -->
+          <div style="margin-bottom: 24px;">
+            <span style="font-size: 26px; font-weight: 800; color: #fafafa; letter-spacing: -0.5px;">
+              BANKS<span style="color: #F35894;">.</span>
+            </span>
+          </div>
+
+          <p style="color: #a1a1aa; font-size: 14px; line-height: 20px; margin-bottom: 24px;">
+            Você solicitou um código de acesso para entrar na sua conta. Utilize o código abaixo:
+          </p>
+
+          <!-- Caixa do Código com destaque em Azul Celeste -->
+          <div style="margin: 24px 0; padding: 20px; background-color: #09090b; border: 1px solid #27272a; border-radius: 12px; text-align: center;">
+            <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #5EACCF;">
+              ${code}
+            </span>
+          </div>
+
+          <p style="color: #71717a; font-size: 12px; line-height: 16px; margin-top: 24px; margin-bottom: 0;">
+            Este código é válido por ${OTP_EXPIRATION_MINUTES} minutos. Se você não solicitou este acesso, ignore este e-mail com segurança.
+          </p>
+        </div>
+      </div>
+    `,
   });
 }
 

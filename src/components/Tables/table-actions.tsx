@@ -1,4 +1,3 @@
-// src/components/Tables/table-actions.tsx
 "use client";
 
 import { deleteTransaction, markTransactionAsPaid } from '@/actions/wallet';
@@ -56,14 +55,17 @@ export function TableActions({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/80 data-[state=open]:bg-zinc-800/80 data-[state=open]:text-zinc-100 transition-colors rounded-lg"
-        >
-          <MoreHorizontalIcon className="h-4 w-4" />
-          <span className="sr-only">Abrir menu</span>
-        </Button>
+      {/* Utilizando o padrão 'render' nativo do Base UI */}
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            className="flex h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted data-[state=open]:bg-muted data-[state=open]:text-foreground transition-colors rounded-lg"
+          />
+        }
+      >
+        <MoreHorizontalIcon className="h-4 w-4" />
+        <span className="sr-only">Abrir menu</span>
       </DropdownMenuTrigger>
       
       <DropdownMenuContent align="end" className="w-36 bg-popover border-border text-popover-foreground shadow-xl rounded-xl p-1.5">
