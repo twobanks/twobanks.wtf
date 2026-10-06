@@ -1,10 +1,10 @@
 // ==========================================
-// Arquivo: src/app/admin/layout.tsx
+// Arquivo: src/app/admin/layout.tsx (Atualizado)
 // ==========================================
 
 import { auth } from "@/auth"
 import { AppSidebar } from "@/components/AppSidebar"
-import { GlobalDrawersHost } from "@/components/Drawers/GlobalDrawersHost"; // Importar
+import { GlobalDrawersHost } from "@/components/Drawers/GlobalDrawersHost"
 import { SiteHeader } from "@/components/SiteHeader"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DrawerProvider } from "@/contexts/DrawerContext"
@@ -21,7 +21,7 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const session = await auth()
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/")
   }
 
@@ -36,13 +36,45 @@ export default async function AdminLayout({
     return conditions.length > 1 ? or(...conditions) : conditions[0];
   };
 
-  // Buscar dados necessários para os selects dos drawers globais
-  const userCategories = await db.query.categories.findMany({
-    where: accessCondition(categories),
-  })
-  const userAccounts = await db.query.financialAccounts.findMany({
-    where: accessCondition(financialAccounts),
-  })
+  // Buscar categorias, contas e TODOS os usuários direto da tabela
+  const [userCategories, userAccounts, allAppUsers] = await Promise.all([
+    db.query.categories.findMany({
+      where: accessCondition(categories),
+    }),
+    db.query.financialAccounts.findMany({
+      where: accessCondition(financialAccounts),
+    }),
+    db.query.users.findMany(),
+  ])
+
+  // Identifica o usuário logado e o outro usuário na tabela
+  const dbCurrentUser = allAppUsers.find((u) => u.id === userId)
+  const dbOtherUser = allAppUsers.find((u) => u.id !== userId)
+
+  // Intervalo de 2 minutos para considerar online
+  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
+
+  const currentUserInfo = dbCurrentUser ? {
+    id: dbCurrentUser.id,
+    name: dbCurrentUser.name ?? null,
+    email: dbCurrentUser.email ?? null,
+    image: dbCurrentUser.image ?? null,
+    isOnline: true,
+  } : {
+    id: session.user.id,
+    name: session.user.name ?? null,
+    email: session.user.email ?? null,
+    image: session.user.image ?? null,
+    isOnline: true,
+  }
+
+  const otherUserInfo = dbOtherUser ? {
+    id: dbOtherUser.id,
+    name: dbOtherUser.name ?? null,
+    email: dbOtherUser.email ?? null,
+    image: dbOtherUser.image ?? null,
+    isOnline: dbOtherUser.lastSeen ? new Date(dbOtherUser.lastSeen) > twoMinutesAgo : false,
+  } : null
 
   return (
     <SidebarProvider
@@ -55,7 +87,11 @@ export default async function AdminLayout({
     >
       <VisibilityProvider>
         <DrawerProvider>
-          <AppSidebar variant="inset" />
+          <AppSidebar 
+            variant="inset" 
+            currentUser={currentUserInfo} 
+            otherUser={otherUserInfo} 
+          />
           <SidebarInset>
             <SiteHeader />
             <div className="flex flex-1 flex-col">
@@ -66,7 +102,6 @@ export default async function AdminLayout({
               </div>
             </div>
           </SidebarInset>
-          {/* Hospeda os drawers globais na raiz do admin */}
           <GlobalDrawersHost categories={userCategories} accounts={userAccounts} />
         </DrawerProvider>
       </VisibilityProvider>

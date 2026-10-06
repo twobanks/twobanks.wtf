@@ -26,6 +26,7 @@ export const users = pgTable("user", {
   password: text("password"),
   role: text("role").default("Atleta"),
   phone: text("phone"), 
+  lastSeen: timestamp("last_seen"),
 })
 
 export const otpCodes = pgTable("otp_codes", {

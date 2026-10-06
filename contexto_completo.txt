@@ -211,88 +211,174 @@ export default function LoginPage() {
 }
 
 // ==========================================
-// Arquivo: src/app/admin/blog/[id]/page.tsx
+// Arquivo: src/app/admin/blog/BlogClient.tsx
 // ==========================================
 
-import { updatePost } from "@/actions/blog"
-import { db } from "@/db"
-import { posts } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
+// ==========================================
+// Arquivo: src/app/admin/blog/BlogClient.tsx
+// ==========================================
+"use client"
 
-export default async function EditarPostPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  
-  const [post] = await db.select().from(posts).where(eq(posts.id, id))
+import { deletePost } from "@/actions/blog"
+import { PostDrawer } from "@/components/Drawers/PostDrawer"
+import { TableActions } from "@/components/Tables/table-actions"
+import { FileText, Plus } from "lucide-react"
+import { useState } from "react"
 
-  if (!post) {
-    notFound()
+interface BlogClientProps {
+  initialPosts: any[]
+}
+
+export function BlogClient({ initialPosts }: BlogClientProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedPost, setSelectedPost] = useState<any | null>(null)
+
+  const handleOpenCreate = () => {
+    setSelectedPost(null)
+    setIsOpen(true)
+  }
+
+  const handleOpenEdit = (post: any) => {
+    setSelectedPost(post)
+    setIsOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Tem certeza de que deseja excluir este post?")) {
+      await deletePost(id)
+    }
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-zinc-900 dark:text-white">
-        Editar Post
-      </h1>
-      
-      <form action={updatePost} className="space-y-6">
-        <input type="hidden" name="id" value={post.id} />
-
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
         <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Título</label>
-          <input 
-            type="text" 
-            name="title" 
-            required
-            defaultValue={post.title}
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          />
+          <h1 className="text-2xl font-bold tracking-tight">Gerenciamento do Blog</h1>
+          <p className="text-sm text-muted-foreground">Crie e gerencie suas postagens e artigos publicados.</p>
         </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Resumo (Excerpt)</label>
-          <input 
-            type="text" 
-            name="excerpt" 
-            defaultValue={post.excerpt || ""}
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Conteúdo (Suporta Markdown)</label>
-          <textarea 
-            name="content" 
-            required
-            rows={15}
-            defaultValue={post.content}
-            className="w-full p-3 border rounded-md font-mono text-sm dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input 
-            type="checkbox" 
-            name="published" 
-            id="published" 
-            defaultChecked={post.published} 
-            className="w-5 h-5" 
-          />
-          <label htmlFor="published" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Post publicado (desmarque para reverter a rascunho)
-          </label>
-        </div>
-        <button 
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
+        <button
+          onClick={handleOpenCreate}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          Salvar Alterações
+          <Plus className="h-4 w-4" /> Novo Post
         </button>
-      </form>
+      </div>
+
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="p-6">
+          {!initialPosts || initialPosts.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground flex flex-col items-center gap-2">
+              <FileText className="h-8 w-8 opacity-40" />
+              <p>Nenhum post encontrado.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {initialPosts.map((post) => (
+                <div key={post.id} className="py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
+                      <FileText className="h-4 w-4" />
+                    </div>
+                    <div className="space-y-0.5">
+                      <p className="font-semibold text-sm">{post.title}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-1">
+                        {post.excerpt || post.content || "Sem descrição prévia..."} •{" "}
+                        <span className={`font-medium ${post.published ? "text-emerald-500" : "text-amber-500"}`}>
+                          {post.published ? "Publicado" : "Rascunho"}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <TableActions
+                    id={post.id}
+                    isPaid={true}
+                    onEdit={() => handleOpenEdit(post)}
+                    onDelete={() => handleDelete(post.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <PostDrawer
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        post={selectedPost}
+      />
+    </div>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/admin/blog/[id]/page.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/app/admin/blog/[id]/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { PostForm } from "@/components/Forms/PostForm"
+import { db } from "@/db"
+import { posts } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
+import { Metadata } from "next"
+import { revalidatePath } from "next/cache"
+import { notFound, redirect } from "next/navigation"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const session = await auth();
+  if (!session?.user?.id) return { title: "Editar Post" };
+
+  const resolvedParams = await params;
+  const post = await db.query.posts.findFirst({
+    where: and(eq(posts.id, resolvedParams.id), eq(posts.authorId, session.user.id)),
+  });
+
+  return {
+    title: post ? `Editar Artigo: ${post.title}` : "Post não encontrado",
+  };
+}
+
+async function updatePostAction(formData: FormData) {
+  "use server"
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const slug = formData.get("slug") as string
+  const excerpt = formData.get("excerpt") as string
+  const content = formData.get("content") as string
+  const published = formData.get("published") === "true"
+
+  await db.update(posts)
+    .set({ title, slug, excerpt, content, published, updatedAt: new Date() })
+    .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+
+  revalidatePath("/admin/blog")
+  redirect("/admin/blog")
+}
+
+export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const resolvedParams = await params
+  const postId = resolvedParams.id
+  if (!postId) notFound()
+
+  const post = await db.query.posts.findFirst({
+    where: and(eq(posts.id, postId), eq(posts.authorId, session.user.id)),
+  })
+
+  if (!post) notFound()
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">Editar Post</h1>
+      <PostForm initialData={post} action={updatePostAction} submitLabel="Salvar Alterações" />
     </div>
   )
 }
@@ -301,60 +387,45 @@ export default async function EditarPostPage({
 // Arquivo: src/app/admin/blog/novo/page.tsx
 // ==========================================
 
-import { createPost } from "@/actions/blog"
+// ==========================================
+// Arquivo: src/app/admin/blog/novo/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { PostForm } from "@/components/Forms/PostForm"
+import { db } from "@/db"
+import { posts } from "@/db/schema"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
-export default function NovoPostPage() {
+async function createPostAction(formData: FormData) {
+  "use server"
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const title = formData.get("title") as string
+  const slug = formData.get("slug") as string
+  const excerpt = formData.get("excerpt") as string
+  const content = formData.get("content") as string
+  const published = formData.get("published") === "true"
+
+  await db.insert(posts).values({
+    title,
+    slug,
+    excerpt,
+    content,
+    published,
+    authorId: session.user.id,
+  })
+
+  revalidatePath("/admin/blog")
+  redirect("/admin/blog")
+}
+
+export default async function NewPostPage() {
   return (
-    <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Escrever novo post</h1>
-      
-      <form action={createPost} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium mb-2">Título</label>
-          <input 
-            type="text" 
-            name="title" 
-            required
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800"
-            placeholder="Ex: Treino longo na serra"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Resumo (Excerpt)</label>
-          <input 
-            type="text" 
-            name="excerpt" 
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800"
-            placeholder="Um breve texto para aparecer na lista de posts..."
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Conteúdo (Suporta Markdown)</label>
-          <textarea 
-            name="content" 
-            required
-            rows={15}
-            className="w-full p-3 border rounded-md font-mono text-sm dark:bg-zinc-900 dark:border-zinc-800"
-            placeholder="## Introdução&#10;Hoje o treino foi intenso..."
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input type="checkbox" name="published" id="published" className="w-5 h-5" />
-          <label htmlFor="published" className="text-sm font-medium">
-            Publicar imediatamente (se desmarcado, salva como rascunho)
-          </label>
-        </div>
-
-        <button 
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700"
-        >
-          Salvar Post
-        </button>
-      </form>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">Criar Novo Post</h1>
+      <PostForm action={createPostAction} submitLabel="Publicar Post" />
     </div>
   )
 }
@@ -363,85 +434,35 @@ export default function NovoPostPage() {
 // Arquivo: src/app/admin/blog/page.tsx
 // ==========================================
 
-import { deletePost } from "@/actions/blog"
-import { DeleteButton } from "@/components/DeleteButton"
+// ==========================================
+// Arquivo: src/app/admin/blog/page.tsx
+// ==========================================
+import { auth } from "@/auth"
 import { db } from "@/db"
 import { posts } from "@/db/schema"
-import { desc } from "drizzle-orm"
-import Link from "next/link"
+import { eq } from "drizzle-orm"
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+import { BlogClient } from "./BlogClient"
+
+export const metadata: Metadata = {
+  title: "Blog",
+}
 
 export default async function AdminBlogPage() {
-  const myPosts = await db.select().from(posts).orderBy(desc(posts.createdAt))
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect("/")
+  }
 
-  return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
-          Gerenciar Blog
-        </h1>
-        <Link 
-          href="/admin/blog/novo"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-        >
-          + Novo Post
-        </Link>
-      </div>
+  const userId = session.user.id
 
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden shadow-sm">
-        <table className="w-full text-left text-sm text-zinc-600 dark:text-zinc-400">
-          <thead className="bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 uppercase text-xs font-semibold">
-            <tr>
-              <th className="px-6 py-4">Título</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Data</th>
-              <th className="px-6 py-4 text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {myPosts.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">
-                  Nenhum post encontrado.
-                </td>
-              </tr>
-            ) : (
-              myPosts.map((post) => (
-                <tr key={post.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100">
-                    {post.title}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${
-                      post.published 
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
-                        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                    }`}>
-                      {post.published ? "Publicado" : "Rascunho"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {post.createdAt.toLocaleDateString('pt-BR')}
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-3">
-                    <Link 
-                      href={`/admin/blog/${post.id}`}
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
-                    >
-                      Editar
-                    </Link>
-                    <form action={deletePost} className="inline-block">
-                      <input type="hidden" name="id" value={post.id} />
-                      <DeleteButton />
-                    </form>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
+  const userPosts = await db.query.posts.findMany({
+    where: eq(posts.authorId, userId),
+    orderBy: (p, { desc }) => [desc(p.createdAt)],
+  })
+
+  return <BlogClient initialPosts={userPosts} />
 }
 
 // ==========================================
@@ -453,12 +474,17 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
 import { and, eq } from "drizzle-orm";
+import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ id: string }>
   searchParams: Promise<{ mes?: string }>
+}
+
+export const metadata: Metadata = {
+  title: "Fatura",
 }
 
 export default async function FaturaPage({ params, searchParams }: PageProps) {
@@ -619,8 +645,13 @@ import { db } from "@/db"
 import { creditCards } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { ChevronRight, CreditCard, Trash2 } from "lucide-react"
+import { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Cartões de Crédito",
+}
 
 export default async function CartoesPage() {
   const session = await auth()
@@ -717,7 +748,12 @@ import { db } from "@/db"
 import { categories } from "@/db/schema"
 import { getUserHouseholdIds } from "@/lib/household"
 import { eq, inArray, or } from "drizzle-orm"
+import { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Categorias",
+}
 
 export default async function CategoriasPage() {
   const session = await auth()
@@ -781,7 +817,12 @@ import { db } from "@/db"
 import { financialAccounts } from "@/db/schema"
 import { getUserHouseholdIds } from "@/lib/household"
 import { eq, inArray, or } from "drizzle-orm"
+import { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Contas",
+}
 
 export default async function ContasPage() {
   const session = await auth()
@@ -852,8 +893,13 @@ import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Eye } from "lucide-react"; // Importamos o ícone Eye
+import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Faturas",
+}
 
 export default async function FaturasPage() {
   const session = await auth();
@@ -1037,7 +1083,12 @@ import {
   TrendingUp,
   Wallet
 } from "lucide-react"
+import { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Investimentos",
+}
 
 export default async function InvestimentosPage() {
   const session = await auth()
@@ -1256,9 +1307,15 @@ import { db } from "@/db";
 import type { ShoppingListWithItems } from "@/db/schema";
 import { shoppingItems, shoppingLists } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Listas de Compras",
+}
+
 
 export default async function ListasPage() {
   const session = await auth();
@@ -1321,7 +1378,6 @@ import { ObraTransactionsTable } from "@/components/Tables/obra-transactions-tab
 import { TransactionsTable } from "@/components/Tables/transactions-table";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DrawerProvider } from "@/contexts/DrawerContext";
 import { db } from "@/db";
 import {
   categories,
@@ -1332,7 +1388,12 @@ import {
 } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Carteira",
+}
 
 export default async function CarteiraPage({
   searchParams,
@@ -1525,7 +1586,7 @@ export default async function CarteiraPage({
   const saldoVariacao = calcVariacao(saldo, prevSaldo);
 
   return (
-    <DrawerProvider>
+    <>
       <DrawerInitializer drawerOpen={open} />
       <div className="space-y-6">
         <SummaryCards
@@ -1652,7 +1713,7 @@ export default async function CarteiraPage({
         </Tabs>
       </div>
       <CarteiraDrawersHost categories={categorias} accounts={accounts} />
-    </DrawerProvider>
+    </>
   );
 }
 
@@ -1667,7 +1728,12 @@ import { db } from "@/db";
 import { categories, financialAccounts, recurringExpenses } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { eq, inArray, or } from "drizzle-orm";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Recorrentes",
+}
 
 export default async function RecorrentesPage() {
   const session = await auth();
@@ -1766,12 +1832,21 @@ export default async function RecorrentesPage() {
 // Arquivo: src/app/admin/layout.tsx
 // ==========================================
 
+// ==========================================
+// Arquivo: src/app/admin/layout.tsx
+// ==========================================
+
 import { auth } from "@/auth"
 import { AppSidebar } from "@/components/AppSidebar"
+import { GlobalDrawersHost } from "@/components/Drawers/GlobalDrawersHost"; // Importar
 import { SiteHeader } from "@/components/SiteHeader"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DrawerProvider } from "@/contexts/DrawerContext"
 import { VisibilityProvider } from "@/contexts/VisibilityContext"
+import { db } from "@/db"
+import { categories, financialAccounts } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
 import { redirect } from "next/navigation"
 
 export default async function AdminLayout({
@@ -1783,6 +1858,25 @@ export default async function AdminLayout({
   if (!session?.user) {
     redirect("/")
   }
+
+  const userId = session.user.id
+  const householdIds = await getUserHouseholdIds(userId)
+
+  const accessCondition = (table: any) => {
+    const conditions = [eq(table.userId, userId)];
+    if (householdIds.length > 0) {
+      conditions.push(inArray(table.householdId, householdIds));
+    }
+    return conditions.length > 1 ? or(...conditions) : conditions[0];
+  };
+
+  // Buscar dados necessários para os selects dos drawers globais
+  const userCategories = await db.query.categories.findMany({
+    where: accessCondition(categories),
+  })
+  const userAccounts = await db.query.financialAccounts.findMany({
+    where: accessCondition(financialAccounts),
+  })
 
   return (
     <SidebarProvider
@@ -1806,6 +1900,8 @@ export default async function AdminLayout({
               </div>
             </div>
           </SidebarInset>
+          {/* Hospeda os drawers globais na raiz do admin */}
+          <GlobalDrawersHost categories={userCategories} accounts={userAccounts} />
         </DrawerProvider>
       </VisibilityProvider>
     </SidebarProvider>
@@ -1813,81 +1909,166 @@ export default async function AdminLayout({
 }
 
 // ==========================================
-// Arquivo: src/app/admin/livros/[id]/page.tsx
+// Arquivo: src/app/admin/livros/BooksClient.tsx
 // ==========================================
 
-import { updateBook } from "@/actions/books"
-import { db } from "@/db"
-import { books } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
+// ==========================================
+// Arquivo: src/app/admin/livros/BooksClient.tsx
+// ==========================================
+"use client"
 
-export default async function EditarLivroPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  
-  const [book] = await db.select().from(books).where(eq(books.id, id))
+import { deleteBook } from "@/actions/books"
+import { BookDrawer } from "@/components/Drawers/BookDrawer"
+import { TableActions } from "@/components/Tables/table-actions"
+import { BookOpen, Plus } from "lucide-react"
+import { useState } from "react"
 
-  if (!book) {
-    notFound()
+interface BooksClientProps {
+  initialBooks: any[]
+}
+
+export function BooksClient({ initialBooks }: BooksClientProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedBook, setSelectedBook] = useState<any | null>(null)
+
+  const handleOpenCreate = () => {
+    setSelectedBook(null)
+    setIsOpen(true)
+  }
+
+  const handleOpenEdit = (book: any) => {
+    setSelectedBook(book)
+    setIsOpen(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Tem certeza que deseja remover este livro?")) {
+      await deleteBook(id)
+    }
   }
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-zinc-900 dark:text-white">
-        Editar Livro
-      </h1>
-      
-      <form action={updateBook} className="space-y-6">
-        <input type="hidden" name="id" value={book.id} />
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Título</label>
-            <input 
-              type="text" 
-              name="title" 
-              required
-              defaultValue={book.title} 
-              className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Autor</label>
-            <input 
-              type="text" 
-              name="author" 
-              required
-              defaultValue={book.author}
-              className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-            />
-          </div>
-        </div>
-
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
         <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Status</label>
-          <select 
-            name="status" 
-            defaultValue={book.status}
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          >
-            <option value="quero ler">Quero Ler</option>
-            <option value="lendo">Lendo</option>
-            <option value="lido">Lido</option>
-          </select>
+          <h1 className="text-2xl font-bold tracking-tight">Gerenciamento de Livros</h1>
+          <p className="text-sm text-muted-foreground">Acompanhe suas leituras e catálogo literário.</p>
         </div>
-
-        <button 
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
+        <button
+          onClick={handleOpenCreate}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
         >
-          Salvar Alterações
+          <Plus className="h-4 w-4" /> Novo Livro
         </button>
-      </form>
+      </div>
+
+      <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+        <div className="p-6">
+          {!initialBooks || initialBooks.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground flex flex-col items-center gap-2">
+              <BookOpen className="h-8 w-8 opacity-40" />
+              <p>Nenhum livro cadastrado.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {initialBooks.map((book) => (
+                <div key={book.id} className="py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500">
+                      <BookOpen className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">{book.title}</p>
+                      <p className="text-xs text-muted-foreground">{book.author} • <span className="capitalize">{book.status}</span></p>
+                    </div>
+                  </div>
+                  <TableActions
+                    id={book.id}
+                    isPaid={true}
+                    onEdit={() => handleOpenEdit(book)}
+                    onDelete={() => handleDelete(book.id)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <BookDrawer
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        book={selectedBook}
+      />
+    </div>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/admin/livros/[id]/page.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/app/admin/livros/[id]/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { BookForm } from "@/components/Forms/BookForm"
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
+import { Metadata } from "next"
+import { revalidatePath } from "next/cache"
+import { notFound, redirect } from "next/navigation"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const session = await auth();
+  if (!session?.user?.id) return { title: "Editar Livro" };
+
+  const resolvedParams = await params;
+  const book = await db.query.books.findFirst({
+    where: and(eq(books.id, resolvedParams.id), eq(books.userId, session.user.id)),
+  });
+
+  return {
+    title: book ? `Editar: ${book.title}` : "Livro não encontrado",
+  };
+}
+
+async function updateBookAction(formData: FormData) {
+  "use server"
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const author = formData.get("author") as string
+  const status = formData.get("status") as string
+
+  await db.update(books)
+    .set({ title, author, status })
+    .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
+
+  revalidatePath("/admin/livros")
+  redirect("/admin/livros")
+}
+
+export default async function EditBookPage({ params }: { params: { id: string } }) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const bookId = params.id;
+  if (!bookId) notFound()
+
+  const book = await db.query.books.findFirst({
+    where: and(eq(books.id, bookId), eq(books.userId, session.user.id)),
+  })
+
+  if (!book) notFound()
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">Editar Livro</h1>
+      <BookForm initialData={book} action={updateBookAction} submitLabel="Salvar Alterações" />
     </div>
   )
 }
@@ -1896,73 +2077,41 @@ export default async function EditarLivroPage({
 // Arquivo: src/app/admin/livros/novo/page.tsx
 // ==========================================
 
-import { createBook } from "@/actions/books"
+// ==========================================
+// Arquivo: src/app/admin/livros/novo/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { BookForm } from "@/components/Forms/BookForm"
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
-export default function NovoLivroPage() {
+async function createBookAction(formData: FormData) {
+  "use server"
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const title = formData.get("title") as string
+  const author = formData.get("author") as string
+  const status = formData.get("status") as string
+
+  await db.insert(books).values({
+    title,
+    author,
+    status,
+    userId: session.user.id,
+  })
+
+  revalidatePath("/admin/livros")
+  redirect("/admin/livros")
+}
+
+export default async function NewBookPage() {
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
-        Adicionar Novo Livro
-      </h1>
-      
-      <form action={createBook} className="space-y-6">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Título</label>
-            <input 
-              type="text" 
-              name="title" 
-              required
-              className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-              placeholder="Ex: O Senhor dos Anéis"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Autor</label>
-            <input 
-              type="text" 
-              name="author" 
-              required
-              className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-              placeholder="Ex: J.R.R. Tolkien"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Status</label>
-            <select 
-              name="status" 
-              className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-            >
-              <option value="quero ler">Quero Ler</option>
-              <option value="lendo">Lendo</option>
-              <option value="lido">Lido</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Nota (1 a 5)</label>
-            <input 
-              type="number" 
-              name="rating" 
-              min="1" 
-              max="5"
-              className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-              placeholder="Ex: 5"
-            />
-          </div>
-        </div>
-
-        <button 
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
-        >
-          Salvar Livro
-        </button>
-      </form>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">Adicionar Novo Livro</h1>
+      <BookForm action={createBookAction} submitLabel="Cadastrar Livro" />
     </div>
   )
 }
@@ -1971,128 +2120,239 @@ export default function NovoLivroPage() {
 // Arquivo: src/app/admin/livros/page.tsx
 // ==========================================
 
-import { deleteBook } from "@/actions/books"
-import { DeleteButton } from "@/components/DeleteButton"
+// ==========================================
+// Arquivo: src/app/admin/livros/page.tsx
+// ==========================================
+import { auth } from "@/auth"
 import { db } from "@/db"
 import { books } from "@/db/schema"
-import { desc } from "drizzle-orm"
-import Link from "next/link"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, or } from "drizzle-orm"
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+import { BooksClient } from "./BooksClient"
 
-export default async function DashboardLivrosPage() {
-  const myBooks = await db.select().from(books).orderBy(desc(books.createdAt))
+export const metadata: Metadata = {
+  title: "Livros",
+}
 
-  return (
-    <div className="w-full max-w-6xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
-          Gerenciar Livros
-        </h1>
-        <Link 
-          href="/admin/livros/novo"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-        >
-          + Novo Livro
-        </Link>
-      </div>
+export default async function AdminLivrosPage() {
+  const session = await auth()
+  if (!session?.user?.id) {
+    redirect("/")
+  }
 
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden shadow-sm">
-        <table className="w-full text-left text-sm text-zinc-600 dark:text-zinc-400">
-          <thead className="bg-zinc-50 dark:bg-zinc-950/50 border-b border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 uppercase text-xs font-semibold">
-            <tr>
-              <th className="px-6 py-4">Título do Livro</th>
-              <th className="px-6 py-4">Autor</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {myBooks.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-zinc-500 italic">
-                  Nenhum livro encontrado.
-                </td>
-              </tr>
-            ) : (
-              myBooks.map((book) => (
-                <tr key={book.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-zinc-900 dark:text-zinc-100">
-                    {book.title}
-                  </td>
-                  <td className="px-6 py-4">{book.author}</td>
-                  <td className="px-6 py-4">
-                    <span className="bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider">
-                      {book.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right space-x-3">
-                    <Link 
-                      href={`/admin/livros/${book.id}`}
-                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors"
-                    >
-                      Editar
-                    </Link>
-                    <form action={deleteBook} className="inline-block">
-                      <input type="hidden" name="id" value={book.id} />
-                      <DeleteButton />
-                    </form>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
+  const userId = session.user.id
+  const householdIds = await getUserHouseholdIds(userId)
+
+  const accessCondition = (tableColumn: any) => {
+    const conditions = [eq(tableColumn, userId)]
+    return conditions.length > 1 ? or(...conditions) : conditions[0]
+  }
+
+  const userBooks = await db.query.books.findMany({
+    where: accessCondition(books.userId),
+    orderBy: (b, { desc }) => [desc(b.createdAt)],
+  })
+
+  return <BooksClient initialBooks={userBooks} />
 }
 
 // ==========================================
 // Arquivo: src/app/admin/page.tsx
 // ==========================================
 
-import { auth } from "@/auth"
-import Link from "next/link"
+// ==========================================
+// Arquivo: src/app/admin/page.tsx (Atualizado com Blog e Livros)
+// ==========================================
 
-export default async function AdminMenuPage() {
-  const session = await auth()
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { financialAccounts, transactions } from "@/db/schema";
+import { getUserHouseholdIds } from "@/lib/household";
+import { eq, inArray, or } from "drizzle-orm";
+import { ArrowDownRight, ArrowUpRight, Layers, TrendingUp, Wallet } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+export default async function AdminPage() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/");
+  }
+
+  const userId = session.user.id;
+  const householdIds = await getUserHouseholdIds(userId);
+
+  const accessCondition = (table: any) => {
+    const conditions = [eq(table.userId, userId)];
+    if (householdIds.length > 0) {
+      conditions.push(inArray(table.householdId, householdIds));
+    }
+    return conditions.length > 1 ? or(...conditions) : conditions[0];
+  };
+
+  // Busca paralela de contas e transações para calcular o saldo real dinâmico
+  const [accountsList, allTransactions, recentTransactions] = await Promise.all([
+    db.query.financialAccounts.findMany({
+      where: accessCondition(financialAccounts),
+    }),
+    db.query.transactions.findMany({
+      where: accessCondition(transactions),
+    }),
+    db.query.transactions.findMany({
+      where: accessCondition(transactions),
+      limit: 5,
+      orderBy: (t, { desc }) => [desc(t.date)],
+    }),
+  ]);
+
+  // Cálculo Dinâmico do Saldo Total Real (Saldo Inicial + Receitas - Despesas)
+  const totalInitial = accountsList.reduce((acc, curr) => {
+    return acc + (curr.initialBalance ? Number(curr.initialBalance) : 0);
+  }, 0);
+
+  const totalTransactions = allTransactions.reduce((acc, tx) => {
+    const amount = Number(tx.amount || 0);
+    if (tx.type === "income") return acc + amount;
+    if (tx.type === "expense") return acc - amount;
+    return acc;
+  }, 0);
+
+  const totalBalance = totalInitial + totalTransactions;
+
   return (
-    <main className="w-full flex flex-col items-center dark:bg-black p-4 text-zinc-900 dark:text-zinc-100">
-      <div className="w-full max-w-sm space-y-8 text-center">
-        <header>
-          <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-            Administração
-          </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Bem-vindo(a), {session?.user?.name || "twobanks"}
-          </p>
-        </header>
-        <nav className="flex flex-col space-y-4">
-          <Link 
-            href="/admin/blog" 
-            className="group relative flex items-center justify-between w-full p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all"
-          >
-            <span className="font-semibold text-lg">📝 Gerenciar Blog</span>
-            <span className="text-zinc-300 dark:text-zinc-600 group-hover:text-blue-500 transition-colors">→</span>
-          </Link>
-          <Link 
-            href="/admin/livros" 
-            className="group relative flex items-center justify-between w-full p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all"
-          >
-            <span className="font-semibold text-lg">📚 Gerenciar Livros</span>
-            <span className="text-zinc-300 dark:text-zinc-600 group-hover:text-blue-500 transition-colors">→</span>
-          </Link>
-        </nav>
-        <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800">
-          <Link 
-            href="/" 
-            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-          >
-            ← Voltar para o site público
-          </Link>
+    <div className="flex flex-col gap-6">
+      {/* Cabeçalho de Boas-Vindas */}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold tracking-tight">Painel Administrativo</h1>
+        <p className="text-sm text-muted-foreground">
+          Visão geral consolidada das suas finanças e atalhos rápidos do sistema.
+        </p>
+      </div>
+
+      {/* Grid de Métricas Principais */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Saldo Total Consolidado</span>
+            <Wallet className="h-4 w-4 text-emerald-500" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold">
+              {totalBalance.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Contas Conectadas</span>
+            <Layers className="h-4 w-4 text-blue-500" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold">{accountsList.length}</span>
+            <span className="text-xs text-muted-foreground">instituições/carteiras</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-muted-foreground">Atalho Rápido</span>
+            <TrendingUp className="h-4 w-4 text-purple-500" />
+          </div>
+          <div className="mt-4 flex gap-2">
+            <Link
+              href="/admin/carteira"
+              className="text-xs font-semibold bg-primary text-primary-foreground px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+            >
+              Acessar Carteira Completa &rarr;
+            </Link>
+          </div>
         </div>
       </div>
-    </main>
-  )
+
+      {/* Seção de Transações Recentes e Atalhos de Gestão */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Últimas Movimentações</h2>
+            <Link href="/admin/carteira" className="text-sm text-primary hover:underline">
+              Ver todas
+            </Link>
+          </div>
+
+          <div className="divide-y divide-border">
+            {recentTransactions.length === 0 ? (
+              <p className="py-4 text-sm text-muted-foreground text-center">Nenhuma transação recente encontrada.</p>
+            ) : (
+              recentTransactions.map((tx) => (
+                <div key={tx.id} className="py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
+                      {tx.type === 'income' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{tx.description || "Transação sem descrição"}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString("pt-BR")}</p>
+                    </div>
+                  </div>
+                  <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                    {Number(tx.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Card de Atalhos de Gerenciamento (Incluindo Blog e Livros) */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col justify-between">
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Gerenciamento</h2>
+            <p className="text-sm text-muted-foreground mb-4">Acesse rapidamente as ferramentas e conteúdos do sistema.</p>
+            
+            <ul className="space-y-1.5 text-sm">
+              <li>
+                <Link href="/admin/categorias" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                  <span>Categorias</span>
+                  <span className="text-xs text-muted-foreground">&rarr;</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/contas" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                  <span>Contas Bancárias</span>
+                  <span className="text-xs text-muted-foreground">&rarr;</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/investimentos" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                  <span>Investimentos</span>
+                  <span className="text-xs text-muted-foreground">&rarr;</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/blog" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                  <span> Blog</span>
+                  <span className="text-xs text-muted-foreground">&rarr;</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/admin/livros" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                  <span> Livros</span>
+                  <span className="text-xs text-muted-foreground">&rarr;</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="mt-6 pt-4 border-t text-xs text-muted-foreground text-center">
+            TwoBanks Dashboard &copy; 2026
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ==========================================
@@ -2817,10 +3077,12 @@ export default async function BlogIndexPage() {
 // Arquivo: src/app/layout.tsx
 // ==========================================
 
+
 import "@/app/globals.css";
 import { auth } from "@/auth";
 import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { DrawerProvider } from "@/contexts/DrawerContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -2835,8 +3097,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "twobanks",
-  description: "twobanks",
+  title: {
+    template: "BANKS | %s",
+    default: "BANKS | Painel Financeiro e Gestão",
+  },
+  description: "Plataforma inteligente de controle financeiro e gerenciamento de conteúdo.",
+  // O Next.js mapeia automaticamente o favicon.ico localizado em src/app/favicon.ico
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -2849,15 +3115,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar isAuthenticated={isAuthenticated} />
+          <DrawerProvider>
+            <Navbar isAuthenticated={isAuthenticated} />
             {children}
+          </DrawerProvider>
         </ThemeProvider>
       </body>
     </html>
@@ -2871,6 +3139,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 import { db } from "@/db"
 import { books } from "@/db/schema"
 import { desc } from "drizzle-orm"
+
+
 
 export default async function LivrosIndexPage() {
   const myBooks = await db
@@ -3443,14 +3713,15 @@ import { usePathname } from "next/navigation"
 const routeLabels: Record<string, string> = {
   "/admin": "Admin",
   "/admin/carteira": "Carteira",
-  "/admin/cartoes": "Cartões",
-  "/admin/categorias": "Categorias",
-  "/admin/contas": "Contas",
-  "/admin/recorrentes": "Recorrentes",
-  "/admin/investimentos": "Investimentos",
-  "/admin/dashboard": "Dashboard",
-  "/admin/faturas": "Faturas",
-  // ... adicione conforme necessário
+  "/admin/carteira/cartoes": "Cartões",
+  "/admin/carteira/categorias": "Categorias",
+  "/admin/carteira/contas": "Contas",
+  "/admin/carteira/recorrentes": "Recorrentes",
+  "/admin/carteira/investimentos": "Investimentos",
+  "/admin/carteira/listas": "Listas de Compras",
+  "/admin/carteira/faturas": "Faturas",
+  "/admin/blog": "Blog",
+  "/admin/livros": "Livros",
 }
 
 export function AppBreadcrumb() {
@@ -3496,6 +3767,10 @@ export function AppBreadcrumb() {
 // Arquivo: src/components/AppSidebar.tsx
 // ==========================================
 
+// ==========================================
+// Arquivo: src/components/AppSidebar.tsx
+// ==========================================
+
 "use client"
 
 import {
@@ -3507,18 +3782,28 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem
+  SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
+import { useDrawer } from "@/contexts/DrawerContext"
 import {
+  BookOpen,
   CreditCard,
   FileText,
+  FolderPlus,
   Landmark,
+  MinusCircle, // 1. IMPORTAR O ÍCONE DE SAÍDA/DESPESA
+  PlusCircle,
+  Repeat,
   ShoppingBasket,
   TrendingUp,
   Wallet
 } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+
+import logoImage from "@/../public/twobanks.webp"
 
 const financeiroItems = [
   { title: "Carteira", href: "/admin/carteira", icon: Wallet },
@@ -3526,7 +3811,12 @@ const financeiroItems = [
   { title: "Faturas", href: "/admin/carteira/faturas", icon: FileText },
   { title: "Contas", href: "/admin/carteira/contas", icon: Landmark },
   { title: "Investimentos", href: "/admin/carteira/investimentos", icon: TrendingUp },
-  { title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket  },
+  { title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket },
+]
+
+const contentItems = [
+  { title: "Blog", href: "/admin/blog", icon: FileText },
+  { title: "Livros", href: "/admin/livros", icon: BookOpen },
 ]
 
 interface AppSidebarProps {
@@ -3535,19 +3825,35 @@ interface AppSidebarProps {
 
 export function AppSidebar({ variant = "sidebar" }: AppSidebarProps) {
   const pathname = usePathname()
+  const { openDrawer } = useDrawer()
 
   return (
     <Sidebar collapsible="icon" variant={variant}>
-      <SidebarHeader>
+      <SidebarHeader className="py-4">
         <Link
-          href="/"
-          className="flex items-center gap-2 font-extrabold text-xl tracking-tight"
+          href="/admin"
+          className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
         >
-          <img src="/twobanks.webp" alt="Logo" width={36} height={36} />
-          BANKS
+          <div className="relative flex items-center justify-center shrink-0 w-10 h-10">
+            <Image
+              src={logoImage}
+              alt="TwoBanks Logo"
+              width={40}
+              height={40}
+              priority
+              className="object-contain w-full h-full"
+            />
+          </div>
+          <span className="truncate group-data-[collapsible=icon]:hidden text-2xl tracking-normal">
+            BANKS<span className="text-[#FC4C02]">.</span>
+          </span>
         </Link>
       </SidebarHeader>
+
+      <SidebarSeparator className="bg-border" />
+
       <SidebarContent>
+        {/* Seção de Navegação Principal (Financeiro) */}
         <SidebarGroup>
           <SidebarGroupLabel>Financeiro</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -3563,6 +3869,81 @@ export function AppSidebar({ variant = "sidebar" }: AppSidebarProps) {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2 bg-border" />
+
+        {/* Seção de Conteúdo (Blog e Livros) */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Conteúdo</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {contentItems.map((item, index) => (
+                <SidebarMenuItem key={`${item.href}-${index}`}>
+                  <SidebarMenuButton
+                    render={<Link href={item.href} />}
+                    isActive={pathname === item.href}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2 bg-border" />
+
+        {/* Seção de Ações Rápidas */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Ações Rápidas</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => openDrawer("income")}>
+                  <PlusCircle className="h-4 w-4" />
+                  <span>Nova Receita</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => openDrawer("expense")}>
+                  {/* Ícone atualizado para MinusCircle indicando saída/gasto */}
+                  <MinusCircle className="h-4 w-4" />
+                  <span>Nova Despesa</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => openDrawer("purchase")}>
+                  <CreditCard className="h-4 w-4" />
+                  <span>Nova Compra Cartão</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => openDrawer("recurring")}>
+                  <Repeat className="h-4 w-4" />
+                  <span>Despesa Recorrente</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => openDrawer("creditCard")}>
+                  <CreditCard className="h-4 w-4" />
+                  <span>Adicionar Cartão</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={() => openDrawer("category")}>
+                  <FolderPlus className="h-4 w-4" />
+                  <span>Adicionar Categoria</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -4638,30 +5019,121 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
 }
 
 // ==========================================
+// Arquivo: src/components/Drawers/BookDrawer.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/components/Drawers/BookDrawer.tsx
+// ==========================================
+"use client"
+
+import { saveBook } from "@/actions/books"
+import { DrawerAlert, DrawerShell, drawerFieldClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react"
+
+interface BookDrawerProps {
+  open: boolean
+  onClose: () => void
+  book?: { id: string; title: string; author: string; status: string } | null
+  onSuccess?: () => void
+}
+
+export function BookDrawer({ open, onClose, book, onSuccess }: BookDrawerProps) {
+  const [alert, setAlert] = useState<DrawerAlert>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true)
+    try {
+      if (book?.id) {
+        formData.append("id", book.id)
+      }
+      await saveBook(formData)
+      setAlert({ type: "success", message: book ? "Livro atualizado com sucesso!" : "Livro cadastrado com sucesso!" })
+      onSuccess?.()
+      onClose()
+    } catch (error) {
+      setAlert({ type: "error", message: "Erro ao salvar o livro." })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <DrawerShell
+      open={open}
+      onClose={onClose}
+      title={book ? "Editar Livro" : "Novo Livro"}
+      description="Preencha os dados da obra literária"
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitLabel="Salvar"
+      alert={alert}
+      onAlertClose={() => setAlert(null)}
+    >
+      <Input
+        name="title"
+        placeholder="Título do Livro"
+        defaultValue={book?.title ?? ""}
+        required
+        autoFocus
+        className={`md:col-span-2 ${drawerFieldClass}`}
+      />
+      <Input
+        name="author"
+        placeholder="Autor"
+        defaultValue={book?.author ?? ""}
+        required
+        className={`md:col-span-2 ${drawerFieldClass}`}
+      />
+      <div className="md:col-span-2">
+        <Select name="status" defaultValue={book?.status ?? "planning"}>
+          <SelectTrigger className={`!h-[52px] ${drawerFieldClass}`}>
+            <SelectValue placeholder="Status da Leitura" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="planning">Planejado</SelectItem>
+            <SelectItem value="reading">Lendo</SelectItem>
+            <SelectItem value="completed">Concluído</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </DrawerShell>
+  )
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/CategoryDrawer.tsx
+// ==========================================
+
+// ==========================================
 // Arquivo: src/components/Drawers/CategoryDrawer.tsx
 // ==========================================
 
 "use client"
 
 import { createCategory, updateCategory } from "@/actions/categories"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
-import { FloatingAlert } from "@/components/ui/floating-alert"
+import { DrawerAlert, DrawerShell, drawerFieldClass, drawerSelectContentClass, drawerSelectItemClass, drawerSelectTriggerClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useDrawer } from "@/contexts/DrawerContext"; // 1. IMPORTAR O CONTEXTO
 import { CategoryDrawerProps } from "@/utils/types"
 import { useState } from "react"
 
 export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
-  const [open, setOpen] = useState(false)   // estado local
-  const [floatingAlert, setFloatingAlert] = useState<{
-    type: "success" | "error"
-    message: string
-  } | null>(null)
+  const { activeDrawer, closeDrawer } = useDrawer()
+  const [alert, setAlert] = useState<DrawerAlert>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Se passou uma categoria por prop (edição na tabela), ele abre. 
+  // Senão, abre se o activeDrawer global for "category".
+  const isOpen = Boolean(category) || activeDrawer === "category"
+
+  const handleClose = () => {
+    closeDrawer()
+  }
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true)
@@ -4672,14 +5144,14 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
       } else {
         await createCategory(formData)
       }
-      setOpen(false)
-      setFloatingAlert({
+      handleClose()
+      setAlert({
         type: "success",
         message: category ? "Categoria atualizada!" : "Categoria criada!",
       })
       onSuccess?.()
     } catch (error) {
-      setFloatingAlert({
+      setAlert({
         type: "error",
         message: "Não foi possível salvar a categoria.",
       })
@@ -4689,66 +5161,38 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
   }
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
-      >
-        {category ? "Editar" : "+ Nova Categoria"}
-      </button>
-
-      <Drawer
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
-          <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
-              {category ? "Editar Categoria" : "Nova Categoria"}
-            </DrawerTitle>
-            <DrawerDescription className="text-sm text-gray-400 mb-4">
-              {category ? "Atualize os dados da categoria" : "Informe os dados da categoria"}
-            </DrawerDescription>
-          </DrawerHeader>
-
-          <form action={handleSubmit} className="grid grid-cols-1 gap-4">
-            <input
-              name="name"
-              placeholder="Nome da categoria"
-              defaultValue={category?.name}
-              required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <select
-              name="type"
-              defaultValue={category?.type ?? "expense"}
-              required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="expense">Despesa</option>
-              <option value="income">Receita</option>
-              {/* Remova "transfer" se não for suportado pela action */}
-            </select>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
-            >
-              {isSubmitting ? "Salvando..." : "Salvar"}
-            </button>
-          </form>
-        </DrawerContent>
-      </Drawer>
-
-      {floatingAlert && (
-        <FloatingAlert
-          type={floatingAlert.type}
-          message={floatingAlert.message}
-          onClose={() => setFloatingAlert(null)}
-        />
-      )}
-    </>
+    <DrawerShell
+      open={isOpen}
+      onClose={handleClose}
+      title={category ? "Editar Categoria" : "Nova Categoria"}
+      description={category ? "Atualize os dados da categoria" : "Informe os dados da categoria"}
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitLabel="Salvar"
+      alert={alert}
+      onAlertClose={() => setAlert(null)}
+      // Removido o 'trigger' fixo para evitar que um botão indesejado apareça no host global
+    >
+      <Input
+        name="name"
+        placeholder="Nome da categoria"
+        defaultValue={category?.name}
+        required
+        autoFocus
+        className={`md:col-span-2 ${drawerFieldClass}`}
+      />
+      <div className="md:col-span-2">
+        <Select name="type" defaultValue={category?.type ?? "expense"} required>
+          <SelectTrigger className={drawerSelectTriggerClass}>
+            <SelectValue placeholder="Selecione o tipo" />
+          </SelectTrigger>
+          <SelectContent className={drawerSelectContentClass}>
+            <SelectItem value="expense" className={drawerSelectItemClass}>Despesa</SelectItem>
+            <SelectItem value="income" className={drawerSelectItemClass}>Receita</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </DrawerShell>
   )
 }
 
@@ -4756,7 +5200,10 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
 // Arquivo: src/components/Drawers/CreditCardDrawer.tsx
 // ==========================================
 
-// src/components/Drawers/CreditCardDrawer.tsx
+// ==========================================
+// Arquivo: src/components/Drawers/CreditCardDrawer.tsx (Corrigido)
+// ==========================================
+
 "use client"
 
 import { createCreditCard, updateCreditCard } from "@/actions/creditCards"
@@ -4773,19 +5220,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useDrawer } from "@/contexts/DrawerContext"
 import type { CreditCardDrawerProps } from "@/utils/types"
-import { useEffect, useState } from "react"
+import { Pencil, Plus } from "lucide-react"
+import { useState } from "react"
 
 export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const { activeDrawer, closeDrawer } = useDrawer()
+  const [isOpenLocal, setIsOpenLocal] = useState(false)
   const [alert, setAlert] = useState<DrawerAlert>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (!isOpen) {
-      setAlert(null)
-    }
-  }, [isOpen])
+  // Se for o drawer global de "Adicionar Novo Cartão" ou o estado local de edição
+  const isGlobalOpen = !creditCard && activeDrawer === "creditCard"
+  const isOpen = isOpenLocal || isGlobalOpen
+
+  const handleClose = () => {
+    setIsOpenLocal(false)
+    closeDrawer()
+  }
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true)
@@ -4797,7 +5250,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
         await createCreditCard(formData)
       }
       
-      setIsOpen(false)
+      handleClose()
       setAlert({
         type: "success",
         message: creditCard ? "Cartão atualizado!" : "Cartão criado!",
@@ -4813,10 +5266,30 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
     }
   }
 
+  // Renderiza um botão de gatilho dependendo se é Edição ou Criação
+  const triggerButton = creditCard ? (
+    <button
+      onClick={() => setIsOpenLocal(true)}
+      title="Editar cartão"
+      className="inline-flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 p-2 rounded-lg transition-colors"
+    >
+      <Pencil size={18} />
+      <span className="sr-only">Editar</span>
+    </button>
+  ) : (
+    <button
+      onClick={() => setIsOpenLocal(true)}
+      className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+    >
+      <Plus size={16} />
+      Novo Cartão
+    </button>
+  )
+
   return (
     <DrawerShell
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={handleClose}
       title={creditCard ? "Editar Cartão" : "Novo Cartão"}
       description="Informe os dados principais do cartão"
       onSubmit={handleSubmit}
@@ -4824,15 +5297,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
       submitLabel="Salvar Cartão"
       alert={alert}
       onAlertClose={() => setAlert(null)}
-      trigger={
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors text-sm"
-        >
-          {creditCard ? "Editar" : "+ Adicionar Cartão"}
-        </button>
-      }
+      trigger={triggerButton}
     >
       <Input
         name="name"
@@ -4968,20 +5433,23 @@ export function ExpenseDrawer({
   );
 
   useEffect(() => {
-    if (!open) return;
-    if (expense) {
-      const next = splitYearMonth(expense.date);
-      setDueMonth(next.month);
-      setDueYear(next.year);
-      setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
-    } else {
-      setIsRecurring(false);
-      setRecurringMonths(12);
-      setCategoryId(CATEGORY_PLACEHOLDER);
-      const now = currentYearMonth();
-      setDueMonth(now.month);
-      setDueYear(now.year);
+    if (open) {
+      if (expense) {
+        const next = splitYearMonth(expense.date);
+        setDueMonth(next.month);
+        setDueYear(next.year);
+        setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
+        setIsRecurring(false); // Edição atual não manipula recursão na UI
+      } else {
+        setIsRecurring(false);
+        setRecurringMonths(12);
+        setCategoryId(CATEGORY_PLACEHOLDER);
+        const now = currentYearMonth();
+        setDueMonth(now.month);
+        setDueYear(now.year);
+      }
     }
+    // Ao fechar (!open), os estados ficam intactos até que a UI suma de fato.
   }, [open, expense]);
 
 
@@ -5160,6 +5628,69 @@ export function ExpenseDrawer({
         Pago
       </label>
     </DrawerShell>
+  );
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/GlobalDrawersHost.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/components/Drawers/GlobalDrawersHost.tsx
+// ==========================================
+
+'use client';
+
+import { useDrawer } from '@/contexts/DrawerContext';
+import { useRouter } from 'next/navigation';
+import { CategoryDrawer } from './CategoryDrawer';
+import { CreditCardDrawer } from './CreditCardDrawer';
+import { RecurringExpenseDrawer } from './RecurringExpenseDrawer';
+
+export function GlobalDrawersHost({
+  categories,
+  accounts,
+}: {
+  categories: any[];
+  accounts: any[];
+}) {
+  const { activeDrawer, closeDrawer } = useDrawer();
+  const router = useRouter();
+
+  return (
+    <>
+      {/* Drawer de Categoria */}
+      {activeDrawer === 'category' && (
+        <CategoryDrawer
+          onSuccess={() => {
+            closeDrawer();
+            router.refresh();
+          }}
+        />
+      )}
+
+      {/* Drawer de Cartão de Crédito */}
+      {activeDrawer === 'creditCard' && (
+        <CreditCardDrawer
+          onSuccess={() => {
+            closeDrawer();
+            router.refresh();
+          }}
+        />
+      )}
+
+      {/* Drawer de Despesa Recorrente */}
+      {activeDrawer === 'recurring' && (
+        <RecurringExpenseDrawer
+          categories={categories}
+          accounts={accounts}
+          onSuccess={() => {
+            closeDrawer();
+            router.refresh();
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -5493,6 +6024,125 @@ export function InvestmentTransactionDrawer({
 }
 
 // ==========================================
+// Arquivo: src/components/Drawers/PostDrawer.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/components/Drawers/PostDrawer.tsx
+// ==========================================
+"use client"
+
+import { savePost } from "@/actions/blog"
+import { DrawerAlert, DrawerShell, drawerFieldClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
+
+interface PostDrawerProps {
+  open: boolean
+  onClose: () => void
+  post?: {
+    id: string
+    title: string
+    slug: string
+    excerpt?: string | null
+    content: string
+    published: boolean
+  } | null
+  onSuccess?: () => void
+}
+
+export function PostDrawer({ open, onClose, post, onSuccess }: PostDrawerProps) {
+  const [alert, setAlert] = useState<DrawerAlert>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true)
+    try {
+      if (post?.id) {
+        formData.append("id", post.id)
+      }
+      await savePost(formData)
+      setAlert({
+        type: "success",
+        message: post ? "Post atualizado com sucesso!" : "Post criado com sucesso!",
+      })
+      onSuccess?.()
+      onClose()
+    } catch (error) {
+      setAlert({
+        type: "error",
+        message: "Não foi possível salvar o post.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <DrawerShell
+      open={open}
+      onClose={onClose}
+      title={post ? "Editar Post" : "Novo Post"}
+      description="Preencha os campos abaixo para gerenciar o conteúdo do blog"
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitLabel="Salvar Post"
+      alert={alert}
+      onAlertClose={() => setAlert(null)}
+    >
+      <Input
+        name="title"
+        placeholder="Título do Artigo"
+        defaultValue={post?.title ?? ""}
+        required
+        autoFocus
+        className={`md:col-span-2 ${drawerFieldClass}`}
+      />
+
+      <Input
+        name="slug"
+        placeholder="Slug (url-amigavel)"
+        defaultValue={post?.slug ?? ""}
+        required
+        className={`md:col-span-2 ${drawerFieldClass}`}
+      />
+
+      <div className="md:col-span-2 space-y-1">
+        <label className="text-xs font-medium text-muted-foreground">Resumo / Excerpt</label>
+        <textarea
+          name="excerpt"
+          defaultValue={post?.excerpt ?? ""}
+          placeholder="Breve descrição do post..."
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[80px]"
+        />
+      </div>
+
+      <div className="md:col-span-2 space-y-1">
+        <label className="text-xs font-medium text-muted-foreground">Conteúdo Completo</label>
+        <textarea
+          name="content"
+          defaultValue={post?.content ?? ""}
+          placeholder="Escreva o conteúdo do post..."
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[150px]"
+          required
+        />
+      </div>
+
+      <div className="md:col-span-2 flex items-center gap-2 pt-2">
+        <input
+          type="checkbox"
+          name="published"
+          value="true"
+          defaultChecked={post?.published ?? false}
+          className="rounded border-gray-700 bg-gray-800 h-4 w-4"
+        />
+        <label className="text-sm font-medium">Publicar imediatamente</label>
+      </div>
+    </DrawerShell>
+  )
+}
+
+// ==========================================
 // Arquivo: src/components/Drawers/PurchaseDrawer.tsx
 // ==========================================
 
@@ -5820,6 +6470,11 @@ export function RecurringExpenseDrawer({
             </select>
 
             {/* Checkbox corrigido: valor explícito "true" */}
+            <input 
+              type="hidden" 
+              name="active" 
+              value="false" 
+            />
             <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
               <input
                 type="checkbox"
@@ -6045,6 +6700,211 @@ export function DrawerShell({
       )}
     </>
   );
+}
+
+// ==========================================
+// Arquivo: src/components/Forms/BookForm.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/components/Forms/BookForm.tsx
+// ==========================================
+"use client"
+
+import { drawerFieldClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react"
+
+interface BookFormProps {
+  initialData?: {
+    id?: string
+    title?: string
+    author?: string
+    status?: string
+  }
+  action: (formData: FormData) => Promise<void>
+  submitLabel: string
+}
+
+export function BookForm({ initialData, action, submitLabel }: BookFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    const formData = new FormData(e.currentTarget)
+    if (initialData?.id) {
+      formData.append("id", String(initialData.id))
+    }
+    try {
+      await action(formData)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl bg-card border rounded-xl p-6 shadow-sm">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Título do Livro</label>
+        <Input
+          name="title"
+          defaultValue={initialData?.title ?? ""}
+          placeholder="Ex: O Senhor dos Anéis"
+          required
+          className={drawerFieldClass}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Autor</label>
+        <Input
+          name="author"
+          defaultValue={initialData?.author ?? ""}
+          placeholder="Ex: J.R.R. Tolkien"
+          required
+          className={drawerFieldClass}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Status da Leitura</label>
+        <Select name="status" defaultValue={initialData?.status ?? "planning"}>
+          <SelectTrigger className={drawerFieldClass}>
+            <SelectValue placeholder="Selecione o status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="planning">Planejado</SelectItem>
+            <SelectItem value="reading">Lendo</SelectItem>
+            <SelectItem value="completed">Concluído</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="pt-4 flex justify-end">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+        >
+          {isSubmitting ? "Salvando..." : submitLabel}
+        </button>
+      </div>
+    </form>
+  )
+}
+
+// ==========================================
+// Arquivo: src/components/Forms/PostForm.tsx
+// ==========================================
+
+// ==========================================
+// Arquivo: src/components/Forms/PostForm.tsx
+// ==========================================
+"use client"
+
+import { drawerFieldClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
+
+interface PostFormProps {
+  initialData?: {
+    id?: string // Ajustado de number para string
+    title?: string
+    slug?: string
+    excerpt?: string | null
+    content?: string
+    published?: boolean
+  }
+  action: (formData: FormData) => Promise<void>
+  submitLabel: string
+}
+
+export function PostForm({ initialData, action, submitLabel }: PostFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    const formData = new FormData(e.currentTarget)
+    if (initialData?.id) {
+      formData.append("id", initialData.id)
+    }
+    try {
+      await action(formData)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl bg-card border rounded-xl p-6 shadow-sm">
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Título do Post</label>
+        <Input
+          name="title"
+          defaultValue={initialData?.title ?? ""}
+          placeholder="Título do artigo"
+          required
+          className={drawerFieldClass}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Slug (URL amigável)</label>
+        <Input
+          name="slug"
+          defaultValue={initialData?.slug ?? ""}
+          placeholder="ex-titulo-do-artigo"
+          required
+          className={drawerFieldClass}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Resumo / Excert</label>
+        <textarea
+          name="excerpt"
+          defaultValue={initialData?.excerpt ?? ""}
+          placeholder="Breve resumo do post..."
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[80px]"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Conteúdo</label>
+        <textarea
+          name="content"
+          defaultValue={initialData?.content ?? ""}
+          placeholder="Escreva o conteúdo do post..."
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[160px]"
+          required
+        />
+      </div>
+
+      <div className="flex items-center gap-2 pt-2">
+        <input
+          type="checkbox"
+          name="published"
+          value="true"
+          defaultChecked={initialData?.published ?? false}
+          className="rounded border-gray-700 bg-gray-800 h-4 w-4"
+        />
+        <label className="text-sm font-medium">Publicar imediatamente</label>
+      </div>
+
+      <div className="pt-4 flex justify-end">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+        >
+          {isSubmitting ? "Salvando..." : submitLabel}
+        </button>
+      </div>
+    </form>
+  )
 }
 
 // ==========================================
@@ -6772,6 +7632,10 @@ export default function PageSizeSelector({ pageSize, filters }: PageSizeSelector
 // Arquivo: src/components/SettingsMenu.tsx
 // ==========================================
 
+// ==========================================
+// Arquivo: src/components/SettingsMenu.tsx
+// ==========================================
+
 "use client"
 
 import {
@@ -6783,12 +7647,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useDrawer } from "@/contexts/DrawerContext"
+import { DrawerKeyProps, useDrawer } from "@/contexts/DrawerContext"
 import { Settings } from "lucide-react"
-
 
 export function SettingsMenu() {
   const { openDrawer } = useDrawer()
+
+  const handleOpenDrawer = (drawerKey: DrawerKeyProps) => {
+    setTimeout(() => {
+      openDrawer(drawerKey)
+    }, 0)
+  }
 
   return (
     <DropdownMenu>
@@ -6799,37 +7668,32 @@ export function SettingsMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Movimentações</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("income")}>
+          <DropdownMenuItem onClick={() => handleOpenDrawer("income")}>
             Adicionar Receita
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openDrawer("expense")}>
-            Adicionar Despesa
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openDrawer("purchase")}>
-            Adicionar Compra
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-
-          <DropdownMenuSeparator />
-
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Despesas</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("recurring")}>
+          <DropdownMenuItem onClick={() => handleOpenDrawer("expense")}>
             Adicionar Despesa
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
           <DropdownMenuLabel>Cartão de Crédito</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("creditCard")}>
-            Adicionar cartão
+          <DropdownMenuItem onClick={() => handleOpenDrawer("purchase")}>
+            Adicionar Compra
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleOpenDrawer("creditCard")}>
+            Adicionar Cartão
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
           <DropdownMenuLabel>Categorias</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("category")}>
-            Adicionar categoria
+          <DropdownMenuItem onClick={() => handleOpenDrawer("category")}>
+            Adicionar Categoria
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
@@ -6849,7 +7713,6 @@ import { useVisibility } from "@/contexts/VisibilityContext"
 import { deslogar } from "@/lib/actions"
 import { Eye, EyeOff, SquareArrowRightExit } from "lucide-react"
 import { AppBreadcrumb } from "./AppBreadcrumb"
-import { SettingsMenu } from "./SettingsMenu"
 
 export function SiteHeader() {
   const { visible, toggleVisible } = useVisibility();
@@ -6867,7 +7730,6 @@ export function SiteHeader() {
         >
           {visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
         </button>
-        <SettingsMenu />
         <ModeToggle />
         <form action={deslogar}>
           <button
@@ -7910,6 +8772,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
 import type { ObraTransactionsTableProps } from "@/utils/types";
 import { HardHat } from "lucide-react";
@@ -7924,6 +8787,7 @@ export function ObraTransactionsTable({
   accounts,
 }: ObraTransactionsTableProps) {
   const { visible } = useVisibility(); // Hook deve ser chamado antes de qualquer return condicional
+  const { openDrawer, setEditingExpense } = useDrawer();
 
   if (!obraCategoryExists) {
     return (
@@ -7946,12 +8810,14 @@ export function ObraTransactionsTable({
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
-  // Função para exibir o valor com sinal negativo e cor condicional
   const renderAmount = (amount: number) => {
-    if (!visible) {
-      return <span className="text-foreground">-R$ ••••••</span>;
-    }
+    if (!visible) return <span className="text-foreground">-R$ ••••••</span>;
     return <span className="text-red-500">-{formatCurrency(amount)}</span>;
+  };
+  // 3. CRIAR A FUNÇÃO QUE CONECTA O ITEM AO DRAWER
+  const handleEdit = (transaction: any) => {
+    setEditingExpense(transaction);
+    openDrawer('expense');
   };
 
   return (
@@ -8004,7 +8870,11 @@ export function ObraTransactionsTable({
                     )}
                   </TableCell>
                   <TableCell className="flex items-center justify-end">
-                    <TableActions id={transaction.id} isPaid={transaction.paid} />
+                    <TableActions 
+                      id={transaction.id} 
+                      isPaid={transaction.paid} 
+                      onEdit={() => handleEdit(transaction)} 
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -8031,6 +8901,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
 import type { OtherExpensesTableProps } from "@/utils/types";
 import { BanknoteArrowDown } from "lucide-react";
@@ -8045,11 +8916,17 @@ export function OtherExpensesTable({
 }: OtherExpensesTableProps) {
   const router = useRouter();
   const { visible } = useVisibility(); // Obtém o estado global
+  const { openDrawer, setEditingExpense } = useDrawer();
 
   // Função que usa o estado visible
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const handleEdit = (transaction: any) => {
+    setEditingExpense(transaction);
+    openDrawer('expense');
   };
 
   return (
@@ -8112,7 +8989,7 @@ export function OtherExpensesTable({
                     )}
                   </TableCell>
                   <TableCell className="flex items-center justify-end">
-                    <TableActions id={expense.id} isPaid={expense.paid} />
+                    <TableActions id={expense.id} isPaid={expense.paid} onEdit={() => handleEdit(expense)} />
                   </TableCell>
                 </TableRow>
               ))
@@ -8228,8 +9105,6 @@ export function RecurringExpensesTable({
 // ==========================================
 
 // src/components/Tables/table-actions.tsx
-'use client';
-
 import { deleteTransaction, markTransactionAsPaid } from '@/actions/wallet';
 import { Button } from '@/components/ui/button';
 import {
@@ -8245,7 +9120,6 @@ import { useRouter } from 'next/navigation';
 export interface TableActionsProps {
   id: number;
   isPaid: boolean;
-  /** Se true, o registro faz parte de uma série recorrente */
   isRecurring?: boolean;
   onEdit?: () => void;
   onDelete?: (id: number) => void | Promise<void>;
@@ -8299,7 +9173,18 @@ export function TableActions({
         }
       />
       <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem onClick={onEdit}>Editar</DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={(e) => {
+            if (onEdit) {
+              setTimeout(() => {
+                onEdit();
+              }, 0);
+            }
+          }}
+        >
+          Editar
+        </DropdownMenuItem>
+
         {!isPaid && (
           <DropdownMenuItem onClick={handlePay}>Pagar</DropdownMenuItem>
         )}
@@ -8327,6 +9212,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
 import type { TransactionsTableProps } from "@/utils/types";
 import { BanknoteArrowUp } from "lucide-react";
@@ -8336,10 +9222,16 @@ import { TableActions } from "./table-actions";
 export function TransactionsTable({ transactions }: TransactionsTableProps) {
   const router = useRouter();
   const { visible } = useVisibility();
+  const { openDrawer, setEditingExpense } = useDrawer();
 
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const handleEdit = (transaction: any) => {
+    setEditingExpense(transaction);
+    openDrawer('expense');
   };
 
   return (
@@ -8389,6 +9281,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                       <TableActions
                         id={transaction.id}
                         isPaid={transaction.paid}
+                        onEdit={() => handleEdit(transaction)}
                         isRecurring={!!transaction.recurringParentId || (transaction as any).source === "recurring"}
                       />
                     </div>
@@ -12815,11 +13708,11 @@ import {
   type ReactNode,
 } from 'react';
 
-type DrawerKey = 'purchase' | 'income' | 'expense' | "creditCard" | "recurring" | "category" | null;
+export type DrawerKeyProps = 'purchase' | 'income' | 'expense' | "creditCard" | "recurring" | "category" | null;
 
 interface DrawerContextValue {
-  activeDrawer: DrawerKey;
-  openDrawer: (key: DrawerKey) => void;
+  activeDrawer: DrawerKeyProps;
+  openDrawer: (key: DrawerKeyProps) => void;
   closeDrawer: () => void;
   editingExpense: any | null;
   setEditingExpense: (expense: any | null) => void;
@@ -12828,10 +13721,10 @@ interface DrawerContextValue {
 const DrawerContext = createContext<DrawerContextValue | null>(null);
 
 export function DrawerProvider({ children }: { children: ReactNode }) {
-  const [activeDrawer, setActiveDrawer] = useState<DrawerKey>(null);
+  const [activeDrawer, setActiveDrawer] = useState<DrawerKeyProps>(null);
   const [editingExpense, setEditingExpense] = useState<any | null>(null);
 
-  const openDrawer = useCallback((key: DrawerKey) => {
+  const openDrawer = useCallback((key: DrawerKeyProps) => {
     setActiveDrawer(key);
   }, []);
 
