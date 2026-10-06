@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDrawer } from "@/contexts/DrawerContext";
-import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import { useVisibility } from "@/contexts/VisibilityContext";
 import type { ObraTransactionsTableProps } from "@/utils/types";
 import { HardHat } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -23,13 +23,14 @@ export function ObraTransactionsTable({
   categories,
   accounts,
 }: ObraTransactionsTableProps) {
-  const { visible } = useVisibility(); // Hook deve ser chamado antes de qualquer return condicional
+  const { visible } = useVisibility();
   const { openDrawer, setEditingExpense } = useDrawer();
+  const router = useRouter();
 
   if (!obraCategoryExists) {
     return (
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+        <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
           Obra (Gastos Temporários)
         </h1>
         <p className="text-muted-foreground">
@@ -39,9 +40,6 @@ export function ObraTransactionsTable({
     );
   }
 
-  const router = useRouter();
-
-  // Função que usa o estado visible
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -49,59 +47,61 @@ export function ObraTransactionsTable({
 
   const renderAmount = (amount: number) => {
     if (!visible) return <span className="text-foreground">-R$ ••••••</span>;
-    return <span className="text-red-500">-{formatCurrency(amount)}</span>;
+    return <span className="text-rose-600 dark:text-rose-400 font-medium">-{formatCurrency(amount)}</span>;
   };
-  // 3. CRIAR A FUNÇÃO QUE CONECTA O ITEM AO DRAWER
+
   const handleEdit = (transaction: any) => {
     setEditingExpense(transaction);
     openDrawer('expense');
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-6">
+    <div className="w-full flex flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <HardHat />
-          <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
+            <HardHat size={20} strokeWidth={2} />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">
             Construção
           </h1>
         </div>
         <ExpenseDrawer categories={categories} accounts={accounts} onSuccess={() => router.refresh()} />
       </div>
 
-      <div className="overflow-hidden rounded-lg border mt-6">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>Descrição</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
-              <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={4} className="h-24 text-center">
+              <TableRow className="hover:bg-transparent border-0">
+                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                   Nenhum gasto de obra neste mês.
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
-                <TableRow key={transaction.id} className="hover:bg-transparent">
-                  <TableCell className="font-medium">
+                <TableRow key={transaction.id} className="border-border hover:bg-muted/40 transition-colors">
+                  <TableCell className="font-medium text-foreground">
                     {transaction.description}
                   </TableCell>
-                  <TableCell className="text-right font-medium">
+                  <TableCell className="text-right">
                     {renderAmount(Number(transaction.amount))}
                   </TableCell>
                   <TableCell className="text-right">
                     {transaction.paid ? (
-                      <Badge variant="outline" className="text-green-500 border-green-500/50">
+                      <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
                         Pago
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-yellow-500 border-yellow-500/50">
+                      <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10">
                         Pendente
                       </Badge>
                     )}

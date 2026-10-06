@@ -1,4 +1,3 @@
-// src/components/Drawers/drawer-shell.tsx
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -10,26 +9,28 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { FloatingAlert } from '@/components/ui/floating-alert';
+import { Loader2 } from 'lucide-react';
 import { ReactNode } from 'react';
 
-// ─── Classes exportadas — todas baseadas nos tokens do sidebar ────────────
+// ─── Classes exportadas — Padronizadas com a nova paleta ────────────
+
 export const drawerFieldClass =
-  'h-12 w-full bg-sidebar-accent border border-sidebar-border px-4 rounded-lg ' +
-  'placeholder:text-sidebar-foreground/40 text-sidebar-foreground ' +
-  'focus:outline-none focus:ring-2 focus:ring-sidebar-ring focus:border-sidebar-ring ' +
-  'transition-colors';
+  'h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 rounded-lg ' +
+  'placeholder:text-zinc-500 text-zinc-100 ' +
+  'focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+  'transition-all duration-200';
 
 export const drawerSelectTriggerClass =
-  '!h-12 w-full bg-sidebar-accent border border-sidebar-border px-4 py-0 rounded-lg ' +
-  'text-sidebar-foreground focus:outline-none focus:ring-2 focus:ring-sidebar-ring focus:border-sidebar-ring ' +
-  'transition-colors flex items-center [&>span]:truncate ' +
-  'data-[placeholder]:text-sidebar-foreground/40';
+  '!h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 py-0 rounded-lg ' +
+  'text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+  'transition-all duration-200 flex items-center [&>span]:truncate ' +
+  'data-[placeholder]:text-zinc-500';
 
 export const drawerSelectContentClass =
-  'bg-sidebar border-sidebar-border text-sidebar-foreground';
+  'bg-zinc-950 border-zinc-800 text-zinc-100 shadow-2xl';
 
 export const drawerSelectItemClass =
-  'focus:bg-sidebar-accent focus:text-sidebar-accent-foreground';
+  'focus:bg-zinc-800 focus:text-brand-blue transition-colors cursor-pointer rounded-md';
 
 export type DrawerAlert = {
   type: 'success' | 'error';
@@ -85,23 +86,23 @@ export function DrawerShell({
         <DrawerContent
           className="
             !p-0 !mt-0 h-[100dvh] flex flex-col
-            bg-sidebar text-sidebar-foreground
-            border-t border-sidebar-border
-            rounded-t-2xl shadow-xl
+            bg-background text-foreground
+            border-t border-zinc-800
+            rounded-t-3xl shadow-2xl
           "
         >
           {/* Bloco 1: Header */}
           <DrawerHeader
             className="
               !p-6 !pb-5 space-y-1.5 shrink-0
-              border-b border-sidebar-border
+              border-b border-zinc-800/60 bg-zinc-950/30
             "
           >
-            <DrawerTitle className="text-xl font-semibold text-sidebar-foreground">
+            <DrawerTitle className="text-xl font-bold text-foreground tracking-tight">
               {title}
             </DrawerTitle>
             {description && (
-              <DrawerDescription className="text-sm text-sidebar-foreground/60">
+              <DrawerDescription className="text-sm text-zinc-400">
                 {description}
               </DrawerDescription>
             )}
@@ -113,15 +114,17 @@ export function DrawerShell({
             action={onSubmit}
             className="flex flex-col flex-1 min-h-0"
           >
-            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+            {/* O corpo do drawer com espaçamento para os inputs */}
+            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-5 content-start">
               {children}
             </div>
 
+            {/* Rodapé com botão principal */}
             <div
               className="
-                p-6 pt-4 space-y-3 shrink-0
-                border-t border-sidebar-border
-                bg-sidebar
+                p-6 pt-4 space-y-4 shrink-0
+                border-t border-zinc-800/60
+                bg-zinc-950/50
               "
             >
               {footerExtra}
@@ -129,15 +132,22 @@ export function DrawerShell({
                 type="submit"
                 disabled={isSubmitting}
                 className="
-                  w-full h-12 font-medium rounded-lg
-                  bg-sidebar-accent text-sidebar-accent-foreground
-                  hover:bg-sidebar-accent/80
-                  ring-1 ring-sidebar-border
-                  transition-colors
-                  disabled:opacity-50 disabled:cursor-not-allowed
+                  w-full h-12 font-semibold rounded-lg text-base
+                  bg-primary text-primary-foreground
+                  hover:brightness-110 active:scale-[0.99]
+                  transition-all duration-200 shadow-md
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  flex items-center justify-center gap-2
                 "
               >
-                {isSubmitting ? submitLabelLoading : submitLabel}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    {submitLabelLoading}
+                  </>
+                ) : (
+                  submitLabel
+                )}
               </Button>
             </div>
           </form>

@@ -231,14 +231,39 @@ export default async function CarteiraPage({
           saldoVariacao={saldoVariacao}
         />
         
-        <Tabs defaultValue="all" className="flex flex-col w-full space-y-4">
-          <Card className="flex flex-row items-center p-3 justify-between flex-wrap gap-3 bg-zinc-900/40 border-zinc-800/80 shadow-none">
-            <TabsList className="flex-wrap bg-zinc-800/50">
-              <TabsTrigger value="all" className="data-[state=active]:bg-zinc-700">Todas</TabsTrigger>
-              <TabsTrigger value="receitas" className="data-[state=active]:bg-zinc-700">Receitas</TabsTrigger>
-              <TabsTrigger value="despesas" className="data-[state=active]:bg-zinc-700">Despesas</TabsTrigger>
-              <TabsTrigger value="obra" className="data-[state=active]:bg-zinc-700">Construção</TabsTrigger>
-              <TabsTrigger value="cartoes" className="data-[state=active]:bg-zinc-700">Cartões</TabsTrigger>
+        <Tabs defaultValue="all" className="flex flex-col w-full space-y-5">
+          <Card className="flex flex-row items-center p-2.5 justify-between flex-wrap gap-4 bg-zinc-950/40 border-zinc-800/60 rounded-2xl shadow-sm">
+            <TabsList className="flex-wrap bg-zinc-900/50 p-1 rounded-xl">
+              <TabsTrigger 
+                value="all" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Todas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="receitas" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Receitas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="despesas" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Despesas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="obra" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Construção
+              </TabsTrigger>
+              <TabsTrigger 
+                value="cartoes" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Cartões
+              </TabsTrigger>
             </TabsList>
             <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
           </Card>

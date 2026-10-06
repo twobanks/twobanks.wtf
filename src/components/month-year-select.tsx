@@ -8,6 +8,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useMemo } from 'react';
+// Importando as mesmas classes padronizadas do Drawer Shell para manter consistência
+import { drawerSelectContentClass, drawerSelectItemClass, drawerSelectTriggerClass } from './Drawers/drawer-shell';
 
 const MONTHS = [
   { label: 'Janeiro',   value: '01' },
@@ -23,10 +25,6 @@ const MONTHS = [
   { label: 'Novembro',  value: '11' },
   { label: 'Dezembro',  value: '12' },
 ] as const;
-
-// Atualizado para usar a paleta zinc em vez de gray
-const defaultTriggerClass =
-  '!h-12 w-full bg-zinc-800/50 border border-zinc-700/50 px-4 py-0 rounded-lg text-zinc-200 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-colors flex items-center [&>span]:truncate data-[placeholder]:text-zinc-500';
 
 export interface MonthYearPickerProps {
   month: string;
@@ -47,7 +45,7 @@ export function MonthYearPicker({
   onYearChange,
   startYear,
   yearsAhead = 5,
-  triggerClassName = defaultTriggerClass,
+  triggerClassName = drawerSelectTriggerClass,
   className,
   disabled,
 }: MonthYearPickerProps) {
@@ -72,12 +70,12 @@ export function MonthYearPicker({
         <SelectTrigger className={triggerClassName}>
           <SelectValue placeholder="Mês" />
         </SelectTrigger>
-        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200 max-h-72">
+        <SelectContent className={`${drawerSelectContentClass} max-h-72`}>
           {MONTHS.map((m) => (
             <SelectItem
               key={m.value}
               value={m.value}
-              className="focus:bg-zinc-800 focus:text-zinc-100"
+              className={drawerSelectItemClass}
             >
               {m.label}
             </SelectItem>
@@ -94,12 +92,12 @@ export function MonthYearPicker({
         <SelectTrigger className={triggerClassName}>
           <SelectValue placeholder="Ano" />
         </SelectTrigger>
-        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
+        <SelectContent className={drawerSelectContentClass}>
           {yearOptions.map((y) => (
             <SelectItem
               key={y.value}
               value={y.value}
-              className="focus:bg-zinc-800 focus:text-zinc-100"
+              className={drawerSelectItemClass}
             >
               {y.label}
             </SelectItem>

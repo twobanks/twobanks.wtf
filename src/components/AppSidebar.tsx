@@ -1,13 +1,9 @@
-// ==========================================
-// Arquivo: src/components/AppSidebar.tsx
-// ==========================================
-
 "use client"
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter, // 1. IMPORTAR O FOOTER DO SIDEBAR
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -70,7 +66,6 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
   const pathname = usePathname()
   const { openDrawer } = useDrawer()
 
-  // 2. DISPARAR PING QUANDO MUDAR DE ROTA OU A CADA 30 SEGUNDOS
   useEffect(() => {
     const sendPing = async () => {
       try {
@@ -104,7 +99,7 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
             />
           </div>
           <span className="truncate group-data-[collapsible=icon]:hidden text-2xl tracking-normal">
-            BANKS<span className="text-[#FC4C02]">.</span>
+            BANKS<span className="text-brand-pink">.</span>
           </span>
         </Link>
       </SidebarHeader>
@@ -117,17 +112,28 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
           <SidebarGroupLabel>Financeiro</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {financeiroItems.map((item, index) => (
-                <SidebarMenuItem key={`${item.href}-${index}`}>
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={pathname === item.href}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {financeiroItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={`${item.href}-${index}`}>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive}
+                      className={`transition-all duration-200 relative overflow-hidden ${
+                        isActive
+                          ? "bg-brand-blue/15 text-brand-blue hover:bg-brand-blue/20 hover:text-brand-blue font-semibold"
+                          : "text-zinc-400 hover:bg-brand-blue/10 hover:text-brand-blue"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 h-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-blue" />
+                      )}
+                      <item.icon className="h-4 w-4 transition-colors" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -139,60 +145,89 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
           <SidebarGroupLabel>Conteúdo</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {contentItems.map((item, index) => (
-                <SidebarMenuItem key={`${item.href}-${index}`}>
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={pathname === item.href}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {contentItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={`${item.href}-${index}`}>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive}
+                      className={`transition-all duration-200 relative overflow-hidden ${
+                        isActive
+                          ? "bg-brand-blue/15 text-brand-blue hover:bg-brand-blue/20 hover:text-brand-blue font-semibold"
+                          : "text-zinc-400 hover:bg-brand-blue/10 hover:text-brand-blue"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 h-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-blue" />
+                      )}
+                      <item.icon className="h-4 w-4 transition-colors" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarSeparator className="my-2 bg-border" />
 
-        {/* Seção Ações Rápidas */}
+        {/* Seção Ações Rápidas - Destaque com Magenta */}
         <SidebarGroup>
           <SidebarGroupLabel>Ações Rápidas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("income")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("income")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <PlusCircle className="h-4 w-4" />
                   <span>Nova Receita</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("expense")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("expense")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <MinusCircle className="h-4 w-4" />
                   <span>Nova Despesa</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("purchase")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("purchase")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <CreditCard className="h-4 w-4" />
                   <span>Nova Compra Cartão</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("recurring")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("recurring")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <Repeat className="h-4 w-4" />
                   <span>Despesa Recorrente</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("creditCard")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("creditCard")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <CreditCard className="h-4 w-4" />
                   <span>Adicionar Cartão</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("category")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("category")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <FolderPlus className="h-4 w-4" />
                   <span>Adicionar Categoria</span>
                 </SidebarMenuButton>
@@ -202,15 +237,14 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
         </SidebarGroup>
       </SidebarContent>
 
-      {/* 3. RODAPÉ DO SIDEBAR: CORRIGIDO PARA O MODO ABERTO E RECOLHIDO */}
       <SidebarFooter className="p-3 border-t border-border bg-sidebar-accent/25">
         <div className="flex flex-col gap-2.5 w-full items-stretch group-data-[collapsible=icon]:items-center">
           
-          {/* Status do Outro Usuário */}
+          {/* Status do Outro Utilizador */}
           {otherUser && (
             <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-sidebar-accent/50 border border-border/40 text-xs w-full group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0">
               <div className="flex items-center gap-2.5 overflow-hidden group-data-[collapsible=icon]:justify-center w-full">
-                <div className={`relative shrink-0 h-7 w-7 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border transition-all ${otherUser.isOnline ? "border-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]" : "border-zinc-600 grayscale opacity-70"}`}>
+                <div className={`relative shrink-0 h-7 w-7 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border transition-all ${otherUser.isOnline ? "border-brand-blue shadow-[0_0_6px_rgba(94,172,207,0.4)]" : "border-zinc-600 grayscale opacity-70"}`}>
                   {otherUser.image ? (
                     <Image src={otherUser.image} alt={otherUser.name || "Outro usuário"} width={32} height={32} className="object-cover w-full h-full" />
                   ) : (
@@ -225,7 +259,7 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0 group-data-[collapsible=icon]:hidden" title={otherUser.isOnline ? "Online" : "Offline"}>
-                <span className={`h-2 w-2 rounded-full ${otherUser.isOnline ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)] animate-pulse" : "bg-zinc-500"}`} />
+                <span className={`h-2 w-2 rounded-full ${otherUser.isOnline ? "bg-brand-blue shadow-[0_0_6px_rgba(94,172,207,0.5)] animate-pulse" : "bg-zinc-500"}`} />
                 <span className="text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
                   {otherUser.isOnline ? "Online" : "Offline"}
                 </span>
@@ -233,10 +267,10 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
             </div>
           )}
 
-          {/* Dados do Usuário Logado Atualmente */}
+          {/* Dados do Utilizador Logado Atualmente */}
           {currentUser && (
             <div className="flex items-center gap-3 px-1 py-1 overflow-hidden w-full group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-              <div className="relative shrink-0 h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border-2 border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">
+              <div className="relative shrink-0 h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border-2 border-brand-blue shadow-[0_0_8px_rgba(94,172,207,0.4)] bg-brand-blue/10 flex items-center justify-center font-bold text-brand-blue text-xs">
                 {currentUser.image ? (
                   <Image src={currentUser.image} alt={currentUser.name || "User"} width={36} height={36} className="object-cover w-full h-full" />
                 ) : (

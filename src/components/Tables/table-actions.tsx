@@ -1,4 +1,6 @@
 // src/components/Tables/table-actions.tsx
+"use client";
+
 import { deleteTransaction, markTransactionAsPaid } from '@/actions/wallet';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontalIcon } from 'lucide-react';
+import { CheckCircle2, MoreHorizontalIcon, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export interface TableActionsProps {
@@ -54,37 +56,40 @@ export function TableActions({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
-            size="icon"
-          >
-            <MoreHorizontalIcon />
-            <span className="sr-only">Abrir menu</span>
-          </Button>
-        }
-      />
-      <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem 
-          onClick={(e) => {
-            if (onEdit) {
-              setTimeout(() => {
-                onEdit();
-              }, 0);
-            }
-          }}
+      <DropdownMenuTrigger>
+        <Button
+          variant="ghost"
+          className="flex h-8 w-8 p-0 text-zinc-500 hover:text-zinc-100 hover:bg-zinc-800/80 data-[state=open]:bg-zinc-800/80 data-[state=open]:text-zinc-100 transition-colors rounded-lg"
         >
-          Editar
+          <MoreHorizontalIcon className="h-4 w-4" />
+          <span className="sr-only">Abrir menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      
+      <DropdownMenuContent align="end" className="w-36 bg-popover border-border text-popover-foreground shadow-xl rounded-xl p-1.5">
+        <DropdownMenuItem 
+          onClick={() => { if (onEdit) setTimeout(() => onEdit(), 0); }}
+          className="flex items-center gap-2 text-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+        >
+          <Pencil className="h-4 w-4" /> Editar
         </DropdownMenuItem>
 
         {!isPaid && (
-          <DropdownMenuItem onClick={handlePay}>Pagar</DropdownMenuItem>
+          <DropdownMenuItem 
+            onClick={handlePay}
+            className="flex items-center gap-2 text-foreground focus:bg-accent focus:text-emerald-600 dark:focus:text-emerald-400 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+          >
+            <CheckCircle2 className="h-4 w-4" /> Pagar
+          </DropdownMenuItem>
         )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={handleDelete}>
-          Excluir
+        
+        <DropdownMenuSeparator className="bg-border my-1" />
+        
+        <DropdownMenuItem 
+          onClick={handleDelete}
+          className="flex items-center gap-2 text-rose-600 dark:text-rose-400 focus:bg-rose-500/10 focus:text-rose-500 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+        >
+          <Trash2 className="h-4 w-4" /> Excluir
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

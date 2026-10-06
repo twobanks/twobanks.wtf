@@ -85,7 +85,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex w-full items-center justify-center p-4 sm:p-6 lg:p-8 dark:bg-black">
+    <div className="flex w-full items-center justify-center p-4 sm:p-6 lg:p-8 bg-background">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-gray-800/80 p-8 shadow-2xl sm:p-10">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">
@@ -122,7 +122,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold text-white transition-all bg-primary hover:brightness-110 text-primary-foreground active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Enviando..." : "Enviar código"}
             </button>
@@ -160,7 +160,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || otp.length !== 6}
-              className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold text-white transition-all bg-primary hover:brightness-110 text-primary-foreground active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Verificando..." : "Entrar"}
             </button>

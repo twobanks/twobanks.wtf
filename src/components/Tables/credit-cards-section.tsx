@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer";
 import {
@@ -45,13 +45,13 @@ export function CreditCardsSection({
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-4">
+    <div className="w-full flex flex-col justify-start gap-4">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-zinc-800 text-zinc-300">
-            <CreditCardIcon size={18} strokeWidth={2} />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
+            <CreditCardIcon size={20} strokeWidth={2} />
           </div>
-          <h2 className="text-lg font-medium text-zinc-100">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
             Cartões de Crédito
           </h2>
         </div>
@@ -64,8 +64,8 @@ export function CreditCardsSection({
       </div>
 
       {cartoesComFatura.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
-          <p className="text-zinc-500">Nenhum cartão cadastrado.</p>
+        <div className="p-8 text-center border border-dashed border-border rounded-xl bg-card">
+          <p className="text-muted-foreground">Nenhum cartão cadastrado.</p>
         </div>
       ) : (
         <Accordion className="space-y-3">
@@ -77,9 +77,8 @@ export function CreditCardsSection({
               <AccordionItem 
                 key={cartao.id} 
                 value={String(cartao.id)}
-                className="border border-zinc-800/80 rounded-xl bg-zinc-900/20 px-4 overflow-hidden data-[state=open]:border-zinc-700/85 transition-colors"
+                className="border border-border rounded-xl bg-card px-4 overflow-hidden data-[state=open]:border-primary/50 transition-colors shadow-xs"
               >
-                
                 <AccordionTrigger className="hover:no-underline py-4 [&>svg]:hidden">
                   <div className="flex w-full items-center justify-between gap-4 pr-1">
                     <div className="flex items-center gap-3">
@@ -87,11 +86,11 @@ export function CreditCardsSection({
                         <CreditCardBrand brand={cartao.brand} showName={false} />
                       )}
                       <div className="text-left">
-                        <span className="font-medium text-zinc-100 block">
+                        <span className="font-medium text-foreground block">
                           {cartao.name}
                         </span>
                         {(cartao as any).lastFourDigits && (
-                          <span className="text-xs text-zinc-500 font-mono">
+                          <span className="text-xs text-muted-foreground font-mono">
                             •••• {(cartao as any).lastFourDigits}
                           </span>
                         )}
@@ -100,17 +99,17 @@ export function CreditCardsSection({
 
                     <div className="flex items-center gap-5">
                       <div className="text-right">
-                        <p className="text-xs text-zinc-500">Total Fatura</p>
-                        <p className="text-sm font-medium text-zinc-100">{formatCurrency(total)}</p>
+                        <p className="text-xs text-muted-foreground">Total Fatura</p>
+                        <p className="text-sm font-medium text-foreground">{formatCurrency(total)}</p>
                       </div>
 
                       <span
                         className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide border ${
                           statusFatura === "Fechada"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                             : statusFatura === "Aberta"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            : "bg-zinc-800 text-zinc-400 border-zinc-700/50"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                            : "bg-muted text-muted-foreground border-border"
                         }`}
                       >
                         {statusFatura}
@@ -132,7 +131,7 @@ export function CreditCardsSection({
                               handlePayInvoice(String(cartao.id));
                             }
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex cursor-pointer"
                         >
                           <CheckCircle2 size={14} />
                           Pagar
@@ -142,30 +141,30 @@ export function CreditCardsSection({
                   </div>
                 </AccordionTrigger>
 
-                <AccordionContent className="pb-4 pt-2 border-t border-zinc-800/60">
+                <AccordionContent className="pb-4 pt-2 border-t border-border">
                   {parcelas.length === 0 ? (
-                    <p className="text-zinc-500 text-center py-6 text-sm">
+                    <p className="text-muted-foreground text-center py-6 text-sm">
                       Nenhuma parcela lançada para este mês.
                     </p>
                   ) : (
                     <Table>
-                      <TableHeader>
-                        <TableRow className="border-zinc-800/80 hover:bg-transparent">
-                          <TableHead className="text-zinc-400 font-medium">Nome</TableHead>
-                          <TableHead className="text-zinc-400 font-medium">Parcela</TableHead>
-                          <TableHead className="text-right text-zinc-400 font-medium">Valor</TableHead>
+                      <TableHeader className="bg-muted/50">
+                        <TableRow className="border-border hover:bg-transparent">
+                          <TableHead className="text-muted-foreground font-medium">Nome</TableHead>
+                          <TableHead className="text-muted-foreground font-medium">Parcela</TableHead>
+                          <TableHead className="text-right text-muted-foreground font-medium">Valor</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {parcelas.map((parcela) => (
-                          <TableRow key={parcela.id} className="border-zinc-800/80 hover:bg-zinc-800/30 transition-colors">
-                            <TableCell className="font-medium text-zinc-200">
+                          <TableRow key={parcela.id} className="border-border hover:bg-muted/40 transition-colors">
+                            <TableCell className="font-medium text-foreground">
                               {parcela.purchaseDescription}
                             </TableCell>
-                            <TableCell className="text-zinc-400 text-sm">
+                            <TableCell className="text-muted-foreground text-sm">
                               {parcela.number} de {parcela.totalInstallments}
                             </TableCell>
-                            <TableCell className="text-right font-medium text-zinc-200">
+                            <TableCell className="text-right font-medium text-foreground">
                               {formatCurrency(Number(parcela.amount))}
                             </TableCell>
                           </TableRow>

@@ -151,8 +151,8 @@ export default async function FaturasPage() {
                     <span
                       className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide  border ${
                         fatura.status === "Fechada"
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          ? "bg-brand-blue/10 text-brand-blue border-brand-blue/20" /* Azul da marca para algo OK/Fechado */
+                          : "bg-brand-yellow/10 text-brand-yellow border-brand-yellow/20" /* Amarelo elétrico para Aberto */
                       }`}
                     >
                       {fatura.status}

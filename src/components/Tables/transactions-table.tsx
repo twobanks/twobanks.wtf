@@ -1,3 +1,4 @@
+// src/components/Tables/transactions-table.tsx
 "use client";
 
 import { IncomeDrawer } from "@/components/Drawers/IncomeDrawer";
@@ -12,7 +13,7 @@ import {
 import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
 import type { TransactionsTableProps } from "@/utils/types";
-import { BanknoteArrowUp } from "lucide-react";
+import { BanknoteArrowUp, Inbox } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TableActions } from "./table-actions";
 
@@ -32,45 +33,50 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400">
-            <BanknoteArrowUp size={18} strokeWidth={2} />
+    <div className="w-full flex flex-col justify-start gap-4">
+      {/* Cabeçalho de Seção */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-xs">
+            <BanknoteArrowUp size={20} strokeWidth={2} />
           </div>
-          <h2 className="text-lg font-medium text-zinc-100">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
             Receitas do Mês
           </h2>
         </div>
         <IncomeDrawer onSuccess={() => router.refresh()} />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/20">
+      {/* Container da Tabela Padronizado com Cores Dinâmicas */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
         <Table>
-          <TableHeader>
-            <TableRow className="border-zinc-800/80 hover:bg-transparent">
-              <TableHead className="text-zinc-400 font-medium">Descrição</TableHead>
-              <TableHead className="text-right text-zinc-400 font-medium">Valor</TableHead>
-              <TableHead className="text-right text-zinc-400 font-medium">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold h-11">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold h-11">Valor</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold h-11">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={3} className="h-32 text-center text-zinc-500">
-                  Nenhuma receita encontrada para este período.
+                <TableCell colSpan={3} className="h-40 text-center">
+                  <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
+                    <Inbox className="h-10 w-10 opacity-20" />
+                    <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
                 <TableRow 
                   key={transaction.id} 
-                  className="border-zinc-800/80 hover:bg-zinc-800/30 transition-colors"
+                  className="border-border hover:bg-muted/40 transition-colors h-14"
                 >
-                  <TableCell className="font-medium text-zinc-200">
+                  <TableCell className="font-medium text-foreground">
                     {transaction.description}
                   </TableCell>
-                  <TableCell className="text-right font-medium text-emerald-400">
+                  <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
                     {formatCurrency(Number(transaction.amount))}
                   </TableCell>
                   <TableCell className="text-right">
