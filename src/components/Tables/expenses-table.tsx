@@ -34,7 +34,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    });
+    }); 
   };
 
   return (
