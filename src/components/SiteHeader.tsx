@@ -6,7 +6,6 @@ import { useVisibility } from "@/contexts/VisibilityContext"
 import { deslogar } from "@/lib/actions"
 import { Eye, EyeOff, SquareArrowRightExit } from "lucide-react"
 import { AppBreadcrumb } from "./AppBreadcrumb"
-import { SettingsMenu } from "./SettingsMenu"
 
 export function SiteHeader() {
   const { visible, toggleVisible } = useVisibility();
@@ -24,7 +23,6 @@ export function SiteHeader() {
         >
           {visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
         </button>
-        <SettingsMenu />
         <ModeToggle />
         <form action={deslogar}>
           <button
