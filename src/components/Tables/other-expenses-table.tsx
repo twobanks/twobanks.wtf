@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
 import type { OtherExpensesTableProps } from "@/utils/types";
 import { BanknoteArrowDown } from "lucide-react";
@@ -23,11 +24,17 @@ export function OtherExpensesTable({
 }: OtherExpensesTableProps) {
   const router = useRouter();
   const { visible } = useVisibility(); // Obtém o estado global
+  const { openDrawer, setEditingExpense } = useDrawer();
 
   // Função que usa o estado visible
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const handleEdit = (transaction: any) => {
+    setEditingExpense(transaction);
+    openDrawer('expense');
   };
 
   return (
@@ -90,7 +97,7 @@ export function OtherExpensesTable({
                     )}
                   </TableCell>
                   <TableCell className="flex items-center justify-end">
-                    <TableActions id={expense.id} isPaid={expense.paid} />
+                    <TableActions id={expense.id} isPaid={expense.paid} onEdit={() => handleEdit(expense)} />
                   </TableCell>
                 </TableRow>
               ))

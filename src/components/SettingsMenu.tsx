@@ -1,3 +1,7 @@
+// ==========================================
+// Arquivo: src/components/SettingsMenu.tsx
+// ==========================================
+
 "use client"
 
 import {
@@ -9,12 +13,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useDrawer } from "@/contexts/DrawerContext"
+import { DrawerKeyProps, useDrawer } from "@/contexts/DrawerContext"
 import { Settings } from "lucide-react"
-
 
 export function SettingsMenu() {
   const { openDrawer } = useDrawer()
+
+  const handleOpenDrawer = (drawerKey: DrawerKeyProps) => {
+    setTimeout(() => {
+      openDrawer(drawerKey)
+    }, 0)
+  }
 
   return (
     <DropdownMenu>
@@ -25,37 +34,32 @@ export function SettingsMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Movimentações</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("income")}>
+          <DropdownMenuItem onClick={() => handleOpenDrawer("income")}>
             Adicionar Receita
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openDrawer("expense")}>
-            Adicionar Despesa
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => openDrawer("purchase")}>
-            Adicionar Compra
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-
-          <DropdownMenuSeparator />
-
-        <DropdownMenuGroup>
-          <DropdownMenuLabel>Despesas</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("recurring")}>
+          <DropdownMenuItem onClick={() => handleOpenDrawer("expense")}>
             Adicionar Despesa
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
           <DropdownMenuLabel>Cartão de Crédito</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("creditCard")}>
-            Adicionar cartão
+          <DropdownMenuItem onClick={() => handleOpenDrawer("purchase")}>
+            Adicionar Compra
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleOpenDrawer("creditCard")}>
+            Adicionar Cartão
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
           <DropdownMenuLabel>Categorias</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => openDrawer("category")}>
-            Adicionar categoria
+          <DropdownMenuItem onClick={() => handleOpenDrawer("category")}>
+            Adicionar Categoria
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

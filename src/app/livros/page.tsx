@@ -2,6 +2,8 @@ import { db } from "@/db"
 import { books } from "@/db/schema"
 import { desc } from "drizzle-orm"
 
+
+
 export default async function LivrosIndexPage() {
   const myBooks = await db
     .select()

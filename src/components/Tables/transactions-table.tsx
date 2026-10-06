@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
 import type { TransactionsTableProps } from "@/utils/types";
 import { BanknoteArrowUp } from "lucide-react";
@@ -18,10 +19,16 @@ import { TableActions } from "./table-actions";
 export function TransactionsTable({ transactions }: TransactionsTableProps) {
   const router = useRouter();
   const { visible } = useVisibility();
+  const { openDrawer, setEditingExpense } = useDrawer();
 
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const handleEdit = (transaction: any) => {
+    setEditingExpense(transaction);
+    openDrawer('expense');
   };
 
   return (
@@ -71,6 +78,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                       <TableActions
                         id={transaction.id}
                         isPaid={transaction.paid}
+                        onEdit={() => handleEdit(transaction)}
                         isRecurring={!!transaction.recurringParentId || (transaction as any).source === "recurring"}
                       />
                     </div>

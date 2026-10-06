@@ -5,8 +5,13 @@ import { db } from "@/db"
 import { creditCards } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { ChevronRight, CreditCard, Trash2 } from "lucide-react"
+import { Metadata } from "next"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Cartões de Crédito",
+}
 
 export default async function CartoesPage() {
   const session = await auth()

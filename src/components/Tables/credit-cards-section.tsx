@@ -59,7 +59,7 @@ export function CreditCardsSection({
           categories={categorias}
           creditCards={cartoes}
           createInstallmentPurchaseAction={createInstallmentPurchaseAction}
-          triggerLabel="Nova Compra"
+          triggerLabel="+"
         />
       </div>
 
@@ -70,12 +70,6 @@ export function CreditCardsSection({
       ) : (
         <Accordion className="space-y-3">
           {cartoesComFatura.map(({ cartao, parcelas, total, pago }) => {
-            const creditLimit = cartao.creditLimit != null ? Number(cartao.creditLimit) : null;
-            const closingDay = cartao.closingDay != null ? Number(cartao.closingDay) : null;
-
-            const hasCreditLimit = creditLimit !== null && !Number.isNaN(creditLimit);
-            const hasClosingDay = closingDay !== null && !Number.isNaN(closingDay);
-
             const statusFatura =
               total === 0 ? "Sem gastos" : pago >= total ? "Fechada" : "Aberta";
 
@@ -83,11 +77,11 @@ export function CreditCardsSection({
               <AccordionItem 
                 key={cartao.id} 
                 value={String(cartao.id)}
-                className="border border-zinc-800/80 rounded-xl bg-zinc-900/20 px-4 overflow-hidden data-[state=open]:border-zinc-700/80 transition-colors"
+                className="border border-zinc-800/80 rounded-xl bg-zinc-900/20 px-4 overflow-hidden data-[state=open]:border-zinc-700/85 transition-colors"
               >
-                {/* Removemos o no-underline padrão e adicionamos estilo para centralizar o ícone de expandir da lib */}
-                <AccordionTrigger className="hover:no-underline py-4 [&[data-state=open]>svg]:rotate-180">
-                  <div className="flex w-full items-center justify-between gap-4 pr-2">
+                
+                <AccordionTrigger className="hover:no-underline py-4 [&>svg]:hidden">
+                  <div className="flex w-full items-center justify-between gap-4 pr-1">
                     <div className="flex items-center gap-3">
                       {cartao.brand && (
                         <CreditCardBrand brand={cartao.brand} showName={false} />
@@ -104,7 +98,7 @@ export function CreditCardsSection({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6">
+                    <div className="flex items-center gap-5">
                       <div className="text-right">
                         <p className="text-xs text-zinc-500">Total Fatura</p>
                         <p className="text-sm font-medium text-zinc-100">{formatCurrency(total)}</p>
@@ -122,19 +116,27 @@ export function CreditCardsSection({
                         {statusFatura}
                       </span>
 
-                      {/* Botão "Pagar" verde, sutil e elegante */}
                       {payInvoiceAction && statusFatura === "Aberta" && (
-                        <button
-                          type="button"
+                        <span
+                          role="button"
+                          tabIndex={0}
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
                             handlePayInvoice(String(cartao.id));
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handlePayInvoice(String(cartao.id));
+                            }
                           }}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex"
                         >
                           <CheckCircle2 size={14} />
                           Pagar
-                        </button>
+                        </span>
                       )}
                     </div>
                   </div>

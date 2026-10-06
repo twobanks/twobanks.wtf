@@ -15,7 +15,12 @@ import {
   TrendingUp,
   Wallet
 } from "lucide-react"
+import { Metadata } from "next"
 import { redirect } from "next/navigation"
+
+export const metadata: Metadata = {
+  title: "Investimentos",
+}
 
 export default async function InvestimentosPage() {
   const session = await auth()

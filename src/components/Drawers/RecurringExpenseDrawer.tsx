@@ -149,6 +149,11 @@ export function RecurringExpenseDrawer({
             </select>
 
             {/* Checkbox corrigido: valor explícito "true" */}
+            <input 
+              type="hidden" 
+              name="active" 
+              value="false" 
+            />
             <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
               <input
                 type="checkbox"

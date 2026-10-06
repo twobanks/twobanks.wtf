@@ -10,7 +10,6 @@ import { ObraTransactionsTable } from "@/components/Tables/obra-transactions-tab
 import { TransactionsTable } from "@/components/Tables/transactions-table";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DrawerProvider } from "@/contexts/DrawerContext";
 import { db } from "@/db";
 import {
   categories,
@@ -21,7 +20,12 @@ import {
 } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Carteira",
+}
 
 export default async function CarteiraPage({
   searchParams,
@@ -76,7 +80,6 @@ export default async function CarteiraPage({
     return { year: date.getFullYear(), month: date.getMonth() + 1 };
   }
 
-  // Consulta unificada de todas as transações do mês
   const allTransactions = await db.query.transactions.findMany({
     where: and(
       accessCondition(transactions),
@@ -91,14 +94,12 @@ export default async function CarteiraPage({
 
   const obraCategory = categorias.find((c) => c.name.toLowerCase().includes("obra"));
 
-  // Transações de obra (todas as despesas com categoria obra)
   const obraTransactions = obraCategory
     ? allTransactions.filter(
         (t) => t.type === "expense" && t.categoryId === obraCategory.id
       )
     : [];
 
-  // Despesas que não são de obra (inclui avulsas e recorrentes)
   const outrasDespesas = allTransactions.filter(
     (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
   ).map((t) => ({
@@ -113,7 +114,6 @@ export default async function CarteiraPage({
     date: t.date,
   }));
 
-  // Cartões de crédito
   const cartoesComFatura = await Promise.all(
     cartoes.map(async (cartao) => {
       const compras = await db.query.purchases.findMany({
@@ -150,7 +150,6 @@ export default async function CarteiraPage({
     })
   );
 
-  // Totais
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
   const totalDespesas =
     outrasDespesas.reduce((sum, t) => sum + t.amount, 0) +
@@ -158,13 +157,11 @@ export default async function CarteiraPage({
     cartoesComFatura.reduce((sum, c) => sum + c.total, 0);
   const saldo = totalReceitas - totalDespesas;
 
-  // ========== MÊS ANTERIOR ==========
   const prev = getPreviousMonth(faturaAno, faturaMesNum);
   const prevPrimeiroDia = new Date(prev.year, prev.month - 1, 1);
   const prevUltimoDia = new Date(prev.year, prev.month, 0);
   const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
   const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
-
   const prevAllTransactions = await db.query.transactions.findMany({
     where: and(
       accessCondition(transactions),
@@ -221,11 +218,8 @@ export default async function CarteiraPage({
   const saldoVariacao = calcVariacao(saldo, prevSaldo);
 
   return (
-    <DrawerProvider>
+    <>
       <DrawerInitializer drawerOpen={open} />
-      
-      {/* O SummaryCards agora precisa ser atualizado internamente para não usar bg-gray-900, 
-          mas o wrapper externo space-y ajuda no espaçamento */}
       <div className="space-y-6">
         <SummaryCards
           totalReceitas={totalReceitas}
@@ -351,6 +345,6 @@ export default async function CarteiraPage({
         </Tabs>
       </div>
       <CarteiraDrawersHost categories={categorias} accounts={accounts} />
-    </DrawerProvider>
+    </>
   );
 }

@@ -5,7 +5,12 @@ import { db } from "@/db";
 import { categories, financialAccounts, recurringExpenses } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { eq, inArray, or } from "drizzle-orm";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Recorrentes",
+}
 
 export default async function RecorrentesPage() {
   const session = await auth();

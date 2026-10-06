@@ -1,82 +1,67 @@
-import { updatePost } from "@/actions/blog"
+// ==========================================
+// Arquivo: src/app/admin/blog/[id]/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { PostForm } from "@/components/Forms/PostForm"
 import { db } from "@/db"
 import { posts } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
+import { and, eq } from "drizzle-orm"
+import { Metadata } from "next"
+import { revalidatePath } from "next/cache"
+import { notFound, redirect } from "next/navigation"
 
-export default async function EditarPostPage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  
-  const [post] = await db.select().from(posts).where(eq(posts.id, id))
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const session = await auth();
+  if (!session?.user?.id) return { title: "Editar Post" };
 
-  if (!post) {
-    notFound()
-  }
+  const resolvedParams = await params;
+  const post = await db.query.posts.findFirst({
+    where: and(eq(posts.id, resolvedParams.id), eq(posts.authorId, session.user.id)),
+  });
+
+  return {
+    title: post ? `Editar Artigo: ${post.title}` : "Post não encontrado",
+  };
+}
+
+async function updatePostAction(formData: FormData) {
+  "use server"
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const slug = formData.get("slug") as string
+  const excerpt = formData.get("excerpt") as string
+  const content = formData.get("content") as string
+  const published = formData.get("published") === "true"
+
+  await db.update(posts)
+    .set({ title, slug, excerpt, content, published, updatedAt: new Date() })
+    .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+
+  revalidatePath("/admin/blog")
+  redirect("/admin/blog")
+}
+
+export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const resolvedParams = await params
+  const postId = resolvedParams.id
+  if (!postId) notFound()
+
+  const post = await db.query.posts.findFirst({
+    where: and(eq(posts.id, postId), eq(posts.authorId, session.user.id)),
+  })
+
+  if (!post) notFound()
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-zinc-900 dark:text-white">
-        Editar Post
-      </h1>
-      
-      <form action={updatePost} className="space-y-6">
-        <input type="hidden" name="id" value={post.id} />
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Título</label>
-          <input 
-            type="text" 
-            name="title" 
-            required
-            defaultValue={post.title}
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Resumo (Excerpt)</label>
-          <input 
-            type="text" 
-            name="excerpt" 
-            defaultValue={post.excerpt || ""}
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-zinc-700 dark:text-zinc-300">Conteúdo (Suporta Markdown)</label>
-          <textarea 
-            name="content" 
-            required
-            rows={15}
-            defaultValue={post.content}
-            className="w-full p-3 border rounded-md font-mono text-sm dark:bg-zinc-900 dark:border-zinc-800 dark:text-white"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input 
-            type="checkbox" 
-            name="published" 
-            id="published" 
-            defaultChecked={post.published} 
-            className="w-5 h-5" 
-          />
-          <label htmlFor="published" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Post publicado (desmarque para reverter a rascunho)
-          </label>
-        </div>
-        <button 
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
-        >
-          Salvar Alterações
-        </button>
-      </form>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">Editar Post</h1>
+      <PostForm initialData={post} action={updatePostAction} submitLabel="Salvar Alterações" />
     </div>
   )
 }

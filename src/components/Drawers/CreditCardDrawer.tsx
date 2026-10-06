@@ -1,4 +1,7 @@
-// src/components/Drawers/CreditCardDrawer.tsx
+// ==========================================
+// Arquivo: src/components/Drawers/CreditCardDrawer.tsx (Corrigido)
+// ==========================================
+
 "use client"
 
 import { createCreditCard, updateCreditCard } from "@/actions/creditCards"
@@ -15,19 +18,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useDrawer } from "@/contexts/DrawerContext"
 import type { CreditCardDrawerProps } from "@/utils/types"
-import { useEffect, useState } from "react"
+import { Pencil, Plus } from "lucide-react"
+import { useState } from "react"
 
 export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProps) {
-  const [isOpen, setIsOpen] = useState(false)
+  const { activeDrawer, closeDrawer } = useDrawer()
+  const [isOpenLocal, setIsOpenLocal] = useState(false)
   const [alert, setAlert] = useState<DrawerAlert>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (!isOpen) {
-      setAlert(null)
-    }
-  }, [isOpen])
+  // Se for o drawer global de "Adicionar Novo Cartão" ou o estado local de edição
+  const isGlobalOpen = !creditCard && activeDrawer === "creditCard"
+  const isOpen = isOpenLocal || isGlobalOpen
+
+  const handleClose = () => {
+    setIsOpenLocal(false)
+    closeDrawer()
+  }
 
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true)
@@ -39,7 +48,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
         await createCreditCard(formData)
       }
       
-      setIsOpen(false)
+      handleClose()
       setAlert({
         type: "success",
         message: creditCard ? "Cartão atualizado!" : "Cartão criado!",
@@ -55,10 +64,30 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
     }
   }
 
+  // Renderiza um botão de gatilho dependendo se é Edição ou Criação
+  const triggerButton = creditCard ? (
+    <button
+      onClick={() => setIsOpenLocal(true)}
+      title="Editar cartão"
+      className="inline-flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 p-2 rounded-lg transition-colors"
+    >
+      <Pencil size={18} />
+      <span className="sr-only">Editar</span>
+    </button>
+  ) : (
+    <button
+      onClick={() => setIsOpenLocal(true)}
+      className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+    >
+      <Plus size={16} />
+      Novo Cartão
+    </button>
+  )
+
   return (
     <DrawerShell
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={handleClose}
       title={creditCard ? "Editar Cartão" : "Novo Cartão"}
       description="Informe os dados principais do cartão"
       onSubmit={handleSubmit}
@@ -66,15 +95,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
       submitLabel="Salvar Cartão"
       alert={alert}
       onAlertClose={() => setAlert(null)}
-      trigger={
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors text-sm"
-        >
-          {creditCard ? "Editar" : "+ Adicionar Cartão"}
-        </button>
-      }
+      trigger={triggerButton}
     >
       <Input
         name="name"

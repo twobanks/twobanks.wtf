@@ -1,57 +1,42 @@
-import { createPost } from "@/actions/blog"
+// ==========================================
+// Arquivo: src/app/admin/blog/novo/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { PostForm } from "@/components/Forms/PostForm"
+import { db } from "@/db"
+import { posts } from "@/db/schema"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
-export default function NovoPostPage() {
+async function createPostAction(formData: FormData) {
+  "use server"
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const title = formData.get("title") as string
+  const slug = formData.get("slug") as string
+  const excerpt = formData.get("excerpt") as string
+  const content = formData.get("content") as string
+  const published = formData.get("published") === "true"
+
+  await db.insert(posts).values({
+    title,
+    slug,
+    excerpt,
+    content,
+    published,
+    authorId: session.user.id,
+  })
+
+  revalidatePath("/admin/blog")
+  redirect("/admin/blog")
+}
+
+export default async function NewPostPage() {
   return (
-    <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-8">Escrever novo post</h1>
-      
-      <form action={createPost} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium mb-2">Título</label>
-          <input 
-            type="text" 
-            name="title" 
-            required
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800"
-            placeholder="Ex: Treino longo na serra"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Resumo (Excerpt)</label>
-          <input 
-            type="text" 
-            name="excerpt" 
-            className="w-full p-3 border rounded-md dark:bg-zinc-900 dark:border-zinc-800"
-            placeholder="Um breve texto para aparecer na lista de posts..."
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2">Conteúdo (Suporta Markdown)</label>
-          <textarea 
-            name="content" 
-            required
-            rows={15}
-            className="w-full p-3 border rounded-md font-mono text-sm dark:bg-zinc-900 dark:border-zinc-800"
-            placeholder="## Introdução&#10;Hoje o treino foi intenso..."
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input type="checkbox" name="published" id="published" className="w-5 h-5" />
-          <label htmlFor="published" className="text-sm font-medium">
-            Publicar imediatamente (se desmarcado, salva como rascunho)
-          </label>
-        </div>
-
-        <button 
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700"
-        >
-          Salvar Post
-        </button>
-      </form>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold tracking-tight">Criar Novo Post</h1>
+      <PostForm action={createPostAction} submitLabel="Publicar Post" />
     </div>
   )
 }

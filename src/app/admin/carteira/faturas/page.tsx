@@ -11,8 +11,13 @@ import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { Eye } from "lucide-react"; // Importamos o ícone Eye
+import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Faturas",
+}
 
 export default async function FaturasPage() {
   const session = await auth();

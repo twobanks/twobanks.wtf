@@ -3,12 +3,17 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
 import { and, eq } from "drizzle-orm";
+import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 interface PageProps {
   params: Promise<{ id: string }>
   searchParams: Promise<{ mes?: string }>
+}
+
+export const metadata: Metadata = {
+  title: "Fatura",
 }
 
 export default async function FaturaPage({ params, searchParams }: PageProps) {

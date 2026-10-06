@@ -1,6 +1,4 @@
 // src/components/Tables/table-actions.tsx
-'use client';
-
 import { deleteTransaction, markTransactionAsPaid } from '@/actions/wallet';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,7 +14,6 @@ import { useRouter } from 'next/navigation';
 export interface TableActionsProps {
   id: number;
   isPaid: boolean;
-  /** Se true, o registro faz parte de uma série recorrente */
   isRecurring?: boolean;
   onEdit?: () => void;
   onDelete?: (id: number) => void | Promise<void>;
@@ -70,7 +67,18 @@ export function TableActions({
         }
       />
       <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem onClick={onEdit}>Editar</DropdownMenuItem>
+        <DropdownMenuItem 
+          onClick={(e) => {
+            if (onEdit) {
+              setTimeout(() => {
+                onEdit();
+              }, 0);
+            }
+          }}
+        >
+          Editar
+        </DropdownMenuItem>
+
         {!isPaid && (
           <DropdownMenuItem onClick={handlePay}>Pagar</DropdownMenuItem>
         )}

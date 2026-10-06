@@ -1,9 +1,18 @@
+// ==========================================
+// Arquivo: src/app/admin/layout.tsx
+// ==========================================
+
 import { auth } from "@/auth"
 import { AppSidebar } from "@/components/AppSidebar"
+import { GlobalDrawersHost } from "@/components/Drawers/GlobalDrawersHost"; // Importar
 import { SiteHeader } from "@/components/SiteHeader"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { DrawerProvider } from "@/contexts/DrawerContext"
 import { VisibilityProvider } from "@/contexts/VisibilityContext"
+import { db } from "@/db"
+import { categories, financialAccounts } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
 import { redirect } from "next/navigation"
 
 export default async function AdminLayout({
@@ -15,6 +24,25 @@ export default async function AdminLayout({
   if (!session?.user) {
     redirect("/")
   }
+
+  const userId = session.user.id
+  const householdIds = await getUserHouseholdIds(userId)
+
+  const accessCondition = (table: any) => {
+    const conditions = [eq(table.userId, userId)];
+    if (householdIds.length > 0) {
+      conditions.push(inArray(table.householdId, householdIds));
+    }
+    return conditions.length > 1 ? or(...conditions) : conditions[0];
+  };
+
+  // Buscar dados necessários para os selects dos drawers globais
+  const userCategories = await db.query.categories.findMany({
+    where: accessCondition(categories),
+  })
+  const userAccounts = await db.query.financialAccounts.findMany({
+    where: accessCondition(financialAccounts),
+  })
 
   return (
     <SidebarProvider
@@ -38,6 +66,8 @@ export default async function AdminLayout({
               </div>
             </div>
           </SidebarInset>
+          {/* Hospeda os drawers globais na raiz do admin */}
+          <GlobalDrawersHost categories={userCategories} accounts={userAccounts} />
         </DrawerProvider>
       </VisibilityProvider>
     </SidebarProvider>

@@ -5,9 +5,15 @@ import { db } from "@/db";
 import type { ShoppingListWithItems } from "@/db/schema";
 import { shoppingItems, shoppingLists } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Listas de Compras",
+}
+
 
 export default async function ListasPage() {
   const session = await auth();

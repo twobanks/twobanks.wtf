@@ -13,14 +13,15 @@ import { usePathname } from "next/navigation"
 const routeLabels: Record<string, string> = {
   "/admin": "Admin",
   "/admin/carteira": "Carteira",
-  "/admin/cartoes": "Cartões",
-  "/admin/categorias": "Categorias",
-  "/admin/contas": "Contas",
-  "/admin/recorrentes": "Recorrentes",
-  "/admin/investimentos": "Investimentos",
-  "/admin/dashboard": "Dashboard",
-  "/admin/faturas": "Faturas",
-  // ... adicione conforme necessário
+  "/admin/carteira/cartoes": "Cartões",
+  "/admin/carteira/categorias": "Categorias",
+  "/admin/carteira/contas": "Contas",
+  "/admin/carteira/recorrentes": "Recorrentes",
+  "/admin/carteira/investimentos": "Investimentos",
+  "/admin/carteira/listas": "Listas de Compras",
+  "/admin/carteira/faturas": "Faturas",
+  "/admin/blog": "Blog",
+  "/admin/livros": "Livros",
 }
 
 export function AppBreadcrumb() {

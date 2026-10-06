@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
 import type { ObraTransactionsTableProps } from "@/utils/types";
 import { HardHat } from "lucide-react";
@@ -23,6 +24,7 @@ export function ObraTransactionsTable({
   accounts,
 }: ObraTransactionsTableProps) {
   const { visible } = useVisibility(); // Hook deve ser chamado antes de qualquer return condicional
+  const { openDrawer, setEditingExpense } = useDrawer();
 
   if (!obraCategoryExists) {
     return (
@@ -45,12 +47,14 @@ export function ObraTransactionsTable({
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
-  // Função para exibir o valor com sinal negativo e cor condicional
   const renderAmount = (amount: number) => {
-    if (!visible) {
-      return <span className="text-foreground">-R$ ••••••</span>;
-    }
+    if (!visible) return <span className="text-foreground">-R$ ••••••</span>;
     return <span className="text-red-500">-{formatCurrency(amount)}</span>;
+  };
+  // 3. CRIAR A FUNÇÃO QUE CONECTA O ITEM AO DRAWER
+  const handleEdit = (transaction: any) => {
+    setEditingExpense(transaction);
+    openDrawer('expense');
   };
 
   return (
@@ -103,7 +107,11 @@ export function ObraTransactionsTable({
                     )}
                   </TableCell>
                   <TableCell className="flex items-center justify-end">
-                    <TableActions id={transaction.id} isPaid={transaction.paid} />
+                    <TableActions 
+                      id={transaction.id} 
+                      isPaid={transaction.paid} 
+                      onEdit={() => handleEdit(transaction)} 
+                    />
                   </TableCell>
                 </TableRow>
               ))

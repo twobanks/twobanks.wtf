@@ -72,20 +72,23 @@ export function ExpenseDrawer({
   );
 
   useEffect(() => {
-    if (!open) return;
-    if (expense) {
-      const next = splitYearMonth(expense.date);
-      setDueMonth(next.month);
-      setDueYear(next.year);
-      setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
-    } else {
-      setIsRecurring(false);
-      setRecurringMonths(12);
-      setCategoryId(CATEGORY_PLACEHOLDER);
-      const now = currentYearMonth();
-      setDueMonth(now.month);
-      setDueYear(now.year);
+    if (open) {
+      if (expense) {
+        const next = splitYearMonth(expense.date);
+        setDueMonth(next.month);
+        setDueYear(next.year);
+        setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
+        setIsRecurring(false); // Edição atual não manipula recursão na UI
+      } else {
+        setIsRecurring(false);
+        setRecurringMonths(12);
+        setCategoryId(CATEGORY_PLACEHOLDER);
+        const now = currentYearMonth();
+        setDueMonth(now.month);
+        setDueYear(now.year);
+      }
     }
+    // Ao fechar (!open), os estados ficam intactos até que a UI suma de fato.
   }, [open, expense]);
 
 

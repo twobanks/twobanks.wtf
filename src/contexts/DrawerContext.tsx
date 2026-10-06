@@ -9,11 +9,11 @@ import {
   type ReactNode,
 } from 'react';
 
-type DrawerKey = 'purchase' | 'income' | 'expense' | "creditCard" | "recurring" | "category" | null;
+export type DrawerKeyProps = 'purchase' | 'income' | 'expense' | "creditCard" | "recurring" | "category" | null;
 
 interface DrawerContextValue {
-  activeDrawer: DrawerKey;
-  openDrawer: (key: DrawerKey) => void;
+  activeDrawer: DrawerKeyProps;
+  openDrawer: (key: DrawerKeyProps) => void;
   closeDrawer: () => void;
   editingExpense: any | null;
   setEditingExpense: (expense: any | null) => void;
@@ -22,10 +22,10 @@ interface DrawerContextValue {
 const DrawerContext = createContext<DrawerContextValue | null>(null);
 
 export function DrawerProvider({ children }: { children: ReactNode }) {
-  const [activeDrawer, setActiveDrawer] = useState<DrawerKey>(null);
+  const [activeDrawer, setActiveDrawer] = useState<DrawerKeyProps>(null);
   const [editingExpense, setEditingExpense] = useState<any | null>(null);
 
-  const openDrawer = useCallback((key: DrawerKey) => {
+  const openDrawer = useCallback((key: DrawerKeyProps) => {
     setActiveDrawer(key);
   }, []);
 

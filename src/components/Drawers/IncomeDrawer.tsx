@@ -13,7 +13,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useDrawer } from '@/contexts/DrawerContext';
 import { IncomeDrawerProps } from '@/utils/types';
-import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 function currentYearMonth() {
@@ -97,12 +96,10 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
           onClick={() => openDrawer('income')}
           className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-zinc-700/50 shadow-sm"
         >
-          <Plus size={16} />
-          Nova Receita
+          +
         </button>
       }
     >
-      {/* Descrição ocupa a linha toda */}
       <Input
         name="description"
         placeholder="Descrição (ex: Salário)"
@@ -110,7 +107,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         className={`md:col-span-2 ${drawerFieldClass}`}
       />
       
-      {/* Valor ocupa a linha toda */}
       <Input
         name="amount"
         type="number"
@@ -120,7 +116,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         className={`md:col-span-2 ${drawerFieldClass}`}
       />
 
-      {/* MonthYearPicker forçado a ocupar a linha toda do grid do DrawerShell */}
       <div className="md:col-span-2">
         <MonthYearPicker
           month={dueMonth}
@@ -131,7 +126,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         />
       </div>
 
-      {/* Recorrência */}
       <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-zinc-800/40 border border-zinc-800 text-sm text-zinc-300 cursor-pointer select-none hover:border-zinc-700 transition-colors">
         <input
           type="checkbox"
