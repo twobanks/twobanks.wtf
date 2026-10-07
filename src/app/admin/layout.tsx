@@ -44,7 +44,9 @@ export default async function AdminLayout({
     db.query.financialAccounts.findMany({
       where: accessCondition(financialAccounts),
     }),
-    db.query.users.findMany(),
+    db.query.users.findMany({
+      limit: 2
+    }),
   ])
 
   // Identifica o usuário logado e o outro usuário na tabela

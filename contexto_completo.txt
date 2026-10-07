@@ -103,7 +103,7 @@ export default function LoginPage() {
     setIsLoading(false);
 
     if (result?.ok) {
-      window.location.href = "/";
+      window.location.href = "/admin";
     } else {
       setMessage("Código inválido ou expirado.");
     }
@@ -116,7 +116,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex w-full items-center justify-center p-4 sm:p-6 lg:p-8 dark:bg-black">
+    <div className="flex w-full items-center justify-center p-4 sm:p-6 lg:p-8 bg-background">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-gray-800/80 p-8 shadow-2xl sm:p-10">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">
@@ -153,7 +153,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold text-white transition-all bg-primary hover:brightness-110 text-primary-foreground active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Enviando..." : "Enviar código"}
             </button>
@@ -191,7 +191,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading || otp.length !== 6}
-              className="flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:bg-blue-500 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex w-full items-center justify-center rounded-lg px-4 py-3 text-sm font-semibold text-white transition-all bg-primary hover:brightness-110 text-primary-foreground active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Verificando..." : "Entrar"}
             </button>
@@ -1033,8 +1033,8 @@ export default async function FaturasPage() {
                     <span
                       className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide  border ${
                         fatura.status === "Fechada"
-                          ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          ? "bg-brand-blue/10 text-brand-blue border-brand-blue/20" /* Azul da marca para algo OK/Fechado */
+                          : "bg-brand-yellow/10 text-brand-yellow border-brand-yellow/20" /* Amarelo elétrico para Aberto */
                       }`}
                     >
                       {fatura.status}
@@ -1599,14 +1599,39 @@ export default async function CarteiraPage({
           saldoVariacao={saldoVariacao}
         />
         
-        <Tabs defaultValue="all" className="flex flex-col w-full space-y-4">
-          <Card className="flex flex-row items-center p-3 justify-between flex-wrap gap-3 bg-zinc-900/40 border-zinc-800/80 shadow-none">
-            <TabsList className="flex-wrap bg-zinc-800/50">
-              <TabsTrigger value="all" className="data-[state=active]:bg-zinc-700">Todas</TabsTrigger>
-              <TabsTrigger value="receitas" className="data-[state=active]:bg-zinc-700">Receitas</TabsTrigger>
-              <TabsTrigger value="despesas" className="data-[state=active]:bg-zinc-700">Despesas</TabsTrigger>
-              <TabsTrigger value="obra" className="data-[state=active]:bg-zinc-700">Construção</TabsTrigger>
-              <TabsTrigger value="cartoes" className="data-[state=active]:bg-zinc-700">Cartões</TabsTrigger>
+        <Tabs defaultValue="all" className="flex flex-col w-full space-y-5">
+          <Card className="flex flex-row items-center p-2.5 justify-between flex-wrap gap-4 bg-zinc-950/40 border-zinc-800/60 rounded-2xl shadow-sm">
+            <TabsList className="flex-wrap bg-zinc-900/50 p-1 rounded-xl">
+              <TabsTrigger 
+                value="all" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Todas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="receitas" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Receitas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="despesas" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Despesas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="obra" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Construção
+              </TabsTrigger>
+              <TabsTrigger 
+                value="cartoes" 
+                className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+              >
+                Cartões
+              </TabsTrigger>
             </TabsList>
             <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
           </Card>
@@ -3802,16 +3827,12 @@ export function AppBreadcrumb() {
 // Arquivo: src/components/AppSidebar.tsx
 // ==========================================
 
-// ==========================================
-// Arquivo: src/components/AppSidebar.tsx
-// ==========================================
-
 "use client"
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter, // 1. IMPORTAR O FOOTER DO SIDEBAR
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -3874,7 +3895,6 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
   const pathname = usePathname()
   const { openDrawer } = useDrawer()
 
-  // 2. DISPARAR PING QUANDO MUDAR DE ROTA OU A CADA 30 SEGUNDOS
   useEffect(() => {
     const sendPing = async () => {
       try {
@@ -3908,7 +3928,7 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
             />
           </div>
           <span className="truncate group-data-[collapsible=icon]:hidden text-2xl tracking-normal">
-            BANKS<span className="text-[#FC4C02]">.</span>
+            BANKS<span className="text-brand-pink">.</span>
           </span>
         </Link>
       </SidebarHeader>
@@ -3921,17 +3941,28 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
           <SidebarGroupLabel>Financeiro</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {financeiroItems.map((item, index) => (
-                <SidebarMenuItem key={`${item.href}-${index}`}>
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={pathname === item.href}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {financeiroItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={`${item.href}-${index}`}>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive}
+                      className={`transition-all duration-200 relative overflow-hidden ${
+                        isActive
+                          ? "bg-brand-blue/15 text-brand-blue hover:bg-brand-blue/20 hover:text-brand-blue font-semibold"
+                          : "text-zinc-400 hover:bg-brand-blue/10 hover:text-brand-blue"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 h-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-blue" />
+                      )}
+                      <item.icon className="h-4 w-4 transition-colors" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -3943,60 +3974,89 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
           <SidebarGroupLabel>Conteúdo</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {contentItems.map((item, index) => (
-                <SidebarMenuItem key={`${item.href}-${index}`}>
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={pathname === item.href}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {contentItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <SidebarMenuItem key={`${item.href}-${index}`}>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive}
+                      className={`transition-all duration-200 relative overflow-hidden ${
+                        isActive
+                          ? "bg-brand-blue/15 text-brand-blue hover:bg-brand-blue/20 hover:text-brand-blue font-semibold"
+                          : "text-zinc-400 hover:bg-brand-blue/10 hover:text-brand-blue"
+                      }`}
+                    >
+                      {isActive && (
+                        <span className="absolute left-0 top-1/2 h-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-blue" />
+                      )}
+                      <item.icon className="h-4 w-4 transition-colors" />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarSeparator className="my-2 bg-border" />
 
-        {/* Seção Ações Rápidas */}
+        {/* Seção Ações Rápidas - Destaque com Magenta */}
         <SidebarGroup>
           <SidebarGroupLabel>Ações Rápidas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("income")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("income")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <PlusCircle className="h-4 w-4" />
                   <span>Nova Receita</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("expense")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("expense")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <MinusCircle className="h-4 w-4" />
                   <span>Nova Despesa</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("purchase")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("purchase")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <CreditCard className="h-4 w-4" />
                   <span>Nova Compra Cartão</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("recurring")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("recurring")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <Repeat className="h-4 w-4" />
                   <span>Despesa Recorrente</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("creditCard")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("creditCard")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <CreditCard className="h-4 w-4" />
                   <span>Adicionar Cartão</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => openDrawer("category")}>
+                <SidebarMenuButton 
+                  onClick={() => openDrawer("category")}
+                  className="transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink"
+                >
                   <FolderPlus className="h-4 w-4" />
                   <span>Adicionar Categoria</span>
                 </SidebarMenuButton>
@@ -4006,15 +4066,14 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
         </SidebarGroup>
       </SidebarContent>
 
-      {/* 3. RODAPÉ DO SIDEBAR: CORRIGIDO PARA O MODO ABERTO E RECOLHIDO */}
       <SidebarFooter className="p-3 border-t border-border bg-sidebar-accent/25">
         <div className="flex flex-col gap-2.5 w-full items-stretch group-data-[collapsible=icon]:items-center">
           
-          {/* Status do Outro Usuário */}
+          {/* Status do Outro Utilizador */}
           {otherUser && (
             <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-sidebar-accent/50 border border-border/40 text-xs w-full group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0">
               <div className="flex items-center gap-2.5 overflow-hidden group-data-[collapsible=icon]:justify-center w-full">
-                <div className={`relative shrink-0 h-7 w-7 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border transition-all ${otherUser.isOnline ? "border-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]" : "border-zinc-600 grayscale opacity-70"}`}>
+                <div className={`relative shrink-0 h-7 w-7 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border transition-all ${otherUser.isOnline ? "border-brand-blue shadow-[0_0_6px_rgba(94,172,207,0.4)]" : "border-zinc-600 grayscale opacity-70"}`}>
                   {otherUser.image ? (
                     <Image src={otherUser.image} alt={otherUser.name || "Outro usuário"} width={32} height={32} className="object-cover w-full h-full" />
                   ) : (
@@ -4029,7 +4088,7 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0 group-data-[collapsible=icon]:hidden" title={otherUser.isOnline ? "Online" : "Offline"}>
-                <span className={`h-2 w-2 rounded-full ${otherUser.isOnline ? "bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)] animate-pulse" : "bg-zinc-500"}`} />
+                <span className={`h-2 w-2 rounded-full ${otherUser.isOnline ? "bg-brand-blue shadow-[0_0_6px_rgba(94,172,207,0.5)] animate-pulse" : "bg-zinc-500"}`} />
                 <span className="text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
                   {otherUser.isOnline ? "Online" : "Offline"}
                 </span>
@@ -4037,10 +4096,10 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
             </div>
           )}
 
-          {/* Dados do Usuário Logado Atualmente */}
+          {/* Dados do Utilizador Logado Atualmente */}
           {currentUser && (
             <div className="flex items-center gap-3 px-1 py-1 overflow-hidden w-full group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-              <div className="relative shrink-0 h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border-2 border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)] bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">
+              <div className="relative shrink-0 h-9 w-9 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 rounded-full overflow-hidden border-2 border-brand-blue shadow-[0_0_8px_rgba(94,172,207,0.4)] bg-brand-blue/10 flex items-center justify-center font-bold text-brand-blue text-xs">
                 {currentUser.image ? (
                   <Image src={currentUser.image} alt={currentUser.name || "User"} width={36} height={36} className="object-cover w-full h-full" />
                 ) : (
@@ -6652,7 +6711,6 @@ export function CarteiraDrawersHost({
 // Arquivo: src/components/Drawers/drawer-shell.tsx
 // ==========================================
 
-// src/components/Drawers/drawer-shell.tsx
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -6664,26 +6722,28 @@ import {
   DrawerTitle,
 } from '@/components/ui/drawer';
 import { FloatingAlert } from '@/components/ui/floating-alert';
+import { Loader2 } from 'lucide-react';
 import { ReactNode } from 'react';
 
-// ─── Classes exportadas — todas baseadas nos tokens do sidebar ────────────
+// ─── Classes exportadas — Padronizadas com a nova paleta ────────────
+
 export const drawerFieldClass =
-  'h-12 w-full bg-sidebar-accent border border-sidebar-border px-4 rounded-lg ' +
-  'placeholder:text-sidebar-foreground/40 text-sidebar-foreground ' +
-  'focus:outline-none focus:ring-2 focus:ring-sidebar-ring focus:border-sidebar-ring ' +
-  'transition-colors';
+  'h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 rounded-lg ' +
+  'placeholder:text-zinc-500 text-zinc-100 ' +
+  'focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+  'transition-all duration-200';
 
 export const drawerSelectTriggerClass =
-  '!h-12 w-full bg-sidebar-accent border border-sidebar-border px-4 py-0 rounded-lg ' +
-  'text-sidebar-foreground focus:outline-none focus:ring-2 focus:ring-sidebar-ring focus:border-sidebar-ring ' +
-  'transition-colors flex items-center [&>span]:truncate ' +
-  'data-[placeholder]:text-sidebar-foreground/40';
+  '!h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 py-0 rounded-lg ' +
+  'text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+  'transition-all duration-200 flex items-center [&>span]:truncate ' +
+  'data-[placeholder]:text-zinc-500';
 
 export const drawerSelectContentClass =
-  'bg-sidebar border-sidebar-border text-sidebar-foreground';
+  'bg-zinc-950 border-zinc-800 text-zinc-100 shadow-2xl';
 
 export const drawerSelectItemClass =
-  'focus:bg-sidebar-accent focus:text-sidebar-accent-foreground';
+  'focus:bg-zinc-800 focus:text-brand-blue transition-colors cursor-pointer rounded-md';
 
 export type DrawerAlert = {
   type: 'success' | 'error';
@@ -6739,23 +6799,23 @@ export function DrawerShell({
         <DrawerContent
           className="
             !p-0 !mt-0 h-[100dvh] flex flex-col
-            bg-sidebar text-sidebar-foreground
-            border-t border-sidebar-border
-            rounded-t-2xl shadow-xl
+            bg-background text-foreground
+            border-t border-zinc-800
+            rounded-t-3xl shadow-2xl
           "
         >
           {/* Bloco 1: Header */}
           <DrawerHeader
             className="
               !p-6 !pb-5 space-y-1.5 shrink-0
-              border-b border-sidebar-border
+              border-b border-zinc-800/60 bg-zinc-950/30
             "
           >
-            <DrawerTitle className="text-xl font-semibold text-sidebar-foreground">
+            <DrawerTitle className="text-xl font-bold text-foreground tracking-tight">
               {title}
             </DrawerTitle>
             {description && (
-              <DrawerDescription className="text-sm text-sidebar-foreground/60">
+              <DrawerDescription className="text-sm text-zinc-400">
                 {description}
               </DrawerDescription>
             )}
@@ -6767,15 +6827,17 @@ export function DrawerShell({
             action={onSubmit}
             className="flex flex-col flex-1 min-h-0"
           >
-            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+            {/* O corpo do drawer com espaçamento para os inputs */}
+            <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-5 content-start">
               {children}
             </div>
 
+            {/* Rodapé com botão principal */}
             <div
               className="
-                p-6 pt-4 space-y-3 shrink-0
-                border-t border-sidebar-border
-                bg-sidebar
+                p-6 pt-4 space-y-4 shrink-0
+                border-t border-zinc-800/60
+                bg-zinc-950/50
               "
             >
               {footerExtra}
@@ -6783,15 +6845,22 @@ export function DrawerShell({
                 type="submit"
                 disabled={isSubmitting}
                 className="
-                  w-full h-12 font-medium rounded-lg
-                  bg-sidebar-accent text-sidebar-accent-foreground
-                  hover:bg-sidebar-accent/80
-                  ring-1 ring-sidebar-border
-                  transition-colors
-                  disabled:opacity-50 disabled:cursor-not-allowed
+                  w-full h-12 font-semibold rounded-lg text-base
+                  bg-primary text-primary-foreground
+                  hover:brightness-110 active:scale-[0.99]
+                  transition-all duration-200 shadow-md
+                  disabled:opacity-60 disabled:cursor-not-allowed
+                  flex items-center justify-center gap-2
                 "
               >
-                {isSubmitting ? submitLabelLoading : submitLabel}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    {submitLabelLoading}
+                  </>
+                ) : (
+                  submitLabel
+                )}
               </Button>
             </div>
           </form>
@@ -8338,6 +8407,7 @@ ${trkpts}
 // Arquivo: src/components/SummaryCards.tsx
 // ==========================================
 
+// src/components/SummaryCards.tsx
 "use client";
 
 import {
@@ -8350,7 +8420,6 @@ import { useVisibility } from "@/contexts/VisibilityContext";
 import { SummaryCardsProps } from "@/utils/types";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
-
 export function SummaryCards({
   totalReceitas,
   totalDespesas,
@@ -8360,47 +8429,37 @@ export function SummaryCards({
   despesasVariacao,
   saldoVariacao,
 }: SummaryCardsProps) {
-const { visible } = useVisibility();
+  const { visible } = useVisibility();
 
   const formatCurrency = (value: number) =>
     visible ? `R$ ${value.toFixed(2)}` : "R$ ••••••";
 
   const renderVariacao = (variacao: number | null | undefined, invertColors = false) => {
-    if (variacao === null || variacao === undefined) return null;
-
-    // Quando visible for false, exibe um placeholder neutro, sem cor
-    if (!visible) {
-      return null;
-    }
+    if (variacao === null || variacao === undefined || !visible) return null;
 
     const isPositive = variacao > 0;
     const color = invertColors
-      ? isPositive
-        ? "text-red-400"   // despesa aumentou -> ruim
-        : "text-green-400" // despesa diminuiu -> bom
-      : isPositive
-        ? "text-green-400"
-        : "text-red-400";
+      ? isPositive ? "text-rose-500 dark:text-rose-400" : "text-emerald-500 dark:text-emerald-400"
+      : isPositive ? "text-emerald-500 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400";
 
     return (
-      <p className={`text-xs font-medium flex items-center gap-1 ${color}`}>
-        {isPositive ? (
-          <ArrowUpRight className="h-3 w-3" />
-        ) : (
-          <ArrowDownRight className="h-3 w-3" />
-        )}
+      <p className={`text-xs font-semibold flex items-center gap-1 ${color}`}>
+        {isPositive ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}
         {Math.abs(variacao).toFixed(1)}%
       </p>
     );
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
       {/* Card Receitas */}
-      <Card className="@container/card bg-gradient-to-t from-primary/5 to-card shadow-xs">
-        <CardHeader>
-          <CardDescription>Receitas do mês</CardDescription>
-          <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${visible ? "text-green-400" : "text-foreground"}`}>
+      <Card className="group relative overflow-hidden bg-card border-border shadow-sm transition-all hover:border-primary/50">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <CardHeader className="relative z-10">
+          <CardDescription className="text-muted-foreground font-medium tracking-wide uppercase text-[10px]">
+            Receitas do mês
+          </CardDescription>
+          <CardTitle className={`text-3xl font-bold tabular-nums tracking-tight ${visible ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"}`}>
             {formatCurrency(totalReceitas)}
           </CardTitle>
           {renderVariacao(receitasVariacao)}
@@ -8408,10 +8467,13 @@ const { visible } = useVisibility();
       </Card>
 
       {/* Card Despesas */}
-      <Card className="@container/card bg-gradient-to-t from-primary/5 to-card shadow-xs">
-        <CardHeader>
-          <CardDescription>Despesas do mês</CardDescription>
-          <CardTitle className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${visible ? "text-red-400" : "text-foreground"}`}>
+      <Card className="group relative overflow-hidden bg-card border-border shadow-sm transition-all hover:border-primary/50">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <CardHeader className="relative z-10">
+          <CardDescription className="text-muted-foreground font-medium tracking-wide uppercase text-[10px]">
+            Despesas do mês
+          </CardDescription>
+          <CardTitle className={`text-3xl font-bold tabular-nums tracking-tight ${visible ? "text-rose-600 dark:text-rose-400" : "text-foreground"}`}>
             {formatCurrency(totalDespesas)}
           </CardTitle>
           {renderVariacao(despesasVariacao, true)}
@@ -8419,12 +8481,17 @@ const { visible } = useVisibility();
       </Card>
 
       {/* Card Saldo */}
-      <Card className="@container/card bg-gradient-to-t from-primary/5 to-card shadow-xs">
-        <CardHeader>
-          <CardDescription>Saldo do mês</CardDescription>
+      <Card className="group relative overflow-hidden bg-card border-border shadow-sm transition-all hover:border-primary/50">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <CardHeader className="relative z-10">
+          <CardDescription className="text-muted-foreground font-medium tracking-wide uppercase text-[10px]">
+            Saldo do mês
+          </CardDescription>
           <CardTitle
-            className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${
-              visible ? (saldo >= 0 ? "text-green-400" : "text-red-400") : "text-foreground"
+            className={`text-3xl font-bold tabular-nums tracking-tight ${
+              visible 
+                ? (saldo >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400") 
+                : "text-foreground"
             }`}
           >
             {formatCurrency(saldo)}
@@ -8539,7 +8606,7 @@ export function ExpensesTable({ expenses, filterCategory }: ExpensesTableProps) 
 // Arquivo: src/components/Tables/credit-cards-section.tsx
 // ==========================================
 
-"use client";
+'use client';
 
 import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer";
 import {
@@ -8586,13 +8653,13 @@ export function CreditCardsSection({
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-4">
+    <div className="w-full flex flex-col justify-start gap-4">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-zinc-800 text-zinc-300">
-            <CreditCardIcon size={18} strokeWidth={2} />
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
+            <CreditCardIcon size={20} strokeWidth={2} />
           </div>
-          <h2 className="text-lg font-medium text-zinc-100">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
             Cartões de Crédito
           </h2>
         </div>
@@ -8605,8 +8672,8 @@ export function CreditCardsSection({
       </div>
 
       {cartoesComFatura.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
-          <p className="text-zinc-500">Nenhum cartão cadastrado.</p>
+        <div className="p-8 text-center border border-dashed border-border rounded-xl bg-card">
+          <p className="text-muted-foreground">Nenhum cartão cadastrado.</p>
         </div>
       ) : (
         <Accordion className="space-y-3">
@@ -8618,9 +8685,8 @@ export function CreditCardsSection({
               <AccordionItem 
                 key={cartao.id} 
                 value={String(cartao.id)}
-                className="border border-zinc-800/80 rounded-xl bg-zinc-900/20 px-4 overflow-hidden data-[state=open]:border-zinc-700/85 transition-colors"
+                className="border border-border rounded-xl bg-card px-4 overflow-hidden data-[state=open]:border-primary/50 transition-colors shadow-xs"
               >
-                
                 <AccordionTrigger className="hover:no-underline py-4 [&>svg]:hidden">
                   <div className="flex w-full items-center justify-between gap-4 pr-1">
                     <div className="flex items-center gap-3">
@@ -8628,11 +8694,11 @@ export function CreditCardsSection({
                         <CreditCardBrand brand={cartao.brand} showName={false} />
                       )}
                       <div className="text-left">
-                        <span className="font-medium text-zinc-100 block">
+                        <span className="font-medium text-foreground block">
                           {cartao.name}
                         </span>
                         {(cartao as any).lastFourDigits && (
-                          <span className="text-xs text-zinc-500 font-mono">
+                          <span className="text-xs text-muted-foreground font-mono">
                             •••• {(cartao as any).lastFourDigits}
                           </span>
                         )}
@@ -8641,17 +8707,17 @@ export function CreditCardsSection({
 
                     <div className="flex items-center gap-5">
                       <div className="text-right">
-                        <p className="text-xs text-zinc-500">Total Fatura</p>
-                        <p className="text-sm font-medium text-zinc-100">{formatCurrency(total)}</p>
+                        <p className="text-xs text-muted-foreground">Total Fatura</p>
+                        <p className="text-sm font-medium text-foreground">{formatCurrency(total)}</p>
                       </div>
 
                       <span
                         className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide border ${
                           statusFatura === "Fechada"
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
                             : statusFatura === "Aberta"
-                            ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                            : "bg-zinc-800 text-zinc-400 border-zinc-700/50"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                            : "bg-muted text-muted-foreground border-border"
                         }`}
                       >
                         {statusFatura}
@@ -8673,7 +8739,7 @@ export function CreditCardsSection({
                               handlePayInvoice(String(cartao.id));
                             }
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex cursor-pointer"
                         >
                           <CheckCircle2 size={14} />
                           Pagar
@@ -8683,30 +8749,30 @@ export function CreditCardsSection({
                   </div>
                 </AccordionTrigger>
 
-                <AccordionContent className="pb-4 pt-2 border-t border-zinc-800/60">
+                <AccordionContent className="pb-4 pt-2 border-t border-border">
                   {parcelas.length === 0 ? (
-                    <p className="text-zinc-500 text-center py-6 text-sm">
+                    <p className="text-muted-foreground text-center py-6 text-sm">
                       Nenhuma parcela lançada para este mês.
                     </p>
                   ) : (
                     <Table>
-                      <TableHeader>
-                        <TableRow className="border-zinc-800/80 hover:bg-transparent">
-                          <TableHead className="text-zinc-400 font-medium">Nome</TableHead>
-                          <TableHead className="text-zinc-400 font-medium">Parcela</TableHead>
-                          <TableHead className="text-right text-zinc-400 font-medium">Valor</TableHead>
+                      <TableHeader className="bg-muted/50">
+                        <TableRow className="border-border hover:bg-transparent">
+                          <TableHead className="text-muted-foreground font-medium">Nome</TableHead>
+                          <TableHead className="text-muted-foreground font-medium">Parcela</TableHead>
+                          <TableHead className="text-right text-muted-foreground font-medium">Valor</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {parcelas.map((parcela) => (
-                          <TableRow key={parcela.id} className="border-zinc-800/80 hover:bg-zinc-800/30 transition-colors">
-                            <TableCell className="font-medium text-zinc-200">
+                          <TableRow key={parcela.id} className="border-border hover:bg-muted/40 transition-colors">
+                            <TableCell className="font-medium text-foreground">
                               {parcela.purchaseDescription}
                             </TableCell>
-                            <TableCell className="text-zinc-400 text-sm">
+                            <TableCell className="text-muted-foreground text-sm">
                               {parcela.number} de {parcela.totalInstallments}
                             </TableCell>
-                            <TableCell className="text-right font-medium text-zinc-200">
+                            <TableCell className="text-right font-medium text-foreground">
                               {formatCurrency(Number(parcela.amount))}
                             </TableCell>
                           </TableRow>
@@ -8764,15 +8830,15 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-    });
+    }); 
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-6">
+    <div className="w-full flex flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BanknoteArrowDown />
-          <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          <BanknoteArrowDown className="text-primary" />
+          <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
             Despesas
           </h1>
         </div>
@@ -8780,27 +8846,27 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
         <button
           type="button"
           onClick={handleNew}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-zinc-700/50 shadow-sm"
         >
           +
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-lg border mt-6">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>Descrição</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-center">Tipo</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+              <TableHead className="text-center text-muted-foreground font-semibold">Tipo</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {expenses.length === 0 ? (
-              <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={5} className="h-24 text-center">
+              <TableRow className="hover:bg-transparent border-0">
+                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                   Nenhuma despesa encontrada.
                 </TableCell>
               </TableRow>
@@ -8811,16 +8877,16 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
                   Boolean(expense.recurringParentId);
 
                 return (
-                  <TableRow key={expense.id} className="hover:bg-transparent">
-                    <TableCell className="font-medium">
+                  <TableRow key={expense.id} className="border-border hover:bg-muted/40 transition-colors">
+                    <TableCell className="font-medium text-foreground">
                       {expense.description}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right text-foreground font-medium">
                       {formatCurrency(expense.amount)}
                     </TableCell>
                     <TableCell className="text-center">
                       {isRecurring ? (
-                        <Badge variant="secondary" className="gap-1">
+                        <Badge variant="outline" className="gap-1 border-brand-pink/30 bg-brand-pink/10 text-brand-pink">
                           <Repeat className="h-3 w-3" />
                           Recorrente
                         </Badge>
@@ -8832,14 +8898,14 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
                       {expense.paid ? (
                         <Badge
                           variant="outline"
-                          className="text-green-500 border-green-500/50"
+                          className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
                         >
                           Pago
                         </Badge>
                       ) : (
                         <Badge
                           variant="outline"
-                          className="text-yellow-500 border-yellow-500/50"
+                          className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
                         >
                           Pendente
                         </Badge>
@@ -8868,7 +8934,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
 // Arquivo: src/components/Tables/obra-transactions-table.tsx
 // ==========================================
 
-"use client";
+'use client';
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8880,7 +8946,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDrawer } from "@/contexts/DrawerContext";
-import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import { useVisibility } from "@/contexts/VisibilityContext";
 import type { ObraTransactionsTableProps } from "@/utils/types";
 import { HardHat } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8893,13 +8959,14 @@ export function ObraTransactionsTable({
   categories,
   accounts,
 }: ObraTransactionsTableProps) {
-  const { visible } = useVisibility(); // Hook deve ser chamado antes de qualquer return condicional
+  const { visible } = useVisibility();
   const { openDrawer, setEditingExpense } = useDrawer();
+  const router = useRouter();
 
   if (!obraCategoryExists) {
     return (
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+        <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
           Obra (Gastos Temporários)
         </h1>
         <p className="text-muted-foreground">
@@ -8909,9 +8976,6 @@ export function ObraTransactionsTable({
     );
   }
 
-  const router = useRouter();
-
-  // Função que usa o estado visible
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -8919,59 +8983,61 @@ export function ObraTransactionsTable({
 
   const renderAmount = (amount: number) => {
     if (!visible) return <span className="text-foreground">-R$ ••••••</span>;
-    return <span className="text-red-500">-{formatCurrency(amount)}</span>;
+    return <span className="text-rose-600 dark:text-rose-400 font-medium">-{formatCurrency(amount)}</span>;
   };
-  // 3. CRIAR A FUNÇÃO QUE CONECTA O ITEM AO DRAWER
+
   const handleEdit = (transaction: any) => {
     setEditingExpense(transaction);
     openDrawer('expense');
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-6">
+    <div className="w-full flex flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <HardHat />
-          <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-sm">
+            <HardHat size={20} strokeWidth={2} />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">
             Construção
           </h1>
         </div>
         <ExpenseDrawer categories={categories} accounts={accounts} onSuccess={() => router.refresh()} />
       </div>
 
-      <div className="overflow-hidden rounded-lg border mt-6">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>Descrição</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
-              <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={4} className="h-24 text-center">
+              <TableRow className="hover:bg-transparent border-0">
+                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                   Nenhum gasto de obra neste mês.
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
-                <TableRow key={transaction.id} className="hover:bg-transparent">
-                  <TableCell className="font-medium">
+                <TableRow key={transaction.id} className="border-border hover:bg-muted/40 transition-colors">
+                  <TableCell className="font-medium text-foreground">
                     {transaction.description}
                   </TableCell>
-                  <TableCell className="text-right font-medium">
+                  <TableCell className="text-right">
                     {renderAmount(Number(transaction.amount))}
                   </TableCell>
                   <TableCell className="text-right">
                     {transaction.paid ? (
-                      <Badge variant="outline" className="text-green-500 border-green-500/50">
+                      <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
                         Pago
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-yellow-500 border-yellow-500/50">
+                      <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10">
                         Pendente
                       </Badge>
                     )}
@@ -8997,7 +9063,7 @@ export function ObraTransactionsTable({
 // Arquivo: src/components/Tables/other-expenses-table.tsx
 // ==========================================
 
-"use client";
+'use client';
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -9009,7 +9075,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDrawer } from "@/contexts/DrawerContext";
-import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import { useVisibility } from "@/contexts/VisibilityContext";
 import type { OtherExpensesTableProps } from "@/utils/types";
 import { BanknoteArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9022,10 +9088,9 @@ export function OtherExpensesTable({
   accounts,
 }: OtherExpensesTableProps) {
   const router = useRouter();
-  const { visible } = useVisibility(); // Obtém o estado global
+  const { visible } = useVisibility();
   const { openDrawer, setEditingExpense } = useDrawer();
 
-  // Função que usa o estado visible
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -9037,11 +9102,11 @@ export function OtherExpensesTable({
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-6">
+    <div className="w-full flex flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <BanknoteArrowDown />
-          <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          <BanknoteArrowDown className="text-primary" />
+          <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
             Despesas
           </h1>
         </div>
@@ -9052,44 +9117,44 @@ export function OtherExpensesTable({
         />
       </div>
 
-      <div className="overflow-hidden rounded-lg border mt-6">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>Descrição</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {expenses.length === 0 ? (
-              <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={4} className="h-24 text-center">
+              <TableRow className="hover:bg-transparent border-0">
+                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                   Nenhuma despesa encontrada.
                 </TableCell>
               </TableRow>
             ) : (
               expenses.map((expense) => (
-                <TableRow key={expense.id} className="hover:bg-transparent">
-                  <TableCell className="font-medium">
+                <TableRow key={expense.id} className="border-border hover:bg-muted/40 transition-colors">
+                  <TableCell className="font-medium text-foreground">
                     {expense.description}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right text-foreground font-medium">
                     {formatCurrency(Number(expense.amount))}
                   </TableCell>
                   <TableCell className="text-right">
                     {expense.paid ? (
                       <Badge
                         variant="outline"
-                        className="text-green-500 border-green-500/50"
+                        className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
                       >
                         Pago
                       </Badge>
                     ) : (
                       <Badge
                         variant="outline"
-                        className="text-yellow-500 border-yellow-500/50"
+                        className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
                       >
                         Pendente
                       </Badge>
@@ -9112,7 +9177,7 @@ export function OtherExpensesTable({
 // Arquivo: src/components/Tables/recurring-expenses-table.tsx
 // ==========================================
 
-"use client";
+'use client';
 
 import { ExpenseDrawer } from "@/components/Drawers/ExpenseDrawer";
 import { Badge } from "@/components/ui/badge";
@@ -9124,7 +9189,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useVisibility } from "@/contexts/VisibilityContext"; // Importe o hook
+import { useVisibility } from "@/contexts/VisibilityContext";
 import type { RecurringExpensesTableProps } from "@/utils/types";
 import { Landmark } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -9136,20 +9201,19 @@ export function RecurringExpensesTable({
   accounts,
 }: RecurringExpensesTableProps) {
   const router = useRouter();
-  const { visible } = useVisibility(); // Obtém o estado global
+  const { visible } = useVisibility();
 
-  // Função que usa o estado visible
   const formatCurrency = (value: number): string => {
     if (!visible) return "R$ ••••••";
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-6">
+    <div className="w-full flex flex-col justify-start gap-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Landmark />
-          <h1 className="text-xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+          <Landmark className="text-primary" />
+          <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
             Contas de Casa
           </h1>
         </div>
@@ -9157,39 +9221,39 @@ export function RecurringExpensesTable({
         <ExpenseDrawer categories={categories} accounts={accounts} onSuccess={() => router.refresh()} />
       </div>
 
-      <div className="overflow-hidden rounded-lg border mt-6">
+      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
         <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead>Descrição</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="text-right">Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {logs.length === 0 ? (
-              <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={4} className="h-24 text-center">
+              <TableRow className="hover:bg-transparent border-0">
+                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                   Nenhuma despesa recorrente encontrada.
                 </TableCell>
               </TableRow>
             ) : (
               logs.map((log) => (
-                <TableRow key={log.id} className="hover:bg-transparent">
-                  <TableCell className="font-medium">
+                <TableRow key={log.id} className="border-border hover:bg-muted/40 transition-colors">
+                  <TableCell className="font-medium text-foreground">
                     {log.recurringExpense.name}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right text-foreground font-medium">
                     {formatCurrency(Number(log.transaction.amount))}
                   </TableCell>
                   <TableCell className="text-right">
                     {log.transaction.paid ? (
-                      <Badge variant="outline" className="text-green-500 border-green-500/50">
+                      <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
                         Pago
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-yellow-500 border-yellow-500/50">
+                      <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10">
                         Pendente
                       </Badge>
                     )}
@@ -9211,7 +9275,8 @@ export function RecurringExpensesTable({
 // Arquivo: src/components/Tables/table-actions.tsx
 // ==========================================
 
-// src/components/Tables/table-actions.tsx
+"use client";
+
 import { deleteTransaction, markTransactionAsPaid } from '@/actions/wallet';
 import { Button } from '@/components/ui/button';
 import {
@@ -9221,7 +9286,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontalIcon } from 'lucide-react';
+import { CheckCircle2, MoreHorizontalIcon, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export interface TableActionsProps {
@@ -9267,37 +9332,43 @@ export function TableActions({
 
   return (
     <DropdownMenu>
+      {/* Utilizando o padrão 'render' nativo do Base UI */}
       <DropdownMenuTrigger
         render={
           <Button
             variant="ghost"
-            className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
-            size="icon"
-          >
-            <MoreHorizontalIcon />
-            <span className="sr-only">Abrir menu</span>
-          </Button>
+            className="flex h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted data-[state=open]:bg-muted data-[state=open]:text-foreground transition-colors rounded-lg"
+          />
         }
-      />
-      <DropdownMenuContent align="end" className="w-32">
+      >
+        <MoreHorizontalIcon className="h-4 w-4" />
+        <span className="sr-only">Abrir menu</span>
+      </DropdownMenuTrigger>
+      
+      <DropdownMenuContent align="end" className="w-36 bg-popover border-border text-popover-foreground shadow-xl rounded-xl p-1.5">
         <DropdownMenuItem 
-          onClick={(e) => {
-            if (onEdit) {
-              setTimeout(() => {
-                onEdit();
-              }, 0);
-            }
-          }}
+          onClick={() => { if (onEdit) setTimeout(() => onEdit(), 0); }}
+          className="flex items-center gap-2 text-foreground focus:bg-accent focus:text-accent-foreground cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
         >
-          Editar
+          <Pencil className="h-4 w-4" /> Editar
         </DropdownMenuItem>
 
         {!isPaid && (
-          <DropdownMenuItem onClick={handlePay}>Pagar</DropdownMenuItem>
+          <DropdownMenuItem 
+            onClick={handlePay}
+            className="flex items-center gap-2 text-foreground focus:bg-accent focus:text-emerald-600 dark:focus:text-emerald-400 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+          >
+            <CheckCircle2 className="h-4 w-4" /> Pagar
+          </DropdownMenuItem>
         )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={handleDelete}>
-          Excluir
+        
+        <DropdownMenuSeparator className="bg-border my-1" />
+        
+        <DropdownMenuItem 
+          onClick={handleDelete}
+          className="flex items-center gap-2 text-rose-600 dark:text-rose-400 focus:bg-rose-500/10 focus:text-rose-500 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+        >
+          <Trash2 className="h-4 w-4" /> Excluir
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -9308,6 +9379,7 @@ export function TableActions({
 // Arquivo: src/components/Tables/transactions-table.tsx
 // ==========================================
 
+// src/components/Tables/transactions-table.tsx
 "use client";
 
 import { IncomeDrawer } from "@/components/Drawers/IncomeDrawer";
@@ -9322,7 +9394,7 @@ import {
 import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
 import type { TransactionsTableProps } from "@/utils/types";
-import { BanknoteArrowUp } from "lucide-react";
+import { BanknoteArrowUp, Inbox } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TableActions } from "./table-actions";
 
@@ -9342,45 +9414,50 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
   };
 
   return (
-    <div className="w-full flex-col justify-start gap-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400">
-            <BanknoteArrowUp size={18} strokeWidth={2} />
+    <div className="w-full flex flex-col justify-start gap-4">
+      {/* Cabeçalho de Seção */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-xs">
+            <BanknoteArrowUp size={20} strokeWidth={2} />
           </div>
-          <h2 className="text-lg font-medium text-zinc-100">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">
             Receitas do Mês
           </h2>
         </div>
         <IncomeDrawer onSuccess={() => router.refresh()} />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/20">
+      {/* Container da Tabela Padronizado com Cores Dinâmicas */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
         <Table>
-          <TableHeader>
-            <TableRow className="border-zinc-800/80 hover:bg-transparent">
-              <TableHead className="text-zinc-400 font-medium">Descrição</TableHead>
-              <TableHead className="text-right text-zinc-400 font-medium">Valor</TableHead>
-              <TableHead className="text-right text-zinc-400 font-medium">Ações</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              <TableHead className="text-muted-foreground font-semibold h-11">Descrição</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold h-11">Valor</TableHead>
+              <TableHead className="text-right text-muted-foreground font-semibold h-11">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={3} className="h-32 text-center text-zinc-500">
-                  Nenhuma receita encontrada para este período.
+                <TableCell colSpan={3} className="h-40 text-center">
+                  <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
+                    <Inbox className="h-10 w-10 opacity-20" />
+                    <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               transactions.map((transaction) => (
                 <TableRow 
                   key={transaction.id} 
-                  className="border-zinc-800/80 hover:bg-zinc-800/30 transition-colors"
+                  className="border-border hover:bg-muted/40 transition-colors h-14"
                 >
-                  <TableCell className="font-medium text-zinc-200">
+                  <TableCell className="font-medium text-foreground">
                     {transaction.description}
                   </TableCell>
-                  <TableCell className="text-right font-medium text-emerald-400">
+                  <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
                     {formatCurrency(Number(transaction.amount))}
                   </TableCell>
                   <TableCell className="text-right">
@@ -9594,6 +9671,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useMemo } from 'react';
+// Importando as mesmas classes padronizadas do Drawer Shell para manter consistência
+import { drawerSelectContentClass, drawerSelectItemClass, drawerSelectTriggerClass } from './Drawers/drawer-shell';
 
 const MONTHS = [
   { label: 'Janeiro',   value: '01' },
@@ -9609,10 +9688,6 @@ const MONTHS = [
   { label: 'Novembro',  value: '11' },
   { label: 'Dezembro',  value: '12' },
 ] as const;
-
-// Atualizado para usar a paleta zinc em vez de gray
-const defaultTriggerClass =
-  '!h-12 w-full bg-zinc-800/50 border border-zinc-700/50 px-4 py-0 rounded-lg text-zinc-200 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-colors flex items-center [&>span]:truncate data-[placeholder]:text-zinc-500';
 
 export interface MonthYearPickerProps {
   month: string;
@@ -9633,7 +9708,7 @@ export function MonthYearPicker({
   onYearChange,
   startYear,
   yearsAhead = 5,
-  triggerClassName = defaultTriggerClass,
+  triggerClassName = drawerSelectTriggerClass,
   className,
   disabled,
 }: MonthYearPickerProps) {
@@ -9658,12 +9733,12 @@ export function MonthYearPicker({
         <SelectTrigger className={triggerClassName}>
           <SelectValue placeholder="Mês" />
         </SelectTrigger>
-        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200 max-h-72">
+        <SelectContent className={`${drawerSelectContentClass} max-h-72`}>
           {MONTHS.map((m) => (
             <SelectItem
               key={m.value}
               value={m.value}
-              className="focus:bg-zinc-800 focus:text-zinc-100"
+              className={drawerSelectItemClass}
             >
               {m.label}
             </SelectItem>
@@ -9680,12 +9755,12 @@ export function MonthYearPicker({
         <SelectTrigger className={triggerClassName}>
           <SelectValue placeholder="Ano" />
         </SelectTrigger>
-        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-200">
+        <SelectContent className={drawerSelectContentClass}>
           {yearOptions.map((y) => (
             <SelectItem
               key={y.value}
               value={y.value}
-              className="focus:bg-zinc-800 focus:text-zinc-100"
+              className={drawerSelectItemClass}
             >
               {y.label}
             </SelectItem>

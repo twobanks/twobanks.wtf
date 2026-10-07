@@ -479,3 +479,47 @@ export const householdMembers = pgTable("household_members", {
 }, (table) => ({
   uniqueMembership: uniqueIndex("unique_household_member").on(table.householdId, table.userId),
 }));
+
+
+export const kanbanStatusEnum = pgEnum("kanban_status", [
+  "to_do", 
+  "in_progress", 
+  "pending", 
+  "canceled", 
+  "done"
+])
+
+export const kanbanUrgencyEnum = pgEnum("kanban_urgency", [
+  "low", 
+  "medium", 
+  "high"
+])
+
+// 2. Criamos a Tabela
+export const kanbanTasks = pgTable("kanban_tasks", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  
+  title: text("title").notNull(),
+  description: text("description"),
+  
+  status: kanbanStatusEnum("status").default("to_do").notNull(),
+  urgency: kanbanUrgencyEnum("urgency").default("medium").notNull(),
+  
+  dueDate: timestamp("due_date", { mode: "string" }),
+  
+  // Relacionamentos com os 2 usuários do sistema
+  assignedToId: text("assigned_to_id").references(() => users.id, { 
+    onDelete: "set null" 
+  }),
+  createdById: text("created_by_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+    
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()), // Atualiza automaticamente a data na edição
+})

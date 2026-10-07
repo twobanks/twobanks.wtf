@@ -72,7 +72,7 @@ export default function LoginPage() {
     setIsLoading(false);
 
     if (result?.ok) {
-      window.location.href = "/";
+      window.location.href = "/admin";
     } else {
       setMessage("Código inválido ou expirado.");
     }

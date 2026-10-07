@@ -22,6 +22,7 @@ const routeLabels: Record<string, string> = {
   "/admin/carteira/faturas": "Faturas",
   "/admin/blog": "Blog",
   "/admin/livros": "Livros",
+  "/admin/tarefas": "Tarefas",
 }
 
 export function AppBreadcrumb() {

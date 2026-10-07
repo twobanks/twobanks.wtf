@@ -1,5 +1,5 @@
-import { toggleInstallmentPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
+import { OptimisticInstallmentButton } from "@/components/OptimisticInstallmentButton";
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
 import { and, eq } from "drizzle-orm";
@@ -140,19 +140,10 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-semibold">R$ {Number(parcela.amount).toFixed(2)}</span>
-                  <form action={toggleInstallmentPaid}>
-                    <input type="hidden" name="id" value={parcela.id} />
-                    <input type="hidden" name="paid" value={String(!parcela.paid)} />
-                    <button
-                      className={`px-3 py-1 rounded-lg text-sm ${
-                        parcela.paid
-                          ? "bg-green-900/40 text-green-300"
-                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                      }`}
-                    >
-                      {parcela.paid ? "Pago ✓" : "Marcar pago"}
-                    </button>
-                  </form>
+                  <OptimisticInstallmentButton 
+                    parcelaId={parcela.id} 
+                    initialPaid={parcela.paid} 
+                  />
                 </div>
               </div>
             ))}
