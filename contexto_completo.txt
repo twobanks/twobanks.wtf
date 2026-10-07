@@ -469,8 +469,8 @@ export default async function AdminBlogPage() {
 // Arquivo: src/app/admin/carteira/cartoes/[id]/page.tsx
 // ==========================================
 
-import { toggleInstallmentPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
+import { OptimisticInstallmentButton } from "@/components/OptimisticInstallmentButton";
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
 import { and, eq } from "drizzle-orm";
@@ -611,19 +611,10 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-semibold">R$ {Number(parcela.amount).toFixed(2)}</span>
-                  <form action={toggleInstallmentPaid}>
-                    <input type="hidden" name="id" value={parcela.id} />
-                    <input type="hidden" name="paid" value={String(!parcela.paid)} />
-                    <button
-                      className={`px-3 py-1 rounded-lg text-sm ${
-                        parcela.paid
-                          ? "bg-green-900/40 text-green-300"
-                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                      }`}
-                    >
-                      {parcela.paid ? "Pago ✓" : "Marcar pago"}
-                    </button>
-                  </form>
+                  <OptimisticInstallmentButton 
+                    parcelaId={parcela.id} 
+                    initialPaid={parcela.paid} 
+                  />
                 </div>
               </div>
             ))}
@@ -1903,7 +1894,9 @@ export default async function AdminLayout({
     db.query.financialAccounts.findMany({
       where: accessCondition(financialAccounts),
     }),
-    db.query.users.findMany(),
+    db.query.users.findMany({
+      limit: 2
+    }),
   ])
 
   // Identifica o usuário logado e o outro usuário na tabela
@@ -2413,6 +2406,44 @@ export default async function AdminPage() {
       </div>
     </div>
   );
+}
+
+// ==========================================
+// Arquivo: src/app/admin/tarefas/page.tsx
+// ==========================================
+
+import { auth } from "@/auth"
+import { KanbanBoard } from "@/components/Kanban/KanbanBoard"
+import { db } from "@/db"
+import { redirect } from "next/navigation"
+
+export const metadata = { title: "Tarefas" }
+
+export default async function KanbanPage() {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  // Busca inicial das tarefas no banco
+  const [tasks, appUsers] = await Promise.all([
+    db.query.kanbanTasks.findMany({
+      orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
+    }),
+    db.query.users.findMany({ limit: 2 }),
+  ])
+
+  return (
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold tracking-tight">Board Operacional</h1>
+        <p className="text-sm text-muted-foreground">
+          Gerencie tarefas, prioridades e acompanhe o fluxo de trabalho.
+        </p>
+      </div>
+
+      {/* Renderiza o Client Component */}
+      <KanbanBoard initialTasks={tasks} users={appUsers} />
+    </div>
+  )
 }
 
 // ==========================================
@@ -3782,6 +3813,7 @@ const routeLabels: Record<string, string> = {
   "/admin/carteira/faturas": "Faturas",
   "/admin/blog": "Blog",
   "/admin/livros": "Livros",
+  "/admin/tarefas": "Tarefas",
 }
 
 export function AppBreadcrumb() {
@@ -3848,6 +3880,7 @@ import {
   CreditCard,
   FileText,
   FolderPlus,
+  KanbanSquare,
   Landmark,
   MinusCircle,
   PlusCircle,
@@ -3870,6 +3903,7 @@ const financeiroItems = [
   { title: "Contas", href: "/admin/carteira/contas", icon: Landmark },
   { title: "Investimentos", href: "/admin/carteira/investimentos", icon: TrendingUp },
   { title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket },
+  { title: "Tarefas", href: "/admin/tarefas", icon: KanbanSquare },
 ]
 
 const contentItems = [
@@ -6190,6 +6224,243 @@ export function InvestmentTransactionDrawer({
 }
 
 // ==========================================
+// Arquivo: src/components/Drawers/KanbanTaskDrawer.tsx
+// ==========================================
+
+"use client"
+
+import {
+  cloneKanbanTask,
+  createKanbanTask,
+  deleteKanbanTask,
+  updateKanbanTask,
+} from "@/actions/kanban"
+import {
+  DrawerAlert,
+  DrawerShell,
+  drawerFieldClass,
+  drawerSelectContentClass,
+  drawerSelectItemClass,
+  drawerSelectTriggerClass,
+} from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Copy, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { KanbanTaskType } from "../Kanban/KanbanBoard"
+
+interface KanbanTaskDrawerProps {
+  task?: KanbanTaskType
+  defaultStatus?: string
+  trigger: React.ReactNode
+  users: { id: string; name: string | null }[]
+}
+
+export function KanbanTaskDrawer({ task, defaultStatus = "to_do", trigger, users }: KanbanTaskDrawerProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [alert, setAlert] = useState<DrawerAlert>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // ==========================================
+  // HANDLERS DE AÇÕES
+  // ==========================================
+
+const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true)
+    try {
+      // TRATAMENTO: Remove assignedToId se for "none" para o banco aceitar como null/empty
+      if (formData.get("assignedToId") === "none") {
+        formData.delete("assignedToId")
+      }
+
+      if (task) {
+        formData.append("id", task.id)
+        await updateKanbanTask(formData)
+      } else {
+        if (!formData.get("status")) formData.append("status", defaultStatus)
+        await createKanbanTask(formData)
+      }
+      setAlert({ type: "success", message: task ? "Tarefa atualizada!" : "Tarefa criada!" })
+      setIsOpen(false)
+    } catch (error) {
+      setAlert({ type: "error", message: "Não foi possível salvar a tarefa." })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!task || !confirm("Tem certeza que deseja excluir esta tarefa?")) return
+    setIsSubmitting(true)
+    try {
+      await deleteKanbanTask(task.id)
+      setIsOpen(false)
+    } catch (error) {
+      setAlert({ type: "error", message: "Erro ao excluir a tarefa." })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleClone = async () => {
+    if (!task) return
+    setIsSubmitting(true)
+    try {
+      await cloneKanbanTask(task.id)
+      setAlert({ type: "success", message: "Tarefa clonada com sucesso!" })
+      setIsOpen(false)
+    } catch (error) {
+      setAlert({ type: "error", message: "Erro ao clonar a tarefa." })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // ==========================================
+  // RENDERIZAÇÃO
+  // ==========================================
+
+  return (
+    <DrawerShell
+      open={isOpen}
+      onClose={() => setIsOpen(false)}
+      title={task ? "Editar Tarefa" : "Nova Tarefa"}
+      description="Preencha os detalhes do card"
+      onSubmit={handleSubmit}
+      isSubmitting={isSubmitting}
+      submitLabel={task ? "Salvar Alterações" : "Criar Tarefa"}
+      alert={alert}
+      onAlertClose={() => setAlert(null)}
+      trigger={
+        // w-full adicionado aqui para garantir que o card estique na coluna
+        <div onClick={() => setIsOpen(true)} className="cursor-pointer flex w-full">
+          {trigger}
+        </div>
+      }
+      footerExtra={
+        // Só renderiza os botões de ação secundária se for uma edição (task existe)
+        task ? (
+          <div className="flex items-center gap-2 w-full mb-3">
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isSubmitting}
+              className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20 text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              <Trash2 size={16} /> Excluir
+            </button>
+            <button
+              type="button"
+              onClick={handleClone}
+              disabled={isSubmitting}
+              className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              <Copy size={16} /> Clonar
+            </button>
+          </div>
+        ) : null
+      }
+    >
+      <Input
+        name="title"
+        placeholder="Título da tarefa"
+        defaultValue={task?.title ?? ""}
+        required
+        autoFocus
+        className={`md:col-span-2 ${drawerFieldClass}`}
+      />
+
+      <div className="md:col-span-2 space-y-1">
+        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+          Descrição
+        </label>
+        <textarea
+          name="description"
+          defaultValue={task?.description ?? ""}
+          placeholder="Detalhes adicionais (opcional)..."
+          className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all min-h-[100px]"
+        />
+      </div>
+
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+          Urgência
+        </label>
+        <Select name="urgency" defaultValue={task?.urgency ?? "medium"}>
+          <SelectTrigger className={drawerSelectTriggerClass}>
+            <SelectValue placeholder="Nível de urgência" />
+          </SelectTrigger>
+          <SelectContent className={drawerSelectContentClass}>
+            <SelectItem value="low" className={drawerSelectItemClass}>
+              🟢 Baixa
+            </SelectItem>
+            <SelectItem value="medium" className={drawerSelectItemClass}>
+              🟡 Média
+            </SelectItem>
+            <SelectItem value="high" className={drawerSelectItemClass}>
+              🔴 Alta
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+          Status
+        </label>
+        <Select name="status" defaultValue={task?.status ?? defaultStatus}>
+          <SelectTrigger className={drawerSelectTriggerClass}>
+            <SelectValue placeholder="Status atual" />
+          </SelectTrigger>
+          <SelectContent className={drawerSelectContentClass}>
+            <SelectItem value="to_do" className={drawerSelectItemClass}>
+              A Fazer
+            </SelectItem>
+            <SelectItem value="in_progress" className={drawerSelectItemClass}>
+              Resolvendo
+            </SelectItem>
+            <SelectItem value="pending" className={drawerSelectItemClass}>
+              Pendente
+            </SelectItem>
+            <SelectItem value="canceled" className={drawerSelectItemClass}>
+              Cancelado
+            </SelectItem>
+            <SelectItem value="done" className={drawerSelectItemClass}>
+              Resolvido
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {/* NOVO CAMPO: Responsável pela tarefa */}
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+          Responsável
+        </label>
+        <Select name="assignedToId" defaultValue={task?.assignedToId ?? "none"}>
+          <SelectTrigger className={drawerSelectTriggerClass}>
+            <SelectValue placeholder="Quem vai fazer?" />
+          </SelectTrigger>
+          <SelectContent className={drawerSelectContentClass}>
+            <SelectItem value="none" className={drawerSelectItemClass}>Nenhum</SelectItem>
+            {users.map((u) => (
+              <SelectItem key={u.id} value={u.id} className={drawerSelectItemClass}>
+                {u.name?.split(" ")[0] || "Usuário"}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </DrawerShell>
+  )
+}
+
+// ==========================================
 // Arquivo: src/components/Drawers/PostDrawer.tsx
 // ==========================================
 
@@ -7202,6 +7473,358 @@ export default function HeartRateDistribution({ streams }: { streams: any }) {
 }
 
 // ==========================================
+// Arquivo: src/components/Kanban/KanbanBoard.tsx
+// ==========================================
+
+"use client"
+
+import { updateKanbanTaskStatus } from "@/actions/kanban"
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  closestCorners,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core"
+import { startTransition, useId, useOptimistic, useState } from "react"
+import { KanbanCard } from "./KanbanCard"
+import { KanbanColumn } from "./KanbanColumn"
+
+export type KanbanTaskType = {
+  id: string
+  title: string
+  description?: string | null
+  status: "to_do" | "in_progress" | "pending" | "canceled" | "done"
+  urgency: "low" | "medium" | "high"
+  dueDate?: string | null
+  assignedToId?: string | null
+  createdById: string
+}
+
+const COLUMNS = [
+  { id: "to_do", title: "A Fazer" },
+  { id: "in_progress", title: "Resolvendo" },
+  { id: "pending", title: "Pendente" },
+  { id: "canceled", title: "Cancelado" },
+  { id: "done", title: "Resolvido" },
+] as const
+
+interface KanbanBoardProps {
+  initialTasks: KanbanTaskType[]
+  users: any[] // Adicionado
+}
+
+export function KanbanBoard({ initialTasks, users }: KanbanBoardProps) {
+  const dndId = useId()
+  // Estado otimista: UI atualiza antes da resposta do servidor
+  const [optimisticTasks, addOptimisticTask] = useOptimistic(
+    initialTasks,
+    (state, { taskId, newStatus }: { taskId: string; newStatus: KanbanTaskType["status"] }) => {
+      return state.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
+    }
+  )
+
+  const [activeTask, setActiveTask] = useState<KanbanTaskType | null>(null)
+
+  // O PointerSensor com constraint evita que um clique simples seja interpretado como drag
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    })
+  )
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event
+    const task = optimisticTasks.find((t) => t.id === active.id)
+    if (task) setActiveTask(task)
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    setActiveTask(null)
+    const { active, over } = event
+    
+    if (!over) return
+
+    const taskId = active.id as string
+    
+    // Identifica se o alvo (over) é uma coluna ou outro card
+    const overId = String(over.id)
+    const overTask = optimisticTasks.find((t) => t.id === overId)
+    const newStatus = (overTask ? overTask.status : overId) as KanbanTaskType["status"]
+
+    const currentTask = optimisticTasks.find((t) => t.id === taskId)
+
+    if (currentTask && currentTask.status !== newStatus) {
+      // 1. Atualização em 60fps na tela do usuário
+      startTransition(() => {
+        addOptimisticTask({ taskId, newStatus })
+      })
+      // 2. Commit atômico no banco em background
+      await updateKanbanTaskStatus(taskId, newStatus)
+    }
+  }
+
+  return (
+    <DndContext
+      sensors={sensors}
+      id={dndId}
+      collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="flex h-[calc(100vh-180px)] w-full gap-5 overflow-x-auto overflow-y-hidden pb-4 items-start">
+        {COLUMNS.map((col) => (
+          <KanbanColumn
+            key={col.id}
+            id={col.id}
+            title={col.title}
+            tasks={optimisticTasks.filter((t) => t.status === col.id)}
+            users={users}
+          />
+        ))}
+      </div>
+
+      {/* DragOverlay cria um "fantasma" do card enquanto ele é arrastado */}
+      <DragOverlay dropAnimation={null}>
+        {activeTask ? <KanbanCard task={activeTask} isOverlay users={users} /> : null}
+      </DragOverlay>
+    </DndContext>
+  )
+}
+
+// ==========================================
+// Arquivo: src/components/Kanban/KanbanCard.tsx
+// ==========================================
+
+"use client"
+
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
+import { Calendar, GripVertical } from "lucide-react"
+import { KanbanTaskDrawer } from "../Drawers/KanbanTaskDrawer"
+import { KanbanTaskType } from "./KanbanBoard"
+
+interface KanbanCardProps {
+  task: KanbanTaskType
+  isOverlay?: boolean
+  users: { id: string; name: string | null }[]
+}
+
+export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) {
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: task.id,
+    data: { type: "Task", task },
+  })
+
+  const style = {
+    transition,
+    transform: CSS.Transform.toString(transform),
+  }
+
+  const getUrgencyStyles = (urgency: string) => {
+    switch (urgency) {
+      case "high": return "bg-rose-500/10 text-rose-400 border-rose-500/20"
+      case "medium": return "bg-amber-500/10 text-amber-400 border-amber-500/20"
+      default: return "bg-zinc-800/50 text-zinc-400 border-zinc-700"
+    }
+  }
+
+  const getUrgencyLabel = (urgency: string) => {
+    switch (urgency) {
+      case "high": return "Alta"
+      case "medium": return "Média"
+      default: return "Baixa"
+    }
+  }
+
+  const creator = users.find((u) => u.id === task.createdById)
+  const assignee = users.find((u) => u.id === task.assignedToId)
+
+  // Função simples para pegar as iniciais do nome (ex: Thiago Soares = TS)
+  const getInitials = (name?: string | null) => {
+    if (!name) return "U"
+    return name.substring(0, 2).toUpperCase()
+  }
+
+  if (isDragging && !isOverlay) {
+    return (
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="h-28 w-full bg-zinc-800/30 border-2 border-dashed border-brand-blue/40 rounded-xl opacity-50"
+      />
+    )
+  }
+
+  return (
+    <KanbanTaskDrawer
+      task={task}
+      users={users}
+      trigger={
+        <div
+          ref={setNodeRef}
+          style={style}
+          className={`group relative w-full flex flex-col gap-3 p-4 bg-zinc-900 border ${
+            isOverlay ? "border-brand-blue shadow-2xl rotate-2 scale-105" : "border-zinc-800/80 shadow-sm"
+          } rounded-xl hover:border-zinc-700 transition-colors cursor-default text-left`}
+        >
+          {/* Alça de Arraste Invisível (Aparece no Hover) */}
+          <div 
+            {...attributes} 
+            {...listeners}
+            onClick={(e) => e.stopPropagation()} // Evita abrir o drawer ao iniciar o drag
+            className="absolute top-2 right-2 p-1.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-zinc-300 hover:bg-zinc-800 rounded-md cursor-grab active:cursor-grabbing transition-all"
+          >
+            <GripVertical size={16} />
+          </div>
+          {/* Cabeçalho do Card (Badges) */}
+          <div className="flex items-center gap-2 pr-6">
+            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md border ${getUrgencyStyles(task.urgency)}`}>
+              {getUrgencyLabel(task.urgency)}
+            </span>
+          </div>
+
+          {/* Corpo (Título) */}
+          <div>
+            <h4 className="text-sm font-semibold text-zinc-100 leading-tight">
+              {task.title}
+            </h4>
+            {task.description && (
+              <p className="text-xs text-zinc-500 mt-1.5 line-clamp-2">
+                {task.description}
+              </p>
+            )}
+          </div>
+
+          {/* Rodapé (Datas, Avatares, Indicadores) */}
+          <div className="flex items-center justify-between mt-1 pt-3 border-t border-zinc-800/50">
+            <div className="flex items-center gap-3 text-zinc-500 text-xs">
+              {task.dueDate && (
+                <div className="flex items-center gap-1.5">
+                  <Calendar size={13} />
+                  <span>{new Date(task.dueDate).toLocaleDateString("pt-BR", { day: '2-digit', month: 'short' })}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Referência Visual: Quem Criou e Quem é Responsável */}
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end">
+                <span className="text-[9px] text-zinc-600 font-medium leading-none uppercase tracking-wider">Criado por</span>
+                <span className="text-[10px] text-zinc-400 font-medium">{creator?.name?.split(" ")[0] || "Sistema"}</span>
+              </div>
+              
+              {assignee && (
+                <>
+                  <div className="h-4 w-px bg-zinc-800" /> {/* Divisor */}
+                  <div 
+                    title={`Responsável: ${assignee.name}`} 
+                    className="h-6 w-6 rounded-full border border-zinc-700 bg-brand-blue/20 flex items-center justify-center text-[10px] font-bold text-brand-blue"
+                  >
+                    {getInitials(assignee.name)}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      }
+    />
+  )
+}
+
+// ==========================================
+// Arquivo: src/components/Kanban/KanbanColumn.tsx
+// ==========================================
+
+"use client"
+
+import { useDroppable } from "@dnd-kit/core"
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
+import { Plus } from "lucide-react"
+import { KanbanTaskDrawer } from "../Drawers/KanbanTaskDrawer"
+import { KanbanTaskType } from "./KanbanBoard"
+import { KanbanCard } from "./KanbanCard"
+
+interface KanbanColumnProps {
+  id: string
+  title: string
+  tasks: KanbanTaskType[]
+  users: any[]
+}
+
+export function KanbanColumn({ id, title, tasks, users }: KanbanColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({
+    id,
+    data: { type: "Column", status: id },
+  })
+
+  // Estilização dinâmica caso um card esteja pairando sobre a coluna
+  const columnBg = isOver ? "bg-zinc-900/60" : "bg-zinc-900/30"
+  const borderStyle = isOver ? "border-brand-blue/50" : "border-zinc-800/80"
+
+  return (
+    <div
+      className={`flex flex-col flex-shrink-0 w-80 h-full max-h-full rounded-2xl border ${borderStyle} ${columnBg} transition-colors duration-200 overflow-hidden shadow-sm`}
+    >
+      {/* Header da Coluna */}
+      <div className="flex items-center justify-between p-4 border-b border-zinc-800/60 bg-zinc-950/20">
+        <h3 className="font-semibold text-sm text-zinc-200 tracking-wide uppercase">
+          {title}
+        </h3>
+        <div className="flex items-center gap-2">
+          <KanbanTaskDrawer
+            defaultStatus={id} // Já abre o form com o status dessa coluna selecionado
+            users={users}
+            trigger={
+              <button 
+                title="Adicionar tarefa nesta coluna"
+                className="flex items-center justify-center h-6 w-6 rounded-md hover:bg-zinc-800 text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                <Plus size={14} />
+              </button>
+            }
+          />
+          <span className="flex items-center justify-center h-6 min-w-6 px-2 rounded-full bg-zinc-800 text-xs font-medium text-zinc-400">
+            {tasks.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Área Soltável de Cards */}
+      <div 
+        ref={setNodeRef} 
+        className="flex-1 overflow-y-auto p-3 space-y-3 custom-scrollbar"
+      >
+        <SortableContext items={tasks.map(t => t.id)} strategy={verticalListSortingStrategy}>
+          {tasks.map((task) => (
+            <KanbanCard key={task.id} task={task} users={users} />
+          ))}
+        </SortableContext>
+        
+        {tasks.length === 0 && (
+          <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-zinc-800/50 rounded-xl">
+            <span className="text-xs text-zinc-600 font-medium">Solte aqui</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ==========================================
 // Arquivo: src/components/ListCard.tsx
 // ==========================================
 
@@ -7622,6 +8245,57 @@ const ListItem = React.forwardRef<
   );
 });
 ListItem.displayName = "ListItem";
+
+// ==========================================
+// Arquivo: src/components/OptimisticInstallmentButton.tsx
+// ==========================================
+
+"use client";
+
+import { toggleInstallmentPaid } from "@/actions/wallet";
+import { startTransition, useOptimistic } from "react";
+
+interface OptimisticButtonProps {
+  parcelaId: number | string;
+  initialPaid: boolean;
+}
+
+export function OptimisticInstallmentButton({ parcelaId, initialPaid }: OptimisticButtonProps) {
+  // Configura o estado otimista: assume que a ação deu certo imediatamente
+  const [optimisticPaid, addOptimisticToggle] = useOptimistic(
+    initialPaid,
+    (state, newPaidStatus: boolean) => newPaidStatus
+  );
+
+  const handleToggle = async () => {
+    const newStatus = !optimisticPaid;
+    
+    // 1. Atualiza a UI na hora (60fps)
+    startTransition(() => {
+      addOptimisticToggle(newStatus);
+    });
+
+    // 2. Dispara a ação no servidor em background
+    const formData = new FormData();
+    formData.append("id", String(parcelaId));
+    formData.append("paid", String(newStatus));
+    
+    await toggleInstallmentPaid(formData);
+  };
+
+  return (
+    <button
+      onClick={handleToggle}
+      className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+        optimisticPaid
+          ? "bg-green-900/40 text-green-300"
+          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+      }`}
+    >
+      {optimisticPaid ? "Pago ✓" : "Marcar pago"}
+    </button>
+  );
+}
 
 // ==========================================
 // Arquivo: src/components/PaceDistribution.tsx

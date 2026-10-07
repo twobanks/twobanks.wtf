@@ -13,7 +13,7 @@ export default async function AuthLayout({
   }
 
   return (
-    <div className="flex flex-col w-full py-16 items-center justify-center dark:bg-black">
+    <div className="w-full bg-[#0a0a0a] text-white overflow-hidden">
       {children}
     </div>
   )
