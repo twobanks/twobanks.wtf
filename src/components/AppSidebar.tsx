@@ -19,6 +19,7 @@ import {
   CreditCard,
   FileText,
   FolderPlus,
+  KanbanSquare,
   Landmark,
   MinusCircle,
   PlusCircle,
@@ -41,6 +42,7 @@ const financeiroItems = [
   { title: "Contas", href: "/admin/carteira/contas", icon: Landmark },
   { title: "Investimentos", href: "/admin/carteira/investimentos", icon: TrendingUp },
   { title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket },
+  { title: "Tarefas", href: "/admin/tarefas", icon: KanbanSquare },
 ]
 
 const contentItems = [
