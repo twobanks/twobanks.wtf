@@ -1,198 +1,42 @@
+// src/components/Navbar.tsx
 "use client";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { deslogar } from "@/lib/actions";
-import { cn } from "@/lib/utils";
-import { menuItems } from "@/utils/mocks";
+
+import { Lock } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as React from "react";
 import { ModeToggle } from "./ModeToggle";
 
-export default function Navbar({
-  isAuthenticated = false,
-}: {
-  isAuthenticated?: boolean;
-}) {
-  const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
-  const publicItems = menuItems.filter((item) => item.name !== "Admin");
-  const atividadeItem = publicItems.find((item) => item.name === "Atividade");
-  const atividadeSubItems = atividadeItem?.subItems ?? [];
+import { LogoTwoBanks } from "./twobanks";
 
-  const adminSubItems = [
-    { title: "Blog", href: "/admin/blog" },
-    { title: "Livros", href: "/admin/livros" },
-  ];
-
-  const carteiraSubItems = [
-    { title: "Carteira", href: "/admin/carteira" },
-    { title: "Categorias", href: "/admin/categorias" },
-    { title: "Contas", href: "/admin/contas" },
-    { title: "Investimentos", href: "/admin/investimentos" },
-    { title: "Dashboard", href: "/admin/dashboard" },
-    { title: "Lista de Compras", href: "/admin/listas" },
-  ];
-
-  const lancamentosSubItems = [
-    { title: "Adicionar Receita", href: "/admin/carteira?open=income" },
-    { title: "Adicionar Despesa", href: "/admin/carteira?open=expense" },
-    { title: "Adicionar Compra", href: "/admin/carteira?open=purchase" },
-    { title: "Adicionar Cartão", href: "/admin/cartoes?open=new-card" },
-    { title: "Adicionar Categoria", href: "/admin/categorias?open=new-category" },
-  ];
-
+export default function Navbar() {
   return (
-    <header
-      className="w-full sticky top-0 z-50 w-full bg-background"
-      suppressHydrationWarning
-    >
-      <div className="flex justify-between h-16 items-center px-2">
-        {isAuthenticated ? (
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="font-extrabold text-xl tracking-tight">
-                  BANKS<span className="text-[#FC4C02]">.</span>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {publicItems
-                      .filter((item) => item.name !== "Atividade")
-                      .map((item) => (
-                        <ListItem key={item.name} href={item.href!} title={item.name} />
-                      ))}
-                    {atividadeSubItems.map((sub) => (
-                      <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                    ))}
-                    <li className="col-span-full mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex justify-end">
-                      <form action={deslogar}>
-                        <button
-                          type="submit"
-                          className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors px-3 py-2"
-                        >
-                          Sair da conta
-                        </button>
-                      </form>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        ) : (
-          <Link href="/" className="mr-8 font-extrabold text-xl tracking-tight">
-            BANKS<span className="text-[#FC4C02]">.</span>
+    <header className="w-full sticky top-0 z-50 bg-background border-b border-zinc-200 dark:border-zinc-800" suppressHydrationWarning>
+      <div className="max-w-7xl mx-auto flex justify-between h-16 items-center px-4">
+        <Link
+          href="/"
+          className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all"
+        >
+          <div className="relative flex items-center justify-center shrink-0">
+            <LogoTwoBanks 
+              variant="flat" 
+              extrusionColor="#0369a1" 
+              fillColor="#5bb4d8"
+              className="w-24 h-auto text-foreground" 
+            />
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            title="Fazer Login"
+            className="flex items-center justify-center p-2 rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            <Lock size={20} />
+            <span className="sr-only">Fazer login</span>
           </Link>
-        )}
-
-        {/* Menu principal */}
-        <NavigationMenu>
-          <NavigationMenuList>
-            {!isAuthenticated && (
-              <>
-                {publicItems.map((item) => {
-                  if (item.subItems) {
-                    return (
-                      <NavigationMenuItem key={item.name}>
-                        <NavigationMenuTrigger>{item.name}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                            {item.subItems.map((sub) => (
-                              <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </NavigationMenuItem>
-                    );
-                  }
-                  return (
-                    <NavigationMenuItem key={item.name}>
-                      <Link href={item.href!} className={navigationMenuTriggerStyle()}>
-                        {item.name}
-                      </Link>
-                    </NavigationMenuItem>
-                  );
-                })}
-              </>
-            )}
-
-            {isAuthenticated && (
-              <>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Carteira</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {carteiraSubItems.map((sub) => (
-                        <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Lançamentos</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {lancamentosSubItems.map((sub) => (
-                        <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Admin</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {adminSubItems.map((sub) => (
-                        <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </>
-            )}
-
-            {!isAuthenticated && (
-              <NavigationMenuItem>
-                <Link href="/login" className={navigationMenuTriggerStyle()}>
-                  Fazer login
-                </Link>
-              </NavigationMenuItem>
-            )}
-          </NavigationMenuList>
-        </NavigationMenu>
-        <ModeToggle />
+          <ModeToggle />
+        </div>
       </div>
     </header>
   );
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink
-        ref={ref}
-        className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-zinc-100 focus:bg-zinc-100 dark:hover:bg-zinc-800 dark:focus:bg-zinc-800",
-          className
-        )}
-        {...props}
-      >
-        <div className="text-sm font-medium leading-none">{title}</div>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";

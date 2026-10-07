@@ -32,8 +32,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
+import { LogoTwoBanks } from "./twobanks"
 
-import logoImage from "@/../public/twobanks.webp"
 
 const financeiroItems = [
   { title: "Carteira", href: "/admin/carteira", icon: Wallet },
@@ -86,25 +86,19 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
   return (
     <Sidebar collapsible="icon" variant={variant}>
       <SidebarHeader className="py-4">
-        <Link
-          href="/"
-          className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
-        >
-          <div className="relative flex items-center justify-center shrink-0 w-10 h-10">
-            <Image
-              src={logoImage}
-              alt="TwoBanks Logo"
-              width={40}
-              height={40}
-              priority
-              className="object-contain w-full h-full"
-            />
-          </div>
-          <span className="truncate group-data-[collapsible=icon]:hidden text-2xl tracking-normal">
-            BANKS<span className="text-brand-pink">.</span>
-          </span>
-        </Link>
-      </SidebarHeader>
+      <Link
+        href="/"
+        className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+      >
+        <div className="relative flex items-center justify-center shrink-0 w-24 group-data-[collapsible=icon]:w-8">
+          <LogoTwoBanks
+            variant="flat" 
+            extrusionColor="#0369a1"
+            className="w-full h-auto text-sky-400"
+          />
+        </div>
+      </Link>
+    </SidebarHeader>
 
       <SidebarSeparator className="bg-border" />
 
@@ -241,8 +235,6 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
 
       <SidebarFooter className="p-3 border-t border-border bg-sidebar-accent/25">
         <div className="flex flex-col gap-2.5 w-full items-stretch group-data-[collapsible=icon]:items-center">
-          
-          {/* Status do Outro Utilizador */}
           {otherUser && (
             <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-sidebar-accent/50 border border-border/40 text-xs w-full group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0">
               <div className="flex items-center gap-2.5 overflow-hidden group-data-[collapsible=icon]:justify-center w-full">

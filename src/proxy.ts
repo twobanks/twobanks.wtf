@@ -1,20 +1,29 @@
-import { auth } from "@/auth"
-import type { NextRequest } from "next/server"
-import { NextResponse } from "next/server"
+// src/proxy.ts
+import { auth } from "@/auth";
 
-export async function proxy(request: NextRequest) {
-  const session = await auth()
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const { pathname } = req.nextUrl;
 
-  // Se não estiver autenticado e acessar /admin, redireciona para login
-  if (!session && request.nextUrl.pathname.startsWith("/admin")) {
-    const loginUrl = new URL("/login", request.url)
-    loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname)
-    return NextResponse.redirect(loginUrl)
+  // Permitir acesso público estrito à raiz (/) e à tela de login (/login)
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/otp") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/icons/");
+
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL("/login", req.url));
   }
 
-  return NextResponse.next()
-}
+  if (isLoggedIn && pathname === "/login") {
+    return Response.redirect(new URL("/admin", req.url));
+  }
+});
 
 export const config = {
-  matcher: ["/admin/:path*"],
-}
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};

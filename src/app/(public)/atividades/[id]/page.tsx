@@ -7,6 +7,7 @@ import { db } from "@/db"
 import { stravaWorkouts } from "@/db/schema"
 import { fetchAndSaveStravaDetails } from "@/lib/strava"; // 🟢 Import da nova função
 import { eq } from "drizzle-orm"
+import { ArrowLeft, Link, Target } from "lucide-react"
 import { notFound } from "next/navigation"
 
 // --- FUNÇÕES AUXILIARES ---
@@ -63,7 +64,17 @@ export default async function DetalheAtividadePage({
 
   return (
     <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
-      <div className="mx-auto p-4 space-y-12">
+      <div className="mx-auto p-4 space-y-8">
+        
+        {/* NOVO: Navegação de Retorno & Cross-Link */}
+        <nav className="flex justify-between items-center pt-4">
+          <Link href="/atividades" className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-[#FC4C02] transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Histórico de Atividades
+          </Link>
+          <Link href="/treinos" className="inline-flex items-center gap-2 text-sm font-medium bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 px-3 py-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">
+            <Target className="h-4 w-4" /> Ver Planilha de Treinos
+          </Link>
+        </nav>
         
         {/* CABEÇALHO PRINCIPAL */}
         <header className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">

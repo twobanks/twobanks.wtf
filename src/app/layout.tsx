@@ -1,7 +1,5 @@
-
+// src/app/layout.tsx
 import "@/app/globals.css";
-import { auth } from "@/auth";
-import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { DrawerProvider } from "@/contexts/DrawerContext";
 import type { Metadata } from "next";
@@ -23,16 +21,12 @@ export const metadata: Metadata = {
     default: "BANKS | Painel Financeiro e Gestão",
   },
   description: "Plataforma inteligente de controle financeiro e gerenciamento de conteúdo.",
-  // O Next.js mapeia automaticamente o favicon.ico localizado em src/app/favicon.ico
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const isAuthenticated = !!session?.user;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
@@ -44,7 +38,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <DrawerProvider>
-            <Navbar isAuthenticated={isAuthenticated} />
             {children}
           </DrawerProvider>
         </ThemeProvider>
