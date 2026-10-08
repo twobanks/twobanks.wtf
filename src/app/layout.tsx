@@ -16,11 +16,49 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://twobanks.wtf"),
   title: {
     template: "BANKS | %s",
-    default: "BANKS | Painel Financeiro e Gestão",
+    default: "BANKS 🛸",
   },
-  description: "Plataforma inteligente de controle financeiro e gerenciamento de conteúdo.",
+  description: "where i register my randomness 🛸",
+  keywords: ["desenvolvimento", "tecnologia", "portfólio", "blog", "randomness"],
+  authors: [{ name: "Thiago Gonçalves Soares" }],
+  creator: "otwobanks",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "/",
+    title: "BANKS 🛸",
+    description: "where i register my randomness 🛸",
+    siteName: "BANKS",
+    images: [
+      {
+        url: "/opengraph-image.png", 
+        width: 1200,
+        height: 630,
+        alt: "BANKS 🛸 - Onde registro minhas aleatoriedades",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BANKS 🛸",
+    description: "where i register my randomness 🛸",
+    creator: "@otwobanks", 
+    images: ["/twitter-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
