@@ -105,7 +105,7 @@
 
 .dark {
   /* Fundo profundo elegante, foge do preto absoluto */
-  --background: #09090b; /* zinc-950 */
+  --background: #0c0c0c; /* zinc-950 */
   --foreground: #fafafa;
   
   /* Cards levemente destacados para gerar profundidade */

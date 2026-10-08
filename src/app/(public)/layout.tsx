@@ -1,11 +1,17 @@
 // src/app/(public)/layout.tsx
-import Navbar from "@/components/Navbar";
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+import { auth } from "@/auth";
+import Footer from "@/components/Footer";
+
+export default async function PublicLayout({ children }: { children: React.ReactNode; }) {
+  const session = await auth()
+  
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Navbar />
-      <main className="flex-1 flex flex-col">{children}</main>
+    <div className="flex min-h-screen flex-col bg-[#053f1a] text-foreground">
+      <main className="flex flex-1 flex-col">
+        {children}
+      </main>
+      <Footer logged={!!session} />
     </div>
   );
 }

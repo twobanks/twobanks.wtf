@@ -1,5 +1,6 @@
 "use client";
 
+import { LogoTwoBanks } from "@/components/twobanks";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
@@ -114,11 +115,14 @@ export default function LoginPage() {
 
         {/* Logo Central */}
         <div className="z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-          <img 
-            src="/twobanks.webp" 
-            alt="Twobanks Logo" 
-            className="w-40 h-40 object-contain opacity-90"
-          />
+          <div className="relative w-62 md:w-[200px] lg:w-[400px] flex items-center justify-center">
+            <LogoTwoBanks 
+              variant="3d" 
+              extrusionColor="#0369a1" 
+              fillColor="#5bb4d8"
+              className="w-full h-auto text-[#5bb4d8] transition-colors duration-300 " 
+            />
+          </div>
         </div>
       </div>
 

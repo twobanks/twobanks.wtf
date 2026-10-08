@@ -285,6 +285,1156 @@ export default function LoginPage() {
 }
 
 // ==========================================
+// Arquivo: src/app/(public)/atividades/[id]/loading.tsx
+// ==========================================
+
+// src/app/atividades/[id]/loading.tsx
+import { Loader2 } from "lucide-react"
+
+export default function LoadingAtividade() {
+  return (
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-zinc-50 dark:bg-black text-zinc-500 gap-4">
+      <Loader2 className="size-8 animate-spin text-blue-500" />
+      <p className="animate-pulse">Sincronizando dados de telemetria do Strava...</p>
+    </div>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/atividades/[id]/page.tsx
+// ==========================================
+
+// src/app/atividades/[id]/page.tsx
+import ActivityChart from "@/components/ActivityChart"
+import HeartRateDistribution from "@/components/HeartRateDistribution"
+import PaceDistribution from "@/components/PaceDistribution"
+import StravaMap from "@/components/StravaMap"
+import { db } from "@/db"
+import { stravaWorkouts } from "@/db/schema"
+import { fetchAndSaveStravaDetails } from "@/lib/strava"; // 🟢 Import da nova função
+import { eq } from "drizzle-orm"
+import { ArrowLeft, Link, Target } from "lucide-react"
+import { notFound } from "next/navigation"
+
+// --- FUNÇÕES AUXILIARES ---
+function formatPace(speedMs: number) {
+  // 🟢 CORREÇÃO: Ignora ruídos de GPS (velocidade muito baixa). 0.83 m/s = ~20:00/km
+  if (!speedMs || speedMs < 0.83) return "-:--" 
+  
+  const secsPerKm = 1000 / speedMs
+  const mins = Math.floor(secsPerKm / 60)
+  const secs = Math.floor(secsPerKm % 60)
+  return `${mins}:${secs.toString().padStart(2, '0')}/km`
+}
+
+function formatTimeExact(totalSeconds: number) {
+  if (!totalSeconds) return "--"
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  const s = totalSeconds % 60
+  
+  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+export default async function DetalheAtividadePage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
+  
+  // Como a variável vai ser substituída caso não tenha streams, precisamos usar 'let' em vez de 'const'
+  let [atividade] = await db.select().from(stravaWorkouts).where(eq(stravaWorkouts.id, id))
+  if (!atividade) notFound()
+
+  // 🟢 REGRAS DE NEGÓCIO ISOLADAS: Se faltam dados, chama a API através da lib e atualiza a variável
+  if (atividade.isDetailed === 0 || !atividade.streamPayload) {
+    atividade = await fetchAndSaveStravaDetails(id, atividade)
+  }
+
+  // --- EXTRAINDO OS DADOS ---
+  const detalhes = atividade.detailedPayload as any
+  const streams = atividade.streamPayload as any
+  const splits = detalhes?.splits_metric || []
+  const bestEfforts = detalhes?.best_efforts || []
+  const gear = detalhes?.gear
+  const maxHr = detalhes?.max_heartrate || atividade.maxHeartrate
+  const sufferScore = detalhes?.suffer_score || atividade.sufferScore
+  
+  // Novos dados extraídos
+  const deviceName = detalhes?.device_name || "Dispositivo Desconhecido"
+  const calories = detalhes?.calories || atividade.kilojoules 
+  const totalElevation = atividade.totalElevationGain
+  const elapsedTime = atividade.elapsedTime
+
+  return (
+    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
+      <div className="mx-auto p-4 space-y-8">
+        
+        {/* NOVO: Navegação de Retorno & Cross-Link */}
+        <nav className="flex justify-between items-center pt-4">
+          <Link href="/atividades" className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-[#FC4C02] transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Histórico de Atividades
+          </Link>
+          <Link href="/treinos" className="inline-flex items-center gap-2 text-sm font-medium bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 px-3 py-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors">
+            <Target className="h-4 w-4" /> Ver Planilha de Treinos
+          </Link>
+        </nav>
+        
+        {/* CABEÇALHO PRINCIPAL */}
+        <header className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
+            <div>
+              <h1 className="text-3xl font-extrabold mb-2">{atividade.name}</h1>
+              <p className="text-zinc-500">{new Date(atividade.startDate).toLocaleString('pt-BR')}</p>
+            </div>
+            
+            {/* TAGS: Relógio e Tênis */}
+            <div className="flex flex-col items-end gap-2">
+              <div className="text-right bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 rounded-lg border border-zinc-100 dark:border-zinc-700">
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">⌚ Gravado com</p>
+                <p className="font-semibold text-xs">{deviceName}</p>
+              </div>
+              {gear && (
+                <div className="text-right bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 rounded-lg border border-zinc-100 dark:border-zinc-700">
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">👟 Equipamento</p>
+                  <p className="font-semibold text-xs">{gear.name}</p>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          {/* GRID DE ESTATÍSTICAS COMPLETAS */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Distância</p>
+              <p className="text-2xl font-bold">{(Number(atividade.distance) / 1000).toFixed(2)} km</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Pace Médio</p>
+              <p className="text-2xl font-bold">{formatPace(Number(atividade.averageSpeed))}</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Tempo Movimentação</p>
+              <p className="text-2xl font-bold">{formatTimeExact(Number(atividade.movingTime))}</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Tempo Decorrido</p>
+              <p className="text-2xl font-bold text-zinc-500">{formatTimeExact(Number(elapsedTime))}</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Elevação</p>
+              <p className="text-2xl font-bold">{Math.round(Number(totalElevation))} m</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Calorias</p>
+              <p className="text-2xl font-bold">{calories ? Math.round(Number(calories)) : "--"} kcal</p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">FC Média / Máx</p>
+              <p className="text-2xl font-bold flex items-center gap-1">
+                {atividade.averageHeartrate || "--"} <span className="text-sm text-zinc-400">/ {maxHr || "--"}</span>
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider">Esforço Relativo</p>
+              <p className="text-2xl font-bold text-[#FC4C02]">{sufferScore || "--"}</p>
+            </div>
+          </div>
+        </header>
+
+        <div className="my-6">
+          <section>
+            {atividade.mapPolyline ? (
+              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                <h2 className="text-xl font-bold mb-4 text-zinc-900 dark:text-white">
+                  Mapa do Percurso
+                </h2>
+                <StravaMap mapPolyline={atividade.mapPolyline} streams={streams} />
+              </div>
+            ) : (
+              <div className="w-full h-[400px] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-500">
+                Esta atividade não possui dados de mapa.
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/* GRÁFICOS CONTÍNUOS */}
+        {streams && streams.time && (
+          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+            <h2 className="text-xl font-bold mb-2">Análise de Ritmo e Coração</h2>
+            <ActivityChart streams={streams} />
+          </div>
+        )}
+
+        {/* GRÁFICOS DE DISTRIBUIÇÃO LADO A LADO */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {streams && streams.velocity_smooth && (
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <h2 className="text-xl font-bold mb-2">Distribuição de Ritmo</h2>
+              <PaceDistribution streams={streams} />
+            </div>
+          )}
+
+          {streams && streams.heartrate && (
+            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <h2 className="text-xl font-bold mb-2">Zonas Cardíacas</h2>
+              <HeartRateDistribution streams={streams} />
+            </div>
+          )}
+        </div>
+
+        {/* PARCIAIS (SPLITS) */}
+        {splits.length > 0 && (
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+            <h2 className="text-lg font-bold p-5 border-b border-zinc-200 dark:border-zinc-800">Parciais por KM</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-zinc-50 dark:bg-zinc-950/50 text-zinc-500 uppercase text-xs">
+                  <tr>
+                    <th className="px-5 py-3 font-semibold">KM</th>
+                    <th className="px-5 py-3 font-semibold">Ritmo</th>
+                    <th className="px-5 py-3 font-semibold">BPM</th>
+                    <th className="px-5 py-3 font-semibold">Elev</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                  {splits.map((split: any, i: number) => (
+                    <tr key={i} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                      <td className="px-5 py-3 font-bold">{split.split}</td>
+                      <td className="px-5 py-3 text-blue-600 dark:text-blue-400 font-medium">
+                        {formatPace(split.average_speed)}
+                      </td>
+                      <td className="px-5 py-3">{split.average_heartrate ? Math.round(split.average_heartrate) : "--"}</td>
+                      <td className="px-5 py-3">
+                        {split.elevation_difference > 0 ? "↗" : split.elevation_difference < 0 ? "↘" : "→"} {Math.round(split.elevation_difference)}m
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/atividades/page.tsx
+// ==========================================
+
+// src/app/atividades/page.tsx
+import AtividadesFooter from "@/components/AtividadesFooter"
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+import { db } from "@/db"
+import { gear, stravaWorkouts } from "@/db/schema"
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/utils/mocks"
+import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm"
+import Link from "next/link"
+import { buildQueryString, formatDistance, formatDuration, formatFullDate, formatPace, getActivityIcon } from "./utils"
+
+export const dynamic = 'force-dynamic'
+
+export default async function AtividadesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}) {
+  const params = searchParams ? await searchParams : {}
+  
+  const getParam = (key: string): string | undefined => {
+    const val = params[key]
+    if (typeof val === "string") return val
+    if (Array.isArray(val)) return val[0]
+    return undefined
+  }
+
+  const page = getParam("page") || "1"
+  const currentPage = Math.max(1, parseInt(page, 10) || 1)
+  const requestedPageSize = parseInt(getParam("pageSize") || String(DEFAULT_PAGE_SIZE), 10)
+  const pageSize = PAGE_SIZE_OPTIONS.includes(requestedPageSize as any) 
+    ? requestedPageSize 
+    : DEFAULT_PAGE_SIZE
+  const offset = (currentPage - 1) * pageSize
+
+  const filters: Record<string, string | number | undefined> = {}
+
+  const activityTypeParam = getParam("type")
+  const activityType = activityTypeParam === undefined || activityTypeParam === "" ? "all" : activityTypeParam
+  filters.type = activityType !== "all" ? activityType : undefined
+
+  const gearIdParam = getParam("gearId")
+  const gearIdValue = gearIdParam === undefined || gearIdParam === "" ? "all" : gearIdParam
+  filters.gearId = gearIdValue !== "all" ? gearIdValue : undefined
+
+  const sortValue = getParam("sort") || "date_desc"
+  filters.sort = sortValue !== "date_desc" ? sortValue : undefined
+
+  const whereConditions = []
+
+  if (filters.type) {
+    whereConditions.push(eq(stravaWorkouts.type, filters.type as string))
+  }
+  if (filters.gearId) {
+    whereConditions.push(eq(stravaWorkouts.gearId, filters.gearId as string))
+  }
+
+  const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined
+
+  let orderByClause
+  switch (sortValue) {
+    case "date_asc":
+      orderByClause = asc(stravaWorkouts.startDate)
+      break
+    case "distance_desc":
+      orderByClause = sql`CAST(${stravaWorkouts.distance} AS DECIMAL) DESC`
+      break
+    case "distance_asc":
+      orderByClause = sql`CAST(${stravaWorkouts.distance} AS DECIMAL) ASC`
+      break
+    case "duration_desc":
+      orderByClause = desc(stravaWorkouts.movingTime)
+      break
+    case "duration_asc":
+      orderByClause = asc(stravaWorkouts.movingTime)
+      break
+    case "hr_desc":
+      orderByClause = desc(stravaWorkouts.averageHeartrate)
+      break
+    case "hr_asc":
+      orderByClause = asc(stravaWorkouts.averageHeartrate)
+      break
+    case "elevation_desc":
+      orderByClause = sql`CAST(${stravaWorkouts.totalElevationGain} AS DECIMAL) DESC`
+      break
+    case "elevation_asc":
+      orderByClause = sql`CAST(${stravaWorkouts.totalElevationGain} AS DECIMAL) ASC`
+      break
+    case "date_desc":
+    default:
+      orderByClause = desc(stravaWorkouts.startDate)
+      break
+  }
+
+  const totalResult = await db
+    .select({ total: count() })
+    .from(stravaWorkouts)
+    .where(whereClause)
+  const total = Number(totalResult[0]?.total ?? 0)
+  const totalPages = Math.ceil(total / pageSize)
+
+  const atividades = await db
+    .select()
+    .from(stravaWorkouts)
+    .where(whereClause)
+    .orderBy(orderByClause)
+    .limit(pageSize)
+    .offset(offset)
+
+  const distinctTypes = await db
+    .selectDistinct({ type: stravaWorkouts.type })
+    .from(stravaWorkouts)
+    .orderBy(stravaWorkouts.type)
+
+  const typeOptions = distinctTypes
+    .map(row => row.type)
+    .filter((type): type is string => type !== null && type !== undefined)
+
+  const distinctGearIds = await db
+    .selectDistinct({ gearId: stravaWorkouts.gearId })
+    .from(stravaWorkouts)
+    .where(sql`${stravaWorkouts.gearId} IS NOT NULL`)
+
+  const gearIdsArray = distinctGearIds.map(row => row.gearId as string)
+  const gearRecords = gearIdsArray.length > 0
+    ? await db
+        .select()
+        .from(gear)
+        .where(inArray(gear.id, gearIdsArray))
+    : []
+
+  const shoes = gearRecords
+    .filter(g => (g.category ?? "Tênis") === "Tênis")
+    .map(g => ({ id: g.id, name: g.name }))
+  const bikes = gearRecords
+    .filter(g => g.category === "Bicicleta")
+    .map(g => ({ id: g.id, name: g.name }))
+
+  const getPageUrl = (newPage: number) => {
+    const query = buildQueryString(currentPage, pageSize, filters, newPage)
+    return query ? `/atividades?${query}` : "/atividades"
+  }
+
+  return (
+    <main className="min-h-screen w-full max-w-6xl mx-auto bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4">
+      <div className="space-y-12">
+        <header className="flex mb-12 flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-extrabold tracking-tight mb-2 flex items-center gap-3">
+              <span className="text-[#FC4C02]">Strava</span> Histórico
+            </h1>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Minhas execuções reais, sincronizadas automaticamente.
+            </p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+              {total} atividade{total !== 1 ? 's' : ''} encontrada{total !== 1 ? 's' : ''}
+            </p>
+          </div>
+        </header>
+
+        {atividades.length === 0 ? (
+          <p className="text-center text-zinc-500 dark:text-zinc-400 py-12">
+            Nenhuma atividade encontrada com os filtros aplicados.
+          </p>
+        ) : (
+          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900 shadow-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                    {/* Aumentando o padding do TableHead com px-4 */}
+                    <TableHead className="font-semibold py-4 px-4">Atividade</TableHead>
+                    <TableHead className="font-semibold text-right py-4 px-4">Distância</TableHead>
+                    <TableHead className="font-semibold text-right hidden md:table-cell py-4 px-4">Ritmo</TableHead>
+                    <TableHead className="font-semibold text-right hidden lg:table-cell py-4 px-4">Tempo</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {atividades.map((atividade) => {
+                    // URL para a página de detalhes da atividade
+                    const activityUrl = `/atividades/${atividade.id}`
+                    
+                    return (
+                      <TableRow 
+                        key={atividade.id}
+                        className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer group"
+                      >
+                        <TableCell className="py-3 px-4">
+                          <Link href={activityUrl} className="block">
+                            <div className="flex items-center gap-4 min-w-[150px]">
+                              {/* Aumentando o gap entre ícone e título para gap-4 */}
+                              <span className="shrink-0">
+                                {getActivityIcon(atividade.type)}
+                              </span>
+                              <div className="flex flex-col min-w-0">
+                                <span className="font-medium truncate text-sm group-hover:text-[#FC4C02] transition-colors">
+                                  {atividade.name}
+                                </span>
+                                <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate flex items-center gap-1">
+                                  {formatFullDate(atividade.startDate)}
+                                </span>
+                              </div>
+                            </div>
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-sm font-medium py-3 px-4">
+                          <Link href={activityUrl} className="block">
+                            {formatDistance(atividade.distance)}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-sm hidden md:table-cell py-3 px-4">
+                          <Link href={activityUrl} className="block">
+                            {formatPace(atividade.averageSpeed, atividade.type)}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-sm hidden lg:table-cell py-3 px-4">
+                          <Link href={activityUrl} className="block">
+                            {formatDuration(atividade.movingTime)}
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <AtividadesFooter
+        currentPage={currentPage}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        activityType={activityType}
+        gearId={filters.gearId as string || ""}
+        sortValue={sortValue}
+        typeOptions={typeOptions}
+        shoes={shoes}
+        bikes={bikes}
+      />
+    </main>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/atividades/utils.tsx
+// ==========================================
+
+// src/app/atividades/utils.tsx
+import { DEFAULT_PAGE_SIZE } from "@/utils/mocks";
+
+export function formatDistance(metersStr: string | null) {
+  if (!metersStr) return "0.00 km"
+  const km = parseFloat(metersStr) / 1000
+  return `${km.toFixed(2)} km`
+}
+
+export function formatPace(speedMs: string | null, type?: string | null) {
+  if (!speedMs) return "-:--"
+  const speed = parseFloat(speedMs)
+  if (speed === 0) return "-:--"
+  
+  // Para atividades de bike, mostra em km/h
+  const isBike = type === "Ride" || type === "VirtualRide" || type === "EBikeRide" || type === "MountainBikeRide"
+  
+  if (isBike) {
+    // Converte de m/s para km/h
+    const speedKmh = speed * 3.6
+    return `${speedKmh.toFixed(1)} km/h`
+  }
+  
+  // Para corrida, caminhada, etc - calcula o pace (min/km)
+  const secsPerKm = 1000 / speed
+  const mins = Math.floor(secsPerKm / 60)
+  const secs = Math.floor(secsPerKm % 60)
+  
+  return `${mins}:${secs.toString().padStart(2, '0')} /km`
+}
+
+export function formatDuration(totalSeconds: number | null) {
+  if (!totalSeconds) return "0s"
+  const h = Math.floor(totalSeconds / 3600)
+  const m = Math.floor((totalSeconds % 3600) / 60)
+  const s = totalSeconds % 60
+  
+  if (h > 0) return `${h}h ${m}m`
+  return `${m}m ${s}s`
+}
+
+export function formatDate(isoDate: string) {
+  const date = new Date(isoDate)
+  return date.toLocaleDateString('pt-BR', { 
+    day: '2-digit', 
+    month: '2-digit',
+  })
+}
+
+export function formatFullDate(isoDate: string) {
+  const date = new Date(isoDate)
+  return date.toLocaleDateString('pt-BR', { 
+    day: '2-digit', 
+    month: '2-digit',
+    year: 'numeric'
+  })
+}
+
+export function getActivityIcon(type: string | null) {
+  const size = "w-5 h-5 object-contain dark:brightness-0 dark:invert shrink-0";
+  switch(type) {
+    case "Run": return <img src="/icons/trailrun.svg" alt="Run" className={size} />;
+    case "Ride": return <img src="/icons/mtb.svg" alt="Ride" className={size} />;
+    case "Walk": return <img src="/icons/walk.svg" alt="Walk" className={size} />;
+    case 'WeightTraining': return <img src="/icons/weightTraining.svg" alt="Weight Training" className={size} />;
+    case 'Workout': return <img src="/icons/workout.svg" alt="Workout" className={size} />;
+    case 'Yoga': return <img src="/icons/yoga.svg" alt="Yoga" className={size} />;
+    case 'EBikeRide': return <img src="/icons/ride.svg" alt="EBike Ride" className={size} />;
+    default: return <img src="/icons/run.svg" alt="Activity" className={size} />;
+  }
+}
+
+export function getActivityTypeLabel(type: string | null) {
+  switch(type) {
+    case "Run": return "Corrida"
+    case "Ride": return "Ciclismo"
+    case "Walk": return "Caminhada"
+    case 'WeightTraining': return "Treino de Força"
+    case 'Workout': return "Treino"
+    case 'Yoga': return "Ioga"
+    case 'EBikeRide': return "Ciclismo Elétrico"
+    default: return type || "Atividade"
+  }
+}
+
+export function getGearIcon(category: string | null) {
+  if (!category) return "👟"
+  switch(category) {
+    case "Tênis": return "👟"
+    case "Bicicleta": return "🚲"
+    default: return "👟"
+  }
+}
+
+export function buildQueryString(
+  currentPage: number,
+  pageSize: number,
+  filters: Record<string, string | number | undefined>,
+  newPage?: number,
+  newPageSize?: number
+) {
+  const params = new URLSearchParams()
+  
+  for (const [key, value] of Object.entries(filters)) {
+    if (value !== undefined && value !== "" && value !== null) {
+      if (key === "sort" && value === "date_desc") continue
+      params.set(key, String(value))
+    }
+  }
+  
+  const finalPage = newPage ?? currentPage
+  if (finalPage > 1) {
+    params.set("page", String(finalPage))
+  }
+  
+  const finalPageSize = newPageSize ?? pageSize
+  if (finalPageSize !== DEFAULT_PAGE_SIZE) {
+    params.set("pageSize", String(finalPageSize))
+  }
+  
+  return params.toString()
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/blog/[slug]/page.tsx
+// ==========================================
+
+// src/app/(public)/blog/[slug]/page.tsx
+import { db } from "@/db"
+import { posts } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { ArrowLeft } from "lucide-react"; // Importe o ícone
+import Link from "next/link"
+import { notFound } from "next/navigation"
+import ReactMarkdown from "react-markdown"
+
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  
+  const [post] = await db.select().from(posts).where(eq(posts.slug, slug))
+
+  if (!post || !post.published) notFound()
+
+  return (
+    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
+      <article className="mx-auto p-4 mx-auto space-y-8">
+        
+        {/* NOVO: Navegação de Retorno */}
+        <nav className="pt-4">
+          <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Voltar para o Blog
+          </Link>
+        </nav>
+
+        <header className="mb-10 text-center">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+            {post.title}
+          </h1>
+          <p className="text-zinc-500">
+            Publicado em {post.createdAt.toLocaleDateString('pt-BR')}
+          </p>
+        </header>
+        <div className="prose prose-lg prose-zinc dark:prose-invert mx-auto">
+          <ReactMarkdown>
+            {post.content}
+          </ReactMarkdown>
+        </div>
+      </article>
+    </main>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/blog/page.tsx
+// ==========================================
+
+import { db } from "@/db"
+import { posts } from "@/db/schema"
+import { desc, eq } from "drizzle-orm"
+import Link from "next/link"
+
+export default async function BlogIndexPage() {
+  const publishedPosts = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.published, true))
+    .orderBy(desc(posts.createdAt))
+  return (
+    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
+      <div className="mx-auto p-4 mx-auto space-y-12">
+        <header className="mb-12">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+            Nosso Blog
+          </h1>
+          <p className="text-zinc-600 dark:text-zinc-400">
+            Acompanhe nossos treinos, histórias e evolução.
+          </p>
+        </header>
+        
+        <div className="space-y-10">
+          {publishedPosts.length === 0 ? (
+            <p className="text-zinc-500 italic">Nenhum post publicado ainda. Comece a escrever!</p>
+          ) : (
+            publishedPosts.map((post) => (
+              <article key={post.id} className="border-b border-zinc-200 dark:border-zinc-800 pb-10 last:border-0">
+                <Link href={`/blog/${post.slug}`} className="group block">
+                  <h2 className="text-2xl font-bold mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {post.title}
+                  </h2>
+                  
+                  {post.excerpt && (
+                    <p className="text-zinc-600 dark:text-zinc-300 mb-4 leading-relaxed">
+                      {post.excerpt}
+                    </p>
+                  )}
+                  
+                  <div className="text-sm text-zinc-500 font-medium">
+                    {post.createdAt.toLocaleDateString('pt-BR', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </div>
+                </Link>
+              </article>
+            ))
+          )}
+        </div>
+      </div>
+    </main>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/layout.tsx
+// ==========================================
+
+// src/app/(public)/layout.tsx
+import Navbar from "@/components/Navbar";
+
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <Navbar />
+      <main className="flex-1 flex flex-col">{children}</main>
+    </div>
+  );
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/livros/page.tsx
+// ==========================================
+
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { desc } from "drizzle-orm"
+
+
+
+export default async function LivrosIndexPage() {
+  const myBooks = await db
+    .select()
+    .from(books)
+    .orderBy(desc(books.createdAt))
+
+  return (
+    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
+      <div className="mx-auto p-4 mx-auto space-y-12">
+        <header className="mb-12 text-center">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-4">
+            Minha Estante
+          </h1>
+          <p className="text-zinc-600 dark:text-zinc-400">
+            Livros que estou lendo, já li ou quero ler em breve.
+          </p>
+        </header>
+        
+        {myBooks.length === 0 ? (
+          <p className="text-center text-zinc-500 italic">Nenhum livro catalogado ainda.</p>
+        ) : (
+          <div className="flex flex-col space-y-4">
+            {myBooks.map((book) => (
+              <div 
+                key={book.id} 
+                className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-3">
+                    <h3 className="font-bold text-xl text-zinc-900 dark:text-zinc-100">
+                      {book.title}
+                    </h3>
+                    
+                    {book.rating && (
+                      <div className="flex items-center text-sm tracking-widest mt-0.5">
+                        <span className="text-amber-500">
+                          {'★'.repeat(book.rating)}
+                        </span>
+                        <span className="text-zinc-300 dark:text-zinc-700">
+                          {'★'.repeat(5 - book.rating)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1">
+                    {book.author}
+                  </p>
+                </div>
+                <div className="shrink-0 ml-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider uppercase font-bold px-3 py-1.5 rounded-full">
+                  {book.status}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </main>
+  )
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/page.tsx
+// ==========================================
+
+// src/app/(public)/page.tsx
+
+import { LogoTwoBanks } from "@/components/twobanks";
+
+export default function PublicHomePage() {
+  return (
+    <main className="min-h-[calc(100vh-5rem)] w-full max-w-6xl mx-auto px-4 flex flex-col items-center justify-center text-center py-12">
+      <div className="space-y-6 w-full flex flex-col items-center">
+        
+        <div className="relative w-72 md:w-[500px] lg:w-[700px] flex items-center justify-center">
+          
+          <LogoTwoBanks 
+            variant="3d" 
+            extrusionColor="#0369a1" 
+            fillColor="#5bb4d8"
+            className="w-full h-auto text-[#5bb4d8] transition-colors duration-300 " 
+          />
+        </div>
+      </div>
+    </main>
+  );
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/sobre/page.tsx
+// ==========================================
+
+export default function Sobre() {
+  return (
+    <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <section className="mb-12 text-center">
+        <h1 className="text-4xl font-bold mb-4">Sobre Nós</h1>
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          Conheça nossa história, missão e a equipe por trás do projeto.
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Nossa História</h2>
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+          Fundada com o propósito de transformar ideias em soluções inovadoras, nossa jornada é movida pela paixão por excelência e pelo compromisso com nossos clientes.
+        </p>
+      </section>
+
+      <section className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="p-6 border rounded-lg shadow-sm">
+          <h3 className="text-xl font-semibold mb-2">Missão</h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Entregar experiências de alta qualidade que impactem positivamente a vida das pessoas.
+          </p>
+        </div>
+        <div className="p-6 border rounded-lg shadow-sm">
+          <h3 className="text-xl font-semibold mb-2">Visão</h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Ser referência no mercado através da inovação constante e excelência técnica.
+          </p>
+        </div>
+        <div className="p-6 border rounded-lg shadow-sm">
+          <h3 className="text-xl font-semibold mb-2">Valores</h3>
+          <p className="text-gray-600 dark:text-gray-400">
+            Transparência, empatia, compromisso com resultados e melhoria contínua.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// ==========================================
+// Arquivo: src/app/(public)/treinos/page.tsx
+// ==========================================
+
+// src/app/treinos/page.tsx
+import { db } from "@/db"
+import { plannedWorkouts, stravaWorkouts } from "@/db/schema"
+import { asc, desc, gte, like, lt } from "drizzle-orm"
+import Link from "next/link"
+
+// --- CONVERSORES DE DATA ---
+function formatCorosDate(dateStr: string) {
+  if (!dateStr || dateStr.length !== 8) return dateStr
+  const year = dateStr.substring(0, 4)
+  const month = dateStr.substring(4, 6)
+  const day = dateStr.substring(6, 8)
+  const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+  return dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
+}
+
+function getTodayCorosStr() {
+  const today = new Date()
+  const yyyy = today.getFullYear()
+  const mm = String(today.getMonth() + 1).padStart(2, '0')
+  const dd = String(today.getDate()).padStart(2, '0')
+  return `${yyyy}${mm}${dd}`
+}
+
+function stravaToCorosDate(stravaIso: string) {
+  if (!stravaIso) return ""
+  return stravaIso.substring(0, 10).replace(/-/g, '')
+}
+
+function formatDistance(meters: string | null) {
+  if (!meters) return "0.00 km"
+  return `${(parseFloat(meters) / 1000).toFixed(2)} km`
+}
+
+export default async function TreinosPage() {
+  const todayStr = getTodayCorosStr()
+
+  // 1. Buscas das Listas de Treinos (Passado e Futuro)
+  const upcomingWorkouts = await db.select().from(plannedWorkouts).where(gte(plannedWorkouts.date, todayStr)).orderBy(asc(plannedWorkouts.date)).limit(5)
+  const pastWorkouts = await db.select().from(plannedWorkouts).where(lt(plannedWorkouts.date, todayStr)).orderBy(desc(plannedWorkouts.date)).limit(20)
+  const execucoes = await db.select().from(stravaWorkouts).orderBy(desc(stravaWorkouts.startDate)).limit(50)
+
+  // 2. BUSCAS PARA O DASHBOARD ANUAL DE 2026
+  const coros2026 = await db.select().from(plannedWorkouts).where(like(plannedWorkouts.date, '2026%'))
+  const strava2026 = await db.select().from(stravaWorkouts).where(like(stravaWorkouts.startDate, '2026%'))
+
+  // 3. CÁLCULO DAS ESTATÍSTICAS
+  let planRunKm = 0, planBikeKm = 0
+  let execRunKm = 0, execBikeKm = 0
+
+  // Somando o Executado (Strava)
+  strava2026.forEach(ex => {
+    const distKm = (Number(ex.distance) || 0) / 1000
+    if (ex.type === "Run") execRunKm += distKm
+    if (ex.type === "Ride" || ex.type === "VirtualRide") execBikeKm += distKm
+  })
+
+  // Somando o Planejado (COROS)
+  coros2026.forEach(pw => {
+    const titleLower = (pw.title || "").toLowerCase()
+    const isBike = titleLower.includes('bike') || titleLower.includes('pedal') || titleLower.includes('ciclismo')
+    
+    let workoutDist = 0
+    const steps = (pw.steps as any[]) || []
+    
+    // O Regex procura números antes do "km". Ex: "5km", "10.5 km", "4,2km"
+    steps.forEach(step => {
+      // É importante validar também se step.name existe
+      if (step && step.name) {
+        const match = step.name.match(/([\d.,]+)\s*km/i)
+        if (match) {
+          workoutDist += parseFloat(match[1].replace(',', '.'))
+        }
+      }
+    })
+
+    if (isBike) planBikeKm += workoutDist
+    else planRunKm += workoutDist // Assume que o padrão é corrida se não tiver "bike" no título
+  })
+
+  const renderWorkoutCard = (treino: any, isUpcoming: boolean) => {
+    const steps = (treino.steps as any[]) || []
+    const execucaoStrava = execucoes.find(ex => stravaToCorosDate(ex.startDate) === treino.date)
+
+    return (
+      <div key={treino.id} className={`bg-white dark:bg-zinc-900 border ${isUpcoming ? "border-blue-200 dark:border-blue-900 shadow-md" : "border-zinc-200 dark:border-zinc-800 shadow-sm"} rounded-2xl overflow-hidden transition-shadow flex flex-col`}>
+        {/* CABEÇALHO DA DATA */}
+        <div className={`${isUpcoming ? "bg-blue-50 dark:bg-blue-950/30" : "bg-zinc-100 dark:bg-zinc-950/50"} px-6 py-4 flex justify-between items-center border-b ${isUpcoming ? "border-blue-100 dark:border-blue-900/50" : "border-zinc-200 dark:border-zinc-800"}`}>
+          <h2 className={`font-bold text-lg capitalize ${isUpcoming ? "text-blue-900 dark:text-blue-100" : ""}`}>
+            {formatCorosDate(treino.date)}
+          </h2>
+          {execucaoStrava ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">✅ Concluído</span>
+          ) : isUpcoming ? (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Próximo</span>
+          ) : (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">❌ Pendente</span>
+          )}
+        </div>
+
+        {/* CORPO DO CARD */}
+        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100 dark:divide-zinc-800 flex-1">
+          {/* LADO PLANO (COROS) */}
+          <div className="p-6 bg-white dark:bg-zinc-900">
+            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2"><span>📋</span> Planejado (Coros)</h3>
+            <h4 className="text-lg font-bold mb-4">{treino.title}</h4>
+            {steps.length > 0 ? (
+              <ul className="space-y-2">
+                {steps.map((step, index) => {
+                  // 🟢 ESCUDO: Garante que o nome existe antes de tentar limpar os números
+                  const rawName = step?.name || ""
+                  const cleanName = rawName.replace(/^\d+\.\s*/, '')
+                  
+                  return (
+                    <li key={index} className="flex items-center gap-3 text-sm text-zinc-800 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-800/40 px-3 py-2 rounded-lg border border-zinc-100 dark:border-zinc-800">
+                      <div className="shrink-0">{step?.exerciseType === 1 ? '🧘‍♂️' : step?.exerciseType === 2 ? '⚡' : '🚶‍♂️'}</div>
+                      <div className="flex-1 font-medium leading-relaxed">
+                        {cleanName || 'Intervalo sem descrição'}
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : <p className="text-sm text-zinc-500 italic bg-zinc-50 dark:bg-zinc-800/40 p-3 rounded-lg">Treino livre sugerido.</p>}
+          </div>
+
+          {/* LADO REALIDADE (STRAVA) */}
+          <div className="p-6 bg-zinc-50 dark:bg-zinc-950/20">
+            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-[#FC4C02]">🏃</span> Executado (Strava)</h3>
+            {execucaoStrava ? (
+              <div className="space-y-4">
+                <h4 className="text-lg font-bold">{execucaoStrava.name}</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                    <p className="text-[10px] text-zinc-500 uppercase">Distância</p>
+                    <p className="font-bold text-lg">{formatDistance(execucaoStrava.distance)}</p>
+                  </div>
+                  <div className="bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
+                    <p className="text-[10px] text-zinc-500 uppercase">BPM Médio</p>
+                    <p className="font-bold text-lg">{execucaoStrava.averageHeartrate || "--"} <span className="text-xs">❤️</span></p>
+                  </div>
+                </div>
+                <Link href={`/atividades/${execucaoStrava.id}`} className="mt-4 block w-full text-center bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-sm font-semibold py-2.5 rounded-lg transition-colors">
+                  Ver Análise Profunda
+                </Link>
+              </div>
+            ) : isUpcoming ? (
+              <div className="flex flex-col items-center justify-center h-full text-zinc-400 text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">⏳</span>Aguardando execução...</div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full text-zinc-400 text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">😴</span>Nenhuma atividade registrada neste dia.</div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
+      <div className="mx-auto p-4 mx-auto space-y-12">
+        <header className="text-center">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-4">Dashboard de Treinos</h1>
+          <p className="text-zinc-600 dark:text-zinc-400">Comparativo: Planejado vs Executado</p>
+        </header>
+
+        {/* 🟢 NOVO: PAINEL DE ESTATÍSTICAS 2026 */}
+        <section className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+          <h2 className="text-lg font-bold mb-6 flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+            <span>📊</span> Balanço Anual (2026)
+          </h2>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Corrida - Planejado */}
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+                🏃 Corrida <span className="text-blue-500 ml-1">Proposto</span>
+              </p>
+              <p className="text-3xl font-extrabold">{planRunKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+            </div>
+            
+            {/* Corrida - Executado */}
+            <div className="space-y-1 border-r md:border-r-0 border-zinc-100 dark:border-zinc-800 pr-4">
+              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+                🏃 Corrida <span className="text-[#FC4C02] ml-1">Executado</span>
+              </p>
+              <p className="text-3xl font-extrabold">{execRunKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+            </div>
+
+            {/* Bike - Planejado */}
+            <div className="space-y-1 pl-4 md:pl-6 md:border-l border-zinc-100 dark:border-zinc-800">
+              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+                🚴 Bike <span className="text-blue-500 ml-1">Proposto</span>
+              </p>
+              <p className="text-3xl font-extrabold">{planBikeKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+            </div>
+            
+            {/* Bike - Executado */}
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+                🚴 Bike <span className="text-[#FC4C02] ml-1">Executado</span>
+              </p>
+              <p className="text-3xl font-extrabold">{execBikeKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+            </div>
+          </div>
+          
+          {/* Barras de Progresso Visuais */}
+          <div className="mt-8 space-y-4">
+            <div>
+              <div className="flex justify-between text-xs mb-1 font-medium">
+                <span className="text-zinc-500">Progresso de Corrida</span>
+                <span className="text-[#FC4C02]">{planRunKm > 0 ? ((execRunKm / planRunKm) * 100).toFixed(1) : 0}%</span>
+              </div>
+              <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
+                  style={{ width: `${Math.min(planRunKm > 0 ? (execRunKm / planRunKm) * 100 : 0, 100)}%` }}
+                />
+              </div>
+            </div>
+            
+            {(planBikeKm > 0 || execBikeKm > 0) && (
+              <div>
+                <div className="flex justify-between text-xs mb-1 font-medium">
+                  <span className="text-zinc-500">Progresso de Ciclismo</span>
+                  <span className="text-[#FC4C02]">{planBikeKm > 0 ? ((execBikeKm / planBikeKm) * 100).toFixed(1) : 0}%</span>
+                </div>
+                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
+                    style={{ width: `${Math.min(planBikeKm > 0 ? (execBikeKm / planBikeKm) * 100 : 0, 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* PRÓXIMOS TREINOS E HISTÓRICO (O que já tínhamos) */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><span>🎯</span> Próximos Treinos</h2>
+          <div className="space-y-6">
+            {upcomingWorkouts.map(t => renderWorkoutCard(t, true))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><span>📅</span> Histórico Recente</h2>
+          <div className="space-y-6">
+            {pastWorkouts.map(t => renderWorkoutCard(t, false))}
+          </div>
+        </section>
+      </div>
+    </main>
+  )
+}
+
+// ==========================================
 // Arquivo: src/app/admin/blog/BlogClient.tsx
 // ==========================================
 
@@ -2521,731 +3671,11 @@ export default async function KanbanPage() {
 }
 
 // ==========================================
-// Arquivo: src/app/atividades/[id]/loading.tsx
-// ==========================================
-
-// src/app/atividades/[id]/loading.tsx
-import { Loader2 } from "lucide-react"
-
-export default function LoadingAtividade() {
-  return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-zinc-50 dark:bg-black text-zinc-500 gap-4">
-      <Loader2 className="size-8 animate-spin text-blue-500" />
-      <p className="animate-pulse">Sincronizando dados de telemetria do Strava...</p>
-    </div>
-  )
-}
-
-// ==========================================
-// Arquivo: src/app/atividades/[id]/page.tsx
-// ==========================================
-
-// src/app/atividades/[id]/page.tsx
-import ActivityChart from "@/components/ActivityChart"
-import HeartRateDistribution from "@/components/HeartRateDistribution"
-import PaceDistribution from "@/components/PaceDistribution"
-import StravaMap from "@/components/StravaMap"
-import { db } from "@/db"
-import { stravaWorkouts } from "@/db/schema"
-import { fetchAndSaveStravaDetails } from "@/lib/strava"; // 🟢 Import da nova função
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
-
-// --- FUNÇÕES AUXILIARES ---
-function formatPace(speedMs: number) {
-  // 🟢 CORREÇÃO: Ignora ruídos de GPS (velocidade muito baixa). 0.83 m/s = ~20:00/km
-  if (!speedMs || speedMs < 0.83) return "-:--" 
-  
-  const secsPerKm = 1000 / speedMs
-  const mins = Math.floor(secsPerKm / 60)
-  const secs = Math.floor(secsPerKm % 60)
-  return `${mins}:${secs.toString().padStart(2, '0')}/km`
-}
-
-function formatTimeExact(totalSeconds: number) {
-  if (!totalSeconds) return "--"
-  const h = Math.floor(totalSeconds / 3600)
-  const m = Math.floor((totalSeconds % 3600) / 60)
-  const s = totalSeconds % 60
-  
-  if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
-export default async function DetalheAtividadePage({
-  params,
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params
-  
-  // Como a variável vai ser substituída caso não tenha streams, precisamos usar 'let' em vez de 'const'
-  let [atividade] = await db.select().from(stravaWorkouts).where(eq(stravaWorkouts.id, id))
-  if (!atividade) notFound()
-
-  // 🟢 REGRAS DE NEGÓCIO ISOLADAS: Se faltam dados, chama a API através da lib e atualiza a variável
-  if (atividade.isDetailed === 0 || !atividade.streamPayload) {
-    atividade = await fetchAndSaveStravaDetails(id, atividade)
-  }
-
-  // --- EXTRAINDO OS DADOS ---
-  const detalhes = atividade.detailedPayload as any
-  const streams = atividade.streamPayload as any
-  const splits = detalhes?.splits_metric || []
-  const bestEfforts = detalhes?.best_efforts || []
-  const gear = detalhes?.gear
-  const maxHr = detalhes?.max_heartrate || atividade.maxHeartrate
-  const sufferScore = detalhes?.suffer_score || atividade.sufferScore
-  
-  // Novos dados extraídos
-  const deviceName = detalhes?.device_name || "Dispositivo Desconhecido"
-  const calories = detalhes?.calories || atividade.kilojoules 
-  const totalElevation = atividade.totalElevationGain
-  const elapsedTime = atividade.elapsedTime
-
-  return (
-    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
-      <div className="mx-auto p-4 space-y-12">
-        
-        {/* CABEÇALHO PRINCIPAL */}
-        <header className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
-            <div>
-              <h1 className="text-3xl font-extrabold mb-2">{atividade.name}</h1>
-              <p className="text-zinc-500">{new Date(atividade.startDate).toLocaleString('pt-BR')}</p>
-            </div>
-            
-            {/* TAGS: Relógio e Tênis */}
-            <div className="flex flex-col items-end gap-2">
-              <div className="text-right bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 rounded-lg border border-zinc-100 dark:border-zinc-700">
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">⌚ Gravado com</p>
-                <p className="font-semibold text-xs">{deviceName}</p>
-              </div>
-              {gear && (
-                <div className="text-right bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 rounded-lg border border-zinc-100 dark:border-zinc-700">
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-0.5">👟 Equipamento</p>
-                  <p className="font-semibold text-xs">{gear.name}</p>
-                </div>
-              )}
-            </div>
-          </div>
-          
-          {/* GRID DE ESTATÍSTICAS COMPLETAS */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-6 pt-6 border-t border-zinc-100 dark:border-zinc-800">
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Distância</p>
-              <p className="text-2xl font-bold">{(Number(atividade.distance) / 1000).toFixed(2)} km</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Pace Médio</p>
-              <p className="text-2xl font-bold">{formatPace(Number(atividade.averageSpeed))}</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Tempo Movimentação</p>
-              <p className="text-2xl font-bold">{formatTimeExact(Number(atividade.movingTime))}</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Tempo Decorrido</p>
-              <p className="text-2xl font-bold text-zinc-500">{formatTimeExact(Number(elapsedTime))}</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Elevação</p>
-              <p className="text-2xl font-bold">{Math.round(Number(totalElevation))} m</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Calorias</p>
-              <p className="text-2xl font-bold">{calories ? Math.round(Number(calories)) : "--"} kcal</p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">FC Média / Máx</p>
-              <p className="text-2xl font-bold flex items-center gap-1">
-                {atividade.averageHeartrate || "--"} <span className="text-sm text-zinc-400">/ {maxHr || "--"}</span>
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider">Esforço Relativo</p>
-              <p className="text-2xl font-bold text-[#FC4C02]">{sufferScore || "--"}</p>
-            </div>
-          </div>
-        </header>
-
-        <div className="my-6">
-          <section>
-            {atividade.mapPolyline ? (
-              <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                <h2 className="text-xl font-bold mb-4 text-zinc-900 dark:text-white">
-                  Mapa do Percurso
-                </h2>
-                <StravaMap mapPolyline={atividade.mapPolyline} streams={streams} />
-              </div>
-            ) : (
-              <div className="w-full h-[400px] flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 text-zinc-500">
-                Esta atividade não possui dados de mapa.
-              </div>
-            )}
-          </section>
-        </div>
-
-        {/* GRÁFICOS CONTÍNUOS */}
-        {streams && streams.time && (
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-            <h2 className="text-xl font-bold mb-2">Análise de Ritmo e Coração</h2>
-            <ActivityChart streams={streams} />
-          </div>
-        )}
-
-        {/* GRÁFICOS DE DISTRIBUIÇÃO LADO A LADO */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {streams && streams.velocity_smooth && (
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <h2 className="text-xl font-bold mb-2">Distribuição de Ritmo</h2>
-              <PaceDistribution streams={streams} />
-            </div>
-          )}
-
-          {streams && streams.heartrate && (
-            <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <h2 className="text-xl font-bold mb-2">Zonas Cardíacas</h2>
-              <HeartRateDistribution streams={streams} />
-            </div>
-          )}
-        </div>
-
-        {/* PARCIAIS (SPLITS) */}
-        {splits.length > 0 && (
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-            <h2 className="text-lg font-bold p-5 border-b border-zinc-200 dark:border-zinc-800">Parciais por KM</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-zinc-50 dark:bg-zinc-950/50 text-zinc-500 uppercase text-xs">
-                  <tr>
-                    <th className="px-5 py-3 font-semibold">KM</th>
-                    <th className="px-5 py-3 font-semibold">Ritmo</th>
-                    <th className="px-5 py-3 font-semibold">BPM</th>
-                    <th className="px-5 py-3 font-semibold">Elev</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {splits.map((split: any, i: number) => (
-                    <tr key={i} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                      <td className="px-5 py-3 font-bold">{split.split}</td>
-                      <td className="px-5 py-3 text-blue-600 dark:text-blue-400 font-medium">
-                        {formatPace(split.average_speed)}
-                      </td>
-                      <td className="px-5 py-3">{split.average_heartrate ? Math.round(split.average_heartrate) : "--"}</td>
-                      <td className="px-5 py-3">
-                        {split.elevation_difference > 0 ? "↗" : split.elevation_difference < 0 ? "↘" : "→"} {Math.round(split.elevation_difference)}m
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-      </div>
-    </main>
-  )
-}
-
-// ==========================================
-// Arquivo: src/app/atividades/page.tsx
-// ==========================================
-
-// src/app/atividades/page.tsx
-import AtividadesFooter from "@/components/AtividadesFooter"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import { db } from "@/db"
-import { gear, stravaWorkouts } from "@/db/schema"
-import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "@/utils/mocks"
-import { and, asc, count, desc, eq, inArray, sql } from "drizzle-orm"
-import Link from "next/link"
-import { buildQueryString, formatDistance, formatDuration, formatFullDate, formatPace, getActivityIcon } from "./utils"
-
-export const dynamic = 'force-dynamic'
-
-export default async function AtividadesPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>
-}) {
-  const params = searchParams ? await searchParams : {}
-  
-  const getParam = (key: string): string | undefined => {
-    const val = params[key]
-    if (typeof val === "string") return val
-    if (Array.isArray(val)) return val[0]
-    return undefined
-  }
-
-  const page = getParam("page") || "1"
-  const currentPage = Math.max(1, parseInt(page, 10) || 1)
-  const requestedPageSize = parseInt(getParam("pageSize") || String(DEFAULT_PAGE_SIZE), 10)
-  const pageSize = PAGE_SIZE_OPTIONS.includes(requestedPageSize as any) 
-    ? requestedPageSize 
-    : DEFAULT_PAGE_SIZE
-  const offset = (currentPage - 1) * pageSize
-
-  const filters: Record<string, string | number | undefined> = {}
-
-  const activityTypeParam = getParam("type")
-  const activityType = activityTypeParam === undefined || activityTypeParam === "" ? "all" : activityTypeParam
-  filters.type = activityType !== "all" ? activityType : undefined
-
-  const gearIdParam = getParam("gearId")
-  const gearIdValue = gearIdParam === undefined || gearIdParam === "" ? "all" : gearIdParam
-  filters.gearId = gearIdValue !== "all" ? gearIdValue : undefined
-
-  const sortValue = getParam("sort") || "date_desc"
-  filters.sort = sortValue !== "date_desc" ? sortValue : undefined
-
-  const whereConditions = []
-
-  if (filters.type) {
-    whereConditions.push(eq(stravaWorkouts.type, filters.type as string))
-  }
-  if (filters.gearId) {
-    whereConditions.push(eq(stravaWorkouts.gearId, filters.gearId as string))
-  }
-
-  const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined
-
-  let orderByClause
-  switch (sortValue) {
-    case "date_asc":
-      orderByClause = asc(stravaWorkouts.startDate)
-      break
-    case "distance_desc":
-      orderByClause = sql`CAST(${stravaWorkouts.distance} AS DECIMAL) DESC`
-      break
-    case "distance_asc":
-      orderByClause = sql`CAST(${stravaWorkouts.distance} AS DECIMAL) ASC`
-      break
-    case "duration_desc":
-      orderByClause = desc(stravaWorkouts.movingTime)
-      break
-    case "duration_asc":
-      orderByClause = asc(stravaWorkouts.movingTime)
-      break
-    case "hr_desc":
-      orderByClause = desc(stravaWorkouts.averageHeartrate)
-      break
-    case "hr_asc":
-      orderByClause = asc(stravaWorkouts.averageHeartrate)
-      break
-    case "elevation_desc":
-      orderByClause = sql`CAST(${stravaWorkouts.totalElevationGain} AS DECIMAL) DESC`
-      break
-    case "elevation_asc":
-      orderByClause = sql`CAST(${stravaWorkouts.totalElevationGain} AS DECIMAL) ASC`
-      break
-    case "date_desc":
-    default:
-      orderByClause = desc(stravaWorkouts.startDate)
-      break
-  }
-
-  const totalResult = await db
-    .select({ total: count() })
-    .from(stravaWorkouts)
-    .where(whereClause)
-  const total = Number(totalResult[0]?.total ?? 0)
-  const totalPages = Math.ceil(total / pageSize)
-
-  const atividades = await db
-    .select()
-    .from(stravaWorkouts)
-    .where(whereClause)
-    .orderBy(orderByClause)
-    .limit(pageSize)
-    .offset(offset)
-
-  const distinctTypes = await db
-    .selectDistinct({ type: stravaWorkouts.type })
-    .from(stravaWorkouts)
-    .orderBy(stravaWorkouts.type)
-
-  const typeOptions = distinctTypes
-    .map(row => row.type)
-    .filter((type): type is string => type !== null && type !== undefined)
-
-  const distinctGearIds = await db
-    .selectDistinct({ gearId: stravaWorkouts.gearId })
-    .from(stravaWorkouts)
-    .where(sql`${stravaWorkouts.gearId} IS NOT NULL`)
-
-  const gearIdsArray = distinctGearIds.map(row => row.gearId as string)
-  const gearRecords = gearIdsArray.length > 0
-    ? await db
-        .select()
-        .from(gear)
-        .where(inArray(gear.id, gearIdsArray))
-    : []
-
-  const shoes = gearRecords
-    .filter(g => (g.category ?? "Tênis") === "Tênis")
-    .map(g => ({ id: g.id, name: g.name }))
-  const bikes = gearRecords
-    .filter(g => g.category === "Bicicleta")
-    .map(g => ({ id: g.id, name: g.name }))
-
-  const getPageUrl = (newPage: number) => {
-    const query = buildQueryString(currentPage, pageSize, filters, newPage)
-    return query ? `/atividades?${query}` : "/atividades"
-  }
-
-  return (
-    <main className="min-h-screen w-full max-w-6xl mx-auto bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4">
-      <div className="space-y-12">
-        <header className="flex mb-12 flex-col sm:flex-row sm:items-start justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-extrabold tracking-tight mb-2 flex items-center gap-3">
-              <span className="text-[#FC4C02]">Strava</span> Histórico
-            </h1>
-            <p className="text-zinc-600 dark:text-zinc-400">
-              Minhas execuções reais, sincronizadas automaticamente.
-            </p>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-              {total} atividade{total !== 1 ? 's' : ''} encontrada{total !== 1 ? 's' : ''}
-            </p>
-          </div>
-        </header>
-
-        {atividades.length === 0 ? (
-          <p className="text-center text-zinc-500 dark:text-zinc-400 py-12">
-            Nenhuma atividade encontrada com os filtros aplicados.
-          </p>
-        ) : (
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900 shadow-sm">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                    {/* Aumentando o padding do TableHead com px-4 */}
-                    <TableHead className="font-semibold py-4 px-4">Atividade</TableHead>
-                    <TableHead className="font-semibold text-right py-4 px-4">Distância</TableHead>
-                    <TableHead className="font-semibold text-right hidden md:table-cell py-4 px-4">Ritmo</TableHead>
-                    <TableHead className="font-semibold text-right hidden lg:table-cell py-4 px-4">Tempo</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {atividades.map((atividade) => {
-                    // URL para a página de detalhes da atividade
-                    const activityUrl = `/atividades/${atividade.id}`
-                    
-                    return (
-                      <TableRow 
-                        key={atividade.id}
-                        className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors cursor-pointer group"
-                      >
-                        <TableCell className="py-3 px-4">
-                          <Link href={activityUrl} className="block">
-                            <div className="flex items-center gap-4 min-w-[150px]">
-                              {/* Aumentando o gap entre ícone e título para gap-4 */}
-                              <span className="shrink-0">
-                                {getActivityIcon(atividade.type)}
-                              </span>
-                              <div className="flex flex-col min-w-0">
-                                <span className="font-medium truncate text-sm group-hover:text-[#FC4C02] transition-colors">
-                                  {atividade.name}
-                                </span>
-                                <span className="text-xs text-zinc-500 dark:text-zinc-400 truncate flex items-center gap-1">
-                                  {formatFullDate(atividade.startDate)}
-                                </span>
-                              </div>
-                            </div>
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-sm font-medium py-3 px-4">
-                          <Link href={activityUrl} className="block">
-                            {formatDistance(atividade.distance)}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-sm hidden md:table-cell py-3 px-4">
-                          <Link href={activityUrl} className="block">
-                            {formatPace(atividade.averageSpeed, atividade.type)}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-sm hidden lg:table-cell py-3 px-4">
-                          <Link href={activityUrl} className="block">
-                            {formatDuration(atividade.movingTime)}
-                          </Link>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <AtividadesFooter
-        currentPage={currentPage}
-        totalPages={totalPages}
-        pageSize={pageSize}
-        activityType={activityType}
-        gearId={filters.gearId as string || ""}
-        sortValue={sortValue}
-        typeOptions={typeOptions}
-        shoes={shoes}
-        bikes={bikes}
-      />
-    </main>
-  )
-}
-
-// ==========================================
-// Arquivo: src/app/atividades/utils.tsx
-// ==========================================
-
-// src/app/atividades/utils.tsx
-import { DEFAULT_PAGE_SIZE } from "@/utils/mocks";
-
-export function formatDistance(metersStr: string | null) {
-  if (!metersStr) return "0.00 km"
-  const km = parseFloat(metersStr) / 1000
-  return `${km.toFixed(2)} km`
-}
-
-export function formatPace(speedMs: string | null, type?: string | null) {
-  if (!speedMs) return "-:--"
-  const speed = parseFloat(speedMs)
-  if (speed === 0) return "-:--"
-  
-  // Para atividades de bike, mostra em km/h
-  const isBike = type === "Ride" || type === "VirtualRide" || type === "EBikeRide" || type === "MountainBikeRide"
-  
-  if (isBike) {
-    // Converte de m/s para km/h
-    const speedKmh = speed * 3.6
-    return `${speedKmh.toFixed(1)} km/h`
-  }
-  
-  // Para corrida, caminhada, etc - calcula o pace (min/km)
-  const secsPerKm = 1000 / speed
-  const mins = Math.floor(secsPerKm / 60)
-  const secs = Math.floor(secsPerKm % 60)
-  
-  return `${mins}:${secs.toString().padStart(2, '0')} /km`
-}
-
-export function formatDuration(totalSeconds: number | null) {
-  if (!totalSeconds) return "0s"
-  const h = Math.floor(totalSeconds / 3600)
-  const m = Math.floor((totalSeconds % 3600) / 60)
-  const s = totalSeconds % 60
-  
-  if (h > 0) return `${h}h ${m}m`
-  return `${m}m ${s}s`
-}
-
-export function formatDate(isoDate: string) {
-  const date = new Date(isoDate)
-  return date.toLocaleDateString('pt-BR', { 
-    day: '2-digit', 
-    month: '2-digit',
-  })
-}
-
-export function formatFullDate(isoDate: string) {
-  const date = new Date(isoDate)
-  return date.toLocaleDateString('pt-BR', { 
-    day: '2-digit', 
-    month: '2-digit',
-    year: 'numeric'
-  })
-}
-
-export function getActivityIcon(type: string | null) {
-  const size = "w-5 h-5 object-contain dark:brightness-0 dark:invert shrink-0";
-  switch(type) {
-    case "Run": return <img src="/icons/trailrun.svg" alt="Run" className={size} />;
-    case "Ride": return <img src="/icons/mtb.svg" alt="Ride" className={size} />;
-    case "Walk": return <img src="/icons/walk.svg" alt="Walk" className={size} />;
-    case 'WeightTraining': return <img src="/icons/weightTraining.svg" alt="Weight Training" className={size} />;
-    case 'Workout': return <img src="/icons/workout.svg" alt="Workout" className={size} />;
-    case 'Yoga': return <img src="/icons/yoga.svg" alt="Yoga" className={size} />;
-    case 'EBikeRide': return <img src="/icons/ride.svg" alt="EBike Ride" className={size} />;
-    default: return <img src="/icons/run.svg" alt="Activity" className={size} />;
-  }
-}
-
-export function getActivityTypeLabel(type: string | null) {
-  switch(type) {
-    case "Run": return "Corrida"
-    case "Ride": return "Ciclismo"
-    case "Walk": return "Caminhada"
-    case 'WeightTraining': return "Treino de Força"
-    case 'Workout': return "Treino"
-    case 'Yoga': return "Ioga"
-    case 'EBikeRide': return "Ciclismo Elétrico"
-    default: return type || "Atividade"
-  }
-}
-
-export function getGearIcon(category: string | null) {
-  if (!category) return "👟"
-  switch(category) {
-    case "Tênis": return "👟"
-    case "Bicicleta": return "🚲"
-    default: return "👟"
-  }
-}
-
-export function buildQueryString(
-  currentPage: number,
-  pageSize: number,
-  filters: Record<string, string | number | undefined>,
-  newPage?: number,
-  newPageSize?: number
-) {
-  const params = new URLSearchParams()
-  
-  for (const [key, value] of Object.entries(filters)) {
-    if (value !== undefined && value !== "" && value !== null) {
-      if (key === "sort" && value === "date_desc") continue
-      params.set(key, String(value))
-    }
-  }
-  
-  const finalPage = newPage ?? currentPage
-  if (finalPage > 1) {
-    params.set("page", String(finalPage))
-  }
-  
-  const finalPageSize = newPageSize ?? pageSize
-  if (finalPageSize !== DEFAULT_PAGE_SIZE) {
-    params.set("pageSize", String(finalPageSize))
-  }
-  
-  return params.toString()
-}
-
-// ==========================================
-// Arquivo: src/app/blog/[slug]/page.tsx
-// ==========================================
-
-import { db } from "@/db"
-import { posts } from "@/db/schema"
-import { eq } from "drizzle-orm"
-import { notFound } from "next/navigation"
-import ReactMarkdown from "react-markdown"
-
-export default async function BlogPostPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await params
-  
-  const [post] = await db
-    .select()
-    .from(posts)
-    .where(eq(posts.slug, slug))
-
-  if (!post || !post.published) {
-    notFound()
-  }
-
-  return (
-    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
-      <article className="mx-auto p-4 mx-auto space-y-12">
-        <header className="mb-10 text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight mb-4">
-            {post.title}
-          </h1>
-          <p className="text-zinc-500">
-            Publicado em {post.createdAt.toLocaleDateString('pt-BR')}
-          </p>
-        </header>
-        <div className="prose prose-lg prose-zinc dark:prose-invert mx-auto">
-          <ReactMarkdown>
-            {post.content}
-          </ReactMarkdown>
-        </div>
-      </article>
-    </main>
-  )
-}
-
-// ==========================================
-// Arquivo: src/app/blog/page.tsx
-// ==========================================
-
-import { db } from "@/db"
-import { posts } from "@/db/schema"
-import { desc, eq } from "drizzle-orm"
-import Link from "next/link"
-
-export default async function BlogIndexPage() {
-  const publishedPosts = await db
-    .select()
-    .from(posts)
-    .where(eq(posts.published, true))
-    .orderBy(desc(posts.createdAt))
-  return (
-    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
-      <div className="mx-auto p-4 mx-auto space-y-12">
-        <header className="mb-12">
-          <h1 className="text-4xl font-extrabold tracking-tight mb-4">
-            Nosso Blog
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Acompanhe nossos treinos, histórias e evolução.
-          </p>
-        </header>
-        
-        <div className="space-y-10">
-          {publishedPosts.length === 0 ? (
-            <p className="text-zinc-500 italic">Nenhum post publicado ainda. Comece a escrever!</p>
-          ) : (
-            publishedPosts.map((post) => (
-              <article key={post.id} className="border-b border-zinc-200 dark:border-zinc-800 pb-10 last:border-0">
-                <Link href={`/blog/${post.slug}`} className="group block">
-                  <h2 className="text-2xl font-bold mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {post.title}
-                  </h2>
-                  
-                  {post.excerpt && (
-                    <p className="text-zinc-600 dark:text-zinc-300 mb-4 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                  )}
-                  
-                  <div className="text-sm text-zinc-500 font-medium">
-                    {post.createdAt.toLocaleDateString('pt-BR', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
-                  </div>
-                </Link>
-              </article>
-            ))
-          )}
-        </div>
-      </div>
-    </main>
-  )
-}
-
-// ==========================================
 // Arquivo: src/app/layout.tsx
 // ==========================================
 
-
+// src/app/layout.tsx
 import "@/app/globals.css";
-import { auth } from "@/auth";
-import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { DrawerProvider } from "@/contexts/DrawerContext";
 import type { Metadata } from "next";
@@ -3267,16 +3697,12 @@ export const metadata: Metadata = {
     default: "BANKS | Painel Financeiro e Gestão",
   },
   description: "Plataforma inteligente de controle financeiro e gerenciamento de conteúdo.",
-  // O Next.js mapeia automaticamente o favicon.ico localizado em src/app/favicon.ico
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const isAuthenticated = !!session?.user;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
@@ -3288,404 +3714,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <DrawerProvider>
-            <Navbar isAuthenticated={isAuthenticated} />
             {children}
           </DrawerProvider>
         </ThemeProvider>
       </body>
     </html>
   );
-}
-
-// ==========================================
-// Arquivo: src/app/livros/page.tsx
-// ==========================================
-
-import { db } from "@/db"
-import { books } from "@/db/schema"
-import { desc } from "drizzle-orm"
-
-
-
-export default async function LivrosIndexPage() {
-  const myBooks = await db
-    .select()
-    .from(books)
-    .orderBy(desc(books.createdAt))
-
-  return (
-    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
-      <div className="mx-auto p-4 mx-auto space-y-12">
-        <header className="mb-12 text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight mb-4">
-            Minha Estante
-          </h1>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Livros que estou lendo, já li ou quero ler em breve.
-          </p>
-        </header>
-        
-        {myBooks.length === 0 ? (
-          <p className="text-center text-zinc-500 italic">Nenhum livro catalogado ainda.</p>
-        ) : (
-          <div className="flex flex-col space-y-4">
-            {myBooks.map((book) => (
-              <div 
-                key={book.id} 
-                className="flex items-center justify-between p-5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-3">
-                    <h3 className="font-bold text-xl text-zinc-900 dark:text-zinc-100">
-                      {book.title}
-                    </h3>
-                    
-                    {book.rating && (
-                      <div className="flex items-center text-sm tracking-widest mt-0.5">
-                        <span className="text-amber-500">
-                          {'★'.repeat(book.rating)}
-                        </span>
-                        <span className="text-zinc-300 dark:text-zinc-700">
-                          {'★'.repeat(5 - book.rating)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mt-1">
-                    {book.author}
-                  </p>
-                </div>
-                <div className="shrink-0 ml-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs tracking-wider uppercase font-bold px-3 py-1.5 rounded-full">
-                  {book.status}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </main>
-  )
-}
-
-// ==========================================
-// Arquivo: src/app/page.tsx
-// ==========================================
-
-
-export default async function Home() {
-  return (
-    <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-      <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-        HELLO TWO
-      </code>
-    </h1>
-  );
-}
-
-// ==========================================
-// Arquivo: src/app/sobre/page.tsx
-// ==========================================
-
-export default function Sobre() {
-  return (
-    <main className="container mx-auto px-4 py-8 max-w-4xl">
-      <section className="mb-12 text-center">
-        <h1 className="text-4xl font-bold mb-4">Sobre Nós</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300">
-          Conheça nossa história, missão e a equipe por trás do projeto.
-        </p>
-      </section>
-
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-4">Nossa História</h2>
-        <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-          Fundada com o propósito de transformar ideias em soluções inovadoras, nossa jornada é movida pela paixão por excelência e pelo compromisso com nossos clientes.
-        </p>
-      </section>
-
-      <section className="grid md:grid-cols-3 gap-6 mb-12">
-        <div className="p-6 border rounded-lg shadow-sm">
-          <h3 className="text-xl font-semibold mb-2">Missão</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Entregar experiências de alta qualidade que impactem positivamente a vida das pessoas.
-          </p>
-        </div>
-        <div className="p-6 border rounded-lg shadow-sm">
-          <h3 className="text-xl font-semibold mb-2">Visão</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Ser referência no mercado através da inovação constante e excelência técnica.
-          </p>
-        </div>
-        <div className="p-6 border rounded-lg shadow-sm">
-          <h3 className="text-xl font-semibold mb-2">Valores</h3>
-          <p className="text-gray-600 dark:text-gray-400">
-            Transparência, empatia, compromisso com resultados e melhoria contínua.
-          </p>
-        </div>
-      </section>
-    </main>
-  );
-}
-
-// ==========================================
-// Arquivo: src/app/treinos/page.tsx
-// ==========================================
-
-// src/app/treinos/page.tsx
-import { db } from "@/db"
-import { plannedWorkouts, stravaWorkouts } from "@/db/schema"
-import { asc, desc, gte, like, lt } from "drizzle-orm"
-import Link from "next/link"
-
-// --- CONVERSORES DE DATA ---
-function formatCorosDate(dateStr: string) {
-  if (!dateStr || dateStr.length !== 8) return dateStr
-  const year = dateStr.substring(0, 4)
-  const month = dateStr.substring(4, 6)
-  const day = dateStr.substring(6, 8)
-  const dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-  return dateObj.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })
-}
-
-function getTodayCorosStr() {
-  const today = new Date()
-  const yyyy = today.getFullYear()
-  const mm = String(today.getMonth() + 1).padStart(2, '0')
-  const dd = String(today.getDate()).padStart(2, '0')
-  return `${yyyy}${mm}${dd}`
-}
-
-function stravaToCorosDate(stravaIso: string) {
-  if (!stravaIso) return ""
-  return stravaIso.substring(0, 10).replace(/-/g, '')
-}
-
-function formatDistance(meters: string | null) {
-  if (!meters) return "0.00 km"
-  return `${(parseFloat(meters) / 1000).toFixed(2)} km`
-}
-
-export default async function TreinosPage() {
-  const todayStr = getTodayCorosStr()
-
-  // 1. Buscas das Listas de Treinos (Passado e Futuro)
-  const upcomingWorkouts = await db.select().from(plannedWorkouts).where(gte(plannedWorkouts.date, todayStr)).orderBy(asc(plannedWorkouts.date)).limit(5)
-  const pastWorkouts = await db.select().from(plannedWorkouts).where(lt(plannedWorkouts.date, todayStr)).orderBy(desc(plannedWorkouts.date)).limit(20)
-  const execucoes = await db.select().from(stravaWorkouts).orderBy(desc(stravaWorkouts.startDate)).limit(50)
-
-  // 2. BUSCAS PARA O DASHBOARD ANUAL DE 2026
-  const coros2026 = await db.select().from(plannedWorkouts).where(like(plannedWorkouts.date, '2026%'))
-  const strava2026 = await db.select().from(stravaWorkouts).where(like(stravaWorkouts.startDate, '2026%'))
-
-  // 3. CÁLCULO DAS ESTATÍSTICAS
-  let planRunKm = 0, planBikeKm = 0
-  let execRunKm = 0, execBikeKm = 0
-
-  // Somando o Executado (Strava)
-  strava2026.forEach(ex => {
-    const distKm = (Number(ex.distance) || 0) / 1000
-    if (ex.type === "Run") execRunKm += distKm
-    if (ex.type === "Ride" || ex.type === "VirtualRide") execBikeKm += distKm
-  })
-
-  // Somando o Planejado (COROS)
-  coros2026.forEach(pw => {
-    const titleLower = (pw.title || "").toLowerCase()
-    const isBike = titleLower.includes('bike') || titleLower.includes('pedal') || titleLower.includes('ciclismo')
-    
-    let workoutDist = 0
-    const steps = (pw.steps as any[]) || []
-    
-    // O Regex procura números antes do "km". Ex: "5km", "10.5 km", "4,2km"
-    steps.forEach(step => {
-      // É importante validar também se step.name existe
-      if (step && step.name) {
-        const match = step.name.match(/([\d.,]+)\s*km/i)
-        if (match) {
-          workoutDist += parseFloat(match[1].replace(',', '.'))
-        }
-      }
-    })
-
-    if (isBike) planBikeKm += workoutDist
-    else planRunKm += workoutDist // Assume que o padrão é corrida se não tiver "bike" no título
-  })
-
-  const renderWorkoutCard = (treino: any, isUpcoming: boolean) => {
-    const steps = (treino.steps as any[]) || []
-    const execucaoStrava = execucoes.find(ex => stravaToCorosDate(ex.startDate) === treino.date)
-
-    return (
-      <div key={treino.id} className={`bg-white dark:bg-zinc-900 border ${isUpcoming ? "border-blue-200 dark:border-blue-900 shadow-md" : "border-zinc-200 dark:border-zinc-800 shadow-sm"} rounded-2xl overflow-hidden transition-shadow flex flex-col`}>
-        {/* CABEÇALHO DA DATA */}
-        <div className={`${isUpcoming ? "bg-blue-50 dark:bg-blue-950/30" : "bg-zinc-100 dark:bg-zinc-950/50"} px-6 py-4 flex justify-between items-center border-b ${isUpcoming ? "border-blue-100 dark:border-blue-900/50" : "border-zinc-200 dark:border-zinc-800"}`}>
-          <h2 className={`font-bold text-lg capitalize ${isUpcoming ? "text-blue-900 dark:text-blue-100" : ""}`}>
-            {formatCorosDate(treino.date)}
-          </h2>
-          {execucaoStrava ? (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">✅ Concluído</span>
-          ) : isUpcoming ? (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">Próximo</span>
-          ) : (
-            <span className="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">❌ Pendente</span>
-          )}
-        </div>
-
-        {/* CORPO DO CARD */}
-        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100 dark:divide-zinc-800 flex-1">
-          {/* LADO PLANO (COROS) */}
-          <div className="p-6 bg-white dark:bg-zinc-900">
-            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2"><span>📋</span> Planejado (Coros)</h3>
-            <h4 className="text-lg font-bold mb-4">{treino.title}</h4>
-            {steps.length > 0 ? (
-              <ul className="space-y-2">
-                {steps.map((step, index) => {
-                  // 🟢 ESCUDO: Garante que o nome existe antes de tentar limpar os números
-                  const rawName = step?.name || ""
-                  const cleanName = rawName.replace(/^\d+\.\s*/, '')
-                  
-                  return (
-                    <li key={index} className="flex items-center gap-3 text-sm text-zinc-800 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-800/40 px-3 py-2 rounded-lg border border-zinc-100 dark:border-zinc-800">
-                      <div className="shrink-0">{step?.exerciseType === 1 ? '🧘‍♂️' : step?.exerciseType === 2 ? '⚡' : '🚶‍♂️'}</div>
-                      <div className="flex-1 font-medium leading-relaxed">
-                        {cleanName || 'Intervalo sem descrição'}
-                      </div>
-                    </li>
-                  )
-                })}
-              </ul>
-            ) : <p className="text-sm text-zinc-500 italic bg-zinc-50 dark:bg-zinc-800/40 p-3 rounded-lg">Treino livre sugerido.</p>}
-          </div>
-
-          {/* LADO REALIDADE (STRAVA) */}
-          <div className="p-6 bg-zinc-50 dark:bg-zinc-950/20">
-            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-[#FC4C02]">🏃</span> Executado (Strava)</h3>
-            {execucaoStrava ? (
-              <div className="space-y-4">
-                <h4 className="text-lg font-bold">{execucaoStrava.name}</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                    <p className="text-[10px] text-zinc-500 uppercase">Distância</p>
-                    <p className="font-bold text-lg">{formatDistance(execucaoStrava.distance)}</p>
-                  </div>
-                  <div className="bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                    <p className="text-[10px] text-zinc-500 uppercase">BPM Médio</p>
-                    <p className="font-bold text-lg">{execucaoStrava.averageHeartrate || "--"} <span className="text-xs">❤️</span></p>
-                  </div>
-                </div>
-                <Link href={`/atividades/${execucaoStrava.id}`} className="mt-4 block w-full text-center bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-sm font-semibold py-2.5 rounded-lg transition-colors">
-                  Ver Análise Profunda
-                </Link>
-              </div>
-            ) : isUpcoming ? (
-              <div className="flex flex-col items-center justify-center h-full text-zinc-400 text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">⏳</span>Aguardando execução...</div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-zinc-400 text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">😴</span>Nenhuma atividade registrada neste dia.</div>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
-      <div className="mx-auto p-4 mx-auto space-y-12">
-        <header className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight mb-4">Dashboard de Treinos</h1>
-          <p className="text-zinc-600 dark:text-zinc-400">Comparativo: Planejado vs Executado</p>
-        </header>
-
-        {/* 🟢 NOVO: PAINEL DE ESTATÍSTICAS 2026 */}
-        <section className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <h2 className="text-lg font-bold mb-6 flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-4">
-            <span>📊</span> Balanço Anual (2026)
-          </h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {/* Corrida - Planejado */}
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                🏃 Corrida <span className="text-blue-500 ml-1">Proposto</span>
-              </p>
-              <p className="text-3xl font-extrabold">{planRunKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
-            </div>
-            
-            {/* Corrida - Executado */}
-            <div className="space-y-1 border-r md:border-r-0 border-zinc-100 dark:border-zinc-800 pr-4">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                🏃 Corrida <span className="text-[#FC4C02] ml-1">Executado</span>
-              </p>
-              <p className="text-3xl font-extrabold">{execRunKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
-            </div>
-
-            {/* Bike - Planejado */}
-            <div className="space-y-1 pl-4 md:pl-6 md:border-l border-zinc-100 dark:border-zinc-800">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                🚴 Bike <span className="text-blue-500 ml-1">Proposto</span>
-              </p>
-              <p className="text-3xl font-extrabold">{planBikeKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
-            </div>
-            
-            {/* Bike - Executado */}
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                🚴 Bike <span className="text-[#FC4C02] ml-1">Executado</span>
-              </p>
-              <p className="text-3xl font-extrabold">{execBikeKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
-            </div>
-          </div>
-          
-          {/* Barras de Progresso Visuais */}
-          <div className="mt-8 space-y-4">
-            <div>
-              <div className="flex justify-between text-xs mb-1 font-medium">
-                <span className="text-zinc-500">Progresso de Corrida</span>
-                <span className="text-[#FC4C02]">{planRunKm > 0 ? ((execRunKm / planRunKm) * 100).toFixed(1) : 0}%</span>
-              </div>
-              <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
-                  style={{ width: `${Math.min(planRunKm > 0 ? (execRunKm / planRunKm) * 100 : 0, 100)}%` }}
-                />
-              </div>
-            </div>
-            
-            {(planBikeKm > 0 || execBikeKm > 0) && (
-              <div>
-                <div className="flex justify-between text-xs mb-1 font-medium">
-                  <span className="text-zinc-500">Progresso de Ciclismo</span>
-                  <span className="text-[#FC4C02]">{planBikeKm > 0 ? ((execBikeKm / planBikeKm) * 100).toFixed(1) : 0}%</span>
-                </div>
-                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
-                    style={{ width: `${Math.min(planBikeKm > 0 ? (execBikeKm / planBikeKm) * 100 : 0, 100)}%` }}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* PRÓXIMOS TREINOS E HISTÓRICO (O que já tínhamos) */}
-        <section>
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><span>🎯</span> Próximos Treinos</h2>
-          <div className="space-y-6">
-            {upcomingWorkouts.map(t => renderWorkoutCard(t, true))}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2"><span>📅</span> Histórico Recente</h2>
-          <div className="space-y-6">
-            {pastWorkouts.map(t => renderWorkoutCard(t, false))}
-          </div>
-        </section>
-      </div>
-    </main>
-  )
 }
 
 // ==========================================
@@ -3967,8 +4001,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect } from "react"
+import { LogoTwoBanks } from "./twobanks"
 
-import logoImage from "@/../public/twobanks.webp"
 
 const financeiroItems = [
   { title: "Carteira", href: "/admin/carteira", icon: Wallet },
@@ -4021,25 +4055,19 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
   return (
     <Sidebar collapsible="icon" variant={variant}>
       <SidebarHeader className="py-4">
-        <Link
-          href="/"
-          className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
-        >
-          <div className="relative flex items-center justify-center shrink-0 w-10 h-10">
-            <Image
-              src={logoImage}
-              alt="TwoBanks Logo"
-              width={40}
-              height={40}
-              priority
-              className="object-contain w-full h-full"
-            />
-          </div>
-          <span className="truncate group-data-[collapsible=icon]:hidden text-2xl tracking-normal">
-            BANKS<span className="text-brand-pink">.</span>
-          </span>
-        </Link>
-      </SidebarHeader>
+      <Link
+        href="/"
+        className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+      >
+        <div className="relative flex items-center justify-center shrink-0 w-24 group-data-[collapsible=icon]:w-8">
+          <LogoTwoBanks
+            variant="flat" 
+            extrusionColor="#0369a1"
+            className="w-full h-auto text-sky-400"
+          />
+        </div>
+      </Link>
+    </SidebarHeader>
 
       <SidebarSeparator className="bg-border" />
 
@@ -4176,8 +4204,6 @@ export function AppSidebar({ variant = "sidebar", currentUser, otherUser }: AppS
 
       <SidebarFooter className="p-3 border-t border-border bg-sidebar-accent/25">
         <div className="flex flex-col gap-2.5 w-full items-stretch group-data-[collapsible=icon]:items-center">
-          
-          {/* Status do Outro Utilizador */}
           {otherUser && (
             <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-sidebar-accent/50 border border-border/40 text-xs w-full group-data-[collapsible=icon]:w-9 group-data-[collapsible=icon]:h-9 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:bg-transparent group-data-[collapsible=icon]:border-0">
               <div className="flex items-center gap-2.5 overflow-hidden group-data-[collapsible=icon]:justify-center w-full">
@@ -8121,204 +8147,48 @@ export function ModeToggle() {
 // Arquivo: src/components/Navbar.tsx
 // ==========================================
 
+// src/components/Navbar.tsx
 "use client";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
-import { deslogar } from "@/lib/actions";
-import { cn } from "@/lib/utils";
-import { menuItems } from "@/utils/mocks";
+
+import { Lock } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as React from "react";
 import { ModeToggle } from "./ModeToggle";
 
-export default function Navbar({
-  isAuthenticated = false,
-}: {
-  isAuthenticated?: boolean;
-}) {
-  const pathname = usePathname();
-  if (pathname.startsWith("/admin")) return null;
-  const publicItems = menuItems.filter((item) => item.name !== "Admin");
-  const atividadeItem = publicItems.find((item) => item.name === "Atividade");
-  const atividadeSubItems = atividadeItem?.subItems ?? [];
+import { LogoTwoBanks } from "./twobanks";
 
-  const adminSubItems = [
-    { title: "Blog", href: "/admin/blog" },
-    { title: "Livros", href: "/admin/livros" },
-  ];
-
-  const carteiraSubItems = [
-    { title: "Carteira", href: "/admin/carteira" },
-    { title: "Categorias", href: "/admin/categorias" },
-    { title: "Contas", href: "/admin/contas" },
-    { title: "Investimentos", href: "/admin/investimentos" },
-    { title: "Dashboard", href: "/admin/dashboard" },
-    { title: "Lista de Compras", href: "/admin/listas" },
-  ];
-
-  const lancamentosSubItems = [
-    { title: "Adicionar Receita", href: "/admin/carteira?open=income" },
-    { title: "Adicionar Despesa", href: "/admin/carteira?open=expense" },
-    { title: "Adicionar Compra", href: "/admin/carteira?open=purchase" },
-    { title: "Adicionar Cartão", href: "/admin/cartoes?open=new-card" },
-    { title: "Adicionar Categoria", href: "/admin/categorias?open=new-category" },
-  ];
-
+export default function Navbar() {
   return (
-    <header
-      className="w-full sticky top-0 z-50 w-full bg-background"
-      suppressHydrationWarning
-    >
-      <div className="flex justify-between h-16 items-center px-2">
-        {isAuthenticated ? (
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="font-extrabold text-xl tracking-tight">
-                  BANKS<span className="text-[#FC4C02]">.</span>
-                </NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                    {publicItems
-                      .filter((item) => item.name !== "Atividade")
-                      .map((item) => (
-                        <ListItem key={item.name} href={item.href!} title={item.name} />
-                      ))}
-                    {atividadeSubItems.map((sub) => (
-                      <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                    ))}
-                    <li className="col-span-full mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex justify-end">
-                      <form action={deslogar}>
-                        <button
-                          type="submit"
-                          className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors px-3 py-2"
-                        >
-                          Sair da conta
-                        </button>
-                      </form>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-        ) : (
-          <Link href="/" className="mr-8 font-extrabold text-xl tracking-tight">
-            BANKS<span className="text-[#FC4C02]">.</span>
+    <header className="w-full sticky top-0 z-50 bg-background border-b border-zinc-200 dark:border-zinc-800" suppressHydrationWarning>
+      <div className="max-w-7xl mx-auto flex justify-between h-16 items-center px-4">
+        <Link
+          href="/"
+          className="flex items-center gap-3 px-2 font-extrabold text-xl tracking-tight transition-all"
+        >
+          <div className="relative flex items-center justify-center shrink-0">
+            <LogoTwoBanks 
+              variant="flat" 
+              extrusionColor="#0369a1" 
+              fillColor="#5bb4d8"
+              className="w-24 h-auto text-foreground" 
+            />
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            title="Fazer Login"
+            className="flex items-center justify-center p-2 rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            <Lock size={20} />
+            <span className="sr-only">Fazer login</span>
           </Link>
-        )}
-
-        {/* Menu principal */}
-        <NavigationMenu>
-          <NavigationMenuList>
-            {!isAuthenticated && (
-              <>
-                {publicItems.map((item) => {
-                  if (item.subItems) {
-                    return (
-                      <NavigationMenuItem key={item.name}>
-                        <NavigationMenuTrigger>{item.name}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                            {item.subItems.map((sub) => (
-                              <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </NavigationMenuItem>
-                    );
-                  }
-                  return (
-                    <NavigationMenuItem key={item.name}>
-                      <Link href={item.href!} className={navigationMenuTriggerStyle()}>
-                        {item.name}
-                      </Link>
-                    </NavigationMenuItem>
-                  );
-                })}
-              </>
-            )}
-
-            {isAuthenticated && (
-              <>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Carteira</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {carteiraSubItems.map((sub) => (
-                        <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Lançamentos</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {lancamentosSubItems.map((sub) => (
-                        <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Admin</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                      {adminSubItems.map((sub) => (
-                        <ListItem key={sub.title} href={sub.href} title={sub.title} />
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </>
-            )}
-
-            {!isAuthenticated && (
-              <NavigationMenuItem>
-                <Link href="/login" className={navigationMenuTriggerStyle()}>
-                  Fazer login
-                </Link>
-              </NavigationMenuItem>
-            )}
-          </NavigationMenuList>
-        </NavigationMenu>
-        <ModeToggle />
+          <ModeToggle />
+        </div>
       </div>
     </header>
   );
 }
-
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink
-        ref={ref}
-        className={cn(
-          "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-zinc-100 focus:bg-zinc-100 dark:hover:bg-zinc-800 dark:focus:bg-zinc-800",
-          className
-        )}
-        {...props}
-      >
-        <div className="text-sm font-medium leading-none">{title}</div>
-      </NavigationMenuLink>
-    </li>
-  );
-});
-ListItem.displayName = "ListItem";
 
 // ==========================================
 // Arquivo: src/components/OptimisticInstallmentButton.tsx
@@ -10529,6 +10399,55 @@ export function formatMonthYearLabel(year: string, month: string): string {
   const idx = Number(month) - 1;
   const name = MONTHS[idx]?.label ?? '';
   return `${name} de ${year}`;
+}
+
+// ==========================================
+// Arquivo: src/components/twobanks.tsx
+// ==========================================
+
+// src/components/LogoTwoBanks.tsx
+import React from "react";
+
+interface LogoTwoBanksProps extends React.SVGProps<SVGSVGElement> {
+  variant?: "flat" | "3d";
+  extrusionColor?: string;
+  fillColor?: string;
+}
+
+export function LogoTwoBanks({
+  variant = "flat",
+  fillColor = "#5bb4d8",
+  extrusionColor = "#0369a1", 
+  className,
+  style,
+  ...props
+}: LogoTwoBanksProps) {
+  
+  const filterStyle =
+    variant === "3d"
+      ? {
+          filter: `
+            drop-shadow(-1px -1px 0px rgba(255,255,255,0.2)) 
+            drop-shadow(4px 4px 0px ${extrusionColor}) 
+          `,
+        }
+      : {};
+
+  return (
+    <svg
+      viewBox="70 0 2500 1450"
+      overflow="visible"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ ...filterStyle, ...style }}
+      {...props}
+    >
+      <path 
+        d="m 1334,1406.2928 c -32.6594,-0.6681 -84.0416,-2.4248 -95.5,-3.265 -7.15,-0.5243 -22.225,-1.4365 -33.5,-2.0271 -20.6328,-1.0808 -25.0959,-1.4341 -63.5,-5.027 -48.4708,-4.5347 -72.6915,-7.2846 -96.4005,-10.9449 -6.9297,-1.0698 -17.5495,-2.6345 -23.5995,-3.477 -25.47586,-3.5478 -55.21818,-8.2522 -61.5,-9.7275 -2.475,-0.5812 -7.425,-1.3931 -11,-1.8041 -5.96983,-0.6863 -15.9576,-2.6548 -79.2575,-15.6207 -29.40872,-6.0239 -90.60138,-21.5058 -132.2425,-33.4577 -24.57754,-7.0543 -107.16575,-34.5543 -129.5,-43.1205 -32.13947,-12.3271 -74.296,-29.9183 -95.5,-39.8506 C 447.24745,1207.4055 409.13955,1186.3385 358,1152.5592 279.87604,1100.9559 222.93926,1048.3761 176.55615,985 171.12201,977.575 164.46842,968.47895 161.77039,964.78656 153.40115,953.3328 145.98013,948.2541 125.01536,939.63261 101.93116,930.13952 92.13734,922.46201 85.652393,908.77542 78.326678,893.31438 78.615858,881.73726 87.008118,854.5 c 2.517181,-8.16957 2.903574,-9.50625 6.855609,-23.71627 4.120332,-14.81515 5.148593,-24.65613 6.194423,-59.28373 0.89666,-29.68874 1.28307,-34.58201 4.42217,-56 7.08891,-48.36748 33.94605,-111.22962 68.5718,-160.5 4.83154,-6.875 9.8929,-13.85 11.24747,-15.5 1.35456,-1.65 6.06782,-7.5 10.47391,-13 4.40609,-5.5 11.72265,-14.05 16.25903,-19 4.53639,-4.95 11.19583,-12.26697 14.79876,-16.25994 C 234.47564,481.65993 267.7562,450.47925 281,439.55229 321.29349,406.30766 363.49914,377.6174 420.34286,344.83079 426.85644,341.07385 432.38454,338 432.62755,338 c 0.243,0 4.03465,-2.03865 8.42589,-4.53032 20.09563,-11.40268 71.35086,-36.3988 99.47889,-48.51382 40.94493,-17.63538 58.51886,-21.46742 80.46767,-17.54618 8.09514,1.44623 27.91112,6.94735 40,11.10441 24.00165,8.25356 39.88069,7.25842 62.5,-3.91689 14.28327,-7.0568 28.11079,-16.3847 48.48386,-32.70669 54.23086,-43.44732 74.44677,-54.90917 115.19799,-65.31398 26.51276,-6.76938 96.77208,-20.28122 124.81815,-24.00425 6.325,-0.83963 18.25,-2.47343 26.5,-3.63067 60.9485,-8.54936 139.1951,-15.93245 206,-19.43747 15.4,-0.80798 36.2068,-1.95117 46.2373,-2.54042 44.4722,-2.61255 183.2459,-0.77333 229.7627,3.04513 6.6,0.54178 18.75,1.43058 27,1.97512 25.7971,1.70271 70.2365,5.68178 95,8.50623 28.4902,3.2495 70.3718,8.62899 82.5,10.59671 63.115,10.24003 92.9035,15.39029 109.5,18.93195 4.95,1.05631 16.425,3.49793 25.5,5.42582 37.9112,8.05382 87.69,19.82954 114.5,27.08623 58.538,15.84453 92.0329,26.37616 149.9974,47.16287 57.8526,20.74655 90.9878,29.28736 137.0026,35.31324 29.4325,3.85435 44.5586,7.09394 57,12.20779 23.6536,9.72249 38.655,22.72894 57.9978,50.28519 22.6103,32.21109 31.1792,41.17984 65.0022,68.03536 43.7895,34.769 63.2065,52.04005 88.629,78.83397 28.7504,30.30143 48.6389,56.09298 68.9397,89.40139 15.3879,25.24781 30.8472,47.34002 45.2951,64.72928 6.3538,7.64738 16.2911,22.66902 18.8535,28.5 5.8843,13.38979 9.3141,30.57196 8.2695,41.42681 -0.8661,8.9989 -2.9812,19.4085 -5.501,27.07319 -1.0849,3.3 -2.8109,9.825 -3.8356,14.5 -1.0247,4.675 -3.5172,13.86157 -5.5389,20.41459 -2.0217,6.55303 -4.7831,18.92803 -6.1364,27.5 -4.0325,25.5422 -8.7179,44.91907 -16.4769,68.14121 -14.9272,44.67659 -42.9549,93.13933 -78.9103,136.4442 -19.5596,23.5577 -50.5649,54.898 -76.5877,77.4153 -27.0204,23.3804 -75.0279,59.2196 -93.7539,69.9903 -1.7854,1.0269 -9.0961,5.4454 -16.2461,9.819 -29.491,18.0392 -63.8088,36.9247 -100,55.0313 -37.0073,18.5149 -56.1016,33.7285 -88.7898,70.7441 -19.8031,22.4246 -25.9132,28.6674 -33.7102,34.4417 -20.7923,15.3986 -35.4927,15.9243 -54.9136,1.964 -9.3814,-6.7435 -20.7233,-12.7515 -29.9235,-15.8508 -11.1582,-3.7589 -29.0191,-2.4321 -44.1629,3.2808 -3.575,1.3486 -14.375,4.7571 -24,7.5744 -9.625,2.8173 -18.85,5.5425 -20.5,6.056 -7.4443,2.3168 -75.0679,18.2328 -110,25.8898 -26.3466,5.7751 -45.9634,9.4472 -83.5,15.6307 -14.575,2.401 -31.9,5.3007 -38.5,6.4437 -14.0487,2.4331 -18.5595,3.0362 -52.5,7.02 -14.025,1.6462 -31.125,3.6766 -38,4.512 -13.5572,1.6474 -35.3596,3.6435 -66,6.0427 -10.725,0.8397 -24.45,1.9555 -30.5,2.4796 -6.05,0.524 -23.375,1.4228 -38.5,1.9974 -15.125,0.5745 -36.275,1.4803 -47,2.0128 -18.5173,0.9193 -109.4521,1.8001 -134,1.298 z m 139.5,-48.264 c 50.8582,-2.1535 72.8762,-3.5157 129.5,-8.0116 12.1892,-0.9679 33.8847,-3.3213 55.5,-6.0204 4.4,-0.5495 15.875,-1.8933 25.5,-2.9864 9.625,-1.0931 26.725,-3.3226 38,-4.9544 20.1546,-2.917 25.509,-3.799 61.5,-10.1308 9.9,-1.7417 19.35,-3.3774 21,-3.635 29.5337,-4.6098 59.6325,-10.7912 103.5,-21.2557 6.875,-1.64 19.25,-4.593 27.5,-6.5622 18.5762,-4.4339 33.2216,-9.3481 42.1623,-14.1473 16.3801,-8.7925 33.3703,-23.9424 44.4468,-39.6324 9.2861,-13.154 13.4324,-21.7087 16.9814,-35.0366 4.1735,-15.6729 4.1436,-32.6157 -0.093,-52.656 -6.3461,-30.0194 -8.115,-39.1593 -9.4419,-48.7844 -4.2441,-30.7854 0.2219,-50.6597 18.292,-81.4019 25.4173,-43.24166 30.8335,-57.18703 29.8336,-76.8137 -0.9122,-17.90398 -4.2733,-26.90952 -17.3555,-46.50088 -15.8266,-23.70129 -23.9436,-39.17642 -27.5366,-52.49912 -2.9016,-10.75919 -3.6245,-33.98006 -1.3722,-44.0796 1.8821,-8.43943 6.0037,-21.49976 8.6534,-27.4204 13.7255,-30.66849 19.9974,-44.94802 21.7415,-49.5 8.2761,-21.60027 14.5045,-44.36248 16.2965,-59.55722 2.9824,-25.28865 -0.8083,-60.55504 -10.5814,-98.44278 -7.7869,-30.18742 -21.2645,-88.95861 -23.3911,-102 -9.7355,-59.70456 -11.9018,-91.42884 -7.443,-109 2.9607,-11.66733 5.4951,-17.16374 10.3354,-22.41484 6.5194,-7.07275 16.0246,-9.49398 29.668,-7.55729 21.4307,3.04208 38.797,12.62165 52.702,29.07128 6.2615,7.40734 9.3702,13.7438 13.0954,26.69261 4.464,15.51634 5.3025,23.1192 5.4272,49.20824 0.1,20.81118 -0.2575,27.36071 -2.3714,43.5 -3.7942,28.96767 -6.414,47.17587 -8.0574,56 -15.7489,84.56797 -23.8019,161.33423 -18.123,172.76084 2.0242,4.07304 4.8976,5.39101 9.3286,4.27888 4.3481,-1.0913 15.2792,-13.16373 24.5362,-27.09812 21.4659,-32.31217 29.7701,-55.87397 29.814,-84.59224 0.019,-12.63738 -1.6662,-25.94437 -5.6356,-44.49421 -5.1292,-23.97035 -6.462,-42.17451 -4.4353,-60.58357 3.106,-28.21295 13.6796,-48.34499 38.9156,-74.09509 21.7031,-22.14523 42.2587,-35.84412 58.1429,-38.74825 5.6079,-1.02531 7.3633,-0.95422 12.3688,0.50092 12.1035,3.51857 16.9192,8.68866 23.5971,25.33356 5.1896,12.93493 7.997,25.13637 8.84,38.41879 0.7633,12.02859 -0.2106,18.44375 -3.6434,23.99811 -2.7511,4.45139 -11.4477,12.69369 -17.2281,16.3281 -18.0758,11.36515 -37.3083,24.64675 -41.6915,28.79135 -6.5503,6.19366 -10.7788,12.73729 -13.8448,21.42479 -4.9144,13.92495 -2.8411,36.65397 6.7296,73.77614 9.8953,38.38093 8.8468,62.79621 -3.4856,81.16529 -8.1076,12.07637 -21.9578,24.78186 -41.518,38.08685 -18.4885,12.5759 -36.7416,29.78806 -40.4284,38.1227 -3.9813,9.00022 -0.1411,19.74727 9.8004,27.42716 2.7326,2.11098 13.5343,8.02273 24.0036,13.13723 18.2112,8.89654 19.3218,9.60854 25.6532,16.44703 8.1781,8.8332 13.9744,20.12228 17.0171,33.14361 1.8685,7.99591 2.2038,12.27219 2.1543,27.47013 -0.038,11.68729 -0.6659,22.03312 -1.7902,29.5 -3.8274,25.41783 -2.9949,50.05739 2.4526,72.59167 5.1269,21.20823 11.0406,30.68843 30.5881,49.03553 23.2902,21.8598 25.8643,24.5974 28.8307,30.6615 3.3898,6.93 4.4188,16.8558 2.576,24.8501 -1.6734,7.2597 -8.2405,19.4115 -13.3381,24.6811 -10.0151,10.353 -31.1694,22.5299 -43.6789,25.1425 -7.9327,1.6567 -22.003,1.3805 -28.7569,-0.5645 -16.9192,-4.8724 -27.1213,-14.14 -36.7656,-33.3979 -7.6427,-15.2612 -11.2273,-29.5421 -13.549,-53.9788 -1.4343,-15.0962 -0.566,-35.4445 3.614,-84.69428 2.6578,-31.31565 1.298,-50.89762 -5.0799,-73.15305 -9.5802,-33.4297 -23.8922,-52.3325 -39.8209,-52.59409 -4.3143,-0.0709 -5.1657,0.28811 -7.6023,3.20551 -3.0166,3.6117 -4.8416,8.74913 -5.7086,16.06976 -0.8259,6.97328 2.363,18.13328 10.1854,35.64495 10.8246,24.23233 11.8394,28.20034 11.8929,46.5 0.039,13.32909 -0.2727,16.55044 -2.2246,23 -2.5042,8.27394 -2.337,7.8412 -11.7812,30.5 -13.6521,32.7545 -16.9215,45.1903 -16.1309,61.3565 0.8791,17.9787 4.6743,28.7084 24.0267,67.9289 11.7749,23.8635 14.2319,31.5494 13.4735,42.1483 -0.6526,9.1218 -4.3249,15.81 -11.7362,21.375 -3.07,2.3052 -12.7124,8.6913 -21.4277,14.1913 -23.9359,15.1054 -32.6087,24.7263 -32.6087,36.1734 0,10.2121 7.8359,19.1277 23.5,26.738 12.6532,6.1475 30.1619,11.0161 36.3071,10.0958 16.0566,-2.4045 28.1514,-11.6632 48.3434,-37.0072 9.913,-12.4423 24.1865,-26.795 34.6677,-34.8601 11.4022,-8.7738 27.3448,-17.9512 76.6818,-44.1421 32.8139,-17.4196 39.4181,-21.1443 53,-29.8921 12.4381,-8.0111 46.6993,-30.9342 50.5,-33.788 59.6981,-44.8257 90.3804,-73.6131 126.6389,-118.8177 41.7208,-52.01475 67.835,-104.86491 75.8469,-153.5 2.4904,-15.11738 7.3988,-28.41565 19.5007,-52.83347 12.9557,-26.14034 15.9019,-35.16876 16.6968,-51.16653 0.8858,-17.82763 -2.9451,-28.62236 -14.0686,-39.64281 -3.2515,-3.22145 -6.28,-5.85719 -6.7298,-5.85719 -1.9366,0 -21.4616,-16.79723 -29.5562,-25.42695 -8.5441,-9.10889 -15.9596,-20.14798 -24.904,-37.07305 -7.2719,-13.76032 -27.2882,-42.73269 -39.0344,-56.5 -1.1731,-1.375 -6.6351,-7.9 -12.1377,-14.5 -18.0447,-21.64358 -54.7832,-56.16102 -87.2566,-81.98156 -36.4425,-28.97652 -41.2793,-33.0267 -47.6221,-39.87747 -9.6409,-10.41315 -16.5844,-20.824 -25.2666,-37.88433 -9.2994,-18.27301 -11.2018,-21.54972 -16.7805,-28.9027 -8.4898,-11.18976 -18.5437,-17.96723 -32.3138,-21.78313 -6.8142,-1.8883 -10.2067,-2.07153 -38.4929,-2.07901 -51.9566,-0.0138 -63.4876,-2.11086 -116.5201,-21.19125 -10.725,-3.85871 -25.575,-9.38882 -33,-12.28913 -23.085,-9.01733 -57.6934,-20.34643 -108.5,-35.51767 -7.7,-2.29927 -16.925,-5.05737 -20.5,-6.1291 -3.575,-1.07173 -16.4,-4.59623 -28.5,-7.83223 -20.0907,-5.37301 -28.1158,-7.3831 -46.25,-11.58442 -3.4375,-0.7964 -9.0625,-2.0996 -12.5,-2.896 -3.4375,-0.7964 -10.0994,-2.36242 -14.8041,-3.48004 -4.7048,-1.11763 -12.8048,-2.91863 -18,-4.00223 -40.5278,-8.45313 -59.7952,-12.26429 -70.7398,-13.99255 -6.9883,-1.10354 -21.0311,-3.35651 -31.2061,-5.0066 -45.3791,-7.35917 -57.7853,-9.20745 -77.5,-11.54603 -11.55,-1.37007 -24.6,-2.95937 -29,-3.53178 -16.4889,-2.1451 -34.7183,-4.02389 -58,-5.97772 -13.2,-1.10776 -30.75,-2.67888 -39,-3.49137 -8.25,-0.8125 -24.9,-1.94324 -37,-2.51276 -12.1,-0.56953 -29.65,-1.46357 -39,-1.98676 -61.5172,-3.44228 -164.3987,-2.59526 -237,1.95121 -8.8,0.55108 -19.825,1.2415 -24.5,1.53426 -4.675,0.29277 -16.15,0.95108 -25.5,1.4629 -19.3223,1.05772 -49.5983,3.57788 -60,4.99437 -3.85,0.52429 -11.95,1.43841 -18,2.03137 -28.8578,2.8284 -97.5616,12.00359 -128,17.09403 -23.99711,4.01322 -82.11713,15.81719 -97.6559,19.83357 -31.89682,8.24452 -55.40492,18.06911 -87.25018,36.46392 C 795.39558,265.12541 788.54616,269 788.373,269 c -0.17317,0 -7.97761,4.95433 -17.3432,11.00962 -59.50067,38.46997 -76.69503,47.18432 -96.0232,48.66596 -8.95296,0.6863 -14.85189,-0.64288 -31.17296,-7.02406 -15.84649,-6.19563 -23.11609,-7.82817 -35.12056,-7.88707 -11.2181,-0.055 -19.09679,1.66659 -35.21308,7.69461 -12.20702,4.56583 -15.8878,6.16136 -37,16.03864 -6.6,3.08779 -16.05,7.47692 -21,9.75361 -14.17556,6.51989 -52.19941,26.22246 -66.5,34.45787 -42.09499,24.24161 -64.39652,38.31232 -92.9905,58.67049 -21.21926,15.10756 -27.33352,19.77505 -42.5095,32.4508 -35.67925,29.80112 -60.97267,55.13396 -85.037,85.16953 -22.31313,27.84982 -45.99998,67.59255 -57.51444,96.5 -13.26443,33.3008 -21.93136,73.43923 -23.96779,111 -0.50693,9.35 -1.1516,17.9 -1.43261,19 -0.28101,1.1 -1.45134,6.05 -2.60072,11 -1.14939,4.95 -4.0355,15.75 -6.41358,24 -9.32688,32.35662 -10.797,45.18209 -6.64204,57.94568 2.30983,7.09554 7.19425,15.41545 11.30913,19.26349 8.08491,7.56062 22.87196,13.30458 34.15439,13.26709 8.46356,-0.0281 14.05706,-2.07098 26.88306,-9.81825 9.44765,-5.70665 16.96025,-7.90613 23.08182,-6.75771 7.20502,1.35166 14.68328,10.47153 17.66418,21.54178 1.65569,6.14877 1.39774,23.27698 -0.54909,36.45972 -2.50871,16.98744 -0.10661,34.58694 6.19528,45.39108 7.1608,12.27672 33.61613,39.80152 56.88762,59.18742 8.23998,6.8642 15.20679,12.7355 15.48179,13.0474 1.13764,1.2903 20.9461,16.8653 26.5,20.8365 22.48171,16.0749 64.49563,44.1358 66.08194,44.1358 0.28808,0 6.0125,3.3185 12.72092,7.3745 55.11176,33.3209 144.67051,74.7555 214.19714,99.0988 9.9,3.4663 20.7,7.2696 24,8.4518 33.25668,11.9139 79.14202,26.161 113,35.0858 9.9,2.6096 25.2,6.6458 34,8.9693 8.8,2.3234 24.55,6.214 35,8.6456 16.7175,3.89 29.87272,6.6485 81,16.9849 21.05887,4.2575 57.05482,10.3893 84.5,14.3944 7.425,1.0835 17.775,2.6165 23,3.4065 22.3286,3.3762 52.4786,7.159 72.5,9.0963 17.2171,1.6658 26.8206,2.6201 49.5,4.9187 7.975,0.8083 25.3,2.1635 38.5,3.0116 13.2,0.8481 26.7,1.7558 30,2.0171 3.3,0.2613 12.525,0.7332 20.5,1.0487 7.975,0.3155 16.75,0.7635 19.5,0.9955 2.75,0.2321 20.525,0.7196 39.5,1.0834 18.975,0.3639 34.725,0.89 35,1.1692 0.7536,0.7651 107.175,-0.6086 133.5,-1.7233 z m 30.4758,-38.2995 c -7.0617,-2.9689 -12.6149,-6.8186 -21.9758,-15.2345 -4.125,-3.7086 -12.8838,-11.0691 -19.4639,-16.3567 -18.6711,-15.0035 -29.5006,-26.2639 -33.9847,-35.337 -8.1695,-16.5299 -5.9674,-33.3815 6.5401,-50.0481 2.7848,-3.7109 9.866,-10.8978 15.7359,-15.9709 27.9077,-24.1193 35.5479,-32.2688 41.0461,-43.7821 2.3875,-4.9996 2.6184,-6.5463 2.5373,-17 -0.1158,-14.9149 -1.9937,-20.2337 -15.8455,-44.8782 -12.8165,-22.8026 -15.6773,-31.3157 -15.6757,-46.6468 0,-18.0908 4.4763,-31.8706 22.0718,-67.975 15.1824,-31.15297 20.9077,-48.59459 25.1118,-76.5 3.7985,-25.21393 2.8144,-50.54731 -3.0556,-78.65686 -4.9519,-23.71312 -15.0234,-37.42813 -42.5169,-57.89783 -23.9955,-17.86544 -34.1828,-31.27028 -35.2656,-46.40407 -1.0645,-14.87755 4.8047,-28.83249 24.4691,-58.17918 6.3986,-9.54913 14.0479,-20.96206 16.9984,-25.36206 17.2042,-25.65603 30.3099,-64.96802 29.0038,-87 -1.0512,-17.73238 -6.864,-33.07623 -25.9504,-68.5 -15.2133,-28.23532 -21.3093,-41.95025 -24.2149,-54.47895 -1.8888,-8.14444 -1.9786,-22.28908 -0.1843,-29.0262 4.1401,-15.54523 9.5235,-22.6179 41.0977,-53.99485 22.7215,-22.57948 42.4917,-44.31553 54.454,-59.86857 4.527,-5.88587 16.584,-17.85412 23.9816,-23.8051 21.6755,-17.43664 46.6001,-21.82788 64.4662,-11.35769 13.9238,8.15993 23.6928,27.78701 23.6128,47.44132 -0.065,15.95209 -2.8786,29.30251 -12.6646,60.09004 -10.3176,32.46 -14.3045,53.65495 -14.3045,76.04515 0,31.12649 7.8445,55.58411 24.0109,74.86143 2.1187,2.52638 8.438,9.99342 14.0429,16.59342 12.0532,14.19334 19.3497,25.03202 24.2345,36 4.4655,10.02625 5.9821,18.12518 5.8987,31.5 -0.1183,18.97711 -3.4933,28.7023 -24.1191,69.5 -16.5785,32.79234 -18.5158,38.76568 -17.8654,55.08366 0.3544,8.89144 0.9259,12.09153 3.081,17.25186 3.4488,8.25797 11.1988,19.8134 26.1974,39.06061 6.6878,8.58213 13.9789,18.30387 16.2025,21.60387 11.2827,16.74452 17.4264,35.00223 17.4977,52 0.051,12.081 -1.3111,18.76053 -8.1548,40 -10.0461,31.17835 -13.0263,45.99397 -13.0263,64.75934 0,23.52244 2.3808,38.44239 10.0115,62.74066 7.9972,25.4654 17.034,62.6588 21.6241,89 2.4006,13.7762 2.7032,18.0579 2.7207,38.5 0.024,27.629 -2.5065,49.7932 -8.7616,76.7511 -5.7967,24.9825 -21.1633,48.4653 -36.3416,55.5364 -5.0514,2.3533 -6.9727,2.677 -15.7531,2.6539 -8.4896,-0.022 -10.7552,-0.3907 -15,-2.4396 -25.5993,-12.3563 -34.9739,-55.9268 -23.996,-111.5266 3.6614,-18.5439 7.5675,-31.1341 20.0034,-64.4752 9.8514,-26.4118 13.4034,-39.9745 14.1427,-54 1.1332,-21.5008 -5.277,-36.715 -24.062,-57.10974 -12.4766,-13.5457 -18.3073,-27.85708 -17.2703,-42.39026 0.789,-11.05841 1.3861,-12.61936 16.7815,-43.87188 10.5977,-21.51305 12.3169,-26.8719 12.2322,-38.12812 -0.1314,-17.45103 -8.4115,-31.44139 -27.1358,-45.84943 -25.4798,-19.6062 -46.6523,-24.09593 -55.9773,-11.8702 -2.1429,2.80938 -2.7443,4.83537 -3.052,10.2804 -0.4647,8.22454 2.2172,17.09786 10.8625,35.93923 9.2783,20.22116 13.0351,32.60434 13.652,45 1.0536,21.16964 -3.7558,32.71528 -26.4515,63.5 -4.0548,5.5 -9.4583,12.37754 -12.0078,15.28342 -7.8834,8.98562 -18.9006,24.35712 -23.1031,32.23415 -2.2059,4.13467 -5.2111,11.70223 -6.6783,16.81693 -4.7426,16.5337 -2.5379,32.8837 6.2199,46.1264 4.5387,6.863 16.4183,20.875 23.3481,27.5391 5.454,5.2449 15.5638,18.1941 19.5181,25 4.6616,8.0231 6.9527,17.2357 6.8392,27.5 -0.093,8.3602 -0.4766,10.3176 -3.2016,16.3139 -3.1041,6.8307 -8.9878,15.5182 -18.3039,27.0263 -2.7426,3.3879 -6.9899,10.2098 -9.4385,15.1598 -9.2618,18.7233 -8.7862,28.7153 3.308,69.5 1.0685,3.6034 1.655,9.4717 1.7007,17.0176 0.067,11.0134 -0.071,11.8034 -3.1434,18.0478 -4.1462,8.4268 -10.7438,15.0493 -19.0851,19.1574 -9.0027,4.4338 -19.882,5.0145 -28.2259,1.5065 z m 103.929,-634.55497 c 2.6099,-2.77722 5.0082,-7.50468 8.751,-17.25 6.3665,-16.57706 8.624,-24.32807 11.1907,-38.42433 3.8373,-21.07456 4.3705,-25.79918 4.4977,-39.85523 0.2017,-22.28522 -4.1837,-36.74679 -18.4176,-60.73476 -4.1918,-7.06442 -17.0998,-30.23066 -22.5472,-40.46589 -4.891,-9.18984 -9.9478,-23.54802 -10.927,-31.02557 -0.8013,-6.12007 0.9457,-23.55617 3.599,-35.91855 5.4425,-25.35754 7.3174,-48.94353 4.8254,-60.70078 -1.5266,-7.20228 -4.477,-12.79922 -6.7471,-12.79922 -8.52,0 -33.0208,32.59083 -39.4679,52.5 -3.4545,10.66752 -4.81,20.02834 -4.7939,33.10397 0.018,14.31433 1.9558,25.70931 8.7416,51.39603 5.5516,21.01484 6.372,24.92675 7.0387,33.56253 0.8739,11.32021 -0.5787,18.316 -9.6424,46.43747 -14.5561,45.16283 -18.0058,59.32837 -18.0058,73.93775 0,10.31446 1.8399,17.24193 5.6301,21.19803 3.7388,3.90252 7.494,3.72494 18.7308,-0.88578 11.861,-4.86685 18.9991,-5.10682 25.3541,-0.85234 5.46,3.65529 8.4123,7.61843 13.8005,18.52568 2.4188,4.8964 5.4175,9.61672 6.6637,10.4896 3.9158,2.74277 7.7284,2.01488 11.7256,-2.23861 z m -396.8002,623.24317 c -11.6389,-3.1299 -20.2372,-9.802 -28.2463,-21.9185 -7.8406,-11.8615 -11.9175,-25.7479 -13.862,-47.2154 -0.9168,-10.1211 -0.8343,-14.3231 0.4812,-24.5 3.9544,-30.5939 12.4261,-52.6594 39.3337,-102.4497 12.4973,-23.1252 19.7941,-40.2242 25.5853,-59.9551 5.4414,-18.539 9.6278,-46.5272 9.5718,-63.99214 -0.03,-9.44931 -2.1364,-29.23158 -3.3152,-31.13893 -0.3081,-0.49853 -1.0557,-4.02072 -1.6612,-7.82708 -1.5993,-10.05279 -8.3707,-32.81071 -13.4478,-45.19654 -6.502,-15.862 -9.2531,-21.79174 -22.9718,-49.51394 -12.7508,-25.76651 -19.8729,-44.1211 -23.5571,-60.71017 -11.1819,-50.3501 -3.8141,-96.14318 27.9956,-174 7.4631,-18.26662 20.3829,-55.7397 23.9618,-69.5 6.4247,-24.70138 6.8122,-61.01626 0.907,-85 -4.7186,-19.16474 -14.4838,-40.88432 -30.0533,-66.84406 -17.8413,-29.74752 -25.7745,-48.13522 -29.7579,-68.97328 -9.6546,-50.5048 6.458,-89.80902 41.6501,-101.59931 11.2978,-3.78509 34.1672,-2.7325 60.2815,2.77452 5.225,1.10186 19.625,4.03611 32,6.52057 38.9742,7.82462 54.1786,12.14413 65.4536,18.59503 12.0194,6.87679 20.9727,17.3587 25.6476,30.02653 2.1989,5.95834 2.3879,7.87498 2.2681,23 -0.1343,16.96126 -0.4097,19.07998 -7.2498,55.77275 -8.9908,48.22959 -9.0844,67.76955 -0.4948,103.22725 2.5508,10.52969 10.9604,37.65542 15.2492,49.18729 9.8814,26.56908 13.3398,45.64429 11.3429,62.56271 -1.8761,15.89522 -6.5486,27.54577 -16.7423,41.74574 -8.3441,11.62334 -13.2751,16.85339 -29.4745,31.26207 -7.975,7.0934 -16.9394,15.56224 -19.9209,18.81964 -6.1698,6.7406 -13.0809,16.95641 -13.0754,19.32759 0,0.87723 4.5605,4.92839 10.13,9.00258 14.8661,10.87494 22.4006,17.61966 41.8663,37.47784 9.625,9.81909 24.8485,24.40722 33.8301,32.41806 24.4846,21.83834 39.7374,40.4013 47.4079,57.69648 10.5815,23.85876 14.4286,46.13665 11.9191,69.02216 -2.0922,19.07964 -10.8388,42.51009 -26.1228,69.97784 -14.3649,25.81601 -28.8051,56.2643 -34.4392,72.6177 -6.6369,19.2642 -11.2307,43.4575 -12.6045,66.3823 -0.5274,8.8 -1.1979,18.25 -1.49,21 -0.2922,2.75 -0.9501,10.175 -1.462,16.5 -1.2347,15.2566 -5.1512,34.7458 -8.5405,42.5 -15.2684,34.9313 -32.2265,56.1534 -65.9981,82.5929 -23.5976,18.4744 -56.3396,34.3746 -81.9547,39.799 -12.0103,2.5434 -31.9725,2.8028 -40.4407,0.5256 z m 80.4597,-151.4815 c 5.3505,-2.5468 12.9942,-10.3379 17.5748,-17.9133 2.1811,-3.6072 6.0476,-13.3169 9.4802,-23.8072 9.189,-28.0821 17.447,-42.8045 37.4215,-66.7155 24.5324,-29.3669 30.244,-39.593 34.4252,-61.63426 3.1213,-16.45432 1.146,-34.52687 -4.9938,-45.69026 -1.4143,-2.57152 -6.1711,-8.72548 -10.5707,-13.67548 -18.722,-21.06445 -21.4471,-30.01923 -16.5849,-54.5 6.0289,-30.3554 4.4705,-47.14392 -5.419,-58.37895 -4.5028,-5.11545 -13.2385,-9.7521 -21.6968,-11.51597 -6.7549,-1.40865 -20.1353,-1.41901 -27.6954,-0.0215 -7.3286,1.35476 -18.4847,6.18804 -24.8963,10.7861 -10.4164,7.47005 -17.6093,21.55671 -17.6089,34.48561 4e-4,14.42453 6.8816,36.46259 18.9352,60.64306 5.481,10.99529 18.3778,52.10273 21.0207,67.0016 6.0193,33.9332 0.5953,66.4013 -19.9631,119.5 -7.9849,20.6237 -11.1944,32.9226 -11.3517,43.5 -0.1615,10.8616 1.3658,14.7404 7.4076,18.812 3.9128,2.6368 7.6037,2.4141 14.5154,-0.876 z m -1.5397,-559.02221 c 13.7916,-4.52755 29.1508,-13.94557 38.9754,-23.89917 7.0374,-7.1298 12.9916,-17.49573 15.517,-27.01462 1.73,-6.52041 1.9098,-17.81055 0.4014,-25.20078 -1.8674,-9.14873 -8.8022,-28.75358 -14.4175,-40.75803 -9.831,-21.01722 -12.7122,-33.48583 -14.4518,-62.54119 -1.3981,-23.35026 -3.6479,-30.00347 -15.5556,-46 -11.4637,-15.40016 -20.7811,-22.2801 -31.4309,-23.20863 -6.774,-0.59061 -10.8651,1.73639 -15.7004,8.93022 -8.2702,12.30446 -5.7625,32.44915 8.6865,69.77841 8.6854,22.43887 17.5136,49.18412 20.0232,60.66065 3.1892,14.58467 3.2111,27.98792 0.062,38.33935 -1.2546,4.125 -5.681,14.25 -9.8363,22.5 -8.8499,17.57063 -11.7205,24.79986 -13.2948,33.48155 -1.4883,8.20754 0.5179,14.42993 5.3672,16.6473 4.2149,1.92726 17.2043,1.05887 25.6541,-1.71506 z m -283.9783,690.96191 c -7.3019,-1.0929 -19.61988,-6.1102 -26.32196,-10.7213 -11.96349,-8.2311 -25.97336,-24.2036 -32.09632,-36.5926 -5.75664,-11.6477 -8.47488,-21.96 -10.55998,-40.0618 -0.57018,-4.95 -1.27566,-10.8 -1.56774,-13 -0.29208,-2.2 -0.94415,-19.075 -1.44904,-37.5 -0.94579,-34.5145 -1.61896,-41.7947 -5.13185,-55.5 -4.63139,-18.0691 -9.48569,-29.7102 -21.92696,-52.5831 -7.24015,-13.3108 -8.18316,-14.9943 -14.51723,-25.9169 -20.30572,-35.01545 -27.28793,-50.5286 -32.42779,-72.04843 -3.13588,-13.12941 -4.35443,-31.61054 -2.99275,-45.38948 1.4286,-14.45625 3.55973,-24.22327 8.63228,-39.56209 9.16653,-27.71851 18.80331,-44.32001 60.15376,-103.62817 9.83886,-14.11169 19.79498,-30.53218 25.4424,-41.96179 15.45469,-31.2782 17.38183,-52.04134 8.1404,-87.7052 -3.3469,-12.91608 -18.09128,-48.54898 -34.42898,-83.20484 -17.58904,-37.31024 -21.45694,-52.11106 -21.42906,-82 0.0153,-16.35628 0.32607,-20.18272 2.23378,-27.5 5.58459,-21.42041 14.64481,-37.72058 42.25001,-76.01162 6.94358,-9.63139 13.8046,-19.30639 15.24673,-21.5 1.44213,-2.19361 6.35299,-9.26868 10.91303,-15.72237 4.56003,-6.4537 12.64612,-18.6037 17.96907,-27 5.32296,-8.39631 12.1909,-18.29809 15.2621,-22.00396 16.1199,-19.45132 39.6535,-30.8054 57.9731,-27.9698 10.4312,1.61461 17.0941,5.45585 22.0425,12.70775 8.5792,12.57304 11.041,27.2102 10.1658,60.44424 -0.3411,12.95567 -0.8984,28.17995 -1.2383,33.83174 -0.8055,13.3941 0.9116,29.69347 4.7548,45.13383 5.9032,23.71624 10.7892,31.37688 41.8383,65.59703 16.899,18.62483 21.2195,23.79769 26.7217,31.99316 8.2197,12.24328 13.5391,25.21553 16.9195,41.26149 2.5508,12.10753 2.3012,36.26723 -0.4931,47.73851 -5.0601,20.77303 -9.6982,30.51297 -32.619,68.5 -23.1586,38.3812 -30.8748,52.8038 -38.3912,71.75829 -9.4967,23.94841 -12.1219,50.3673 -7.4269,74.74171 3.8393,19.93135 14.4161,43.632 29.9,67 12.6411,19.07769 30.0993,48.53747 35.0791,59.19399 17.9599,38.43297 20.1496,79.60731 5.9769,112.38831 -1.8918,4.3758 -5.398,11.4265 -7.7915,15.6683 -4.7251,8.3736 -23.9821,37.423 -30.6154,46.1834 -10.333,13.6467 -27.3219,44.7146 -35.632,65.1608 -6.4401,15.8453 -8.4538,22.8166 -12.6647,43.844 -6.4829,32.3731 -14.5355,50.0634 -29.3048,64.3781 -13.2945,12.8853 -37.5432,20.4094 -56.5887,17.5588 z m 37.264,-183.6502 c 19.8861,-9.3382 39.7109,-37.5916 49.2758,-70.2255 7.7548,-26.4584 9.7368,-52.75473 5.5396,-73.5 -3.4845,-17.22283 -8.3001,-29.73711 -18.663,-48.5 -15.5527,-28.15958 -30.3617,-58.87189 -33.994,-70.5 -8.8218,-28.24173 -8.5679,-48.41708 1.0068,-80 6.8802,-22.69459 16.1363,-42.04937 36.7866,-76.92191 15.0726,-25.45336 26.7747,-50.66517 30.7858,-66.32717 3.8266,-14.94141 3.5857,-38.51424 -0.5594,-54.75408 -2.3695,-9.28317 -9.5499,-23.22724 -16.2369,-31.53132 -3.3369,-4.14397 -11.6212,-12.55148 -18.4094,-18.68336 -6.7882,-6.13188 -13.1978,-12.19136 -14.2436,-13.46552 -1.0458,-1.27415 -4.2459,-5.01664 -7.1114,-8.31664 -8.2819,-9.53769 -14.1622,-19.48115 -19.0369,-32.19089 -6.8479,-17.85461 -8.5181,-21.13764 -12.655,-24.8751 -3.2997,-2.98103 -4.4845,-3.43401 -8.982,-3.43401 -4.9013,0 -5.4387,0.26734 -9.9547,4.95267 -17.8306,18.49892 -27.42813,52.53141 -23.8793,84.67511 2.09062,18.93587 6.36982,34.76204 16.6387,61.5365 11.3525,29.59992 19.0643,55.24973 21.3955,71.16244 2.123,14.49131 -1.8769,37.41474 -9.6031,55.03591 -6.0541,13.80767 -20.07071,38.00069 -36.86927,63.63737 -9.52148,14.53095 -21.47766,34.27996 -27.24331,45 -7.16851,13.3284 -15.13264,35.70558 -16.66364,46.82061 -0.32731,2.37634 -1.11205,6.20134 -1.74386,8.5 -0.63181,2.29867 -1.16884,9.35439 -1.19341,15.67939 -0.0684,17.59475 5.027,35.51242 14.92976,52.5 5.44214,9.33566 6.18228,10.30918 22.82994,30.02858 28.74145,34.04462 37.31739,51.96692 41.13779,85.97142 1.7219,15.3262 5.4681,34.3204 7.9319,40.2171 4.7366,11.3363 14.9557,14.002 28.784,7.5084 z m 745.995,172.8317 c -15.0473,-2.3905 -28.4994,-14.9198 -33.2901,-31.0062 -2.4674,-8.2851 -2.6768,-21.9951 -0.5245,-34.3375 1.4299,-8.1994 8.2158,-28.2639 17.8279,-52.7135 10.4252,-26.5178 13.9757,-39.9782 17.2177,-65.2745 2.3345,-18.2159 1.601,-33.5833 -2.4243,-50.7885 -5.1709,-22.1019 -9.9746,-33.174 -29.2582,-67.437 -9.8848,-17.5632 -15.8762,-30.86 -18.9247,-42 -3.4747,-12.69714 -1.9903,-28.05131 4.6668,-48.27451 0.8556,-2.59902 5.1577,-12.07272 9.5603,-21.05268 9.1028,-18.56706 11.1813,-24.08667 13.3241,-35.38261 1.8859,-9.94146 1.9028,-20.17876 0.056,-33.7902 -2.6137,-19.26319 -6.6774,-32.1154 -18.0225,-57 -13.6254,-29.88632 -16.903,-40.54884 -18.6322,-60.61405 -1.291,-14.97979 -0.059,-30.89452 5.217,-67.38595 5.3673,-37.12285 6.1217,-45.44863 5.6181,-62 -0.4505,-14.80915 -1.3043,-20.00623 -5.5074,-33.52445 -1.8234,-5.86483 -8.1442,-18.57997 -14.5238,-29.21664 -3.5491,-5.9174 -7.5747,-13.00891 -8.9459,-15.75891 -8.4492,-16.94543 -14.1733,-40.46957 -15.3298,-63 -1.2082,-23.53672 4.4832,-73.9154 11.2407,-99.5 6.2439,-23.64 17.2283,-40.48309 30.1738,-46.2674 3.7299,-1.66658 6.6532,-2.08357 14.4517,-2.06146 9.4808,0.0269 10.0396,0.15785 18.5,4.33618 15.6856,7.74654 25.0683,20.08656 32.1124,42.23385 1.7041,5.35765 3.8232,13.68265 4.7091,18.5 2.2096,12.01484 2.863,37.53284 1.4533,56.75883 -3.516,47.95166 -3.1992,65.82199 1.454,82 5.8875,20.4693 12.3618,30.23551 36.4821,55.03201 24.2879,24.96874 30.4103,34.27494 40.988,62.3028 12.5037,33.13135 18.2511,72.58068 21.0035,144.16519 1.5565,40.48 4.8555,78.49561 8.9464,103.09068 2.3556,14.16216 10.1302,44.97072 12.698,50.31901 3.9697,8.26787 7.3755,7.14836 9.8177,-3.22716 2.7473,-11.67199 6.3835,-53.50554 7.5344,-86.68253 1.2573,-36.24496 4.8521,-104.25418 7.0829,-134 3.2131,-42.84602 3.5512,-87.02926 0.8415,-110 -1.3224,-11.21084 -4.9691,-26.98315 -8.2607,-35.72803 -5.6909,-15.11932 -20.2962,-41.18558 -30.8312,-55.02498 -13.2727,-17.43575 -23.1773,-36.48247 -26.9094,-51.74699 -6.5828,-26.9248 -4.0124,-52.8413 7.5484,-76.10738 6.8375,-13.76038 13.7119,-22.05019 25.6714,-30.95721 20.0976,-14.96798 45.2843,-19.69306 63.4549,-11.90425 8.5776,3.67681 17.2893,13.65757 20.9316,23.9809 5.246,14.86898 3.7202,29.06953 -6.177,57.48794 -5.041,14.47448 -11.1496,34.91253 -12.8521,43 -0.8105,3.85 -1.4739,11.92827 -1.4744,17.95171 -0,17.23219 4.2676,33.21457 18.3432,68.67549 7.3305,18.4679 18.122,58.94186 21.1631,79.3728 4.6139,30.9973 5.681,61.75415 2.948,84.96872 -1.7487,14.85337 -1.3113,12.50447 -5.9642,32.03128 -3.8211,16.03651 -8.4833,31.85968 -14.1427,48 -16.625,47.41364 -19.3231,58.5081 -20.0629,82.5 -0.8394,27.21885 2.7774,41.40847 17.4014,68.27011 19.3371,35.51863 22.3133,43.59773 22.3133,60.57175 0,14.32119 -2.5001,22.03169 -15.1924,46.85531 -19.2116,37.57383 -22.756,48.00673 -23.545,69.30283 -0.2751,7.425 -0.017,17.4041 0.5733,22.1758 1.0185,8.2322 1.7652,11.8078 7.699,36.8677 3.6597,15.4559 6.4791,35.5835 7.1569,51.0918 0.4891,11.1911 0.2705,15.0171 -1.2193,21.3434 -3.2922,13.9799 -11.0992,24.0405 -21.1021,27.1937 -6.332,1.996 -10.6651,1.0699 -17.2234,-3.6808 -11.2743,-8.1671 -26.5686,-37.8263 -38.4129,-74.4916 -7.4645,-23.107 -14.3794,-46.0837 -18.8096,-62.5 -2.3006,-8.525 -5.8732,-21.575 -7.9391,-29 -4.8179,-17.3153 -5.9716,-22.3542 -14.8823,-65 -5.4559,-26.11161 -9.6605,-48.86631 -13.1192,-71 -0.4727,-3.025 -1.5299,-9.55 -2.3494,-14.5 -2.6476,-15.99294 -3.4412,-22.34612 -6.6204,-53 -3.5143,-33.88414 -5.0313,-49.60366 -5.9831,-62 -2.9331,-38.19769 -6.9257,-73.08274 -10.93,-95.5 -1.9557,-10.94833 -2.2958,-12.63322 -4.239,-21 -2.9409,-12.66234 -5.5324,-21.17327 -10.504,-34.49777 -6.0612,-16.24455 -10.0137,-23.99279 -14.0448,-27.53206 -9.2217,-8.09677 -15.6023,0.74999 -20.5666,28.51551 -2.9292,16.38314 -3.1956,55.92506 -0.4751,70.51432 3.4683,18.59936 8.7237,36.7533 17.3694,60 1.9433,5.225 5.7996,15.575 8.5695,23 10.1868,27.30606 11.8289,33.88632 11.8748,47.58584 0.062,18.39065 -3.2963,28.17285 -15.8658,46.21813 -15.996,22.96458 -18.2159,28.04874 -18.9569,43.41602 -0.467,9.68424 -0.2546,11.5683 2.1982,19.5 3.9319,12.71479 16.2016,36.07525 26.934,51.28001 15.6724,22.2031 33.75,57.7788 40.3975,79.5 5.9396,19.4079 7.6187,32.2958 7.5565,58 -0.063,25.8479 -1.3214,37.8301 -6.8057,64.7824 -7.0931,34.8587 -14.0204,48.9053 -30.543,61.9331 -12.8431,10.1266 -34.6644,15.5473 -51.6947,12.8417 z m -996.84327,-39.1054 c -9.87313,-1.7134 -16.26619,-5.4697 -26.02473,-15.291 -10.92469,-10.995 -19.13686,-23.2055 -28.35529,-42.1608 -12.56284,-25.8322 -17.26494,-37.9376 -21.50012,-55.3512 C 711.95728,1107.1341 711.5,1102.5766 711.5,1075.5 c 0,-27.0159 0.74713,-36.1181 5.17121,-63 6.41831,-38.99934 6.75383,-53.32214 1.77655,-75.83755 C 713.25589,913.17627 700.68849,886 695.01941,886 c -4.07083,0 -5.47123,5.45893 -9.10692,35.5 -1.34131,11.08303 -3.44847,22.65886 -5.48344,30.12374 -2.84311,10.42934 -13.42815,38.70328 -19.38486,51.77936 -4.31779,9.4783 -8.30554,20.5148 -10.8356,29.9886 -2.43303,9.1104 -2.69864,11.7865 -2.6907,27.1083 0.0103,19.8707 1.58808,28.1794 9.61969,50.6588 9.22447,25.818 11.51557,39.8712 8.45166,51.8412 -6.7153,26.2352 -34.33621,38.4997 -59.04781,26.2191 -18.26027,-9.0745 -31.40395,-27.1096 -40.43469,-55.4823 -4.78126,-15.0217 -6.37258,-26.7137 -6.49713,-47.7368 -0.1172,-19.7806 0.0753,-21.4081 6.56523,-55.5 5.11389,-26.8636 6.71044,-35.57745 7.87841,-43 1.75577,-11.15804 3.94687,-33.67407 3.92723,-40.35681 -0.0577,-19.61982 -7.35797,-51.05351 -17.66197,-76.04894 C 556.76785,862.48107 548.605,845.83321 532.81414,815 c -9.06118,-17.69285 -16.29932,-37.60405 -19.44838,-53.5 -1.36981,-6.91458 -1.76791,-13.63427 -1.71808,-29 0.063,-19.41981 0.15729,-20.3191 3.25145,-31 3.44977,-11.90847 10.81495,-26.32125 18.87578,-36.93763 2.53167,-3.3343 14.30732,-15.77783 26.16811,-27.65229 20.27595,-20.29931 31.38952,-32.91789 36.67889,-41.64599 8.77811,-14.48491 13.39908,-27.51858 13.357,-37.67405 -0.0252,-6.0884 -3.63263,-16.81694 -7.88032,-23.4364 C 597.41852,526.86039 586.14015,516.53033 569,503.83808 541.84405,483.72914 530.66172,472.45839 523.98368,458.4658 c -5.69585,-11.93458 -6.26737,-27.5242 -1.52313,-41.54699 9.07337,-26.81858 44.33835,-48.50173 71.52711,-43.97942 16.6273,2.76563 29.3266,11.26912 41.9063,28.06061 8.23502,10.99216 26.92563,49.15796 32.07676,65.5 6.25413,19.84131 7.11108,23.19073 9.21055,36 2.02141,12.33294 1.51759,39.49493 -1.00163,54 -2.10794,12.13706 -6.14425,27.44419 -8.69651,32.98026 -0.76569,1.66086 -2.29705,5.35936 -3.40301,8.21889 -4.26926,11.0384 -17.99121,36.80739 -24.65513,46.30085 -10.50847,14.97043 -31.95779,57.79458 -38.31655,76.5 -7.63157,22.44964 -10.90964,46.34712 -9.68577,70.61032 1.49809,29.69952 10.96762,63.47185 28.28039,100.85969 9.27875,20.03795 11.29437,18.06633 13.25942,-12.97001 2.91172,-45.98805 6.2031,-59.82538 23.54842,-99 8.77222,-19.81217 12.68012,-31.32003 14.43238,-42.5 0.67371,-4.29845 0.99284,-19.15696 0.82692,-38.5 -0.29511,-34.40426 0.0227,-37.05807 5.96678,-49.81734 3.71797,-7.98089 16.56449,-20.6374 25.80809,-25.42638 23.9336,-12.39968 45.08732,-9.06588 54.07551,8.52223 5.50523,10.77264 4.92028,21.74767 -2.21026,41.46918 -15.03714,41.58948 -19.88147,58.3653 -22.48807,77.87583 -1.6497,12.34807 -0.67001,35.1839 2.07542,48.37648 3.70432,17.80031 16.03579,52.06453 20.52158,57.02128 1.88983,2.08822 4.13291,1.65001 4.96443,-0.96986 0.3079,-0.9701 1.84883,-8.01602 3.4243,-15.65762 7.64803,-37.09563 14.51151,-57.14597 30.27415,-88.44013 6.77483,-13.45031 13.52793,-27.15479 15.0069,-30.45439 1.47896,-3.2996 3.80268,-8.47428 5.16381,-11.49928 1.36113,-3.025 4.33865,-11.125 6.61672,-18 11.36431,-34.2964 6.30828,-58.82012 -26.35437,-127.82906 -14.69278,-31.04259 -22.28099,-53.82521 -28.5344,-85.67094 -3.64736,-18.57432 -3.85948,-20.24384 -5.09016,-40.06289 -1.07123,-17.25136 -0.14248,-35.42921 2.55142,-49.93711 1.52733,-8.22542 5.82683,-24.44826 7.42076,-28 0.49366,-1.1 2.8067,-6.5 5.14009,-12 9.79481,-23.08713 30.22006,-46.54559 51.98694,-59.70715 12.48186,-7.54727 31.37222,-13.63515 44.91016,-14.47338 10.90855,-0.67542 18.44949,1.83914 24.63592,8.21498 6.08445,6.27074 7.87826,12.36281 7.79278,26.46555 -0.10938,18.0463 -3.79605,30.82328 -20.91916,72.5 -18.15562,44.18976 -22.13454,59.79037 -21.16909,83 0.82952,19.94187 4.41589,33.34181 17.66426,66 15.72189,38.7556 23.54428,61.71916 27.70138,81.32067 2.28561,10.77714 2.68647,15.0797 2.67195,28.67933 -0.0184,17.27924 -0.89084,23.42262 -5.41183,38.10977 -5.76772,18.73735 -15.79241,35.75789 -44.79137,76.04951 -12.97112,18.02228 -21.54527,32.20773 -30.12536,49.84072 -11.27781,23.17707 -14.69897,33.56528 -19.92456,60.5 -2.2921,11.8144 -3.25613,37.30929 -2.1433,56.68202 0.59454,10.34989 1.49411,21.29298 1.99905,24.31798 0.50495,3.025 1.19799,7.975 1.54009,11 1.25587,11.10472 3.73011,21.67798 16.02962,68.5 11.7976,44.9113 14.29598,55.5793 16.86209,72 6.4074,41.0016 4.85049,68.783 -5.43602,97 -9.18089,25.1842 -24.617,42.9506 -38.97645,44.8605 -1.925,0.2561 -5.76709,0.072 -8.53797,-0.4087 z M 459.5,1103.521 c -0.55,-0.1766 -5.05,-1.5894 -10,-3.1396 -9.41202,-2.9474 -32.66801,-14.2838 -45.5,-22.1793 -23.18421,-14.2652 -49.60474,-34.6971 -62.00416,-47.9499 -21.84302,-23.3464 -23.5117,-49.78803 -4.47887,-70.97132 5.18433,-5.77009 20.5136,-16.93815 33.9684,-24.74749 5.84962,-3.39519 14.44303,-11.17417 15.50264,-14.03339 1.77955,-4.80187 -2.89483,-8.42497 -15.98801,-12.39226 -7.39566,-2.24093 -11.2446,-2.97916 -37,-7.09671 -19.95261,-3.18985 -26.97847,-4.95118 -34,-8.52357 -10.56337,-5.37438 -13.33671,-12.92642 -8.53471,-23.24075 4.70894,-10.11445 11.35151,-16.48952 30.53471,-29.30507 10.2808,-6.8682 34.6097,-24.81688 42.20025,-31.13329 5.77691,-4.80722 9.0405,-9.89542 8.61822,-13.43653 -0.60434,-5.06779 -5.93766,-7.96211 -21.81847,-11.84062 -32.60733,-7.96356 -36.73695,-9.52863 -40.7113,-15.42908 -6.36209,-9.44538 1.29259,-24.64525 26.23873,-52.10212 18.69824,-20.58014 25.18786,-34.74541 24.26386,-52.96217 -0.48064,-9.47615 -2.65223,-15.03845 -8.14909,-20.87315 -4.9758,-5.28161 -8.23156,-6.56615 -16.6422,-6.56606 -11.85939,1.2e-4 -19.52476,4.33565 -40.5,22.90678 -18.79917,16.64448 -26.96295,20.84471 -40.5,20.8371 -19.60499,-0.011 -32.37259,-14.91225 -33.70928,-39.3425 -0.6802,-12.43178 0.73615,-19.48133 6.18669,-30.79284 8.04327,-16.69219 15.71444,-22.51295 63.52259,-48.19992 27.55841,-14.80693 38.95445,-24.87521 60.97025,-53.86655 14.53973,-19.14653 23.69899,-29.23903 33.91988,-37.37595 23.41193,-18.6384 50.96788,-22.95709 73.60311,-11.5354 7.03181,3.54823 13.70977,8.86483 25.50676,20.30696 15.19372,14.73669 20.53634,19.0079 40.60366,32.46099 20.15929,13.51475 34.22494,26.68538 38.98331,36.50271 3.65181,7.5343 4.44262,18.15051 1.98245,26.61319 -4.639,15.9576 -20.14062,29.73625 -38.86451,34.5448 -8.51296,2.18625 -28.85824,1.34859 -52.20491,-2.14938 -14.27731,-2.13914 -20.48179,-2.61095 -30,-2.28135 -14.01299,0.48525 -20.01967,2.37264 -29.30488,9.20802 -7.79258,5.73657 -10.63064,11.37692 -10.59918,21.06472 0.0258,7.94304 2.01,14.80996 9.01338,31.19346 9.24863,21.63598 7.57581,27.32639 -15.791,53.71595 C 391.15317,728.06613 386,736.53437 386,740.47384 c 0,5.02998 6.07525,9.67851 18,13.77284 31.31387,10.75153 41.7197,16.36323 46.03783,24.82747 2.23861,4.38804 2.55332,12.23355 0.62971,15.69798 -3.63414,6.54509 -20.94954,20.95811 -50.7314,42.22787 -14.47459,10.33754 -24.4897,19.01804 -25.45651,22.06418 -2.10788,6.64135 4.15598,9.76062 33.02037,16.4434 35.65192,8.25425 43.62665,11.03391 50.36846,17.55636 10.05809,9.73082 7.74815,22.4432 -8.07439,44.43606 -15.983,22.21591 -20.19192,31.55315 -19.60834,43.5 0.47727,9.77055 3.31785,15.87121 14.12353,30.3329 19.76034,26.446 37.03503,54.6691 40.71673,66.5224 3.86926,12.4571 1.81898,21.6402 -5.51577,24.7049 -3.02963,1.2658 -16.97492,1.9354 -20.01022,0.9608 z m 1887.8813,-61.4509 c -24.1131,-3.8611 -48.857,-21.2268 -61.0409,-42.83955 -7.4845,-13.27663 -14.9938,-40.50409 -17.415,-63.14421 -1.3129,-12.27607 -0.7545,-38.31842 1.0843,-50.56935 3.423,-22.80505 11.5228,-45.08977 21.9999,-60.52775 5.1446,-7.58047 16.6349,-18.17894 23.1805,-21.38144 7.8554,-3.84327 16.4102,-5.23997 23.0175,-3.75793 16.2609,3.64738 32.535,17.07175 37.9399,31.29618 5.0297,13.23713 3.1856,27.23835 -5.7102,43.35395 -12.0903,21.90283 -12.9267,24.07754 -12.8839,33.5 0.03,6.64817 0.4968,9.37431 2.142,12.51311 4.7666,9.09368 11.9645,13.43576 22.3046,13.45516 18.7734,0.0352 32.9341,-18.13211 38.4809,-49.36851 1.3568,-7.64047 1.6447,-13.23272 1.2616,-24.5 -0.6024,-17.7155 -4.0067,-32.29929 -11.0597,-47.37932 -12.7831,-27.33168 -23.4236,-38.20559 -57.6828,-58.94851 -33.6779,-20.39092 -40.3185,-26.43727 -49.7218,-45.27193 -10.9837,-22.00018 -15.4076,-43.11161 -15.4944,-73.94114 -0.068,-24.2666 2.0813,-35.98435 12.3604,-67.37821 5.7344,-17.51391 12.5486,-31.71218 19.8447,-41.34947 6.2945,-8.3142 18.024,-19.2956 25.2001,-23.5929 7.2118,-4.3186 23.5452,-9.79755 33.5833,-11.26531 13.448,-1.96636 28.858,1.52152 44.9482,10.17355 12.6757,6.81602 18.8946,11.72505 32.3131,25.50727 13.3889,13.7518 21.871,25.95135 31.2305,44.91784 10.467,21.21081 15.0856,35.10487 20.787,62.53303 6.9991,33.67113 4.2999,52.38644 -9.5532,66.23952 -7.0882,7.08825 -14.0877,9.95211 -25.5505,10.45418 -16.1428,0.70704 -25.8376,-2.8572 -37.3417,-13.72835 -11.3146,-10.6921 -15.5766,-19.91797 -15.5949,-33.75796 -0.014,-10.26357 2.1019,-19.52253 6.6821,-29.24612 8.7357,-18.54571 10.557,-29.26833 6.9982,-41.20201 -2.1868,-7.3329 -8.5669,-14.48998 -16.346,-18.33646 -5.0845,-2.51411 -7.0162,-2.89911 -14.8451,-2.95882 -8.1859,-0.0624 -9.4949,0.20274 -14.471,2.93136 -8.8075,4.82959 -16.0512,16.47492 -20.7852,33.41545 -2.5295,9.05144 -2.2417,35.24667 0.5074,46.1863 3.5072,13.95621 7.7786,24.42922 14.2032,34.82446 12.7541,20.63652 27.5922,34.11715 60.0695,54.57379 41.265,25.9919 54.5313,36.19727 65.1189,50.09432 8.9681,11.77116 15.2868,26.15871 17.9649,40.90568 3.8843,21.38823 -0.6899,55.01886 -10.9813,80.7383 -15.24,38.08637 -41.9652,73.74193 -73.6264,98.2289 -15.1403,11.7097 -32.0919,20.3739 -50,25.556 -9.4257,2.7276 -12.9321,3.232 -24.5,3.5248 -7.425,0.1879 -15.8034,-0.027 -18.6187,-0.4779 z M 196.48694,853.25826 c -2.75718,-0.98478 -7.08296,-3.00355 -9.61285,-4.48616 -16.44173,-9.63549 -21.96366,-32.7063 -13.28048,-55.48629 C 180.60689,774.88674 182,769.88988 182,763.13338 c 0,-11.34702 2.14574,-16.62201 9.83726,-24.18343 9.55172,-9.39017 14.26533,-11.44995 26.20215,-11.44995 9.12861,0 9.78966,0.15072 15.35067,3.5 13.55802,8.16571 23.96079,24.042 29.15814,44.5 4.76078,18.73954 4.26428,34.10656 -1.46479,45.33647 -5.61721,11.01064 -21.26944,24.88356 -34.35906,30.45321 -9.27709,3.94741 -22.31968,4.79654 -30.23743,1.96858 z M 2550.7628,803.25 c -1.4362,-1.5125 -4.4315,-6.90123 -6.6563,-11.97496 -2.2247,-5.07373 -5.1732,-10.92985 -6.5522,-13.01359 -2.2749,-3.43764 -17.143,-17.88419 -21.6677,-21.05347 -3.5212,-2.46634 -6.8866,-9.59414 -6.8866,-14.58568 0,-8.61968 4.9216,-15.03598 17.2793,-22.52706 13.008,-7.88533 39.8703,-20.99512 44.4163,-21.67684 6.2234,-0.93326 11.4757,0.87369 15.3432,5.27858 7.4078,8.437 8.5309,16.16935 4.5811,31.54052 -1.3677,5.32277 -2.6751,14.15394 -3.0738,20.7625 -1.3007,21.56363 -5.5312,34.98515 -13.5572,43.0111 -4.8295,4.82945 -9.7497,6.9889 -15.9239,6.9889 -3.8175,0 -5.177,-0.51197 -7.3022,-2.75 z" 
+        fill={fillColor}
+      />
+    </svg>
+  );
 }
 
 // ==========================================

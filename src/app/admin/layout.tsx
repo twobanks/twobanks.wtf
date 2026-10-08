@@ -36,64 +36,25 @@ export default async function AdminLayout({
     return conditions.length > 1 ? or(...conditions) : conditions[0];
   };
 
-  // Buscar categorias, contas e TODOS os usuários direto da tabela
-  const [userCategories, userAccounts, allAppUsers] = await Promise.all([
+  const [userCategories, userAccounts] = await Promise.all([
     db.query.categories.findMany({
       where: accessCondition(categories),
     }),
     db.query.financialAccounts.findMany({
       where: accessCondition(financialAccounts),
     }),
-    db.query.users.findMany({
-      limit: 2
-    }),
   ])
 
-  // Identifica o usuário logado e o outro usuário na tabela
-  const dbCurrentUser = allAppUsers.find((u) => u.id === userId)
-  const dbOtherUser = allAppUsers.find((u) => u.id !== userId)
-
-  // Intervalo de 2 minutos para considerar online
-  const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000)
-
-  const currentUserInfo = dbCurrentUser ? {
-    id: dbCurrentUser.id,
-    name: dbCurrentUser.name ?? null,
-    email: dbCurrentUser.email ?? null,
-    image: dbCurrentUser.image ?? null,
-    isOnline: true,
-  } : {
-    id: session.user.id,
-    name: session.user.name ?? null,
-    email: session.user.email ?? null,
-    image: session.user.image ?? null,
-    isOnline: true,
-  }
-
-  const otherUserInfo = dbOtherUser ? {
-    id: dbOtherUser.id,
-    name: dbOtherUser.name ?? null,
-    email: dbOtherUser.email ?? null,
-    image: dbOtherUser.image ?? null,
-    isOnline: dbOtherUser.lastSeen ? new Date(dbOtherUser.lastSeen) > twoMinutesAgo : false,
-  } : null
+  const styleSidebarProvider = {
+    "--sidebar-width": "calc(var(--spacing) * 72)",
+    "--header-height": "calc(var(--spacing) * 12)",
+  } as React.CSSProperties
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
+    <SidebarProvider style={styleSidebarProvider}>
       <VisibilityProvider>
         <DrawerProvider>
-          <AppSidebar 
-            variant="inset" 
-            currentUser={currentUserInfo} 
-            otherUser={otherUserInfo} 
-          />
+          <AppSidebar variant="inset" />
           <SidebarInset>
             <SiteHeader />
             <div className="flex flex-1 flex-col">

@@ -9,8 +9,8 @@ interface LogoTwoBanksProps extends React.SVGProps<SVGSVGElement> {
 
 export function LogoTwoBanks({
   variant = "flat",
-  fillColor = "#5bb4d8",
-  extrusionColor = "#0369a1", 
+  fillColor = "#058B58",
+  extrusionColor = "#B8DE53", 
   className,
   style,
   ...props
