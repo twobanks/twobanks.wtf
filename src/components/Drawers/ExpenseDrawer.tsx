@@ -22,11 +22,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useDrawer } from '@/contexts/DrawerContext';
-import { ExpenseDrawerProps } from '@/utils/types';
 import { Repeat } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const CATEGORY_PLACEHOLDER = '__category_placeholder__';
+const ACCOUNT_PLACEHOLDER = '__account_placeholder__';
+
+interface ExpenseDrawerProps {
+  categories: any[];
+  accounts: any[];
+  expense?: any;
+  onSuccess?: () => void;
+  onNew?: () => void;
+}
 
 function splitYearMonth(date?: string | null) {
   if (!date) return { year: '', month: '' };
@@ -44,6 +52,7 @@ function currentYearMonth() {
 
 export function ExpenseDrawer({
   categories,
+  accounts,
   expense,
   onSuccess,
   onNew
@@ -53,8 +62,13 @@ export function ExpenseDrawer({
   const [recurringMonths, setRecurringMonths] = useState(12);
   const [alert, setAlert] = useState<DrawerAlert>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [categoryId, setCategoryId] = useState(
     expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
+  );
+  
+  const [accountId, setAccountId] = useState(
+    expense?.accountId ? String(expense.accountId) : ACCOUNT_PLACEHOLDER,
   );
 
   const initial = expense ? splitYearMonth(expense.date) : currentYearMonth();
@@ -71,6 +85,14 @@ export function ExpenseDrawer({
     [categories],
   );
 
+  const accountItems = useMemo(
+    () => [
+      { label: 'Sem conta vinculada', value: ACCOUNT_PLACEHOLDER },
+      ...accounts.map((a) => ({ label: a.name, value: String(a.id) })),
+    ],
+    [accounts],
+  );
+
   useEffect(() => {
     if (open) {
       if (expense) {
@@ -78,24 +100,28 @@ export function ExpenseDrawer({
         setDueMonth(next.month);
         setDueYear(next.year);
         setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
-        setIsRecurring(false); // Edição atual não manipula recursão na UI
+        setAccountId(expense.accountId ? String(expense.accountId) : ACCOUNT_PLACEHOLDER);
+        setIsRecurring(false);
       } else {
         setIsRecurring(false);
         setRecurringMonths(12);
         setCategoryId(CATEGORY_PLACEHOLDER);
+        setAccountId(ACCOUNT_PLACEHOLDER);
         const now = currentYearMonth();
         setDueMonth(now.month);
         setDueYear(now.year);
       }
     }
-    // Ao fechar (!open), os estados ficam intactos até que a UI suma de fato.
   }, [open, expense]);
-
 
   const handleSubmit = async (formData: FormData) => {
     formData.set(
       'categoryId',
       categoryId === CATEGORY_PLACEHOLDER ? '' : categoryId,
+    );
+    formData.set(
+      'accountId',
+      accountId === ACCOUNT_PLACEHOLDER ? '' : accountId,
     );
 
     const isoDate = toFirstDayOfMonth(dueYear, dueMonth);
@@ -133,6 +159,7 @@ export function ExpenseDrawer({
   };
 
   const isCategoryPlaceholder = categoryId === CATEGORY_PLACEHOLDER;
+  const isAccountPlaceholder = accountId === ACCOUNT_PLACEHOLDER;
 
   return (
     <DrawerShell
@@ -183,6 +210,7 @@ export function ExpenseDrawer({
         className="md:col-span-2"
       />
 
+      {/* Seletor de Categoria */}
       <Select
         items={categoryItems}
         value={categoryId}
@@ -209,6 +237,38 @@ export function ExpenseDrawer({
               className={drawerSelectItemClass}
             >
               {cat.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Seletor de Conta Bancária */}
+      <Select
+        items={accountItems}
+        value={accountId}
+        onValueChange={(v) => setAccountId(v ?? ACCOUNT_PLACEHOLDER)}
+      >
+        <SelectTrigger
+          className={`${drawerSelectTriggerClass} ${
+            isAccountPlaceholder ? 'text-sidebar-foreground/50' : ''
+          }`}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className={drawerSelectContentClass + ' max-h-72'}>
+          <SelectItem
+            value={ACCOUNT_PLACEHOLDER}
+            className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+          >
+            Sem conta vinculada
+          </SelectItem>
+          {accounts.map((acc) => (
+            <SelectItem
+              key={acc.id}
+              value={String(acc.id)}
+              className={drawerSelectItemClass}
+            >
+              {acc.name}
             </SelectItem>
           ))}
         </SelectContent>

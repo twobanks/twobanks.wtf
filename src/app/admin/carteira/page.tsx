@@ -1,7 +1,3 @@
-// ==========================================
-// Ficheiro: src/app/admin/carteira/page.tsx (Refatorado com invoiceService)
-// ==========================================
-
 import { createInstallmentPurchase, markInvoiceAsPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { CarteiraDrawersHost } from "@/components/Drawers/carteira-drawers-host";
@@ -24,13 +20,14 @@ import {
 } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { getCreditCardInvoicesSummary } from "@/services/invoiceService";
+import { ensureRecurringExpensesGenerated } from "@/services/recurringService";
 import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Carteira",
-}
+};
 
 export default async function CarteiraPage({
   searchParams,
@@ -56,7 +53,6 @@ export default async function CarteiraPage({
     where: accessCondition(categories),
   });
 
-  // Substitua a linha antiga de accounts por esta:
   const accounts = await db.query.financialAccounts.findMany({
     where: accessCondition(financialAccounts),
   });
@@ -76,6 +72,9 @@ export default async function CarteiraPage({
       faturaMesNum = mesNum;
     }
   }
+
+  // Garante a geração automática das despesas recorrentes para o mês consultado
+  await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
 
   const primeiroDia = new Date(faturaAno, faturaMesNum - 1, 1);
   const ultimoDia = new Date(faturaAno, faturaMesNum, 0);
@@ -122,7 +121,6 @@ export default async function CarteiraPage({
     date: t.date,
   }));
 
-  // Utilização do serviço centralizado para o mês atual
   const cartoesComFatura = await getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum);
 
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
@@ -157,7 +155,6 @@ export default async function CarteiraPage({
     (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
   );
 
-  // Utilização do serviço centralizado para o mês anterior
   const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
   const prevTotalCartoes = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
 
