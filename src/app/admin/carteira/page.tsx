@@ -72,14 +72,10 @@ export default async function CarteiraPage({
       faturaMesNum = mesNum;
     }
   }
-
-  // Garante a geração automática das despesas recorrentes para o mês consultado
   await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
-
-  const primeiroDia = new Date(faturaAno, faturaMesNum - 1, 1);
-  const ultimoDia = new Date(faturaAno, faturaMesNum, 0);
-  const firstDayStr = primeiroDia.toISOString().split("T")[0];
-  const lastDayStr = ultimoDia.toISOString().split("T")[0];
+  const firstDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-01`;
+  const lastDayNum = new Date(Date.UTC(faturaAno, faturaMesNum, 0)).getUTCDate();
+  const lastDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-${String(lastDayNum).padStart(2, "0")}`;
 
   function getPreviousMonth(year: number, month: number) {
     const date = new Date(year, month - 1, 1);

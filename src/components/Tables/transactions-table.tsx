@@ -29,12 +29,12 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
 
   const handleEdit = (transaction: any) => {
     setEditingExpense(transaction);
-    openDrawer('expense');
+    openDrawer("expense");
   };
 
   return (
     <div className="w-full flex flex-col justify-start gap-4">
-      {/* Cabeçalho de Seção */}
+      {/* Cabeçalho de Seção (Mantido Original) */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-xs">
@@ -47,54 +47,93 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
         <IncomeDrawer onSuccess={() => router.refresh()} />
       </div>
 
-      {/* Container da Tabela Padronizado com Cores Dinâmicas */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow className="border-border hover:bg-transparent">
-              <TableHead className="text-muted-foreground font-semibold h-11">Descrição</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold h-11">Valor</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold h-11">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.length === 0 ? (
-              <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={3} className="h-40 text-center">
-                  <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
-                    <Inbox className="h-10 w-10 opacity-20" />
-                    <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              transactions.map((transaction) => (
-                <TableRow 
-                  key={transaction.id} 
-                  className="border-border hover:bg-muted/40 transition-colors h-14"
-                >
-                  <TableCell className="font-medium text-foreground">
-                    {transaction.description}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
-                    {formatCurrency(Number(transaction.amount))}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end">
-                      <TableActions
-                        id={transaction.id}
-                        isPaid={transaction.paid}
-                        onEdit={() => handleEdit(transaction)}
-                        isRecurring={!!transaction.recurringParentId || (transaction as any).source === "recurring"}
-                      />
-                    </div>
-                  </TableCell>
+      {/* Estado Vazio (Zero Transações) */}
+      {transactions.length === 0 ? (
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-8 flex flex-col items-center justify-center text-muted-foreground gap-2">
+          <Inbox className="h-10 w-10 opacity-20" />
+          <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
+        </div>
+      ) : (
+        <>
+          {/* Visualização Tabular - Telas Médias e Grandes (Desktop / Tablet) */}
+          <div className="hidden md:block overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-muted-foreground font-semibold h-11">
+                    Descrição
+                  </TableHead>
+                  <TableHead className="text-right text-muted-foreground font-semibold h-11">
+                    Valor
+                  </TableHead>
+                  <TableHead className="text-right text-muted-foreground font-semibold h-11">
+                    Ações
+                  </TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              </TableHeader>
+              <TableBody>
+                {transactions.map((transaction) => (
+                  <TableRow
+                    key={transaction.id}
+                    className="border-border hover:bg-muted/40 transition-colors h-14"
+                  >
+                    <TableCell className="font-medium text-foreground">
+                      {transaction.description}
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
+                      {formatCurrency(Number(transaction.amount))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end">
+                        <TableActions
+                          id={transaction.id}
+                          isPaid={transaction.paid}
+                          onEdit={() => handleEdit(transaction)}
+                          isRecurring={
+                            !!transaction.recurringParentId ||
+                            (transaction as any).source === "recurring"
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Visualização em Cards - Telas Pequenas (Mobile) */}
+          <div className="grid grid-cols-1 gap-3 md:hidden">
+            {transactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="p-4 rounded-2xl border border-border bg-card shadow-xs flex items-center justify-between gap-3"
+              >
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="font-medium text-foreground text-sm truncate">
+                    {transaction.description}
+                  </span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                    {formatCurrency(Number(transaction.amount))}
+                  </span>
+                </div>
+
+                <div className="flex items-center shrink-0">
+                  <TableActions
+                    id={transaction.id}
+                    isPaid={transaction.paid}
+                    onEdit={() => handleEdit(transaction)}
+                    isRecurring={
+                      !!transaction.recurringParentId ||
+                      (transaction as any).source === "recurring"
+                    }
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

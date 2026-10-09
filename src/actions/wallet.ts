@@ -9,6 +9,21 @@ import { revalidatePath } from "next/cache"
 
 const DEFAULT_RECURRING_MONTHS = 12;
 
+function addMonthsToDateString(dateStr: string, monthsToAdd: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const targetDate = new Date(Date.UTC(y, m - 1 + monthsToAdd, 1));
+  const targetYear = targetDate.getUTCFullYear();
+  const targetMonth = targetDate.getUTCMonth();
+  
+  const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, targetMonth + 1, 0)).getUTCDate();
+  const finalDay = Math.min(d, lastDayOfTargetMonth);
+  
+  const finalMonthStr = String(targetMonth + 1).padStart(2, "0");
+  const finalDayStr = String(finalDay).padStart(2, "0");
+  
+  return `${targetYear}-${finalMonthStr}-${finalDayStr}`;
+}
+
 export async function createTransaction(formData: FormData) {
   const session = await auth();
   if (!session?.user) throw new Error('Não autorizado');
@@ -22,20 +37,18 @@ export async function createTransaction(formData: FormData) {
   const accountId = formData.get('accountId') ? Number(formData.get('accountId')) : null;
 
   const isRecurring = formData.get('isRecurring') === 'on';
-  const recurringMonths = Math.min(
+  const totalMonths = Math.min(
     Math.max(Number(formData.get('recurringMonths') ?? DEFAULT_RECURRING_MONTHS), 1),
     60,
   );
 
-  const date = new Date(dateStr);
-  if (!description || isNaN(amount) || isNaN(date.getTime())) {
+  if (!description || isNaN(amount) || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     throw new Error('Dados inválidos');
   }
 
   const householdId = await getPrimaryHouseholdId(userId);
-  const isoDate = date.toISOString().split('T')[0];
 
-  // 1) Insere a linha-semente
+  // 1) Insere a transação Semente (Mês 1)
   const [seed] = await db
     .insert(transactions)
     .values({
@@ -44,28 +57,27 @@ export async function createTransaction(formData: FormData) {
       description,
       amount: amount.toFixed(2),
       type,
-      date: isoDate,
+      date: dateStr,
       categoryId,
       accountId,
       paid: true,
       source: 'manual',
-      isRecurring,            // true só na semente
+      isRecurring,
       recurringParentId: null,
     })
     .returning();
 
-  // 2) Se recorrente, replica para os próximos N meses
-  if (isRecurring && seed) {
-    const children = Array.from({ length: recurringMonths }, (_, i) => {
-      const d = new Date(date);
-      d.setMonth(d.getMonth() + i + 1);
+  // 2) Se for recorrente, gera as filhas para os (totalMonths - 1) meses seguintes
+  if (isRecurring && seed && totalMonths > 1) {
+    const children = Array.from({ length: totalMonths - 1 }, (_, i) => {
+      const nextDateStr = addMonthsToDateString(dateStr, i + 1);
       return {
         userId,
         householdId,
         description,
         amount: amount.toFixed(2),
         type,
-        date: d.toISOString().split('T')[0],
+        date: nextDateStr,
         categoryId,
         accountId,
         paid: true,
@@ -81,8 +93,10 @@ export async function createTransaction(formData: FormData) {
   }
 
   revalidatePath('/admin/carteira');
+  revalidatePath('/admin');
 }
 
+// File: src/actions/wallet.ts
 export async function createInstallmentPurchase(formData: FormData) {
   const session = await auth()
   if (!session?.user) throw new Error("Não autorizado")
@@ -92,7 +106,7 @@ export async function createInstallmentPurchase(formData: FormData) {
   const description = String(formData.get("description"))
   const totalAmount = Number(formData.get("totalAmount"))
   const installmentsCount = Number(formData.get("installments"))
-  const firstDueDate = formData.get("firstDueDate") as string
+  const firstDueDate = formData.get("firstDueDate") as string // Ex: "2026-10-01"
   const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(firstDueDate)) {
@@ -103,12 +117,7 @@ export async function createInstallmentPurchase(formData: FormData) {
     throw new Error("Dados inválidos")
   }
 
-  const householdIds = await getUserHouseholdIds(userId)
-  const canAccess = or(
-    eq(transactions.userId, userId),
-    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
-  )
-
+  // 1. Grava a compra original (pai)
   const [purchase] = await db.insert(purchases).values({
     userId,
     creditCardId,
@@ -122,18 +131,35 @@ export async function createInstallmentPurchase(formData: FormData) {
   const installmentAmount = totalAmount / installmentsCount
   const installmentsData = []
 
+  // 2. Extrai os valores reais da string para ignorar Fusos Horários
+  const [startYear, startMonth, startDay] = firstDueDate.split("-").map(Number);
+
+  // 3. Gera as parcelas caindo exatamente no mesmo dia nos meses seguintes
   for (let i = 0; i < installmentsCount; i++) {
-    const dueDate = new Date(firstDueDate)
-    dueDate.setMonth(dueDate.getMonth() + i)
+    const targetMonthRaw = startMonth + i;
+    
+    // Cálculo seguro de virada de ano (ex: Mês 13 vira Mês 1 do ano seguinte)
+    const targetYear = startYear + Math.floor((targetMonthRaw - 1) / 12);
+    const normalizedMonth = ((targetMonthRaw - 1) % 12) + 1;
+
+    // Proteção para meses mais curtos (ex: dia 31 caindo em Fevereiro vira dia 28)
+    const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, normalizedMonth, 0)).getUTCDate();
+    const finalDay = Math.min(startDay, lastDayOfTargetMonth);
+
+    const monthFormatted = String(normalizedMonth).padStart(2, "0");
+    const dayFormatted = String(finalDay).padStart(2, "0");
+    
+    const dueDateStr = `${targetYear}-${monthFormatted}-${dayFormatted}`;
 
     installmentsData.push({
       purchaseId: purchase.id,
       number: i + 1,
       amount: installmentAmount.toFixed(2),
-      dueDate: dueDate.toISOString().split("T")[0],
+      dueDate: dueDateStr,
     })
   }
 
+  // 4. Insere todas as parcelas
   await db.insert(installments).values(installmentsData)
 
   revalidatePath("/admin/carteira")
@@ -412,91 +438,83 @@ export async function updateExpense(formData: FormData) {
 }
 
 export async function createTransfer(formData: FormData) {
-  const session = await auth();
-  if (!session?.user) throw new Error("Não autorizado");
-  const userId = session.user.id;
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
 
-  const sourceAccountId = Number(formData.get("sourceAccountId"));
-  const destinationAccountId = Number(formData.get("destinationAccountId"));
-  const amount = Number(formData.get("amount"));
-  const dateStr = String(formData.get("date") ?? "");
-  const description = String(formData.get("description") ?? "Transferência entre contas").trim();
+  const sourceAccountId = Number(formData.get("sourceAccountId"))
+  const destinationAccountId = Number(formData.get("destinationAccountId"))
+  const amount = Number(formData.get("amount"))
+  const dateStr = String(formData.get("date") ?? "")
+  const description = String(formData.get("description") ?? "Transferência entre contas").trim()
 
   if (!sourceAccountId || !destinationAccountId || sourceAccountId === destinationAccountId) {
-    throw new Error("Contas de origem e destino inválidas ou iguais");
+    throw new Error("Contas de origem e destino inválidas ou iguais")
   }
 
-  if (isNaN(amount) || amount <= 0) {
-    throw new Error("Valor inválido");
-  }
+  if (isNaN(amount) || amount <= 0) throw new Error("Valor inválido")
 
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new Error("Data inválida");
-  }
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) throw new Error("Data inválida")
 
-  // 1. Obter os IDs de household do utilizador (suporta o modelo individual e familiar/casal)
-  const householdIds = await getUserHouseholdIds(userId);
+  const householdIds = await getUserHouseholdIds(userId)
 
-  // 2. Condição de segurança para validar se o utilizador tem acesso à conta
   const getAccountValidationCondition = (accountId: number) => {
     return and(
       eq(financialAccounts.id, accountId),
       householdIds.length > 0
         ? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
         : eq(financialAccounts.userId, userId)
-    );
-  };
+    )
+  }
 
-  // 3. Validar e buscar a conta de origem
-  const [sourceAccount] = await db.select()
+  const [sourceAccount] = await db
+    .select()
     .from(financialAccounts)
     .where(getAccountValidationCondition(sourceAccountId))
-    .limit(1);
+    .limit(1)
 
-  if (!sourceAccount) {
-    throw new Error("Conta de origem não encontrada ou sem permissão de acesso.");
-  }
+  if (!sourceAccount) throw new Error("Conta de origem não encontrada ou sem acesso")
 
-  // 4. Validar e buscar a conta de destino
-  const [destinationAccount] = await db.select()
+  const [destinationAccount] = await db
+    .select()
     .from(financialAccounts)
     .where(getAccountValidationCondition(destinationAccountId))
-    .limit(1);
+    .limit(1)
 
-  if (!destinationAccount) {
-    throw new Error("Conta de destino não encontrada ou sem permissão de acesso.");
-  }
+  if (!destinationAccount) throw new Error("Conta de destino não encontrada ou sem acesso")
 
-  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null;
-  const isoDate = date.toISOString().split("T")[0];
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+  const isoDate = date.toISOString().split("T")[0]
 
-  // 5. Inserção do par de lançamentos (Saída na origem e Entrada no destino)
-  await db.insert(transactions).values([
-    {
-      userId,
-      householdId: sourceAccount.householdId || primaryHouseholdId,
-      description: `${description} (Saída para ${destinationAccount.name})`,
-      amount: amount.toFixed(2),
-      type: 'transfer',
-      date: isoDate,
-      accountId: sourceAccountId,
-      paid: true,
-      source: 'manual',
-    },
-    {
-      userId,
-      householdId: destinationAccount.householdId || primaryHouseholdId,
-      description: `${description} (Entrada de ${sourceAccount.name})`,
-      amount: amount.toFixed(2),
-      type: 'transfer',
-      date: isoDate,
-      accountId: destinationAccountId,
-      paid: true,
-      source: 'manual',
-    },
-  ]);
+  // Bloco de transação atômica
+  await db.transaction(async (tx) => {
+    await tx.insert(transactions).values([
+      {
+        userId,
+        householdId: sourceAccount.householdId || primaryHouseholdId,
+        description: `${description} (Saída para ${destinationAccount.name})`,
+        amount: amount.toFixed(2),
+        type: 'transfer',
+        date: isoDate,
+        accountId: sourceAccountId,
+        paid: true,
+        source: 'manual',
+      },
+      {
+        userId,
+        householdId: destinationAccount.householdId || primaryHouseholdId,
+        description: `${description} (Entrada de ${sourceAccount.name})`,
+        amount: amount.toFixed(2),
+        type: 'transfer',
+        date: isoDate,
+        accountId: destinationAccountId,
+        paid: true,
+        source: 'manual',
+      },
+    ])
+  })
 
-  revalidatePath("/admin/carteira");
-  revalidatePath("/admin");
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin")
 }

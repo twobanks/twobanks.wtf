@@ -3,6 +3,7 @@ import {
   AnyPgColumn,
   boolean,
   date,
+  index,
   integer,
   jsonb,
   numeric,
@@ -232,19 +233,16 @@ export const transactions = pgTable('transactions', {
   accountId: integer('account_id').references(() => financialAccounts.id),
   paid: boolean('paid').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
-
-  // ─── Novos campos ───────────────────────────────────────────────
-  // Marca a linha "semente" que iniciou a série recorrente.
-  // Filhos têm isRecurring = false.
   isRecurring: boolean('is_recurring').notNull().default(false),
-
-  // Aponta para a linha-semente. Null na semente; preenchido em cada cópia.
   // onDelete cascade: se a semente morre, o histórico inteiro vai junto.
   recurringParentId: integer('recurring_parent_id').references(
     (): AnyPgColumn => transactions.id,
     { onDelete: 'cascade' },
   ),
-});
+}, (table) => [
+  index("idx_transactions_user_date").on(table.userId, table.date),
+  index("idx_transactions_household_date").on(table.householdId, table.date),
+]);
 
 export const recurringExpenses = pgTable("recurring_expenses", {
   id: serial("id").primaryKey(),
@@ -314,15 +312,19 @@ export const purchases = pgTable('purchases', {
   firstDueDate: date('first_due_date').notNull(),
   categoryId: integer('category_id').references(() => categories.id),
   createdAt: timestamp('created_at').defaultNow(),
-});
+}, (table) => [
+  index("idx_purchases_card_user").on(table.creditCardId, table.userId),
+]);
 
 // Parcelas de uma compra
+// src/db/schema.ts
+
 export const installments = pgTable('installments', {
   id: serial('id').primaryKey(),
   purchaseId: integer('purchase_id')
-    .references(() => purchases.id)
+    .references(() => purchases.id, { onDelete: 'cascade' }) // <--- Adicione aqui
     .notNull(),
-  number: integer('number').notNull(), // 1, 2, 3...
+  number: integer('number').notNull(),
   amount: numeric('amount').notNull(),
   dueDate: date('due_date').notNull(),
   paid: boolean('paid').notNull().default(false),
@@ -422,6 +424,7 @@ export const recurringPaymentLogs = pgTable("recurring_payment_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   uniqueCombination: uniqueIndex("unique_recurring_month").on(table.recurringExpenseId, table.month),
+  
 }));
 
 export const recurringExpensesRelations = relations(recurringExpenses, ({ one, many }) => ({

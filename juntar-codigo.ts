@@ -1,40 +1,85 @@
-const fs = require('fs');
-const path = require('path');
 
-const outputFileName = 'contexto_completo.txt';
-// Agora podemos escanear a raiz inteira de forma segura
-const directoriesToScan = ['./']; 
-// Pastas que serão ignoradas
-const ignoredFolders = ['node_modules', '.next', '.github', '.git']; 
+const fs = require("fs");
+const path = require("path");
 
-// Remove o arquivo anterior se existir
-if (fs.existsSync(outputFileName)) {
-  fs.unlinkSync(outputFileName);
-}
+const outputFileName = "contexto_completo.txt";
+const rootDir = path.resolve(__dirname);
 
-function findAndAppendFiles(dir: any) {
+const ignoredFolders = new Set([
+  "node_modules",
+  ".next",
+  ".github",
+  ".git",
+  "dist",
+  "build",
+]);
+
+const allowedExtensions = new Set([".ts", ".tsx"]);
+
+const outputPath = path.join(rootDir, outputFileName);
+const collectedFiles: any = [];
+
+function findAndCollectFiles(dir: any) {
   if (!fs.existsSync(dir)) return;
-  
-  const files = fs.readdirSync(dir);
 
-  for (const file of files) {
-    // Se a pasta ou arquivo atual estiver na lista de ignorados, pula para o próximo
-    if (ignoredFolders.includes(file)) {
+  const entries = fs.readdirSync(dir, {
+    withFileTypes: true,
+  });
+
+  for (const entry of entries) {
+    // Ignora pastas específicas
+    if (entry.isDirectory() && ignoredFolders.has(entry.name)) {
       continue;
     }
 
-    const fullPath = path.join(dir, file);
-    const stat = fs.statSync(fullPath);
+    const fullPath = path.join(dir, entry.name);
 
-    if (stat.isDirectory()) {
-      findAndAppendFiles(fullPath);
-    } else if (fullPath.endsWith('.tsx')) {
-      const content = fs.readFileSync(fullPath, 'utf-8');
-      const header = `\n\n// ==========================================\n// Arquivo: ${fullPath}\n// ==========================================\n\n`;
-      fs.appendFileSync(outputFileName, header + content);
+    if (entry.isDirectory()) {
+      findAndCollectFiles(fullPath);
+      continue;
+    }
+
+    // Verifica a extensão real do arquivo
+    const extension = path.extname(entry.name).toLowerCase();
+
+    if (
+      allowedExtensions.has(extension) &&
+      fullPath !== outputPath
+    ) {
+      collectedFiles.push(fullPath);
     }
   }
 }
 
-directoriesToScan.forEach(dir => findAndAppendFiles(dir));
-console.log(`Pronto! Código reunido em ${outputFileName}`);
+// Percorre todo o projeto
+findAndCollectFiles(rootDir);
+
+// Ordena os arquivos para facilitar a leitura
+collectedFiles.sort();
+
+let output = "";
+
+for (const filePath of collectedFiles) {
+  const relativePath = path.relative(rootDir, filePath);
+  const content = fs.readFileSync(filePath, "utf8");
+
+  output +=
+    `\n\n// ==========================================\n` +
+    `// Arquivo: ${relativePath}\n` +
+    `// ==========================================\n\n` +
+    content;
+}
+
+// Escreve tudo de uma vez
+fs.writeFileSync(outputPath, output, "utf8");
+
+console.log("Código reunido com sucesso!");
+console.log(`Arquivos encontrados: ${collectedFiles.length}`);
+console.log(`Arquivo gerado: ${outputPath}`);
+
+console.log("\nArquivos .ts encontrados:");
+collectedFiles
+  .filter((file: any) => path.extname(file).toLowerCase() === ".ts")
+  .forEach((file: any) => {
+    console.log(`- ${path.relative(rootDir, file)}`);
+  });

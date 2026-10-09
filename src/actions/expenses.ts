@@ -1,10 +1,10 @@
+// src/actions/expenses.ts
 "use server"
 
 import { auth } from "@/auth"
 import { db } from "@/db"
 import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
 import { and, eq, gte, or } from "drizzle-orm"
-
 import { revalidatePath } from "next/cache"
 
 const DEFAULT_RECURRING_MONTHS = 12;
@@ -17,8 +17,7 @@ export async function createExpense(formData: FormData) {
 
   const description = String(formData.get('description') ?? '').trim();
   const amount = Number(formData.get('amount'));
-  const dateStr = String(formData.get('date') ?? '');
-  const baseDate = new Date(dateStr);
+  const dateStr = String(formData.get('date') ?? ''); // Formato "YYYY-MM-DD"
   const categoryId = formData.get('categoryId')
     ? Number(formData.get('categoryId'))
     : null;
@@ -35,30 +34,31 @@ export async function createExpense(formData: FormData) {
     MAX_RECURRING_MONTHS,
   );
 
-  if (!description || isNaN(amount) || isNaN(baseDate.getTime())) {
+  if (!description || isNaN(amount) || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     throw new Error('Dados inválidos');
   }
 
-  // ─── Dia de vencimento (só faz sentido para recorrente) ──────────
-  // Se o usuário informou `dueDay`, usa. Senão, usa o dia da data-base.
-  let dueDay = baseDate.getDate();
+  // 1. Desestruturação direta da string sem usar new Date(dateStr)
+  const [year, month, day] = dateStr.split('-').map(Number);
+
+  let dueDay = day;
   if (isRecurring) {
     const raw = Number(formData.get('dueDay'));
     if (raw >= 1 && raw <= 31) dueDay = raw;
   }
 
-  // Retorna a data-alvo ajustando para o último dia quando o mês é mais curto
-  // (ex.: dueDay=31 em fev vira 28/29)
-  function targetDate(year: number, monthIndex: number) {
-    const lastDay = new Date(year, monthIndex + 1, 0).getDate();
-    return new Date(year, monthIndex, Math.min(dueDay, lastDay));
+  // Helper imutável para formatar datas YYYY-MM-DD sem desvio de timezone
+  function getFormattedDate(y: number, m: number, d: number) {
+    const lastDayOfTargetMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const finalDay = Math.min(d, lastDayOfTargetMonth);
+    const monthStr = String(m).padStart(2, '0');
+    const dayStr = String(finalDay).padStart(2, '0');
+    return `${y}-${monthStr}-${dayStr}`;
   }
 
-  const seedDate = isRecurring
-    ? targetDate(baseDate.getFullYear(), baseDate.getMonth())
-    : baseDate;
+  const seedDateStr = getFormattedDate(year, month, dueDay);
 
-  // ─── 1) Semente ──────────────────────────────────────────────────
+  // ─── 2. Inserção da Semente ─────────────────────────────────────────
   const [seed] = await db
     .insert(transactions)
     .values({
@@ -66,7 +66,7 @@ export async function createExpense(formData: FormData) {
       description,
       amount: amount.toFixed(2),
       type: 'expense',
-      date: seedDate.toISOString().split('T')[0],
+      date: seedDateStr,
       source: 'manual',
       categoryId,
       accountId,
@@ -76,19 +76,21 @@ export async function createExpense(formData: FormData) {
     })
     .returning();
 
-  // ─── 2) Filhos ───────────────────────────────────────────────────
+  // ─── 3. Inserção das Filhas Recorrentes ──────────────────────────────
   if (isRecurring && seed) {
-    const children = Array.from({ length: recurringMonths }, (_, i) => {
-      const d = targetDate(
-        baseDate.getFullYear(),
-        baseDate.getMonth() + i + 1,
-      );
+    const children = Array.from({ length: recurringMonths - 1 }, (_, i) => {
+      const targetMonthRaw = month + i + 1;
+      const targetYear = year + Math.floor((targetMonthRaw - 1) / 12);
+      const normalizedMonth = ((targetMonthRaw - 1) % 12) + 1;
+
+      const childDateStr = getFormattedDate(targetYear, normalizedMonth, dueDay);
+
       return {
         userId,
         description,
         amount: amount.toFixed(2),
         type: 'expense' as const,
-        date: d.toISOString().split('T')[0],
+        date: childDateStr,
         source: 'recurring',
         categoryId,
         accountId,
@@ -116,7 +118,6 @@ export async function updateExpense(formData: FormData) {
   const description = String(formData.get('description') ?? '').trim();
   const amount = Number(formData.get('amount'));
   const dateStr = String(formData.get('date') ?? '');
-  const date = new Date(dateStr);
   const categoryId = formData.get('categoryId')
     ? Number(formData.get('categoryId'))
     : null;
@@ -125,21 +126,48 @@ export async function updateExpense(formData: FormData) {
     : null;
   const paid = formData.get('paid') === 'on';
 
-  if (!id || !description || isNaN(amount) || isNaN(date.getTime())) {
+  if (!id || !description || isNaN(amount) || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     throw new Error('Dados inválidos');
   }
 
-  await db
-    .update(transactions)
-    .set({
-      description,
-      amount: amount.toFixed(2),
-      date: date.toISOString().split('T')[0],
-      categoryId,
-      accountId,
-      paid,
-    })
-    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
+
+  if (!tx) throw new Error('Transação não encontrada');
+
+  const seedId = tx.isRecurring ? tx.id : tx.recurringParentId;
+
+  const patch = {
+    description,
+    amount: amount.toFixed(2),
+    categoryId,
+    accountId,
+    paid,
+  };
+
+  if (seedId) {
+    await db
+      .update(transactions)
+      .set(patch)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          or(
+            eq(transactions.id, seedId),
+            eq(transactions.recurringParentId, seedId),
+          ),
+          gte(transactions.date, tx.date),
+        ),
+      );
+  } else {
+    await db
+      .update(transactions)
+      .set({ ...patch, date: dateStr })
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
 
   revalidatePath('/admin/carteira');
   revalidatePath('/admin/recorrentes');
@@ -181,7 +209,6 @@ export async function deleteExpense(formData: FormData) {
   if (!transaction) throw new Error("Transação não encontrada");
 
   if (transaction.source === "recurring") {
-    // Encontrar log
     const [log] = await db.select()
       .from(recurringPaymentLogs)
       .where(eq(recurringPaymentLogs.transactionId, id))
@@ -189,7 +216,6 @@ export async function deleteExpense(formData: FormData) {
 
     if (!log) throw new Error("Log de despesa recorrente não encontrado");
 
-    // Excluir logs e transações futuros (mês atual em diante)
     const now = new Date();
     const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
@@ -208,10 +234,8 @@ export async function deleteExpense(formData: FormData) {
       await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, logFuturo.id));
     }
 
-    // Excluir a despesa recorrente
     await db.delete(recurringExpenses).where(eq(recurringExpenses.id, log.recurringExpenseId));
   } else {
-    // Excluir transação avulsa
     await db.delete(transactions).where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   }
 

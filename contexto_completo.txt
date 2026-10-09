@@ -1,6 +1,2099 @@
 
 
 // ==========================================
+// Arquivo: drizzle.config.ts
+// ==========================================
+
+// drizzle.config.ts
+import * as dotenv from 'dotenv';
+import { defineConfig } from 'drizzle-kit';
+
+dotenv.config({ path: '.env.local' });
+
+export default defineConfig({
+  schema: './src/db/schema.ts',
+  out: './src/db/migrations',
+  dialect: 'postgresql',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+});
+
+// ==========================================
+// Arquivo: juntar-codigo.ts
+// ==========================================
+
+
+const fs = require("fs");
+const path = require("path");
+
+const outputFileName = "contexto_completo.txt";
+const rootDir = path.resolve(__dirname);
+
+const ignoredFolders = new Set([
+  "node_modules",
+  ".next",
+  ".github",
+  ".git",
+  "dist",
+  "build",
+]);
+
+const allowedExtensions = new Set([".ts", ".tsx"]);
+
+const outputPath = path.join(rootDir, outputFileName);
+const collectedFiles: any = [];
+
+function findAndCollectFiles(dir: any) {
+  if (!fs.existsSync(dir)) return;
+
+  const entries = fs.readdirSync(dir, {
+    withFileTypes: true,
+  });
+
+  for (const entry of entries) {
+    // Ignora pastas específicas
+    if (entry.isDirectory() && ignoredFolders.has(entry.name)) {
+      continue;
+    }
+
+    const fullPath = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      findAndCollectFiles(fullPath);
+      continue;
+    }
+
+    // Verifica a extensão real do arquivo
+    const extension = path.extname(entry.name).toLowerCase();
+
+    if (
+      allowedExtensions.has(extension) &&
+      fullPath !== outputPath
+    ) {
+      collectedFiles.push(fullPath);
+    }
+  }
+}
+
+// Percorre todo o projeto
+findAndCollectFiles(rootDir);
+
+// Ordena os arquivos para facilitar a leitura
+collectedFiles.sort();
+
+let output = "";
+
+for (const filePath of collectedFiles) {
+  const relativePath = path.relative(rootDir, filePath);
+  const content = fs.readFileSync(filePath, "utf8");
+
+  output +=
+    `\n\n// ==========================================\n` +
+    `// Arquivo: ${relativePath}\n` +
+    `// ==========================================\n\n` +
+    content;
+}
+
+// Escreve tudo de uma vez
+fs.writeFileSync(outputPath, output, "utf8");
+
+console.log("Código reunido com sucesso!");
+console.log(`Arquivos encontrados: ${collectedFiles.length}`);
+console.log(`Arquivo gerado: ${outputPath}`);
+
+console.log("\nArquivos .ts encontrados:");
+collectedFiles
+  .filter((file: any) => path.extname(file).toLowerCase() === ".ts")
+  .forEach((file: any) => {
+    console.log(`- ${path.relative(rootDir, file)}`);
+  });
+
+
+// ==========================================
+// Arquivo: next-env.d.ts
+// ==========================================
+
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+import "./.next/dev/types/routes.d.ts";
+import "./.next/dev/types/root-params.d.ts";
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+
+
+// ==========================================
+// Arquivo: next.config.ts
+// ==========================================
+
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  transpilePackages: ['react-map-gl', 'mapbox-gl', '@mapbox/polyline'],
+  devIndicators: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "snipboard.io", 
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+
+// ==========================================
+// Arquivo: src/actions/accounts.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { financialAccounts } from "@/db/schema"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, inArray, or } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+
+export async function createAccount(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const name = String(formData.get("name"))
+  const type = String(formData.get("type"))
+  const initialBalance = Number(formData.get("initialBalance")) || 0
+
+  if (!name || !type) throw new Error("Dados inválidos")
+
+  const householdId = await getPrimaryHouseholdId(userId)
+
+  await db.insert(financialAccounts).values({
+    userId,
+    householdId,
+    name,
+    type: type as any,
+    initialBalance: initialBalance.toFixed(2),
+  })
+
+  revalidatePath("/admin/contas")
+  revalidatePath("/admin/carteira")
+}
+
+export async function updateAccount(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  const name = String(formData.get("name"))
+  const type = String(formData.get("type"))
+  const initialBalance = Number(formData.get("initialBalance")) || 0
+
+  if (!id || !name || !type) throw new Error("Dados inválidos")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(financialAccounts.userId, userId),
+    householdIds.length > 0 ? inArray(financialAccounts.householdId, householdIds) : undefined
+  )
+
+  await db.update(financialAccounts)
+    .set({ name, type: type as any, initialBalance: initialBalance.toFixed(2) })
+    .where(and(eq(financialAccounts.id, id), canAccess))
+
+  revalidatePath("/admin/contas")
+  revalidatePath("/admin/carteira")
+}
+
+export async function deleteAccount(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(financialAccounts.userId, userId),
+    householdIds.length > 0 ? inArray(financialAccounts.householdId, householdIds) : undefined
+  )
+
+  await db.delete(financialAccounts)
+    .where(and(eq(financialAccounts.id, id), canAccess))
+
+  revalidatePath("/admin/contas")
+  revalidatePath("/admin/carteira")
+}
+
+// ==========================================
+// Arquivo: src/actions/blog.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { posts } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+export async function savePost(formData: FormData) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const slug = formData.get("slug") as string
+  const excerpt = formData.get("excerpt") as string
+  const content = formData.get("content") as string
+  const published = formData.get("published") === "true"
+
+  if (id) {
+    // Editar
+    await db.update(posts)
+      .set({ title, slug, excerpt, content, published, updatedAt: new Date() })
+      .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+  } else {
+    // Criar
+    await db.insert(posts).values({
+      title,
+      slug,
+      excerpt,
+      content,
+      published,
+      authorId: session.user.id,
+    })
+  }
+
+  revalidatePath("/admin/blog")
+}
+
+export async function deletePost(id: string) {
+  const session = await auth()
+  if (!session?.user?.id) return
+
+  await db.delete(posts)
+    .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+
+  revalidatePath("/admin/blog")
+}
+
+export async function updatePost(formData: FormData) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Não autorizado")
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const content = formData.get("content") as string
+  const excerpt = formData.get("excerpt") as string
+  const published = formData.get("published") === "on" 
+
+  await db.update(posts)
+    .set({
+      title,
+      content,
+      excerpt,
+      published,
+      updatedAt: new Date(),
+    })
+    .where(eq(posts.id, id))
+
+  revalidatePath("/blog")
+  revalidatePath("/admin/blog")
+  redirect("/admin/blog")
+}
+
+// ==========================================
+// Arquivo: src/actions/books.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { and, desc, eq } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+
+export async function getBooks() {
+  try {
+    const data = await db.select().from(books).orderBy(desc(books.createdAt))
+    return data
+  } catch (error) {
+    return []
+  }
+}
+
+export async function saveBook(formData: FormData) {
+  const session = await auth()
+  if (!session?.user?.id) redirect("/")
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const author = formData.get("author") as string
+  const status = formData.get("status") as string
+
+  if (id) {
+    // Editar
+    await db.update(books)
+      .set({ title, author, status })
+      .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
+  } else {
+    // Criar
+    await db.insert(books).values({
+      title,
+      author,
+      status,
+      userId: session.user.id,
+    })
+  }
+
+  revalidatePath("/admin/livros")
+}
+
+export async function deleteBook(id: string) {
+  const session = await auth()
+  if (!session?.user?.id) return
+
+  await db.delete(books)
+    .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
+
+  revalidatePath("/admin/livros")
+}
+
+export async function updateBook(formData: FormData) {
+  const session = await auth()
+  
+  if (!session?.user?.id) {
+    throw new Error("Não autorizado")
+  }
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const author = formData.get("author") as string
+  const status = formData.get("status") as string
+
+  await db.update(books)
+    .set({ 
+      title, 
+      author, 
+      status,
+      updatedAt: new Date(), 
+    })
+    .where(eq(books.id, id))
+
+  revalidatePath("/livros")
+  redirect("/livros")
+}
+
+// ==========================================
+// Arquivo: src/actions/categories.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { categories } from "@/db/schema"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, inArray, or } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+
+export async function createCategory(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const name = String(formData.get("name"))
+  const type = String(formData.get("type")) as "income" | "expense"
+
+  if (!name || !type) throw new Error("Dados inválidos")
+
+  const householdId = await getPrimaryHouseholdId(userId)
+
+  await db.insert(categories).values({
+    userId,
+    householdId,
+    name,
+    type,
+  })
+
+  revalidatePath("/admin/categorias")
+  revalidatePath("/admin/carteira")
+}
+
+export async function updateCategory(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  const name = String(formData.get("name"))
+  const type = String(formData.get("type")) as "income" | "expense"
+
+  if (!id || !name || !type) throw new Error("Dados inválidos")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(categories.userId, userId),
+    householdIds.length > 0 ? inArray(categories.householdId, householdIds) : undefined
+  )
+
+  await db.update(categories)
+    .set({ name, type })
+    .where(and(eq(categories.id, id), canAccess))
+
+  revalidatePath("/admin/categorias")
+  revalidatePath("/admin/carteira")
+}
+
+export async function deleteCategory(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(categories.userId, userId),
+    householdIds.length > 0 ? inArray(categories.householdId, householdIds) : undefined
+  )
+
+  await db.delete(categories)
+    .where(and(eq(categories.id, id), canAccess))
+
+  revalidatePath("/admin/categorias")
+  revalidatePath("/admin/carteira")
+}
+
+// ==========================================
+// Arquivo: src/actions/creditCards.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { creditCards } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+
+export async function createCreditCard(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const name = String(formData.get("name"))
+  const brand = String(formData.get("brand") || "")
+  const creditLimit = Number(formData.get("creditLimit") || 0)
+  const dueDay = Number(formData.get("dueDay") || 0)
+  const closingDay = Number(formData.get("closingDay") || 0)
+  const lastFourDigits = formData.get("lastFourDigits") as string | null;
+
+  if (!name) throw new Error("Nome é obrigatório")
+
+  await db.insert(creditCards).values({
+    userId,
+    name,
+    brand: brand || null,
+    lastFourDigits: lastFourDigits || null,
+    creditLimit: creditLimit > 0 ? creditLimit.toFixed(2) : null,
+    dueDay: dueDay > 0 ? dueDay : null,
+    closingDay: closingDay > 0 ? closingDay : null,
+  })
+
+  revalidatePath("/admin/cartoes")
+  revalidatePath("/admin/carteira")
+}
+
+export async function updateCreditCard(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  const name = String(formData.get("name"))
+  const brand = String(formData.get("brand") || "")
+  const creditLimit = Number(formData.get("creditLimit") || 0)
+  const dueDay = Number(formData.get("dueDay") || 0)
+  const closingDay = Number(formData.get("closingDay") || 0)
+
+  if (!id || !name) throw new Error("Dados inválidos")
+
+  await db
+    .update(creditCards)
+    .set({
+      name,
+      brand: brand || null,
+      creditLimit: creditLimit > 0 ? creditLimit.toFixed(2) : null,
+      dueDay: dueDay > 0 ? dueDay : null,
+      closingDay: closingDay > 0 ? closingDay : null,
+    })
+    .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
+
+  revalidatePath("/admin/cartoes")
+  revalidatePath("/admin/carteira")
+}
+
+export async function deleteCreditCard(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  await db
+    .delete(creditCards)
+    .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
+
+  revalidatePath("/admin/cartoes")
+  revalidatePath("/admin/carteira")
+}
+
+// ==========================================
+// Arquivo: src/actions/expenses.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
+import { and, eq, gte, or } from "drizzle-orm"
+
+import { revalidatePath } from "next/cache"
+
+const DEFAULT_RECURRING_MONTHS = 12;
+const MAX_RECURRING_MONTHS = 60;
+
+export async function createExpense(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
+
+  const description = String(formData.get('description') ?? '').trim();
+  const amount = Number(formData.get('amount'));
+  const dateStr = String(formData.get('date') ?? '');
+  const baseDate = new Date(dateStr);
+  const categoryId = formData.get('categoryId')
+    ? Number(formData.get('categoryId'))
+    : null;
+  const accountId = formData.get('accountId')
+    ? Number(formData.get('accountId'))
+    : null;
+  const paid = formData.get('paid') === 'on';
+  const isRecurring = formData.get('isRecurring') === 'on';
+  const recurringMonths = Math.min(
+    Math.max(
+      Number(formData.get('recurringMonths') ?? DEFAULT_RECURRING_MONTHS),
+      1,
+    ),
+    MAX_RECURRING_MONTHS,
+  );
+
+  if (!description || isNaN(amount) || isNaN(baseDate.getTime())) {
+    throw new Error('Dados inválidos');
+  }
+
+  // ─── Dia de vencimento (só faz sentido para recorrente) ──────────
+  // Se o usuário informou `dueDay`, usa. Senão, usa o dia da data-base.
+  let dueDay = baseDate.getDate();
+  if (isRecurring) {
+    const raw = Number(formData.get('dueDay'));
+    if (raw >= 1 && raw <= 31) dueDay = raw;
+  }
+
+  // Retorna a data-alvo ajustando para o último dia quando o mês é mais curto
+  // (ex.: dueDay=31 em fev vira 28/29)
+  function targetDate(year: number, monthIndex: number) {
+    const lastDay = new Date(year, monthIndex + 1, 0).getDate();
+    return new Date(year, monthIndex, Math.min(dueDay, lastDay));
+  }
+
+  const seedDate = isRecurring
+    ? targetDate(baseDate.getFullYear(), baseDate.getMonth())
+    : baseDate;
+
+  // ─── 1) Semente ──────────────────────────────────────────────────
+  const [seed] = await db
+    .insert(transactions)
+    .values({
+      userId,
+      description,
+      amount: amount.toFixed(2),
+      type: 'expense',
+      date: seedDate.toISOString().split('T')[0],
+      source: 'manual',
+      categoryId,
+      accountId,
+      paid,
+      isRecurring,
+      recurringParentId: null,
+    })
+    .returning();
+
+  // ─── 2) Filhos ───────────────────────────────────────────────────
+  if (isRecurring && seed) {
+    const children = Array.from({ length: recurringMonths }, (_, i) => {
+      const d = targetDate(
+        baseDate.getFullYear(),
+        baseDate.getMonth() + i + 1,
+      );
+      return {
+        userId,
+        description,
+        amount: amount.toFixed(2),
+        type: 'expense' as const,
+        date: d.toISOString().split('T')[0],
+        source: 'recurring',
+        categoryId,
+        accountId,
+        paid: false,
+        isRecurring: false,
+        recurringParentId: seed.id,
+      };
+    });
+
+    if (children.length > 0) {
+      await db.insert(transactions).values(children);
+    }
+  }
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
+}
+
+export async function updateExpense(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
+
+  const id = Number(formData.get('id'));
+  const description = String(formData.get('description') ?? '').trim();
+  const amount = Number(formData.get('amount'));
+  const dateStr = String(formData.get('date') ?? '');
+  const date = new Date(dateStr);
+  const categoryId = formData.get('categoryId')
+    ? Number(formData.get('categoryId'))
+    : null;
+  const accountId = formData.get('accountId')
+    ? Number(formData.get('accountId'))
+    : null;
+  const paid = formData.get('paid') === 'on';
+
+  if (!id || !description || isNaN(amount) || isNaN(date.getTime())) {
+    throw new Error('Dados inválidos');
+  }
+
+  await db
+    .update(transactions)
+    .set({
+      description,
+      amount: amount.toFixed(2),
+      date: date.toISOString().split('T')[0],
+      categoryId,
+      accountId,
+      paid,
+    })
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
+}
+
+export async function deleteExpenseSeries(seedId: number) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+
+  await db
+    .delete(transactions)
+    .where(
+      and(
+        eq(transactions.userId, session.user.id),
+        or(
+          eq(transactions.id, seedId),
+          eq(transactions.recurringParentId, seedId),
+        ),
+      ),
+    );
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
+}
+
+export async function deleteExpense(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Não autorizado");
+  const userId = session.user.id;
+
+  const id = Number(formData.get("id"));
+  if (!id) throw new Error("ID inválido");
+
+  const [transaction] = await db.select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
+
+  if (!transaction) throw new Error("Transação não encontrada");
+
+  if (transaction.source === "recurring") {
+    // Encontrar log
+    const [log] = await db.select()
+      .from(recurringPaymentLogs)
+      .where(eq(recurringPaymentLogs.transactionId, id))
+      .limit(1);
+
+    if (!log) throw new Error("Log de despesa recorrente não encontrado");
+
+    // Excluir logs e transações futuros (mês atual em diante)
+    const now = new Date();
+    const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+    const logsFuturos = await db.query.recurringPaymentLogs.findMany({
+      where: and(
+        eq(recurringPaymentLogs.recurringExpenseId, log.recurringExpenseId),
+        gte(recurringPaymentLogs.month, currentMonthStr)
+      ),
+      with: { transaction: true }
+    });
+
+    for (const logFuturo of logsFuturos) {
+      if (logFuturo.transaction) {
+        await db.delete(transactions).where(eq(transactions.id, logFuturo.transactionId));
+      }
+      await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, logFuturo.id));
+    }
+
+    // Excluir a despesa recorrente
+    await db.delete(recurringExpenses).where(eq(recurringExpenses.id, log.recurringExpenseId));
+  } else {
+    // Excluir transação avulsa
+    await db.delete(transactions).where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
+
+  revalidatePath("/admin/carteira");
+  revalidatePath("/admin/recorrentes");
+}
+
+// ==========================================
+// Arquivo: src/actions/investments.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { assets, investmentTransactions } from "@/db/schema"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, inArray, or } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+
+export async function createAsset(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const name = String(formData.get("name"))
+  const ticker = formData.get("ticker") ? String(formData.get("ticker")) : null
+  const type = String(formData.get("type"))
+  const currentPrice = formData.get("currentPrice") ? Number(formData.get("currentPrice")) : null
+  const quantity = formData.get("quantity") ? Number(formData.get("quantity")) : null
+  const averagePrice = formData.get("averagePrice") ? Number(formData.get("averagePrice")) : null
+
+  if (!name || !type) throw new Error("Dados inválidos")
+
+  const householdId = await getPrimaryHouseholdId(userId)
+
+  await db.insert(assets).values({
+    userId,
+    householdId,
+    name,
+    ticker,
+    type,
+    currentPrice: currentPrice ? currentPrice.toFixed(2) : null,
+    quantity: quantity ? quantity.toFixed(2) : null,
+    averagePrice: averagePrice ? averagePrice.toFixed(2) : null,
+  })
+
+  revalidatePath("/admin/investimentos")
+}
+
+export async function updateAsset(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  const name = String(formData.get("name"))
+  const ticker = formData.get("ticker") ? String(formData.get("ticker")) : null
+  const type = String(formData.get("type"))
+  const currentPrice = formData.get("currentPrice") ? Number(formData.get("currentPrice")) : null
+  const quantity = formData.get("quantity") ? Number(formData.get("quantity")) : null
+  const averagePrice = formData.get("averagePrice") ? Number(formData.get("averagePrice")) : null
+
+  if (!id || !name || !type) throw new Error("Dados inválidos")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(assets.userId, userId),
+    householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+  )
+
+  await db.update(assets)
+    .set({
+      name,
+      ticker,
+      type,
+      currentPrice: currentPrice ? currentPrice.toFixed(2) : null,
+      quantity: quantity ? quantity.toFixed(2) : null,
+      averagePrice: averagePrice ? averagePrice.toFixed(2) : null,
+    })
+    .where(and(eq(assets.id, id), canAccess))
+
+  revalidatePath("/admin/investimentos")
+}
+
+export async function deleteAsset(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(assets.userId, userId),
+    householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+  )
+
+  await db.delete(assets)
+    .where(and(eq(assets.id, id), canAccess))
+
+  revalidatePath("/admin/investimentos")
+}
+
+export async function createInvestmentTransaction(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const assetId = Number(formData.get("assetId"))
+  const type = String(formData.get("type"))
+  const date = new Date(String(formData.get("date")))
+  const quantity = formData.get("quantity") ? Number(formData.get("quantity")) : null
+  const price = formData.get("price") ? Number(formData.get("price")) : null
+  const amount = Number(formData.get("amount"))
+  const fees = formData.get("fees") ? Number(formData.get("fees")) : 0
+  const notes = formData.get("notes") ? String(formData.get("notes")) : null
+
+  if (!assetId || !type || !date || isNaN(amount)) throw new Error("Dados inválidos")
+
+  // Busca o ativo e verifica acesso (próprio ou compartilhado)
+  const householdIds = await getUserHouseholdIds(userId)
+  const [asset] = await db.select().from(assets).where(
+    and(
+      eq(assets.id, assetId),
+      or(
+        eq(assets.userId, userId),
+        householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+      )
+    )
+  ).limit(1)
+
+  if (!asset) throw new Error("Ativo não encontrado ou sem permissão")
+
+  const householdId = asset.householdId ?? null
+
+  await db.insert(investmentTransactions).values({
+    userId,
+    householdId,
+    assetId,
+    type,
+    date: date.toISOString().split("T")[0],
+    quantity: quantity ? quantity.toFixed(2) : null,
+    price: price ? price.toFixed(2) : null,
+    amount: amount.toFixed(2),
+    fees: fees.toFixed(2),
+    notes,
+  })
+
+  // Atualizar quantidade média e preço médio do ativo (se aplicável)
+  if (type === "buy" && quantity && price) {
+    const oldQuantity = Number(asset.quantity) || 0
+    const oldAverage = Number(asset.averagePrice) || 0
+    const newQuantity = oldQuantity + quantity
+    const newAverage = ((oldQuantity * oldAverage) + (quantity * price)) / newQuantity
+
+    await db.update(assets)
+      .set({
+        quantity: newQuantity.toFixed(2),
+        averagePrice: newAverage.toFixed(2),
+      })
+      .where(and(eq(assets.id, assetId), or(
+        eq(assets.userId, userId),
+        householdIds.length > 0 ? inArray(assets.householdId, householdIds) : undefined
+      )))
+  }
+
+  revalidatePath("/admin/investimentos")
+}
+
+export async function deleteInvestmentTransaction(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(investmentTransactions.userId, userId),
+    householdIds.length > 0 ? inArray(investmentTransactions.householdId, householdIds) : undefined
+  )
+
+  await db.delete(investmentTransactions)
+    .where(and(eq(investmentTransactions.id, id), canAccess))
+
+  revalidatePath("/admin/investimentos")
+}
+
+// ==========================================
+// Arquivo: src/actions/kanban.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { kanbanTasks } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+import { z } from "zod"
+
+// 1. Validação com Zod
+const kanbanSchema = z.object({
+  title: z.string().min(2, "O título deve ter no mínimo 2 caracteres").max(255),
+  description: z.string().optional().nullable(),
+  status: z.enum(["to_do", "in_progress", "pending", "canceled", "done"]).default("to_do"),
+  urgency: z.enum(["low", "medium", "high"]).default("medium"),
+  dueDate: z.string().optional().nullable(),
+  assignedToId: z.string().optional().nullable(),
+})
+
+// Caminho para revalidação de cache (ajuste se a sua rota for diferente)
+const KANBAN_ROUTE = "/admin/kanban"
+
+// ==========================================
+// 1. CRIAR TAREFA (Via Formulário)
+// ==========================================
+export async function createKanbanTask(formData: FormData) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Não autorizado")
+
+  const parsedData = kanbanSchema.parse({
+    title: formData.get("title"),
+    description: formData.get("description"),
+    status: formData.get("status") || "to_do",
+    urgency: formData.get("urgency") || "medium",
+    dueDate: formData.get("dueDate"),
+    assignedToId: formData.get("assignedToId"),
+  })
+
+  await db.insert(kanbanTasks).values({
+    ...parsedData,
+    createdById: session.user.id,
+  })
+
+  revalidatePath(KANBAN_ROUTE)
+}
+
+// ==========================================
+// 2. ATUALIZAR STATUS (Para o Drag-and-Drop)
+// Recebe os parâmetros diretamente, otimizado para o @dnd-kit
+// ==========================================
+export async function updateKanbanTaskStatus(taskId: string, newStatus: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Não autorizado")
+
+  // Validar se o status recebido é um dos permitidos
+  const statusParser = z.enum(["to_do", "in_progress", "pending", "canceled", "done"])
+  const parsedStatus = statusParser.parse(newStatus)
+
+  // Atualização atômica direta no Neon
+  await db.update(kanbanTasks)
+    .set({ status: parsedStatus })
+    .where(eq(kanbanTasks.id, taskId))
+
+  revalidatePath(KANBAN_ROUTE)
+}
+
+// ==========================================
+// 3. EDITAR TAREFA COMPLETA (Via Formulário)
+// ==========================================
+export async function updateKanbanTask(formData: FormData) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Não autorizado")
+
+  const taskId = formData.get("id") as string
+  if (!taskId) throw new Error("ID da tarefa não fornecido")
+
+  const parsedData = kanbanSchema.parse({
+    title: formData.get("title"),
+    description: formData.get("description"),
+    status: formData.get("status"),
+    urgency: formData.get("urgency"),
+    dueDate: formData.get("dueDate"),
+    assignedToId: formData.get("assignedToId"),
+  })
+
+  await db.update(kanbanTasks)
+    .set(parsedData)
+    .where(eq(kanbanTasks.id, taskId))
+
+  revalidatePath(KANBAN_ROUTE)
+}
+
+// ==========================================
+// 4. CLONAR TAREFA
+// Excelente para tarefas repetitivas.
+// ==========================================
+export async function cloneKanbanTask(taskId: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Não autorizado")
+
+  const [taskToClone] = await db.select().from(kanbanTasks).where(eq(kanbanTasks.id, taskId))
+  
+  if (!taskToClone) throw new Error("Tarefa não encontrada")
+
+  await db.insert(kanbanTasks).values({
+    title: `${taskToClone.title} (Cópia)`,
+    description: taskToClone.description,
+    status: "to_do", // Clones sempre nascem na primeira coluna
+    urgency: taskToClone.urgency,
+    dueDate: taskToClone.dueDate,
+    assignedToId: taskToClone.assignedToId, // Mantém o mesmo responsável
+    createdById: session.user.id, // O autor passa a ser quem clonou
+  })
+
+  revalidatePath(KANBAN_ROUTE)
+}
+
+// ==========================================
+// 5. EXCLUIR TAREFA
+// ==========================================
+export async function deleteKanbanTask(taskId: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Não autorizado")
+
+  await db.delete(kanbanTasks).where(eq(kanbanTasks.id, taskId))
+  
+  revalidatePath(KANBAN_ROUTE)
+}
+
+// ==========================================
+// Arquivo: src/actions/recurringExpenses.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, gte, inArray, or } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+
+const REPLICATION_MONTHS = 12
+
+export async function createRecurringExpense(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const name = String(formData.get("name") ?? "").trim()
+  const amount = Number(formData.get("amount"))
+  const dueDay = Number(formData.get("dueDay"))
+  const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
+  const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
+  const active = formData.get("active") === "on" || formData.get("active") === "true"
+  const startMonth = String(formData.get("startMonth") ?? "").trim()
+
+  if (!name) throw new Error("Nome é obrigatório")
+  if (isNaN(amount) || amount <= 0) throw new Error("Valor inválido")
+  if (isNaN(dueDay) || dueDay < 1 || dueDay > 31) throw new Error("Dia de vencimento inválido")
+  if (!startMonth) throw new Error("Mês de início é obrigatório")
+
+  const [startYear, startMonthNum] = startMonth.split("-").map(Number)
+  if (!startYear || !startMonthNum || startMonthNum < 1 || startMonthNum > 12) {
+    throw new Error("Mês de início inválido")
+  }
+
+  const householdId = await getPrimaryHouseholdId(userId)
+
+  const [novaDespesa] = await db.insert(recurringExpenses).values({
+    userId,
+    householdId,
+    name,
+    amount: amount.toFixed(2),
+    dueDay,
+    categoryId,
+    accountId,
+    active,
+  }).returning()
+
+  if (active) {
+    for (let i = 0; i < REPLICATION_MONTHS; i++) {
+      const targetDate = new Date(startYear, startMonthNum - 1 + i, 1)
+      const targetYear = targetDate.getFullYear()
+      const targetMonth = targetDate.getMonth() + 1
+      const monthStr = `${targetYear}-${String(targetMonth).padStart(2, "0")}`
+
+      const [existente] = await db.select()
+        .from(recurringPaymentLogs)
+        .where(and(
+          eq(recurringPaymentLogs.recurringExpenseId, novaDespesa.id),
+          eq(recurringPaymentLogs.month, monthStr)
+        ))
+        .limit(1)
+
+      if (existente) continue
+
+      let dueDate = new Date(targetYear, targetMonth - 1, dueDay)
+      if (dueDate.getMonth() !== targetMonth - 1) {
+        dueDate = new Date(targetYear, targetMonth, 0)
+      }
+
+      const [transaction] = await db.insert(transactions).values({
+        userId,
+        householdId,
+        description: name,
+        amount: amount.toFixed(2),
+        type: "expense",
+        date: dueDate.toISOString().split("T")[0],
+        source: "recurring",
+        categoryId,
+        accountId,
+        paid: false,
+      }).returning()
+
+      await db.insert(recurringPaymentLogs).values({
+        recurringExpenseId: novaDespesa.id,
+        month: monthStr,
+        transactionId: transaction.id,
+      })
+    }
+  }
+
+  revalidatePath("/admin/recorrentes")
+  revalidatePath("/admin/carteira")
+}
+
+export async function updateRecurringExpense(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  const name = String(formData.get("name"))
+  const amount = Number(formData.get("amount"))
+  const dueDay = Number(formData.get("dueDay"))
+  const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
+  const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
+  const active = formData.get("active") === "on" || formData.get("active") === "true"
+
+  if (!id || !name || isNaN(amount) || !dueDay) throw new Error("Dados inválidos")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(recurringExpenses.userId, userId),
+    householdIds.length > 0 ? inArray(recurringExpenses.householdId, householdIds) : undefined
+  )
+
+  // Busca a despesa atual para verificar o status anterior
+  const [despesaAtual] = await db.select()
+    .from(recurringExpenses)
+    .where(and(eq(recurringExpenses.id, id), canAccess))
+    .limit(1)
+
+  if (!despesaAtual) throw new Error("Despesa não encontrada")
+
+  // Atualiza a despesa recorrente
+  await db.update(recurringExpenses)
+    .set({ name, amount: amount.toFixed(2), dueDay, categoryId, accountId, active })
+    .where(and(eq(recurringExpenses.id, id), canAccess))
+
+  const now = new Date()
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+
+  // Se a despesa foi desativada, remove logs futuros
+  if (despesaAtual.active && !active) {
+    const logsFuturos = await db.query.recurringPaymentLogs.findMany({
+      where: and(
+        eq(recurringPaymentLogs.recurringExpenseId, id),
+        gte(recurringPaymentLogs.month, currentMonthStr)
+      ),
+      with: { transaction: true }
+    })
+
+    for (const log of logsFuturos) {
+      if (log.transaction) {
+        await db.delete(transactions).where(eq(transactions.id, log.transactionId))
+      }
+      await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, log.id))
+    }
+  }
+  // Se a despesa foi ativada, gera logs futuros a partir do mês atual
+  else if (!despesaAtual.active && active) {
+    for (let i = 0; i < REPLICATION_MONTHS; i++) {
+      const targetDate = new Date(now.getFullYear(), now.getMonth() + i, 1)
+      const targetYear = targetDate.getFullYear()
+      const targetMonth = targetDate.getMonth() + 1
+      const monthStr = `${targetYear}-${String(targetMonth).padStart(2, "0")}`
+
+      const [existente] = await db.select()
+        .from(recurringPaymentLogs)
+        .where(and(
+          eq(recurringPaymentLogs.recurringExpenseId, id),
+          eq(recurringPaymentLogs.month, monthStr)
+        ))
+        .limit(1)
+
+      if (existente) continue
+
+      let dueDate = new Date(targetYear, targetMonth - 1, dueDay)
+      if (dueDate.getMonth() !== targetMonth - 1) {
+        dueDate = new Date(targetYear, targetMonth, 0)
+      }
+
+      const [transaction] = await db.insert(transactions).values({
+        userId,
+        householdId: despesaAtual.householdId,
+        description: name,
+        amount: amount.toFixed(2),
+        type: "expense",
+        date: dueDate.toISOString().split("T")[0],
+        source: "recurring",
+        categoryId,
+        accountId,
+        paid: false,
+      }).returning()
+
+      await db.insert(recurringPaymentLogs).values({
+        recurringExpenseId: id,
+        month: monthStr,
+        transactionId: transaction.id,
+      })
+    }
+  }
+  // Se o status não mudou, apenas atualiza os logs futuros existentes
+  else {
+    const logsFuturos = await db.query.recurringPaymentLogs.findMany({
+      where: and(
+        eq(recurringPaymentLogs.recurringExpenseId, id),
+        gte(recurringPaymentLogs.month, currentMonthStr)
+      ),
+      with: { transaction: true }
+    })
+
+    for (const log of logsFuturos) {
+      if (!log.transaction) continue
+
+      const [year, month] = log.month.split("-").map(Number)
+      let dueDate = new Date(year, month - 1, dueDay)
+      if (dueDate.getMonth() !== month - 1) {
+        dueDate = new Date(year, month, 0)
+      }
+
+      await db.update(transactions)
+        .set({
+          description: name,
+          amount: amount.toFixed(2),
+          date: dueDate.toISOString().split("T")[0],
+          categoryId,
+          accountId,
+        })
+        .where(eq(transactions.id, log.transactionId))
+    }
+  }
+
+  revalidatePath("/admin/recorrentes")
+  revalidatePath("/admin/carteira")
+}
+
+export async function deleteRecurringExpense(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(recurringExpenses.userId, userId),
+    householdIds.length > 0 ? inArray(recurringExpenses.householdId, householdIds) : undefined
+  )
+
+  const now = new Date()
+  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+
+  const logsFuturos = await db.query.recurringPaymentLogs.findMany({
+    where: and(
+      eq(recurringPaymentLogs.recurringExpenseId, id),
+      gte(recurringPaymentLogs.month, currentMonthStr)
+    ),
+    with: { transaction: true }
+  })
+
+  for (const log of logsFuturos) {
+    if (log.transaction) {
+      await db.delete(transactions).where(eq(transactions.id, log.transactionId))
+    }
+    await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, log.id))
+  }
+
+  await db.delete(recurringExpenses)
+    .where(and(eq(recurringExpenses.id, id), canAccess))
+
+  revalidatePath("/admin/recorrentes")
+  revalidatePath("/admin/carteira")
+}
+
+export async function generateMonthlyRecurring(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const now = new Date()
+  const year = Number(formData.get("year") || now.getFullYear())
+  const month = Number(formData.get("month") || now.getMonth() + 1)
+
+  if (isNaN(year) || isNaN(month) || month < 1 || month > 12) throw new Error("Mês inválido")
+  const monthStr = `${year}-${String(month).padStart(2, "0")}`
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const acesso = or(
+    eq(recurringExpenses.userId, userId),
+    householdIds.length > 0 ? inArray(recurringExpenses.householdId, householdIds) : undefined
+  )
+
+  const despesas = await db.query.recurringExpenses.findMany({
+    where: and(
+      acesso,
+      eq(recurringExpenses.active, true)
+    ),
+    with: { category: true, account: true },
+  })
+
+  for (const despesa of despesas) {
+    const [logExistente] = await db.select()
+      .from(recurringPaymentLogs)
+      .where(and(
+        eq(recurringPaymentLogs.recurringExpenseId, despesa.id),
+        eq(recurringPaymentLogs.month, monthStr)
+      ))
+      .limit(1)
+
+    if (logExistente) continue
+
+    let dueDate = new Date(year, month - 1, despesa.dueDay)
+    if (dueDate.getMonth() !== month - 1) {
+      dueDate = new Date(year, month, 0)
+    }
+
+    const [transaction] = await db.insert(transactions).values({
+      userId,
+      householdId: despesa.householdId,
+      description: despesa.name,
+      amount: despesa.amount,
+      type: "expense",
+      date: dueDate.toISOString().split("T")[0],
+      source: "recurring",
+      categoryId: despesa.categoryId,
+      accountId: despesa.accountId,
+      paid: false,
+    }).returning()
+
+    await db.insert(recurringPaymentLogs).values({
+      recurringExpenseId: despesa.id,
+      month: monthStr,
+      transactionId: transaction.id,
+    })
+  }
+
+  revalidatePath("/admin/recorrentes")
+  revalidatePath("/admin/carteira")
+}
+
+// ==========================================
+// Arquivo: src/actions/shopping.ts
+// ==========================================
+
+// app/actions/shopping.ts
+"use server";
+
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { ShoppingItem, shoppingItems, ShoppingList, shoppingLists } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const listTypeValues = ["supermercado", "varejao", "acougue"] as const;
+export type ListType = (typeof listTypeValues)[number];
+
+const listSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório").max(100),
+  type: z.enum(listTypeValues),
+});
+
+const itemSchema = z.object({
+  name: z.string().min(1, "Nome do item é obrigatório").max(100),
+  quantity: z.coerce.number().int().positive().default(1),
+  unit: z.string().max(20).optional(),
+});
+
+async function getUserIdOrThrow() {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) throw new Error("Não autorizado");
+  return userId;
+}
+
+// Criar lista
+export async function createList(formData: FormData) {
+  const userId = await getUserIdOrThrow();
+  const parsed = listSchema.parse({
+    name: formData.get("name"),
+    type: formData.get("type"),
+  });
+
+  await db.insert(shoppingLists).values({
+    name: parsed.name,
+    type: parsed.type,
+    userId,
+  });
+
+  revalidatePath("/listas");
+}
+
+// Atualizar lista
+export async function updateList(listId: ShoppingList["id"], formData: FormData) {
+  const userId = await getUserIdOrThrow();
+  const parsed = listSchema.parse({
+    name: formData.get("name"),
+    type: formData.get("type"),
+  });
+
+  const result = await db
+    .update(shoppingLists)
+    .set({ name: parsed.name, type: parsed.type, updatedAt: new Date() })
+    .where(and(eq(shoppingLists.id, listId), eq(shoppingLists.userId, userId)))
+    .returning({ id: shoppingLists.id });
+
+  if (result.length === 0) throw new Error("Lista não encontrada");
+  revalidatePath("/listas");
+}
+
+// Excluir lista
+export async function deleteList(listId: ShoppingList["id"]) {
+  const userId = await getUserIdOrThrow();
+  await db
+    .delete(shoppingLists)
+    .where(and(eq(shoppingLists.id, listId), eq(shoppingLists.userId, userId)));
+  revalidatePath("/listas");
+}
+
+// Adicionar item a uma lista
+export async function addItem(listId: ShoppingList["id"], formData: FormData) {
+  const userId = await getUserIdOrThrow();
+
+  // Verifica se a lista pertence ao usuário
+  const list = await db
+    .select()
+    .from(shoppingLists)
+    .where(and(eq(shoppingLists.id, listId), eq(shoppingLists.userId, userId)));
+
+  if (list.length === 0) throw new Error("Lista não encontrada");
+
+  const parsed = itemSchema.parse({
+    name: formData.get("name"),
+    quantity: formData.get("quantity") || 1,
+    unit: formData.get("unit") || undefined,
+  });
+
+  await db.insert(shoppingItems).values({
+    listId,
+    name: parsed.name,
+    quantity: parsed.quantity,
+    unit: parsed.unit,
+  });
+
+  revalidatePath("/listas");
+}
+
+// Marcar/desmarcar item como comprado
+export async function toggleItem(itemId: ShoppingItem["id"]) {
+  const userId = await getUserIdOrThrow();
+
+  const item = await db
+    .select()
+    .from(shoppingItems)
+    .innerJoin(shoppingLists, eq(shoppingItems.listId, shoppingLists.id))
+    .where(and(eq(shoppingItems.id, itemId), eq(shoppingLists.userId, userId)))
+    .limit(1);
+
+  if (item.length === 0) throw new Error("Item não encontrado");
+
+  const current = item[0].shopping_items;
+  await db
+    .update(shoppingItems)
+    .set({ checked: !current.checked })
+    .where(eq(shoppingItems.id, itemId));
+
+  revalidatePath("/listas");
+}
+
+// Excluir item
+export async function deleteItem(itemId: ShoppingItem["id"]) {
+  const userId = await getUserIdOrThrow();
+
+  const item = await db
+    .select({ id: shoppingItems.id })
+    .from(shoppingItems)
+    .innerJoin(shoppingLists, eq(shoppingItems.listId, shoppingLists.id))
+    .where(and(eq(shoppingItems.id, itemId), eq(shoppingLists.userId, userId)))
+    .limit(1);
+
+  if (item.length === 0) throw new Error("Item não encontrado");
+
+  await db.delete(shoppingItems).where(eq(shoppingItems.id, itemId));
+  revalidatePath("/listas");
+}
+
+// ==========================================
+// Arquivo: src/actions/wallet.ts
+// ==========================================
+
+"use server"
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { creditCards, financialAccounts, installments, purchases, transactions } from "@/db/schema"
+import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { and, eq, gte, inArray, or } from "drizzle-orm"
+import { revalidatePath } from "next/cache"
+
+const DEFAULT_RECURRING_MONTHS = 12;
+
+export async function createTransaction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
+
+  const description = String(formData.get('description') ?? '').trim();
+  const amount = Number(formData.get('amount'));
+  const type = String(formData.get('type')) as 'income' | 'expense';
+  const dateStr = String(formData.get('date') ?? '');
+  const categoryId = formData.get('categoryId') ? Number(formData.get('categoryId')) : null;
+  const accountId = formData.get('accountId') ? Number(formData.get('accountId')) : null;
+
+  const isRecurring = formData.get('isRecurring') === 'on';
+  const recurringMonths = Math.min(
+    Math.max(Number(formData.get('recurringMonths') ?? DEFAULT_RECURRING_MONTHS), 1),
+    60,
+  );
+
+  const date = new Date(dateStr);
+  if (!description || isNaN(amount) || isNaN(date.getTime())) {
+    throw new Error('Dados inválidos');
+  }
+
+  const householdId = await getPrimaryHouseholdId(userId);
+  const isoDate = date.toISOString().split('T')[0];
+
+  // 1) Insere a linha-semente
+  const [seed] = await db
+    .insert(transactions)
+    .values({
+      userId,
+      householdId,
+      description,
+      amount: amount.toFixed(2),
+      type,
+      date: isoDate,
+      categoryId,
+      accountId,
+      paid: true,
+      source: 'manual',
+      isRecurring,            // true só na semente
+      recurringParentId: null,
+    })
+    .returning();
+
+  // 2) Se recorrente, replica para os próximos N meses
+  if (isRecurring && seed) {
+    const children = Array.from({ length: recurringMonths }, (_, i) => {
+      const d = new Date(date);
+      d.setMonth(d.getMonth() + i + 1);
+      return {
+        userId,
+        householdId,
+        description,
+        amount: amount.toFixed(2),
+        type,
+        date: d.toISOString().split('T')[0],
+        categoryId,
+        accountId,
+        paid: true,
+        source: 'recurring',
+        isRecurring: false,
+        recurringParentId: seed.id,
+      };
+    });
+
+    if (children.length > 0) {
+      await db.insert(transactions).values(children);
+    }
+  }
+
+  revalidatePath('/admin/carteira');
+}
+
+export async function createInstallmentPurchase(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const creditCardId = Number(formData.get("creditCardId"))
+  const description = String(formData.get("description"))
+  const totalAmount = Number(formData.get("totalAmount"))
+  const installmentsCount = Number(formData.get("installments"))
+  const firstDueDate = formData.get("firstDueDate") as string
+  const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(firstDueDate)) {
+    throw new Error("Data inválida")
+  }
+
+  if (!creditCardId || !description || isNaN(totalAmount) || !installmentsCount) {
+    throw new Error("Dados inválidos")
+  }
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(transactions.userId, userId),
+    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
+  )
+
+  const [purchase] = await db.insert(purchases).values({
+    userId,
+    creditCardId,
+    description,
+    totalAmount: totalAmount.toFixed(2),
+    installments: installmentsCount,
+    firstDueDate,
+    categoryId,
+  }).returning()
+
+  const installmentAmount = totalAmount / installmentsCount
+  const installmentsData = []
+
+  for (let i = 0; i < installmentsCount; i++) {
+    const dueDate = new Date(firstDueDate)
+    dueDate.setMonth(dueDate.getMonth() + i)
+
+    installmentsData.push({
+      purchaseId: purchase.id,
+      number: i + 1,
+      amount: installmentAmount.toFixed(2),
+      dueDate: dueDate.toISOString().split("T")[0],
+    })
+  }
+
+  await db.insert(installments).values(installmentsData)
+
+  revalidatePath("/admin/carteira")
+}
+
+export async function updateTransaction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+
+  const id = Number(formData.get('id'));
+  if (!id) throw new Error('ID inválido');
+
+  const patch: Record<string, unknown> = {};
+  const description = formData.get('description');
+  const amount = formData.get('amount');
+  const date = formData.get('date');
+  const paid = formData.get('paid');
+
+  if (description !== null) patch.description = String(description).trim();
+  if (amount !== null) patch.amount = Number(amount).toFixed(2);
+  if (date !== null) patch.date = String(date);
+  if (paid !== null) patch.paid = paid === 'on';
+
+  await db
+    .update(transactions)
+    .set(patch)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, session.user.id)));
+
+  revalidatePath('/admin/carteira');
+}
+
+export async function deleteTransaction(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
+
+  const id = Number(formData.get('id'));
+  if (!id) throw new Error('ID inválido');
+
+  // 1) Descobre se a linha faz parte de uma série
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
+
+  if (!tx) throw new Error('Transação não encontrada');
+
+  const seedId = tx.isRecurring ? tx.id : tx.recurringParentId;
+
+  if (seedId) {
+    // 2) Série: apaga do mês clicado em diante
+    //    - Se clicou na semente (date mais antiga), apaga tudo
+    //    - Se clicou numa cópia, preserva os meses anteriores
+    await db.delete(transactions).where(
+      and(
+        eq(transactions.userId, userId),
+        or(
+          eq(transactions.id, seedId),
+          eq(transactions.recurringParentId, seedId),
+        ),
+        gte(transactions.date, tx.date),
+      ),
+    );
+  } else {
+    // Avulsa: apaga só ela
+    await db
+      .delete(transactions)
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
+}
+
+export async function toggleInstallmentPaid(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const installmentId = Number(formData.get("id"))
+  const paid = formData.get("paid") === "true"
+
+  if (!installmentId) throw new Error("ID inválido")
+
+  // Verificar se a parcela pertence a uma compra do usuário
+  const [purchase] = await db
+    .select({ userId: purchases.userId })
+    .from(purchases)
+    .innerJoin(installments, eq(installments.purchaseId, purchases.id))
+    .where(and(eq(installments.id, installmentId), eq(purchases.userId, userId)))
+    .limit(1)
+
+  if (!purchase) throw new Error("Parcela não encontrada")
+
+  await db
+    .update(installments)
+    .set({ paid, paidAt: paid ? new Date() : null })
+    .where(eq(installments.id, installmentId))
+
+  revalidatePath("/admin/cartoes/[id]", "page")
+}
+
+export async function markInvoiceAsPaid(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const cardId = Number(formData.get("cardId"))
+  const month = String(formData.get("month") || "")
+  const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
+
+  if (!cardId || !month) throw new Error("Dados inválidos")
+
+  const [year, monthNum] = month.split("-").map(Number)
+  const primeiroDia = new Date(year, monthNum - 1, 1)
+  const ultimoDia = new Date(year, monthNum, 0)
+
+  // Busca dados do cartão para a descrição da despesa
+  const [card] = await db.select().from(creditCards).where(eq(creditCards.id, cardId)).limit(1)
+  const cardName = card ? card.name : "Cartão de Crédito"
+
+  // Buscar todas as parcelas do cartão no mês
+  const compras = await db.query.purchases.findMany({
+    where: and(
+      eq(purchases.creditCardId, cardId),
+      eq(purchases.userId, userId)
+    ),
+    with: { installments: true },
+  })
+
+  const parcelasDoMes = compras.flatMap((compra) =>
+    compra.installments.filter((parcela) => {
+      const dueDate = new Date(parcela.dueDate + "T00:00:00")
+      return dueDate >= primeiroDia && dueDate <= ultimoDia && !parcela.paid
+    })
+  )
+
+  if (parcelasDoMes.length === 0) return
+
+  const totalAmount = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0)
+  const ids = parcelasDoMes.map(p => p.id)
+  const hojeIso = new Date().toISOString().split("T")[0]
+
+  // Execução sequencial compatível com o driver neon-http:
+  // 1. Marca as parcelas do cartão como pagas
+  await db.update(installments)
+    .set({ paid: true, paidAt: new Date() })
+    .where(inArray(installments.id, ids))
+
+  // 2. Insere a transação de despesa correspondente para abater o Saldo Bancário Atual
+  await db.insert(transactions).values({
+    userId,
+    description: `Pagamento Fatura - ${cardName} (${month})`,
+    amount: totalAmount.toFixed(2),
+    type: 'expense',
+    date: hojeIso,
+    paid: true,
+    source: 'manual',
+    accountId: accountId, // Conta bancária escolhida para o pagamento
+  })
+
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin/cartoes/[id]", "page")
+  revalidatePath("/admin")
+}
+
+export async function markTransactionAsPaid(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const id = Number(formData.get("id"))
+  if (!id) throw new Error("ID inválido")
+
+  // Verifica se a transação pertence ao usuário ou household
+  const householdIds = await getUserHouseholdIds(userId)
+  const canAccess = or(
+    eq(transactions.userId, userId),
+    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
+  )
+
+  await db.update(transactions)
+    .set({ paid: true })
+    .where(and(eq(transactions.id, id), canAccess))
+
+  revalidatePath("/admin/carteira")
+}
+
+export async function deleteRecurringSeries(seedId: number) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+
+  // onDelete: cascade já cuida dos filhos quando deletamos a semente,
+  // mas o filtro de userId evita deletar séries de outros usuários.
+  await db
+    .delete(transactions)
+    .where(
+      and(
+        eq(transactions.userId, session.user.id),
+        or(eq(transactions.id, seedId), eq(transactions.recurringParentId, seedId)),
+      ),
+    );
+
+  revalidatePath('/admin/carteira');
+}
+
+export async function updateExpense(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error('Não autorizado');
+  const userId = session.user.id;
+
+  const id = Number(formData.get('id'));
+  const description = String(formData.get('description') ?? '').trim();
+  const amount = Number(formData.get('amount'));
+  const dateStr = String(formData.get('date') ?? '');
+  const date = new Date(dateStr);
+  const categoryId = formData.get('categoryId')
+    ? Number(formData.get('categoryId'))
+    : null;
+  const accountId = formData.get('accountId')
+    ? Number(formData.get('accountId'))
+    : null;
+  const paid = formData.get('paid') === 'on';
+
+  if (!id || !description || isNaN(amount) || isNaN(date.getTime())) {
+    throw new Error('Dados inválidos');
+  }
+
+  // 1) Descobre se é série
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
+
+  if (!tx) throw new Error('Transação não encontrada');
+
+  const seedId = tx.isRecurring ? tx.id : tx.recurringParentId;
+
+  // Campos que sempre mudam
+  const patch = {
+    description,
+    amount: amount.toFixed(2),
+    categoryId,
+    accountId,
+    paid,
+  };
+
+  if (seedId) {
+    // 2) Série: atualiza do mês clicado em diante.
+    //    NÃO mexe na `date` — os meses ficam fixos para não bagunçar a série.
+    await db
+      .update(transactions)
+      .set(patch)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          or(
+            eq(transactions.id, seedId),
+            eq(transactions.recurringParentId, seedId),
+          ),
+          gte(transactions.date, tx.date),
+        ),
+      );
+  } else {
+    // 3) Avulsa: atualiza tudo, inclusive a data
+    await db
+      .update(transactions)
+      .set({ ...patch, date: date.toISOString().split('T')[0] })
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
+
+  revalidatePath('/admin/carteira');
+  revalidatePath('/admin/recorrentes');
+}
+
+export async function createTransfer(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Não autorizado");
+  const userId = session.user.id;
+
+  const sourceAccountId = Number(formData.get("sourceAccountId"));
+  const destinationAccountId = Number(formData.get("destinationAccountId"));
+  const amount = Number(formData.get("amount"));
+  const dateStr = String(formData.get("date") ?? "");
+  const description = String(formData.get("description") ?? "Transferência entre contas").trim();
+
+  if (!sourceAccountId || !destinationAccountId || sourceAccountId === destinationAccountId) {
+    throw new Error("Contas de origem e destino inválidas ou iguais");
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    throw new Error("Valor inválido");
+  }
+
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    throw new Error("Data inválida");
+  }
+
+  // 1. Obter os IDs de household do utilizador (suporta o modelo individual e familiar/casal)
+  const householdIds = await getUserHouseholdIds(userId);
+
+  // 2. Condição de segurança para validar se o utilizador tem acesso à conta
+  const getAccountValidationCondition = (accountId: number) => {
+    return and(
+      eq(financialAccounts.id, accountId),
+      householdIds.length > 0
+        ? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
+        : eq(financialAccounts.userId, userId)
+    );
+  };
+
+  // 3. Validar e buscar a conta de origem
+  const [sourceAccount] = await db.select()
+    .from(financialAccounts)
+    .where(getAccountValidationCondition(sourceAccountId))
+    .limit(1);
+
+  if (!sourceAccount) {
+    throw new Error("Conta de origem não encontrada ou sem permissão de acesso.");
+  }
+
+  // 4. Validar e buscar a conta de destino
+  const [destinationAccount] = await db.select()
+    .from(financialAccounts)
+    .where(getAccountValidationCondition(destinationAccountId))
+    .limit(1);
+
+  if (!destinationAccount) {
+    throw new Error("Conta de destino não encontrada ou sem permissão de acesso.");
+  }
+
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null;
+  const isoDate = date.toISOString().split("T")[0];
+
+  // 5. Inserção do par de lançamentos (Saída na origem e Entrada no destino)
+  await db.insert(transactions).values([
+    {
+      userId,
+      householdId: sourceAccount.householdId || primaryHouseholdId,
+      description: `${description} (Saída para ${destinationAccount.name})`,
+      amount: amount.toFixed(2),
+      type: 'transfer',
+      date: isoDate,
+      accountId: sourceAccountId,
+      paid: true,
+      source: 'manual',
+    },
+    {
+      userId,
+      householdId: destinationAccount.householdId || primaryHouseholdId,
+      description: `${description} (Entrada de ${sourceAccount.name})`,
+      amount: amount.toFixed(2),
+      type: 'transfer',
+      date: isoDate,
+      accountId: destinationAccountId,
+      paid: true,
+      source: 'manual',
+    },
+  ]);
+
+  revalidatePath("/admin/carteira");
+  revalidatePath("/admin");
+}
+
+// ==========================================
 // Arquivo: src/app/(auth)/layout.tsx
 // ==========================================
 
@@ -2587,6 +4680,7 @@ import { createInstallmentPurchase, markInvoiceAsPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { CarteiraDrawersHost } from "@/components/Drawers/carteira-drawers-host";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
+import { TransferDrawer } from "@/components/Drawers/TransferDrawer";
 import { MonthYearPicker } from "@/components/month-year-picker";
 import { SummaryCards } from "@/components/SummaryCards";
 import { CreditCardsSection } from "@/components/Tables/credit-cards-section";
@@ -2600,17 +4694,18 @@ import {
   categories,
   creditCards,
   financialAccounts,
-  purchases,
   transactions,
 } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
+import { getCreditCardInvoicesSummary } from "@/services/invoiceService";
+import { ensureRecurringExpensesGenerated } from "@/services/recurringService";
 import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Carteira",
-}
+};
 
 export default async function CarteiraPage({
   searchParams,
@@ -2635,9 +4730,11 @@ export default async function CarteiraPage({
   const categorias = await db.query.categories.findMany({
     where: accessCondition(categories),
   });
+
   const accounts = await db.query.financialAccounts.findMany({
     where: accessCondition(financialAccounts),
   });
+
   const cartoes = await db.query.creditCards.findMany({
     where: eq(creditCards.userId, userId),
   });
@@ -2653,6 +4750,9 @@ export default async function CarteiraPage({
       faturaMesNum = mesNum;
     }
   }
+
+  // Garante a geração automática das despesas recorrentes para o mês consultado
+  await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
 
   const primeiroDia = new Date(faturaAno, faturaMesNum - 1, 1);
   const ultimoDia = new Date(faturaAno, faturaMesNum, 0);
@@ -2699,41 +4799,7 @@ export default async function CarteiraPage({
     date: t.date,
   }));
 
-  const cartoesComFatura = await Promise.all(
-    cartoes.map(async (cartao) => {
-      const compras = await db.query.purchases.findMany({
-        where: and(
-          eq(purchases.creditCardId, cartao.id),
-          eq(purchases.userId, userId)
-        ),
-        with: { installments: true, category: true },
-      });
-
-      const parcelasDoMes = compras.flatMap((compra) =>
-        compra.installments
-          .filter((parcela) => {
-            const dueDate = new Date(parcela.dueDate + "T00:00:00");
-            return dueDate >= primeiroDia && dueDate <= ultimoDia;
-          })
-          .map((parcela) => ({
-            ...parcela,
-            purchaseDescription: compra.description,
-            purchaseCategory: compra.category?.name || "Sem categoria",
-            totalInstallments: compra.installments.length,
-          }))
-      );
-
-      const total = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0);
-      const pago = parcelasDoMes.filter((p) => p.paid).reduce((sum, p) => sum + Number(p.amount), 0);
-
-      return {
-        cartao,
-        parcelas: parcelasDoMes.sort((a, b) => a.dueDate.localeCompare(b.dueDate)),
-        total,
-        pago,
-      };
-    })
-  );
+  const cartoesComFatura = await getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum);
 
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
   const totalDespesas =
@@ -2747,6 +4813,7 @@ export default async function CarteiraPage({
   const prevUltimoDia = new Date(prev.year, prev.month, 0);
   const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
   const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
+  
   const prevAllTransactions = await db.query.transactions.findMany({
     where: and(
       accessCondition(transactions),
@@ -2766,25 +4833,8 @@ export default async function CarteiraPage({
     (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
   );
 
-  const prevCartoesComFatura = await Promise.all(
-    cartoes.map(async (cartao) => {
-      const compras = await db.query.purchases.findMany({
-        where: and(eq(purchases.creditCardId, cartao.id), eq(purchases.userId, userId)),
-        with: { installments: true },
-      });
-      const parcelasDoMes = compras.flatMap((compra) =>
-        compra.installments
-          .filter((parcela) => {
-            const dueDate = new Date(parcela.dueDate + "T00:00:00");
-            return dueDate >= prevPrimeiroDia && dueDate <= prevUltimoDia;
-          })
-          .map((parcela) => parcela)
-      );
-      const total = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0);
-      return total;
-    })
-  );
-  const prevTotalCartoes = prevCartoesComFatura.reduce((sum, total) => sum + total, 0);
+  const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
+  const prevTotalCartoes = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
 
   const prevTotalReceitas = prevReceitas.reduce((sum, t) => sum + Number(t.amount), 0);
   const prevTotalDespesas =
@@ -2850,7 +4900,10 @@ export default async function CarteiraPage({
                 Cartões
               </TabsTrigger>
             </TabsList>
-            <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+            <div className="flex items-center gap-2">
+              <TransferDrawer accounts={accounts} />
+              <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+            </div>
           </Card>
 
           <TabsContent value="all" className="space-y-6 mt-0">
@@ -2894,6 +4947,7 @@ export default async function CarteiraPage({
                     cartoesComFatura={cartoesComFatura}
                     categorias={categorias}
                     cartoes={cartoes}
+                    accounts={accounts}
                     createInstallmentPurchaseAction={createInstallmentPurchase}
                     faturaAno={faturaAno}
                     faturaMesNum={faturaMesNum}
@@ -2944,6 +4998,7 @@ export default async function CarteiraPage({
                   cartoesComFatura={cartoesComFatura}
                   categorias={categorias}
                   cartoes={cartoes}
+                  accounts={accounts}
                   createInstallmentPurchaseAction={createInstallmentPurchase}
                   faturaAno={faturaAno}
                   faturaMesNum={faturaMesNum}
@@ -3403,17 +5458,20 @@ export default async function AdminLivrosPage() {
 // ==========================================
 
 // ==========================================
-// Arquivo: src/app/admin/page.tsx (Atualizado com Blog e Livros)
+// Arquivo: src/app/admin/page.tsx (Corrigido para o array de householdIds)
 // ==========================================
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { financialAccounts, transactions } from "@/db/schema";
+import { transactions } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { eq, inArray, or } from "drizzle-orm";
-import { ArrowDownRight, ArrowUpRight, Layers, TrendingUp, Wallet } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
+import { getDashboardSummary } from '@/services/balanceService';
+import { formatCurrency } from '@/utils/currency';
 
 export default async function AdminPage() {
   const session = await auth();
@@ -3422,7 +5480,11 @@ export default async function AdminPage() {
   }
 
   const userId = session.user.id;
+  
+  // getUserHouseholdIds retorna string[]
   const householdIds = await getUserHouseholdIds(userId);
+  // Pegamos o primeiro ID do grupo doméstico para o serviço, se existir
+  const householdId = householdIds.length > 0 ? householdIds[0] : null;
 
   const accessCondition = (table: any) => {
     const conditions = [eq(table.userId, userId)];
@@ -3432,14 +5494,8 @@ export default async function AdminPage() {
     return conditions.length > 1 ? or(...conditions) : conditions[0];
   };
 
-  // Busca paralela de contas e transações para calcular o saldo real dinâmico
-  const [accountsList, allTransactions, recentTransactions] = await Promise.all([
-    db.query.financialAccounts.findMany({
-      where: accessCondition(financialAccounts),
-    }),
-    db.query.transactions.findMany({
-      where: accessCondition(transactions),
-    }),
+  // Busca paralela de contas e transações recentes
+  const [recentTransactions] = await Promise.all([
     db.query.transactions.findMany({
       where: accessCondition(transactions),
       limit: 5,
@@ -3447,19 +5503,8 @@ export default async function AdminPage() {
     }),
   ]);
 
-  // Cálculo Dinâmico do Saldo Total Real (Saldo Inicial + Receitas - Despesas)
-  const totalInitial = accountsList.reduce((acc, curr) => {
-    return acc + (curr.initialBalance ? Number(curr.initialBalance) : 0);
-  }, 0);
-
-  const totalTransactions = allTransactions.reduce((acc, tx) => {
-    const amount = Number(tx.amount || 0);
-    if (tx.type === "income") return acc + amount;
-    if (tx.type === "expense") return acc - amount;
-    return acc;
-  }, 0);
-
-  const totalBalance = totalInitial + totalTransactions;
+  const now = new Date();
+  const summary = await getDashboardSummary(userId, householdId, now);
 
   return (
     <div className="flex flex-col gap-6">
@@ -3473,26 +5518,35 @@ export default async function AdminPage() {
 
       {/* Grid de Métricas Principais */}
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Saldo Total Consolidado</span>
-            <Wallet className="h-4 w-4 text-emerald-500" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">
-              {totalBalance.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-            </span>
-          </div>
-        </div>
+        <div className="rounded-xl border bg-card p-6 shadow-sm md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Card 1: Saldo Real */}
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <h3 className="text-gray-500 text-sm">Saldo Bancário Atual</h3>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatCurrency(summary.bankBalanceCents)}
+              </p>
+            </div>
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Contas Conectadas</span>
-            <Layers className="h-4 w-4 text-blue-500" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{accountsList.length}</span>
-            <span className="text-xs text-muted-foreground">instituições/carteiras</span>
+            {/* Card 2: Compromissos */}
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <h3 className="text-gray-500 text-sm">Compromissos do Mês</h3>
+              <p className="text-2xl font-bold text-red-600">
+                {formatCurrency(summary.totalPendingObligationsCents)}
+              </p>
+              <div className="text-xs text-gray-400 mt-1">
+                <span>Cartões: {formatCurrency(summary.pendingCardObligationsCents)}</span>
+                <span className="ml-2">Outros: {formatCurrency(summary.pendingExpensesCents)}</span>
+              </div>
+            </div>
+
+            {/* Card 3: Previsão */}
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <h3 className="text-gray-500 text-sm">Saldo Disponível (Previsto)</h3>
+              <p className="text-2xl font-bold text-blue-600">
+                {formatCurrency(summary.expectedAvailableBalanceCents)}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -3573,13 +5627,13 @@ export default async function AdminPage() {
               </li>
               <li>
                 <Link href="/admin/blog" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
-                  <span> Blog</span>
+                  <span>Blog</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
               <li>
                 <Link href="/admin/livros" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
-                  <span> Livros</span>
+                  <span>Livros</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
@@ -3631,6 +5685,525 @@ export default async function KanbanPage() {
       <KanbanBoard initialTasks={tasks} users={appUsers} />
     </div>
   )
+}
+
+// ==========================================
+// Arquivo: src/app/api/auth/[...nextauth]/route.ts
+// ==========================================
+
+import { handlers } from "@/auth"
+export const { GET, POST } = handlers
+
+// ==========================================
+// Arquivo: src/app/api/coros-sync/route.ts
+// ==========================================
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { plannedWorkouts } from "@/db/schema"
+import { NextResponse } from "next/server"
+
+function formatDateToCoros(date: Date) {
+  return date.toISOString().slice(0, 10).replace(/-/g, '')
+}
+
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
+
+export async function GET(request: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+  }
+
+  const token = process.env.COROS_AUTH_TOKEN
+  if (!token) {
+    return NextResponse.json({ error: "Token do COROS não configurado no .env" }, { status: 500 })
+  }
+
+  let currentDate = new Date("2023-07-31T00:00:00Z")
+  const finalDate = new Date("2026-09-27T00:00:00Z")
+  let totalImportados = 0
+
+  while (currentDate <= finalDate) {
+    let chunkEnd = new Date(currentDate)
+    chunkEnd.setDate(chunkEnd.getDate() + 28)
+
+    if (chunkEnd > finalDate) chunkEnd = finalDate
+
+    const startStr = formatDateToCoros(currentDate)
+    const endStr = formatDateToCoros(chunkEnd)
+
+    console.log(`📡 Buscando treinos COROS de ${startStr} a ${endStr}...`)
+
+    try {
+      const response = await fetch(
+        `https://teamapi.coros.com/training/schedule/query?startDate=${startStr}&endDate=${endStr}&supportRestExercise=1`,
+        {
+          headers: {
+            "Cookie": `CPL-coros-token=${token};`, 
+            "accesstoken": token, 
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/plain, */*",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+          },
+        }
+      )
+
+      const json = await response.json()
+
+      if (json.result !== "0000") {
+         console.error(`❌ COROS recusou. Resposta:`, json)
+      }
+
+      if (json.data && json.data.entities && json.data.entities.length > 0) {
+        const treinos = json.data.entities
+        console.log(`✅ Achou ${treinos.length} treinos neste mês!`)
+
+        for (const treino of treinos) {
+          let titulo = `Treino de ${treino.exerciseBarChart?.[0]?.name || "Corrida"}`
+          
+          await db.insert(plannedWorkouts).values({
+            id: treino.id,
+            date: treino.happenDay.toString(),
+            title: titulo,
+            status: treino.executeStatus,
+            steps: treino.exerciseBarChart,
+            rawPayload: treino,
+            userId: session.user.id,
+          }).onConflictDoNothing()
+          
+          totalImportados++
+        }
+      } else {
+        console.log(`⚠️ Nenhum treino encontrado entre ${startStr} e ${endStr}`)
+      }
+
+      await delay(1000)
+
+      currentDate = new Date(chunkEnd)
+      currentDate.setDate(currentDate.getDate() + 1)
+
+    } catch (error) {
+      console.error("Erro na requisição da API:", error)
+      return NextResponse.json({ error: "Falha na sincronização", details: error }, { status: 500 })
+    }
+  }
+
+  return NextResponse.json({ 
+    success: true, 
+    message: `A importação terminou! ${totalImportados} treinos foram salvos no seu banco de dados Neon.` 
+  })
+}
+
+// ==========================================
+// Arquivo: src/app/api/otp/send-email/route.ts
+// ==========================================
+
+import { db } from "@/db";
+import { otpCodes, users } from "@/db/schema";
+import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
+
+const OTP_EXPIRATION_MINUTES = 5;
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "noreply@twobanks.wtf";
+
+function generateOtp(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+async function sendOtpEmail(to: string, code: string): Promise<void> {
+  await resend.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: "Seu código de acesso twobanks",
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #09090b; padding: 40px 0; color: #fafafa;">
+        <div style="max-width: 440px; margin: 0 auto; background-color: #18181b; padding: 32px; border-radius: 16px; border: 1px solid #27272a; text-align: center;">
+          
+          <!-- Logotipo em Tipografia Centralizada (Substitui a imagem com perfeição) -->
+          <div style="margin-bottom: 24px;">
+            <span style="font-size: 26px; font-weight: 800; color: #fafafa; letter-spacing: -0.5px;">
+              BANKS<span style="color: #F35894;">.</span>
+            </span>
+          </div>
+
+          <p style="color: #a1a1aa; font-size: 14px; line-height: 20px; margin-bottom: 24px;">
+            Você solicitou um código de acesso para entrar na sua conta. Utilize o código abaixo:
+          </p>
+
+          <!-- Caixa do Código com destaque em Azul Celeste -->
+          <div style="margin: 24px 0; padding: 20px; background-color: #09090b; border: 1px solid #27272a; border-radius: 12px; text-align: center;">
+            <span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #5EACCF;">
+              ${code}
+            </span>
+          </div>
+
+          <p style="color: #71717a; font-size: 12px; line-height: 16px; margin-top: 24px; margin-bottom: 0;">
+            Este código é válido por ${OTP_EXPIRATION_MINUTES} minutos. Se você não solicitou este acesso, ignore este e-mail com segurança.
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}
+
+export async function POST(req: Request) {
+  try {
+    const { identifier } = await req.json();
+
+    if (!identifier) {
+      return NextResponse.json({ error: "Informe seu email." }, { status: 400 });
+    }
+
+    const normalizedEmail = String(identifier).toLowerCase();
+
+    const [user] = await db
+      .select({ id: users.id, email: users.email })
+      .from(users)
+      .where(eq(users.email, normalizedEmail));
+
+    if (!user || !user.email) {
+      return NextResponse.json({ success: true });
+    }
+
+    const code = generateOtp();
+    const codeHash = await bcrypt.hash(code, 10);
+    const expiresAt = new Date(Date.now() + OTP_EXPIRATION_MINUTES * 60 * 1000);
+
+    await db.insert(otpCodes).values({
+      userId: user.id,
+      codeHash,
+      expiresAt,
+    });
+
+    await sendOtpEmail(user.email, code);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Erro ao enviar email:", error);
+    return NextResponse.json({ error: "Falha ao enviar o código." }, { status: 500 });
+  }
+}
+
+// ==========================================
+// Arquivo: src/app/api/presence/route.ts
+// ==========================================
+
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { users } from "@/db/schema"; // ajuste para sua tabela de usuários
+import { eq } from "drizzle-orm"
+import { NextResponse } from "next/server"
+
+export async function POST() {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  // Atualiza o timestamp do usuário logado para o horário atual
+  await db.update(users)
+    .set({ lastSeen: new Date() })
+    .where(eq(users.id, session.user.id))
+
+  return NextResponse.json({ success: true })
+}
+
+// ==========================================
+// Arquivo: src/app/api/strava-sync/route.ts
+// ==========================================
+
+// src/app/api/strava-sync/route.ts
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { stravaWorkouts } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
+import { NextResponse } from "next/server"
+
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
+
+export async function GET(request: Request) {
+  const session = await auth()
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+  }
+
+  const clientId = process.env.STRAVA_CLIENT_ID
+  const clientSecret = process.env.STRAVA_CLIENT_SECRET
+  const refreshToken = process.env.STRAVA_REFRESH_TOKEN
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    return NextResponse.json({ error: "Chaves do Strava ausentes" }, { status: 500 })
+  }
+
+  try {
+    const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: refreshToken,
+        grant_type: "refresh_token"
+      })
+    })
+
+    const tokenData = await tokenResponse.json()
+    if (!tokenData.access_token) throw new Error("Falha ao gerar access_token")
+
+    const url = new URL(request.url)
+    const fullSync = url.searchParams.get('full') === 'true'
+    
+    let startDate: number
+    let endDate: number
+    let syncType: string
+
+    if (fullSync) {
+      startDate = 1356998400
+      endDate = Math.floor(Date.now() / 1000)
+      syncType = "completa (2013-atual)"
+      console.log("📡 Iniciando sincronização COMPLETA do Strava...")
+    } else {
+      const yesterday = new Date()
+      yesterday.setDate(yesterday.getDate() - 1)
+      yesterday.setHours(0, 0, 0, 0)
+      startDate = Math.floor(yesterday.getTime() / 1000)
+      endDate = Math.floor(Date.now() / 1000)
+      syncType = "incremental (a partir de ontem)"
+      console.log(`📡 Iniciando sincronização INCREMENTAL do Strava (a partir de ${yesterday.toISOString().split('T')[0]})...`)
+    }
+
+    let totalImportados = 0
+    let page = 1
+    let hasMoreActivities = true
+
+    while (hasMoreActivities) {
+      console.log(`Buscando Página ${page} da sincronização ${syncType}...`)
+      
+      const activitiesResponse = await fetch(
+        `https://www.strava.com/api/v3/athlete/activities?after=${startDate}&before=${endDate}&page=${page}&per_page=200`,
+        { headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+      )
+
+      const activities = await activitiesResponse.json()
+
+      if (!Array.isArray(activities) || activities.length === 0) {
+        hasMoreActivities = false
+        break
+      }
+
+      for (const activity of activities) {
+        const existingActivity = await db.select()
+          .from(stravaWorkouts)
+          .where(and(
+            eq(stravaWorkouts.name, activity.name),
+            eq(stravaWorkouts.startDate, activity.start_date_local)
+          ))
+          .limit(1)
+
+        if (!fullSync && existingActivity.length > 0) {
+          console.log(`⏭️ Atividade ${activity.id} já existe no banco, pulando...`)
+          continue
+        }
+
+        let streamsData = null
+        try {
+          const streamsResponse = await fetch(
+            `https://www.strava.com/api/v3/activities/${activity.id}/streams?keys=time,heartrate,velocity_smooth,latlng,altitude,distance&key_by_type=true`,
+            { headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+          )
+          
+          if (streamsResponse.ok) {
+            streamsData = await streamsResponse.json()
+          }
+        } catch (err) {
+          console.warn(`Aviso: Não foi possível baixar streams para a atividade ${activity.id}`)
+        }
+
+        await db.insert(stravaWorkouts).values({
+          id: activity.id.toString(),
+          name: activity.name,
+          type: activity.type,
+          distance: activity.distance?.toString(),
+          movingTime: activity.moving_time,
+          elapsedTime: activity.elapsed_time,
+          totalElevationGain: activity.total_elevation_gain?.toString(),
+          averageSpeed: activity.average_speed?.toString(),
+          maxSpeed: activity.max_speed?.toString(),
+          averageHeartrate: activity.has_heartrate ? Math.round(activity.average_heartrate) : null,
+          maxHeartrate: activity.has_heartrate ? Math.round(activity.max_heartrate) : null,
+          averageCadence: activity.average_cadence?.toString(),
+          averageWatts: activity.average_watts?.toString(),
+          kilojoules: activity.kilojoules?.toString(),
+          sufferScore: activity.suffer_score,
+          gearId: activity.gear_id,
+          mapPolyline: activity.map?.summary_polyline || null,
+          startDate: activity.start_date_local,
+          timezone: activity.timezone,
+          rawPayload: activity, 
+          streamPayload: streamsData,
+          userId: 'b3c34ca9-ee8a-489a-aca6-78004baf1cbf',
+        }).onConflictDoNothing()
+
+        totalImportados++
+        
+        await delay(150) 
+      }
+
+      page++
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: `Sincronização ${syncType} concluída! ${totalImportados} atividades importadas com sucesso.`,
+      syncType: syncType,
+      totalActivities: totalImportados,
+      startDate: new Date(startDate * 1000).toISOString(),
+      endDate: new Date(endDate * 1000).toISOString()
+    })
+
+  } catch (error) {
+    console.error("Erro fatal:", error)
+    return NextResponse.json({ error: "Falha na sincronização" }, { status: 500 })
+  }
+}
+
+// ==========================================
+// Arquivo: src/app/api/sync-gears/route.ts
+// ==========================================
+
+import { fetchAndSaveAllGearDetails } from "@/lib/strava"
+import { NextResponse } from "next/server"
+
+export async function GET() {
+  try {
+    await fetchAndSaveAllGearDetails()
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    return NextResponse.json({ error: String(error) }, { status: 500 })
+  }
+}
+
+// ==========================================
+// Arquivo: src/app/api/webhooks/strava/route.ts
+// ==========================================
+
+// src/app/api/webhooks/strava/route.ts
+import { db } from "@/db"
+import { stravaWorkouts } from "@/db/schema"
+import { NextResponse } from "next/server"
+
+const VERIFY_TOKEN = process.env.STRAVA_WEBHOOK_VERIFY_TOKEN || "meu_token_secreto_123"
+
+// 🟢 GET: Validação do Webhook (Strava)
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const mode = searchParams.get("hub.mode")
+  const token = searchParams.get("hub.verify_token")
+  const challenge = searchParams.get("hub.challenge")
+
+  if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    console.log("Webhook do Strava validado com sucesso!")
+    return NextResponse.json({ "hub.challenge": challenge })
+  }
+
+  return new NextResponse("Token inválido", { status: 403 })
+}
+
+// 🟢 POST: Recebe o aviso e baixa o treino novo
+export async function POST(request: Request) {
+  try {
+    const body = await request.json()
+
+    // Se for a CRIAÇÃO de uma atividade nova
+    if (body.object_type === "activity" && body.aspect_type === "create") {
+      const activityId = body.object_id
+      
+      console.log(`Nova atividade detectada! Baixando dados do ID: ${activityId}`)
+
+      const clientId = process.env.STRAVA_CLIENT_ID
+      const clientSecret = process.env.STRAVA_CLIENT_SECRET
+      const refreshToken = process.env.STRAVA_REFRESH_TOKEN
+
+      if (!clientId || !clientSecret || !refreshToken) {
+        throw new Error("Chaves do Strava ausentes nas variáveis de ambiente.")
+      }
+
+      // 1. Gera um Token Novo
+      const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: clientId,
+          client_secret: clientSecret,
+          refresh_token: refreshToken,
+          grant_type: "refresh_token"
+        })
+      })
+
+      const tokenData = await tokenResponse.json()
+      if (!tokenData.access_token) throw new Error("Falha ao gerar access_token")
+
+      // 2. Busca OS DETALHES principais da atividade
+      const activityResponse = await fetch(
+        `https://www.strava.com/api/v3/activities/${activityId}`,
+        { headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+      )
+      const activity = await activityResponse.json()
+
+      // 3. Busca as STREAMS (Telemetria para o Gráfico e Mapa)
+      // Passamos key_by_type=true para o Strava devolver o formato exato que os nossos componentes esperam
+      const streamsResponse = await fetch(
+        `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=time,heartrate,velocity_smooth,latlng,altitude,distance&key_by_type=true`,
+        { headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+      )
+      
+      let streamsData = null
+      if (streamsResponse.ok) {
+        streamsData = await streamsResponse.json()
+      } else {
+        console.warn(`Aviso: Não foi possível buscar as streams da atividade ${activityId}`)
+      }
+
+      // 4. Salva no banco de dados
+      await db.insert(stravaWorkouts).values({
+        id: activity.id.toString(),
+        name: activity.name,
+        type: activity.type,
+        distance: activity.distance?.toString(),
+        movingTime: activity.moving_time,
+        elapsedTime: activity.elapsed_time,
+        totalElevationGain: activity.total_elevation_gain?.toString(),
+        averageSpeed: activity.average_speed?.toString(),
+        maxSpeed: activity.max_speed?.toString(),
+        averageHeartrate: activity.has_heartrate ? Math.round(activity.average_heartrate) : null,
+        maxHeartrate: activity.has_heartrate ? Math.round(activity.max_heartrate) : null,
+        averageCadence: activity.average_cadence?.toString(),
+        averageWatts: activity.average_watts?.toString(),
+        kilojoules: activity.kilojoules?.toString(),
+        sufferScore: activity.suffer_score,
+        gearId: activity.gear_id,
+        mapPolyline: activity.map?.summary_polyline || null,
+        startDate: activity.start_date_local,
+        timezone: activity.timezone,
+        rawPayload: activity, 
+        streamPayload: streamsData, 
+        userId: "COLOQUE_SEU_USER_ID_AQUI", 
+      }).onConflictDoNothing()
+
+      console.log(`✅ Atividade ${activityId} salva no banco com mapa e gráfico!`)
+    }
+
+    // Retorna 200 rápido para o Strava
+    return NextResponse.json({ message: "Recebido" }, { status: 200 })
+  } catch (error) {
+    console.error("Erro no Webhook:", error)
+    return new NextResponse("Erro interno", { status: 500 })
+  }
 }
 
 // ==========================================
@@ -3722,6 +6295,103 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
+// ==========================================
+// Arquivo: src/auth.ts
+// ==========================================
+
+import { db } from "@/db";
+import { otpCodes, users } from "@/db/schema";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import bcrypt from "bcryptjs";
+import { and, desc, eq, gt, isNull } from "drizzle-orm";
+import NextAuth, { type DefaultSession } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+
+declare module "next-auth" {
+  interface User {
+    role?: string | null;
+  }
+  interface Session {
+    user: {
+      id: string;
+      role?: string | null;
+    } & DefaultSession["user"];
+  }
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: DrizzleAdapter(db),
+  session: {
+    strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 horas
+  },
+  providers: [
+    Credentials({
+      name: "OTP",
+      credentials: {
+        identifier: { label: "Email", type: "text" },
+        otp: { label: "OTP", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.identifier || !credentials?.otp) return null;
+
+        const identifier = String(credentials.identifier).toLowerCase();
+        const otp = String(credentials.otp);
+
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, identifier));
+
+        if (!user) return null;
+
+        const [otpRecord] = await db
+          .select()
+          .from(otpCodes)
+          .where(
+            and(
+              eq(otpCodes.userId, user.id),
+              isNull(otpCodes.consumedAt),
+              gt(otpCodes.expiresAt, new Date())
+            )
+          )
+          .orderBy(desc(otpCodes.createdAt))
+          .limit(1);
+
+        if (!otpRecord) return null;
+
+        const isValid = await bcrypt.compare(otp, otpRecord.codeHash);
+        if (!isValid) return null;
+
+        await db
+          .update(otpCodes)
+          .set({ consumedAt: new Date() })
+          .where(eq(otpCodes.id, otpRecord.id));
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) token.role = user.role;
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub as string;
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
+});
 
 // ==========================================
 // Arquivo: src/components/ActivityChart.tsx
@@ -5575,11 +8245,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useDrawer } from '@/contexts/DrawerContext';
-import { ExpenseDrawerProps } from '@/utils/types';
 import { Repeat } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const CATEGORY_PLACEHOLDER = '__category_placeholder__';
+const ACCOUNT_PLACEHOLDER = '__account_placeholder__';
+
+interface ExpenseDrawerProps {
+  categories: any[];
+  accounts: any[];
+  expense?: any;
+  onSuccess?: () => void;
+  onNew?: () => void;
+}
 
 function splitYearMonth(date?: string | null) {
   if (!date) return { year: '', month: '' };
@@ -5597,6 +8275,7 @@ function currentYearMonth() {
 
 export function ExpenseDrawer({
   categories,
+  accounts,
   expense,
   onSuccess,
   onNew
@@ -5606,8 +8285,13 @@ export function ExpenseDrawer({
   const [recurringMonths, setRecurringMonths] = useState(12);
   const [alert, setAlert] = useState<DrawerAlert>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [categoryId, setCategoryId] = useState(
     expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
+  );
+  
+  const [accountId, setAccountId] = useState(
+    expense?.accountId ? String(expense.accountId) : ACCOUNT_PLACEHOLDER,
   );
 
   const initial = expense ? splitYearMonth(expense.date) : currentYearMonth();
@@ -5624,6 +8308,14 @@ export function ExpenseDrawer({
     [categories],
   );
 
+  const accountItems = useMemo(
+    () => [
+      { label: 'Sem conta vinculada', value: ACCOUNT_PLACEHOLDER },
+      ...accounts.map((a) => ({ label: a.name, value: String(a.id) })),
+    ],
+    [accounts],
+  );
+
   useEffect(() => {
     if (open) {
       if (expense) {
@@ -5631,24 +8323,28 @@ export function ExpenseDrawer({
         setDueMonth(next.month);
         setDueYear(next.year);
         setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
-        setIsRecurring(false); // Edição atual não manipula recursão na UI
+        setAccountId(expense.accountId ? String(expense.accountId) : ACCOUNT_PLACEHOLDER);
+        setIsRecurring(false);
       } else {
         setIsRecurring(false);
         setRecurringMonths(12);
         setCategoryId(CATEGORY_PLACEHOLDER);
+        setAccountId(ACCOUNT_PLACEHOLDER);
         const now = currentYearMonth();
         setDueMonth(now.month);
         setDueYear(now.year);
       }
     }
-    // Ao fechar (!open), os estados ficam intactos até que a UI suma de fato.
   }, [open, expense]);
-
 
   const handleSubmit = async (formData: FormData) => {
     formData.set(
       'categoryId',
       categoryId === CATEGORY_PLACEHOLDER ? '' : categoryId,
+    );
+    formData.set(
+      'accountId',
+      accountId === ACCOUNT_PLACEHOLDER ? '' : accountId,
     );
 
     const isoDate = toFirstDayOfMonth(dueYear, dueMonth);
@@ -5686,6 +8382,7 @@ export function ExpenseDrawer({
   };
 
   const isCategoryPlaceholder = categoryId === CATEGORY_PLACEHOLDER;
+  const isAccountPlaceholder = accountId === ACCOUNT_PLACEHOLDER;
 
   return (
     <DrawerShell
@@ -5736,6 +8433,7 @@ export function ExpenseDrawer({
         className="md:col-span-2"
       />
 
+      {/* Seletor de Categoria */}
       <Select
         items={categoryItems}
         value={categoryId}
@@ -5762,6 +8460,38 @@ export function ExpenseDrawer({
               className={drawerSelectItemClass}
             >
               {cat.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Seletor de Conta Bancária */}
+      <Select
+        items={accountItems}
+        value={accountId}
+        onValueChange={(v) => setAccountId(v ?? ACCOUNT_PLACEHOLDER)}
+      >
+        <SelectTrigger
+          className={`${drawerSelectTriggerClass} ${
+            isAccountPlaceholder ? 'text-sidebar-foreground/50' : ''
+          }`}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent className={drawerSelectContentClass + ' max-h-72'}>
+          <SelectItem
+            value={ACCOUNT_PLACEHOLDER}
+            className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+          >
+            Sem conta vinculada
+          </SelectItem>
+          {accounts.map((acc) => (
+            <SelectItem
+              key={acc.id}
+              value={String(acc.id)}
+              className={drawerSelectItemClass}
+            >
+              {acc.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -6935,6 +9665,164 @@ export function RecurringExpenseDrawer({
       )}
     </>
   )
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/TransferDrawer.tsx
+// ==========================================
+
+"use client";
+
+import { createTransfer } from "@/actions/wallet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ArrowLeftRight } from "lucide-react";
+import { useState } from "react";
+
+interface Account {
+  id: number;
+  name: string;
+}
+
+interface TransferDrawerProps {
+  accounts: Account[];
+  triggerLabel?: string;
+}
+
+export function TransferDrawer({ accounts, triggerLabel = "Transferir" }: TransferDrawerProps) {
+  console.log("TransferDrawer accounts:", accounts); // Log the accounts to verify they are being passed correctly
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+
+    try {
+      const formData = new FormData(event.currentTarget);
+      await createTransfer(formData);
+      setOpen(false);
+    } catch (error) {
+      console.error("Erro ao realizar transferência:", error);
+      alert("Erro ao realizar transferência. Verifique os dados.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 px-3 cursor-pointer">
+        <ArrowLeftRight size={16} />
+        {triggerLabel}
+      </SheetTrigger>
+      <SheetContent className="sm:max-w-md">
+        <SheetHeader>
+          <SheetTitle>Nova Transferência</SheetTitle>
+          <SheetDescription>
+            Mova fundos entre as suas contas próprias sem afetar o resultado das despesas ou receitas da casa.
+          </SheetDescription>
+        </SheetHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <label htmlFor="sourceAccountId" className="text-sm font-medium leading-none">
+              Conta de Origem
+            </label>
+            <select
+              id="sourceAccountId"
+              name="sourceAccountId"
+              required
+              defaultValue=""
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
+            >
+              <option value="" disabled className="bg-background text-muted-foreground">
+                Selecione a conta de origem
+              </option>
+              {accounts.map((acc) => (
+                <option key={acc.id} value={acc.id} className="bg-background text-foreground py-1">
+                  {acc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="destinationAccountId" className="text-sm font-medium leading-none">
+              Conta de Destino
+            </label>
+            <select
+              id="destinationAccountId"
+              name="destinationAccountId"
+              required
+              defaultValue=""
+              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
+            >
+              <option value="" disabled className="bg-background text-muted-foreground">
+                Selecione a conta de destino
+              </option>
+              {accounts.map((acc) => (
+                <option key={acc.id} value={acc.id} className="bg-background text-foreground py-1">
+                  {acc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="amount" className="text-sm font-medium leading-none">
+              Valor (R$)
+            </label>
+            <Input
+              id="amount"
+              name="amount"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="date" className="text-sm font-medium leading-none">
+              Data
+            </label>
+            <Input
+              id="date"
+              name="date"
+              type="date"
+              defaultValue={new Date().toISOString().split("T")[0]}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="description" className="text-sm font-medium leading-none">
+              Descrição
+            </label>
+            <Input
+              id="description"
+              name="description"
+              placeholder="Ex: Transferência para investimentos"
+              defaultValue="Transferência entre contas"
+            />
+          </div>
+
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "A processar..." : "Confirmar Transferência"}
+          </Button>
+        </form>
+      </SheetContent>
+    </Sheet>
+  );
 }
 
 // ==========================================
@@ -9129,6 +12017,7 @@ export function CreditCardsSection({
   cartoesComFatura,
   categorias,
   cartoes,
+  accounts = [],
   createInstallmentPurchaseAction,
   faturaAno,
   faturaMesNum,
@@ -9143,9 +12032,17 @@ export function CreditCardsSection({
 
   const handlePayInvoice = async (cardId: string) => {
     if (!payInvoiceAction) return;
+    
+    // Pega a primeira conta disponível como origem do pagamento
+    const defaultAccountId = accounts.length > 0 ? accounts[0].id : null;
+
     const formData = new FormData();
     formData.set("cardId", String(cardId));
     formData.set("month", `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`);
+    if (defaultAccountId) {
+      formData.set("accountId", String(defaultAccountId));
+    }
+    
     await payInvoiceAction(formData);
   };
 
@@ -14504,6 +17401,1063 @@ export function useVisibility() {
 }
 
 // ==========================================
+// Arquivo: src/db/index.ts
+// ==========================================
+
+// src/db/index.ts
+import { neon } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema';
+
+const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle(sql, { schema });
+
+// ==========================================
+// Arquivo: src/db/schema.ts
+// ==========================================
+
+import { InferSelectModel, relations } from "drizzle-orm";
+import {
+  AnyPgColumn,
+  boolean,
+  date,
+  integer,
+  jsonb,
+  numeric,
+  pgEnum,
+  pgTable,
+  primaryKey,
+  serial,
+  text,
+  timestamp,
+  uniqueIndex
+} from "drizzle-orm/pg-core";
+import { AdapterAccount } from "next-auth/adapters";
+
+export const users = pgTable("user", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").unique(),
+  image: text("image"),
+  password: text("password"),
+  role: text("role").default("Atleta"),
+  phone: text("phone"), 
+  lastSeen: timestamp("last_seen"),
+})
+
+export const otpCodes = pgTable("otp_codes", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  codeHash: text("code_hash").notNull(),
+  expiresAt: timestamp("expires_at", { mode: "date" }).notNull(),
+  consumedAt: timestamp("consumed_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const accounts = pgTable(
+  "account",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (account) => ({
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId],
+    }),
+  })
+)
+
+export const sessions = pgTable("session", {
+  sessionToken: text("sessionToken").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { mode: "date" }).notNull(),
+})
+
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
+  (verificationToken) => ({
+    compositePk: primaryKey({
+      columns: [verificationToken.identifier, verificationToken.token],
+    }),
+  })
+)
+
+export const posts = pgTable("post", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  slug: text("slug").unique().notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt"),
+  published: boolean("published").default(false).notNull(),
+  authorId: text("authorId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+export const books = pgTable("book", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  title: text("title").notNull(),
+  author: text("author").notNull(),
+  status: text("status").default("lido").notNull(),
+  rating: integer("rating"),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+export const photos = pgTable("photo", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  title: text("title").notNull(),
+  imageUrl: text("imageUrl").notNull(),
+  camera: text("camera"),
+  lens: text("lens"),
+  aperture: text("aperture"),
+  shutterSpeed: text("shutterSpeed"),
+  iso: text("iso"),
+  location: text("location"),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+export const plannedWorkouts = pgTable("planned_workout", {
+  id: text("id").primaryKey(),
+  date: text("date").notNull(),
+  title: text("title"),
+  status: integer("status"),
+  steps: jsonb("steps"),
+  rawPayload: jsonb("rawPayload"),
+  userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+})
+
+export const stravaWorkouts = pgTable("strava_workout", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type"),
+  distance: text("distance"),
+  movingTime: integer("movingTime"),
+  elapsedTime: integer("elapsedTime"),
+  totalElevationGain: text("totalElevationGain"),
+  averageSpeed: text("averageSpeed"),
+  maxSpeed: text("maxSpeed"),
+  averageHeartrate: integer("averageHeartrate"),
+  maxHeartrate: integer("maxHeartrate"),
+  averageCadence: text("averageCadence"),
+  averageWatts: text("averageWatts"),
+  kilojoules: text("kilojoules"),
+  sufferScore: integer("sufferScore"),
+  gearId: text("gearId"),
+  mapPolyline: text("mapPolyline"),
+  startDate: text("startDate").notNull(),
+  timezone: text("timezone"),
+  rawPayload: jsonb("rawPayload"),
+  userId: text("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  isDetailed: integer("isDetailed").default(0),
+  detailedPayload: jsonb("detailedPayload"),
+  streamPayload: jsonb("streamPayload"),
+})
+
+export const gear = pgTable("gear", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  nickname: text("nickname"),
+  brandName: text("brand_name"),
+  modelName: text("model_name"),
+  distance: text("distance"),
+  resourceState: integer("resource_state"),
+  category: text("category").notNull().default("Tênis"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+})
+
+export const transactionTypeEnum = pgEnum('transaction_type', [
+  'income',
+  'expense',
+  'transfer',
+]);
+
+export const accountTypeEnum = pgEnum('account_type', [
+  'checking',
+  'savings',
+  'cash',
+  'investment',
+  'other',
+]);
+
+// ---------- TABELAS ----------
+
+// ... imports existentes
+
+// Adicionar householdId nas tabelas relevantes:
+
+export const categories = pgTable('categories', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }), // NOVA
+  name: text('name').notNull(),
+  type: transactionTypeEnum('type').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const financialAccounts = pgTable('financial_accounts', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }), // NOVA
+  name: text('name').notNull(),
+  type: accountTypeEnum('type').notNull(),
+  initialBalance: numeric('initial_balance').default('0'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// src/db/schema.ts
+export const transactions = pgTable('transactions', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }),
+  description: text('description').notNull(),
+  amount: numeric('amount').notNull(),
+  type: transactionTypeEnum('type').notNull(),
+  date: date('date').notNull(),
+  source: text('source').notNull().default('manual'),
+  categoryId: integer('category_id').references(() => categories.id),
+  accountId: integer('account_id').references(() => financialAccounts.id),
+  paid: boolean('paid').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+
+  // ─── Novos campos ───────────────────────────────────────────────
+  // Marca a linha "semente" que iniciou a série recorrente.
+  // Filhos têm isRecurring = false.
+  isRecurring: boolean('is_recurring').notNull().default(false),
+
+  // Aponta para a linha-semente. Null na semente; preenchido em cada cópia.
+  // onDelete cascade: se a semente morre, o histórico inteiro vai junto.
+  recurringParentId: integer('recurring_parent_id').references(
+    (): AnyPgColumn => transactions.id,
+    { onDelete: 'cascade' },
+  ),
+});
+
+export const recurringExpenses = pgTable("recurring_expenses", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }), // NOVA
+  name: text("name").notNull(),
+  amount: numeric("amount").notNull(),
+  categoryId: integer("category_id").references(() => categories.id),
+  accountId: integer("account_id").references(() => financialAccounts.id),
+  dueDay: integer("due_day").notNull(),
+  frequency: text("frequency").notNull().default("monthly"),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const assets = pgTable("assets", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }), // NOVA
+  name: text("name").notNull(),
+  ticker: text("ticker"),
+  type: text("type").notNull().default("stock"),
+  currentPrice: numeric("current_price"),
+  quantity: numeric("quantity"),
+  averagePrice: numeric("average_price"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const investmentTransactions = pgTable("investment_transactions", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  householdId: text('household_id').references(() => households.id, { onDelete: 'set null' }), // NOVA
+  assetId: integer("asset_id").notNull().references(() => assets.id, { onDelete: "cascade" }),
+  type: text("type").notNull(),
+  date: date("date").notNull(),
+  quantity: numeric("quantity"),
+  price: numeric("price"),
+  amount: numeric("amount").notNull(),
+  fees: numeric("fees").default("0"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Cartões de crédito
+export const creditCards = pgTable('credit_cards', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  brand: text('brand'),
+  lastFourDigits: text('last_four_digits'), // <-- NOVA COLUNA AQUI
+  creditLimit: numeric('credit_limit'),
+  dueDay: integer('due_day'),
+  closingDay: integer('closing_day'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Compras no cartão de crédito
+export const purchases = pgTable('purchases', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  creditCardId: integer('credit_card_id').references(() => creditCards.id),
+  description: text('description').notNull(),
+  totalAmount: numeric('total_amount').notNull(),
+  installments: integer('installments').notNull().default(1),
+  firstDueDate: date('first_due_date').notNull(),
+  categoryId: integer('category_id').references(() => categories.id),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Parcelas de uma compra
+export const installments = pgTable('installments', {
+  id: serial('id').primaryKey(),
+  purchaseId: integer('purchase_id')
+    .references(() => purchases.id)
+    .notNull(),
+  number: integer('number').notNull(), // 1, 2, 3...
+  amount: numeric('amount').notNull(),
+  dueDate: date('due_date').notNull(),
+  paid: boolean('paid').notNull().default(false),
+  paidAt: timestamp('paid_at'),
+});
+
+// ---------- RELAÇÕES (para queries com joins) ----------
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  transactions: many(transactions),
+  purchases: many(purchases),
+}));
+
+export const accountsBankRelations = relations(financialAccounts, ({ many }) => ({
+  transactions: many(transactions),
+}));
+
+export const transactionsRelations = relations(transactions, ({ one }) => ({
+  category: one(categories, {
+    fields: [transactions.categoryId],
+    references: [categories.id],
+  }),
+  account: one(financialAccounts, {
+    fields: [transactions.accountId],
+    references: [financialAccounts.id],
+  }),
+}));
+
+export const creditCardsRelations = relations(creditCards, ({ many }) => ({
+  purchases: many(purchases),
+}));
+
+export const purchasesRelations = relations(purchases, ({ one, many }) => ({
+  creditCard: one(creditCards, {
+    fields: [purchases.creditCardId],
+    references: [creditCards.id],
+  }),
+  category: one(categories, {
+    fields: [purchases.categoryId],
+    references: [categories.id],
+  }),
+  installments: many(installments),
+}));
+
+export const installmentsRelations = relations(installments, ({ one }) => ({
+  purchase: one(purchases, {
+    fields: [installments.purchaseId],
+    references: [purchases.id],
+  }),
+}));
+
+export const listTypeEnum = pgEnum("list_type", [
+  "supermercado",
+  "varejao",
+  "acougue",
+]);
+
+export const shoppingLists = pgTable("shopping_lists", {
+  id: serial('id').primaryKey(),
+  name: text("name").notNull(),
+  type: listTypeEnum("type").notNull(),
+  userId: text("user_id").notNull(), // ID do usuário vindo do Auth.js
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const shoppingItems = pgTable("shopping_items", {
+  id: serial('id').primaryKey(),
+  listId: serial("list_id")
+    .notNull()
+    .references(() => shoppingLists.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  quantity: integer("quantity").default(1),
+  unit: text("unit"),
+  checked: boolean("checked").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type ShoppingList = InferSelectModel<typeof shoppingLists>;
+export type ShoppingItem = InferSelectModel<typeof shoppingItems>;
+
+// Tipo combinado para lista com itens
+export type ShoppingListWithItems = ShoppingList & {
+  items: ShoppingItem[];
+};
+
+// Log de geração mensal para evitar duplicatas
+export const recurringPaymentLogs = pgTable("recurring_payment_logs", {
+  id: serial("id").primaryKey(),
+  recurringExpenseId: integer("recurring_expense_id")
+    .notNull()
+    .references(() => recurringExpenses.id, { onDelete: "cascade" }),
+  month: text("month").notNull(), // formato "YYYY-MM"
+  transactionId: integer("transaction_id")
+    .notNull()
+    .references(() => transactions.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueCombination: uniqueIndex("unique_recurring_month").on(table.recurringExpenseId, table.month),
+}));
+
+export const recurringExpensesRelations = relations(recurringExpenses, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [recurringExpenses.categoryId],
+    references: [categories.id],
+  }),
+  account: one(financialAccounts, {
+    fields: [recurringExpenses.accountId],
+    references: [financialAccounts.id],
+  }),
+  logs: many(recurringPaymentLogs),
+}));
+
+export const recurringPaymentLogsRelations = relations(recurringPaymentLogs, ({ one }) => ({
+  recurringExpense: one(recurringExpenses, {
+    fields: [recurringPaymentLogs.recurringExpenseId],
+    references: [recurringExpenses.id],
+  }),
+  transaction: one(transactions, {
+    fields: [recurringPaymentLogs.transactionId],
+    references: [transactions.id],
+  }),
+}));
+
+// Relações
+export const assetsRelations = relations(assets, ({ many }) => ({
+  transactions: many(investmentTransactions),
+}));
+
+export const investmentTransactionsRelations = relations(investmentTransactions, ({ one }) => ({
+  asset: one(assets, {
+    fields: [investmentTransactions.assetId],
+    references: [assets.id],
+  }),
+}));
+
+export const households = pgTable("households", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).defaultNow().notNull(),
+});
+
+export const householdMembers = pgTable("household_members", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  householdId: text("household_id")
+    .notNull()
+    .references(() => households.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  role: text("role").notNull().default("member"),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+}, (table) => ({
+  uniqueMembership: uniqueIndex("unique_household_member").on(table.householdId, table.userId),
+}));
+
+
+export const kanbanStatusEnum = pgEnum("kanban_status", [
+  "to_do", 
+  "in_progress", 
+  "pending", 
+  "canceled", 
+  "done"
+])
+
+export const kanbanUrgencyEnum = pgEnum("kanban_urgency", [
+  "low", 
+  "medium", 
+  "high"
+])
+
+// 2. Criamos a Tabela
+export const kanbanTasks = pgTable("kanban_tasks", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  
+  title: text("title").notNull(),
+  description: text("description"),
+  
+  status: kanbanStatusEnum("status").default("to_do").notNull(),
+  urgency: kanbanUrgencyEnum("urgency").default("medium").notNull(),
+  
+  dueDate: timestamp("due_date", { mode: "string" }),
+  
+  // Relacionamentos com os 2 usuários do sistema
+  assignedToId: text("assigned_to_id").references(() => users.id, { 
+    onDelete: "set null" 
+  }),
+  createdById: text("created_by_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+    
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .notNull()
+    .$onUpdate(() => new Date()), // Atualiza automaticamente a data na edição
+})
+
+// ==========================================
+// Arquivo: src/hooks/use-mobile.ts
+// ==========================================
+
+import * as React from "react"
+
+const MOBILE_BREAKPOINT = 768
+
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
+
+  return !!isMobile
+}
+
+
+// ==========================================
+// Arquivo: src/lib/actions.ts
+// ==========================================
+
+"use server"
+
+import { signOut } from "@/auth";
+
+export async function deslogar() {
+  await signOut({ redirectTo: "/login" })
+}
+
+// ==========================================
+// Arquivo: src/lib/household.ts
+// ==========================================
+
+import { db } from "@/db";
+import { householdMembers } from "@/db/schema";
+import { eq } from "drizzle-orm";
+
+export async function getUserHouseholdIds(userId: string): Promise<string[]> {
+  const memberships = await db
+    .select({ householdId: householdMembers.householdId })
+    .from(householdMembers)
+    .where(eq(householdMembers.userId, userId));
+
+  return memberships.map(m => m.householdId);
+}
+
+export async function getPrimaryHouseholdId(userId: string): Promise<string | null> {
+  const ids = await getUserHouseholdIds(userId);
+  return ids[0] ?? null;
+}
+
+// ==========================================
+// Arquivo: src/lib/strava.ts
+// ==========================================
+
+import { db } from "@/db"
+import { gear, stravaWorkouts } from "@/db/schema"
+import { eq, sql } from "drizzle-orm"
+
+async function getStravaToken() {
+  const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      client_id: process.env.STRAVA_CLIENT_ID,
+      client_secret: process.env.STRAVA_CLIENT_SECRET,
+      refresh_token: process.env.STRAVA_REFRESH_TOKEN,
+      grant_type: "refresh_token"
+    })
+  })
+  const { access_token } = await tokenResponse.json()
+  if (!access_token) throw new Error("Falha ao gerar token")
+  return access_token
+}
+
+export async function fetchAndSaveStravaDetails(id: string, atividadeAtual: any) {
+  try {
+    const token = await getStravaToken()
+
+    if (!token) throw new Error("Falha ao gerar token de acesso")
+
+    const detalheResponse = await fetch(`https://www.strava.com/api/v3/activities/${id}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+    const detalheJson = detalheResponse.ok ? await detalheResponse.json() : atividadeAtual.detailedPayload
+
+    const streamResponse = await fetch(`https://www.strava.com/api/v3/activities/${id}/streams?keys=time,heartrate,velocity_smooth&key_by_type=true`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
+    let streamJson = null
+    if (streamResponse.ok) {
+      streamJson = await streamResponse.json()
+    }
+    if (detalheJson?.gear?.id) {
+      const gearData = detalheJson.gear
+      const category = gearData.frame_type !== undefined
+        ? (gearData.frame_type ? "Bicicleta" : "Tênis")
+        : (atividadeAtual.type === "Ride" ? "Bicicleta" : "Tênis")
+
+      await db.insert(gear).values({
+        id: gearData.id,
+        name: gearData.name ?? null,
+        nickname: gearData.nickname ?? null,
+        brandName: gearData.brand_name ?? null,
+        modelName: gearData.model_name ?? null,
+        distance: gearData.distance ? String(gearData.distance) : null,
+        resourceState: gearData.resource_state ?? null,
+        category,
+        updatedAt: new Date(),
+      }).onConflictDoUpdate({
+        target: gear.id,
+        set: {
+          name: gearData.name ?? null,
+          nickname: gearData.nickname ?? null,
+          brandName: gearData.brand_name ?? null,
+          modelName: gearData.model_name ?? null,
+          distance: gearData.distance ? String(gearData.distance) : null,
+          resourceState: gearData.resource_state ?? null,
+          category,
+          updatedAt: new Date(),
+        },
+      })
+    }
+
+    await db.update(stravaWorkouts)
+      .set({ isDetailed: 1, detailedPayload: detalheJson, streamPayload: streamJson })
+      .where(eq(stravaWorkouts.id, id))
+      
+    return {
+      ...atividadeAtual,
+      detailedPayload: detalheJson,
+      streamPayload: streamJson,
+      isDetailed: 1
+    }
+  } catch (error) {
+    return atividadeAtual 
+  }
+}
+
+export async function fetchAndSaveAllGearDetails() {
+  try {
+    const token = await getStravaToken()
+
+    const distinctGearIds = await db
+      .selectDistinct({ gearId: stravaWorkouts.gearId })
+      .from(stravaWorkouts)
+      .where(sql`${stravaWorkouts.gearId} IS NOT NULL`)
+
+    let savedCount = 0
+
+    for (const { gearId } of distinctGearIds) {
+      if (!gearId) continue
+
+      try {
+        const response = await fetch(`https://www.strava.com/api/v3/gear/${gearId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        })
+
+        if (!response.ok) {
+          console.warn(`Falha ao buscar gear ${gearId}: ${response.status}`)
+          continue
+        }
+
+        const gearData = await response.json()
+
+        const category = gearData.frame_type ? "Bicicleta" : "Tênis"
+
+        await db.insert(gear).values({
+          id: gearData.id,
+          name: gearData.name ?? "Equipamento",
+          nickname: gearData.nickname ?? null,
+          brandName: gearData.brand_name ?? null,
+          modelName: gearData.model_name ?? null,
+          distance: gearData.distance ? String(gearData.distance) : null,
+          resourceState: gearData.resource_state ?? null,
+          category,
+          updatedAt: new Date(),
+        }).onConflictDoUpdate({
+          target: gear.id,
+          set: {
+            name: gearData.name ?? "Equipamento",
+            nickname: gearData.nickname ?? null,
+            brandName: gearData.brand_name ?? null,
+            modelName: gearData.model_name ?? null,
+            distance: gearData.distance ? String(gearData.distance) : null,
+            resourceState: gearData.resource_state ?? null,
+            category,
+            updatedAt: new Date(),
+          },
+        })
+
+        savedCount++
+      } catch (error) {
+        console.error(`Erro ao processar gear ${gearId}:`, error)
+      }
+    }
+
+    console.log(`Equipamentos salvos/atualizados: ${savedCount}`)
+  } catch (error) {
+    console.error("Erro ao sincronizar equipamentos:", error)
+  }
+}
+
+// ==========================================
+// Arquivo: src/lib/utils.ts
+// ==========================================
+
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+
+// ==========================================
+// Arquivo: src/proxy.ts
+// ==========================================
+
+// src/proxy.ts
+import { auth } from "@/auth";
+
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const { pathname } = req.nextUrl;
+
+  // Permitir acesso público estrito à raiz (/) e à tela de login (/login)
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/otp") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/icons/");
+
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL("/login", req.url));
+  }
+
+  if (isLoggedIn && pathname === "/login") {
+    return Response.redirect(new URL("/admin", req.url));
+  }
+});
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};
+
+// ==========================================
+// Arquivo: src/services/balanceService.ts
+// ==========================================
+
+// src/services/balanceService.ts
+import { db } from '@/db'; // Ajuste o caminho do seu banco se necessário (ex: '@/db/index')
+import { financialAccounts, installments, purchases, transactions } from '@/db/schema';
+import { toCents } from '@/utils/currency';
+import { and, eq, gte, lte, or } from 'drizzle-orm';
+
+export async function getDashboardSummary(userId: string, householdId: string | null, targetMonth: Date) {
+  // 1. Delimitar o mês atual
+  const startOfMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
+  const endOfMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0, 23, 59, 59, 999);
+
+  const householdCondition = householdId
+    ? or(eq(financialAccounts.userId, userId), eq(financialAccounts.householdId, householdId))
+    : eq(financialAccounts.userId, userId);
+
+  const txHouseholdCondition = householdId
+    ? or(eq(transactions.userId, userId), eq(transactions.householdId, householdId))
+    : eq(transactions.userId, userId);
+
+  // --- A. SALDO BANCÁRIO ATUAL (Histórico Completo) ---
+  const accounts = await db.select().from(financialAccounts).where(householdCondition);
+  const allTransactions = await db.select().from(transactions).where(txHouseholdCondition);
+
+  let bankBalanceCents = 0;
+
+  // Soma saldos iniciais
+  accounts.forEach((acc) => {
+    bankBalanceCents += toCents(acc.initialBalance);
+  });
+
+  // Soma movimentações efetivadas (ignoramos 'transfer' para o saldo consolidado global)
+  allTransactions.forEach((tx) => {
+    if (tx.paid === true) {
+      if (tx.type === 'income') bankBalanceCents += toCents(tx.amount);
+      if (tx.type === 'expense') bankBalanceCents -= toCents(tx.amount);
+    }
+  });
+
+
+  // --- B. COMPROMISSOS PENDENTES DO MÊS ---
+  let pendingExpensesCents = 0;
+  
+  // Despesas pendentes
+  allTransactions.forEach((tx) => {
+    if (
+      tx.type === 'expense' &&
+      tx.paid === false &&
+      new Date(tx.date) >= startOfMonth &&
+      new Date(tx.date) <= endOfMonth
+    ) {
+      pendingExpensesCents += toCents(tx.amount);
+    }
+  });
+
+  // Faturas de Cartão (Parcelas abertas do mês)
+  // Como `installments` não tem userId direto, precisamos fazer um join com `purchases`
+  const monthlyInstallments = await db
+    .select({
+      amount: installments.amount,
+      paid: installments.paid,
+    })
+    .from(installments)
+    .innerJoin(purchases, eq(installments.purchaseId, purchases.id))
+    .where(
+      and(
+        householdId
+          ? or(eq(purchases.userId, userId), eq(transactions.householdId, householdId)) // Nota: se purchases não tem householdId, use userId
+          : eq(purchases.userId, userId),
+        eq(installments.paid, false),
+        gte(installments.dueDate, startOfMonth.toISOString()), // Ajuste de formatação de data dependendo do seu DB
+        lte(installments.dueDate, endOfMonth.toISOString())
+      )
+    );
+
+  let pendingCardObligationsCents = 0;
+  monthlyInstallments.forEach((inst) => {
+    pendingCardObligationsCents += toCents(inst.amount);
+  });
+
+
+  // --- C. SALDO DISPONÍVEL PREVISTO ---
+  const totalPendingObligationsCents = pendingExpensesCents + pendingCardObligationsCents;
+  const expectedAvailableBalanceCents = bankBalanceCents - totalPendingObligationsCents;
+
+  return {
+    bankBalanceCents,
+    pendingExpensesCents,
+    pendingCardObligationsCents,
+    totalPendingObligationsCents,
+    expectedAvailableBalanceCents,
+  };
+}
+
+// ==========================================
+// Arquivo: src/services/invoiceService.ts
+// ==========================================
+
+// src/services/invoiceService.ts
+import { db } from "@/db";
+import { creditCards, purchases } from "@/db/schema";
+import { and, eq } from "drizzle-orm";
+
+export async function getCreditCardInvoicesSummary(userId: string, year: number, monthNum: number) {
+  const primeiroDia = new Date(year, monthNum - 1, 1);
+  const ultimoDia = new Date(year, monthNum, 0);
+
+  const cartoes = await db.query.creditCards.findMany({
+    where: eq(creditCards.userId, userId),
+  });
+
+  const cartoesComFatura = await Promise.all(
+    cartoes.map(async (cartao) => {
+      const compras = await db.query.purchases.findMany({
+        where: and(
+          eq(purchases.creditCardId, cartao.id),
+          eq(purchases.userId, userId)
+        ),
+        with: { installments: true, category: true },
+      });
+
+      const parcelasDoMes = compras.flatMap((compra) =>
+        compra.installments
+          .filter((parcela) => {
+            const dueDate = new Date(parcela.dueDate + "T00:00:00");
+            return dueDate >= primeiroDia && dueDate <= ultimoDia;
+          })
+          .map((parcela) => ({
+            ...parcela,
+            purchaseDescription: compra.description,
+            purchaseCategory: compra.category?.name || "Sem categoria",
+            totalInstallments: compra.installments.length,
+          }))
+      );
+
+      const total = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0);
+      const pago = parcelasDoMes.filter((p) => p.paid).reduce((sum, p) => sum + Number(p.amount), 0);
+
+      const statusFatura =
+        total === 0 ? "Sem gastos" : pago >= total ? "Fechada" : "Aberta";
+
+      return {
+        cartao,
+        parcelas: parcelasDoMes.sort((a, b) => a.dueDate.localeCompare(b.dueDate)),
+        total,
+        pago,
+        statusFatura,
+      };
+    })
+  );
+
+  return cartoesComFatura;
+}
+
+// ==========================================
+// Arquivo: src/services/recurringService.ts
+// ==========================================
+
+// src/services/recurringService.ts
+import { db } from "@/db";
+import { recurringExpenses, transactions } from "@/db/schema";
+import { and, eq, gte, lte } from "drizzle-orm";
+
+export async function ensureRecurringExpensesGenerated(userId: string, year: number, monthNum: number) {
+  const primeiroDia = new Date(year, monthNum - 1, 1);
+  const ultimoDia = new Date(year, monthNum, 0);
+  const firstDayStr = primeiroDia.toISOString().split("T")[0];
+  const lastDayStr = ultimoDia.toISOString().split("T")[0];
+
+  const activeRules = await db.query.recurringExpenses.findMany({
+    where: and(
+      eq(recurringExpenses.userId, userId),
+      eq(recurringExpenses.active, true)
+    ),
+  });
+
+  if (activeRules.length === 0) return;
+
+  const existingTransactions = await db.query.transactions.findMany({
+    where: and(
+      eq(transactions.userId, userId),
+      gte(transactions.date, firstDayStr),
+      lte(transactions.date, lastDayStr),
+      eq(transactions.source, "recurring")
+    ),
+  });
+
+  const existingDescriptions = new Set(existingTransactions.map((t) => t.description));
+
+  const rulesToGenerate = activeRules.filter(
+    (rule) => !existingDescriptions.has(rule.name)
+  );
+
+  if (rulesToGenerate.length === 0) return;
+
+  const newTransactionsToInsert = rulesToGenerate.map((rule) => {
+    const day = rule.dueDay || 1;
+    const targetDate = new Date(year, monthNum - 1, Math.min(day, ultimoDia.getDate()));
+    const targetDateStr = targetDate.toISOString().split("T")[0];
+
+    return {
+      userId: rule.userId,
+      householdId: rule.householdId,
+      description: rule.name,
+      amount: rule.amount,
+      type: "expense" as const,
+      categoryId: rule.categoryId,
+      accountId: rule.accountId,
+      date: targetDateStr,
+      paid: false, 
+      source: "recurring" as const,
+    };
+  });
+
+  if (newTransactionsToInsert.length > 0) {
+    await db.insert(transactions).values(newTransactionsToInsert);
+  }
+}
+
+// ==========================================
+// Arquivo: src/utils/currency.ts
+// ==========================================
+
+// src/utils/currency.ts
+
+/**
+ * Converte um valor financeiro (string do DB ou float) para centavos (Inteiro).
+ * Ex: "10.50" -> 1050 | "0.10" -> 10 | 0.20 -> 20
+ */
+export function toCents(value: string | number | null | undefined): number {
+  if (!value) return 0;
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return 0;
+  // Math.round previne que 0.29 * 100 vire 28.99999999
+  return Math.round(num * 100);
+}
+
+/**
+ * Converte de centavos de volta para decimal padrão do sistema (Float).
+ * Ex: 1050 -> 10.50
+ */
+export function fromCents(cents: number): number {
+  return cents / 100;
+}
+
+/**
+ * Formata um valor em centavos diretamente para Real Brasileiro (BRL) na interface.
+ */
+export function formatCurrency(cents: number): string {
+  return (cents / 100).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  });
+}
+
+// ==========================================
 // Arquivo: src/utils/hooks/OnlineTracker.tsx
 // ==========================================
 
@@ -14530,4 +18484,465 @@ export function OnlineTracker() {
   }, [])
 
   return null
+}
+
+// ==========================================
+// Arquivo: src/utils/mocks/index.ts
+// ==========================================
+
+
+export const menuItems = [
+  {
+    name: 'Sobre',
+    href: '/sobre',
+  },
+  {
+    name: 'Blog',
+    href: '/blog',
+  },
+  {
+    name: 'Livros',
+    href: '/livros',
+  },
+  {
+    name: 'Atividade',
+    subItems: [
+      {
+        title: 'Treinos Propostos',
+        href: '/treinos',
+      },
+      {
+        title: 'Treinos Executados',
+        href: '/atividades',
+      },
+    ]
+  },
+  {
+    name: 'Admin',
+    hasLogout: true, 
+    subItems: [
+      {
+        title: 'Blog',
+        href: '/admin/blog',
+      },
+      {
+        title: 'Livros',
+        href: '/admin/livros',
+      },
+      {
+        title: 'Carteira',
+        href: '/admin/carteira',
+      },
+      {
+        title: 'Lista de Compras',
+        href: '/admin/listas',
+      },
+    ]
+  }
+]
+
+export const SORT_OPTIONS = [
+  { value: "date_desc", label: "Mais recentes" },
+  { value: "date_asc", label: "Mais antigos" },
+  { value: "distance_desc", label: "Maior distância" },
+  { value: "distance_asc", label: "Menor distância" },
+  { value: "duration_desc", label: "Maior duração" },
+  { value: "duration_asc", label: "Menor duração" },
+  { value: "hr_desc", label: "Maior FC média" },
+  { value: "hr_asc", label: "Menor FC média" },
+  { value: "elevation_desc", label: "Maior ganho de elevação" },
+  { value: "elevation_asc", label: "Menor ganho de elevação" },
+] as const
+
+export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200] as const
+export const DEFAULT_PAGE_SIZE = 10
+
+
+
+// ==========================================
+// Arquivo: src/utils/types/index.ts
+// ==========================================
+
+export interface StravaMapProps {
+  mapPolyline: string | null
+  streams?: any 
+}
+
+export interface SvgIconProps {
+  src: string; // Agora isso é uma string pura!
+  className?: string;
+}
+
+export interface PageSizeSelectorProps {
+  pageSize: number
+  filters: Record<string, string | number | undefined>
+}
+
+export interface AtividadesFooterProps {
+  currentPage: number
+  totalPages: number
+  pageSize: number
+  activityType: string
+  gearId: string
+  sortValue: string
+  typeOptions: string[]
+  shoes: { id: string; name: string }[]
+  bikes: { id: string; name: string }[]
+}
+
+export interface FiltersProps {
+  activityType: string
+  gearId: string
+  sortValue: string
+  typeOptions: string[]
+  shoes: { id: string; name: string }[]
+  bikes: { id: string; name: string }[]
+}
+
+export type AlertType = 'success' | 'error';
+
+export interface FloatingAlertProps {
+  type: AlertType;
+  message: string;
+  onClose: () => void;
+  duration?: number; // em ms
+}
+
+export interface PurchaseDrawerProps {
+  categories: Category[];
+  creditCards: CreditCard[];
+  initialOpen?: boolean;
+  createInstallmentPurchaseAction: (formData: FormData) => Promise<void>;
+  initialCreditCardId?: number;   // ← novo
+  triggerLabel?: string;      
+  onSuccess?: () => void;
+}
+
+export type CategoryType = "expense" | "income" | "transfer"
+
+export interface Category {
+  id: number
+  name: string
+  type: CategoryType
+}
+
+export type AccountType = "checking" | "savings" | "cash" | "investment" | "other"
+
+export interface FinancialAccount {
+  id: number
+  name: string
+  type: AccountType
+  initialBalance: string | null
+}
+
+export interface Transaction {
+  id: number
+  description: string
+  amount: string
+  type: CategoryType // agora aceita "transfer"
+  date: string
+  categoryId: number | null
+  accountId: number | null
+  paid: boolean
+  category?: Category | null
+  account?: FinancialAccount | null
+  isRecurring: boolean;
+  recurringParentId: number | null;
+}
+
+
+export interface CreditCard {
+  id: number
+  name: string
+  // outros campos opcionais conforme schema
+  lastFourDigits?: string | null
+}
+
+export interface TransactionDrawerProps {
+  categories: Category[]
+  accounts: FinancialAccount[]
+  createTransactionAction?: (formData: FormData) => Promise<void>
+  initialOpen?: boolean
+  transaction?: Transaction
+  onSuccess?: () => void
+}
+
+export interface PurchaseDrawerProps {
+  categories: Category[]
+  creditCards: CreditCard[]
+  createInstallmentPurchaseAction: (formData: FormData) => Promise<void>
+}
+
+export interface CreditCard {
+  id: number
+  name: string
+  brand?: string | null
+  creditLimit?: string | null
+  dueDay?: number | null
+  closingDay?: number | null
+}
+
+export interface Installment {
+  id: number
+  purchaseId: number
+  number: number
+  amount: string
+  dueDate: string
+  paid: boolean
+  paidAt?: string | null
+}
+
+export interface PurchaseWithInstallments {
+  id: number
+  description: string
+  totalAmount: string
+  installmentsCount: number
+  firstDueDate: string
+  categoryId?: number | null
+  category?: Category | null
+  installments: Installment[]
+}
+
+export interface CreditCardDrawerProps {
+  creditCard?: CreditCard
+  onSuccess?: () => void
+}
+
+export interface RecurringExpense {
+  id: number;
+  name: string;
+  amount: string;
+  categoryId: number | null;
+  accountId: number | null;
+  dueDay: number;
+  active: boolean;
+  frequency: string;
+  category?: Category | null;
+  account?: FinancialAccount | null;
+  startMonth?: string;
+}
+
+export interface RecurringExpenseDrawerProps {
+  recurringExpense?: RecurringExpense
+  categories?: Category[]
+  accounts?: FinancialAccount[]
+  onSuccess?: () => void
+}
+
+export interface Asset {
+  id: number;
+  name: string;
+  ticker?: string | null;
+  type: string; // ← aceitar qualquer string vinda do banco
+  currentPrice?: string | null;
+  quantity?: string | null;
+  averagePrice?: string | null;
+}
+
+export interface InvestmentTransaction {
+  id: number;
+  assetId: number;
+  type: "buy" | "sell" | "contribution" | "withdrawal" | "dividend" | "jcp";
+  date: string;
+  quantity?: string | null;
+  price?: string | null;
+  amount: string;
+  fees?: string | null;
+  notes?: string | null;
+  asset?: Asset | null;
+}
+
+export interface AssetDrawerProps {
+  asset?: Asset;
+  onSuccess?: () => void;
+}
+
+export interface InvestmentTransactionDrawerProps {
+  assets: Asset[];
+  assetId?: number;
+  transaction?: InvestmentTransaction;
+  onSuccess?: () => void;
+}
+
+export interface ObraTransactionsTableProps {
+  obraCategoryExists: boolean
+  transactions: Transaction[]
+  categories: Category[]
+  accounts: FinancialAccount[]
+}
+
+export interface Parcela {
+  id: number
+  purchaseDescription: string
+  number: number
+  totalInstallments: number
+  amount: string
+  paid: boolean
+  dueDate: string
+}
+
+export interface CartaoFatura {
+  cartao: CreditCard
+  parcelas: Parcela[]
+  total: number
+  pago: number
+}
+
+export interface CreditCardsSectionProps {
+  cartoesComFatura: CartaoFatura[]
+  categorias: Category[]
+  cartoes: CreditCard[]
+  createInstallmentPurchaseAction: (
+    formData: FormData
+  ) => Promise<void>
+  faturaAno: number
+  accounts?: any[]
+  faturaMesNum: number
+  payInvoiceAction?: (formData: FormData) => Promise<void>;
+}
+
+export interface OtherExpensesTableProps {
+  expenses: Transaction[]
+  categories: Category[]
+  accounts: FinancialAccount[]
+}
+
+export interface RecurringLog {
+  id: number
+  transaction: {
+    id: number
+    date: string
+    amount: string
+    paid: boolean
+  }
+  recurringExpense: {
+    name: string
+    category?: { name: string } | null
+    account?: { name: string } | null
+  }
+}
+
+export interface RecurringExpensesTableProps {
+  logs: RecurringLog[]
+  categories: Category[]
+  accounts: FinancialAccount[]
+}
+
+export interface TableActionsProps {
+  id: number
+  editHref?: string
+  onEdit?: () => void
+  onDelete?: (id: number) => void
+  onPay?: () => void
+  isPaid?: boolean
+}
+
+export interface TransactionsTableProps {
+  transactions: Transaction[]
+}
+
+export interface FinancialAccount {
+  id: number
+  name: string
+  type: "checking" | "savings" | "cash" | "investment" | "other"
+  initialBalance: string | null
+}
+
+export interface AccountDrawerProps {
+  account?: FinancialAccount
+  onSuccess?: () => void
+}
+
+export interface AssetDrawerProps {
+  asset?: Asset
+  onSuccess?: () => void
+}
+
+export interface Category {
+  id: number
+  name: string
+  type: "expense" | "income" | "transfer"
+}
+
+export interface CategoryDrawerProps {
+  category?: Category
+  onSuccess?: () => void
+}
+
+export interface CreditCardDrawerProps {
+  creditCard?: CreditCard
+  onSuccess?: () => void
+}
+
+// src/utils/types.ts
+export interface EditableExpense {
+  id: number;
+  description: string;
+  amount: number;
+  paid: boolean;
+  date?: string;
+  categoryId?: number | null;   // ← adiciona undefined
+  accountId?: number | null;    // ← adiciona undefined
+  isRecurring: boolean;
+  recurringParentId?: number | null;
+}
+
+export interface ExpenseDrawerProps {
+  categories: Category[]
+  accounts: FinancialAccount[]
+  expense?: EditableExpense
+  onSuccess?: () => void
+  onNew?: () => void;
+}
+
+export interface IncomeDrawerProps {
+  onSuccess?: () => void
+}
+
+export interface InvestmentTransactionDrawerProps {
+  assets: Asset[]
+  selectedAssetId?: number
+  onSuccess?: () => void
+}
+
+export interface SummaryCardsProps {
+  totalReceitas: number;
+  totalDespesas: number;
+  saldo: number;
+  mes: string;
+  receitasVariacao?: number | null;
+  despesasVariacao?: number | null;
+  saldoVariacao?: number | null;
+}
+
+export type UnifiedExpense = {
+  id: number;
+  description: string;
+  amount: number;
+  paid: boolean;
+  isRecurring: boolean;
+  recurringParentId: number | null;
+  categoryId?: number | null;
+  accountId?: number | null;
+  date?: string;
+};
+
+
+
+// ==========================================
+// Arquivo: svg.d.ts
+// ==========================================
+
+// env.d.ts
+
+// Ensina o TypeScript a aceitar importações de SVG com o sufixo ?raw
+declare module '*.svg?raw' {
+  const content: string;
+  export default content;
+}
+
+// (Opcional) Também ensina a aceitar SVGs normais como URL, caso precise
+declare module '*.svg' {
+  const content: any;
+  export default content;
 }
