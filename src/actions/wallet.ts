@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth"
 import { db } from "@/db"
-import { installments, purchases, transactions } from "@/db/schema"
+import { creditCards, financialAccounts, installments, purchases, transactions } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
 import { and, eq, gte, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -244,11 +244,17 @@ export async function markInvoiceAsPaid(formData: FormData) {
 
   const cardId = Number(formData.get("cardId"))
   const month = String(formData.get("month") || "")
+  const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
+
   if (!cardId || !month) throw new Error("Dados inválidos")
 
   const [year, monthNum] = month.split("-").map(Number)
   const primeiroDia = new Date(year, monthNum - 1, 1)
   const ultimoDia = new Date(year, monthNum, 0)
+
+  // Busca dados do cartão para a descrição da despesa
+  const [card] = await db.select().from(creditCards).where(eq(creditCards.id, cardId)).limit(1)
+  const cardName = card ? card.name : "Cartão de Crédito"
 
   // Buscar todas as parcelas do cartão no mês
   const compras = await db.query.purchases.findMany({
@@ -262,18 +268,37 @@ export async function markInvoiceAsPaid(formData: FormData) {
   const parcelasDoMes = compras.flatMap((compra) =>
     compra.installments.filter((parcela) => {
       const dueDate = new Date(parcela.dueDate + "T00:00:00")
-      return dueDate >= primeiroDia && dueDate <= ultimoDia
+      return dueDate >= primeiroDia && dueDate <= ultimoDia && !parcela.paid
     })
   )
 
   if (parcelasDoMes.length === 0) return
 
+  const totalAmount = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0)
   const ids = parcelasDoMes.map(p => p.id)
+  const hojeIso = new Date().toISOString().split("T")[0]
+
+  // Execução sequencial compatível com o driver neon-http:
+  // 1. Marca as parcelas do cartão como pagas
   await db.update(installments)
     .set({ paid: true, paidAt: new Date() })
     .where(inArray(installments.id, ids))
 
+  // 2. Insere a transação de despesa correspondente para abater o Saldo Bancário Atual
+  await db.insert(transactions).values({
+    userId,
+    description: `Pagamento Fatura - ${cardName} (${month})`,
+    amount: totalAmount.toFixed(2),
+    type: 'expense',
+    date: hojeIso,
+    paid: true,
+    source: 'manual',
+    accountId: accountId, // Conta bancária escolhida para o pagamento
+  })
+
+  revalidatePath("/admin/carteira")
   revalidatePath("/admin/cartoes/[id]", "page")
+  revalidatePath("/admin")
 }
 
 export async function markTransactionAsPaid(formData: FormData) {
@@ -384,4 +409,94 @@ export async function updateExpense(formData: FormData) {
 
   revalidatePath('/admin/carteira');
   revalidatePath('/admin/recorrentes');
+}
+
+export async function createTransfer(formData: FormData) {
+  const session = await auth();
+  if (!session?.user) throw new Error("Não autorizado");
+  const userId = session.user.id;
+
+  const sourceAccountId = Number(formData.get("sourceAccountId"));
+  const destinationAccountId = Number(formData.get("destinationAccountId"));
+  const amount = Number(formData.get("amount"));
+  const dateStr = String(formData.get("date") ?? "");
+  const description = String(formData.get("description") ?? "Transferência entre contas").trim();
+
+  if (!sourceAccountId || !destinationAccountId || sourceAccountId === destinationAccountId) {
+    throw new Error("Contas de origem e destino inválidas ou iguais");
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    throw new Error("Valor inválido");
+  }
+
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) {
+    throw new Error("Data inválida");
+  }
+
+  // 1. Obter os IDs de household do utilizador (suporta o modelo individual e familiar/casal)
+  const householdIds = await getUserHouseholdIds(userId);
+
+  // 2. Condição de segurança para validar se o utilizador tem acesso à conta
+  const getAccountValidationCondition = (accountId: number) => {
+    return and(
+      eq(financialAccounts.id, accountId),
+      householdIds.length > 0
+        ? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
+        : eq(financialAccounts.userId, userId)
+    );
+  };
+
+  // 3. Validar e buscar a conta de origem
+  const [sourceAccount] = await db.select()
+    .from(financialAccounts)
+    .where(getAccountValidationCondition(sourceAccountId))
+    .limit(1);
+
+  if (!sourceAccount) {
+    throw new Error("Conta de origem não encontrada ou sem permissão de acesso.");
+  }
+
+  // 4. Validar e buscar a conta de destino
+  const [destinationAccount] = await db.select()
+    .from(financialAccounts)
+    .where(getAccountValidationCondition(destinationAccountId))
+    .limit(1);
+
+  if (!destinationAccount) {
+    throw new Error("Conta de destino não encontrada ou sem permissão de acesso.");
+  }
+
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null;
+  const isoDate = date.toISOString().split("T")[0];
+
+  // 5. Inserção do par de lançamentos (Saída na origem e Entrada no destino)
+  await db.insert(transactions).values([
+    {
+      userId,
+      householdId: sourceAccount.householdId || primaryHouseholdId,
+      description: `${description} (Saída para ${destinationAccount.name})`,
+      amount: amount.toFixed(2),
+      type: 'transfer',
+      date: isoDate,
+      accountId: sourceAccountId,
+      paid: true,
+      source: 'manual',
+    },
+    {
+      userId,
+      householdId: destinationAccount.householdId || primaryHouseholdId,
+      description: `${description} (Entrada de ${sourceAccount.name})`,
+      amount: amount.toFixed(2),
+      type: 'transfer',
+      date: isoDate,
+      accountId: destinationAccountId,
+      paid: true,
+      source: 'manual',
+    },
+  ]);
+
+  revalidatePath("/admin/carteira");
+  revalidatePath("/admin");
 }

@@ -1,7 +1,12 @@
+// ==========================================
+// Ficheiro: src/app/admin/carteira/page.tsx (Refatorado com invoiceService)
+// ==========================================
+
 import { createInstallmentPurchase, markInvoiceAsPaid } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { CarteiraDrawersHost } from "@/components/Drawers/carteira-drawers-host";
 import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
+import { TransferDrawer } from "@/components/Drawers/TransferDrawer";
 import { MonthYearPicker } from "@/components/month-year-picker";
 import { SummaryCards } from "@/components/SummaryCards";
 import { CreditCardsSection } from "@/components/Tables/credit-cards-section";
@@ -15,10 +20,10 @@ import {
   categories,
   creditCards,
   financialAccounts,
-  purchases,
   transactions,
 } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
+import { getCreditCardInvoicesSummary } from "@/services/invoiceService";
 import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -50,9 +55,12 @@ export default async function CarteiraPage({
   const categorias = await db.query.categories.findMany({
     where: accessCondition(categories),
   });
+
+  // Substitua a linha antiga de accounts por esta:
   const accounts = await db.query.financialAccounts.findMany({
     where: accessCondition(financialAccounts),
   });
+
   const cartoes = await db.query.creditCards.findMany({
     where: eq(creditCards.userId, userId),
   });
@@ -114,41 +122,8 @@ export default async function CarteiraPage({
     date: t.date,
   }));
 
-  const cartoesComFatura = await Promise.all(
-    cartoes.map(async (cartao) => {
-      const compras = await db.query.purchases.findMany({
-        where: and(
-          eq(purchases.creditCardId, cartao.id),
-          eq(purchases.userId, userId)
-        ),
-        with: { installments: true, category: true },
-      });
-
-      const parcelasDoMes = compras.flatMap((compra) =>
-        compra.installments
-          .filter((parcela) => {
-            const dueDate = new Date(parcela.dueDate + "T00:00:00");
-            return dueDate >= primeiroDia && dueDate <= ultimoDia;
-          })
-          .map((parcela) => ({
-            ...parcela,
-            purchaseDescription: compra.description,
-            purchaseCategory: compra.category?.name || "Sem categoria",
-            totalInstallments: compra.installments.length,
-          }))
-      );
-
-      const total = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0);
-      const pago = parcelasDoMes.filter((p) => p.paid).reduce((sum, p) => sum + Number(p.amount), 0);
-
-      return {
-        cartao,
-        parcelas: parcelasDoMes.sort((a, b) => a.dueDate.localeCompare(b.dueDate)),
-        total,
-        pago,
-      };
-    })
-  );
+  // Utilização do serviço centralizado para o mês atual
+  const cartoesComFatura = await getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum);
 
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
   const totalDespesas =
@@ -162,6 +137,7 @@ export default async function CarteiraPage({
   const prevUltimoDia = new Date(prev.year, prev.month, 0);
   const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
   const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
+  
   const prevAllTransactions = await db.query.transactions.findMany({
     where: and(
       accessCondition(transactions),
@@ -181,25 +157,9 @@ export default async function CarteiraPage({
     (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
   );
 
-  const prevCartoesComFatura = await Promise.all(
-    cartoes.map(async (cartao) => {
-      const compras = await db.query.purchases.findMany({
-        where: and(eq(purchases.creditCardId, cartao.id), eq(purchases.userId, userId)),
-        with: { installments: true },
-      });
-      const parcelasDoMes = compras.flatMap((compra) =>
-        compra.installments
-          .filter((parcela) => {
-            const dueDate = new Date(parcela.dueDate + "T00:00:00");
-            return dueDate >= prevPrimeiroDia && dueDate <= prevUltimoDia;
-          })
-          .map((parcela) => parcela)
-      );
-      const total = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0);
-      return total;
-    })
-  );
-  const prevTotalCartoes = prevCartoesComFatura.reduce((sum, total) => sum + total, 0);
+  // Utilização do serviço centralizado para o mês anterior
+  const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
+  const prevTotalCartoes = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
 
   const prevTotalReceitas = prevReceitas.reduce((sum, t) => sum + Number(t.amount), 0);
   const prevTotalDespesas =
@@ -265,7 +225,10 @@ export default async function CarteiraPage({
                 Cartões
               </TabsTrigger>
             </TabsList>
-            <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+            <div className="flex items-center gap-2">
+              <TransferDrawer accounts={accounts} />
+              <MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+            </div>
           </Card>
 
           <TabsContent value="all" className="space-y-6 mt-0">
@@ -309,6 +272,7 @@ export default async function CarteiraPage({
                     cartoesComFatura={cartoesComFatura}
                     categorias={categorias}
                     cartoes={cartoes}
+                    accounts={accounts}
                     createInstallmentPurchaseAction={createInstallmentPurchase}
                     faturaAno={faturaAno}
                     faturaMesNum={faturaMesNum}
@@ -359,6 +323,7 @@ export default async function CarteiraPage({
                   cartoesComFatura={cartoesComFatura}
                   categorias={categorias}
                   cartoes={cartoes}
+                  accounts={accounts}
                   createInstallmentPurchaseAction={createInstallmentPurchase}
                   faturaAno={faturaAno}
                   faturaMesNum={faturaMesNum}

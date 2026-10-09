@@ -24,6 +24,7 @@ export function CreditCardsSection({
   cartoesComFatura,
   categorias,
   cartoes,
+  accounts = [],
   createInstallmentPurchaseAction,
   faturaAno,
   faturaMesNum,
@@ -38,9 +39,17 @@ export function CreditCardsSection({
 
   const handlePayInvoice = async (cardId: string) => {
     if (!payInvoiceAction) return;
+    
+    // Pega a primeira conta disponível como origem do pagamento
+    const defaultAccountId = accounts.length > 0 ? accounts[0].id : null;
+
     const formData = new FormData();
     formData.set("cardId", String(cardId));
     formData.set("month", `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}`);
+    if (defaultAccountId) {
+      formData.set("accountId", String(defaultAccountId));
+    }
+    
     await payInvoiceAction(formData);
   };
 

@@ -1,15 +1,18 @@
 // ==========================================
-// Arquivo: src/app/admin/page.tsx (Atualizado com Blog e Livros)
+// Arquivo: src/app/admin/page.tsx (Corrigido para o array de householdIds)
 // ==========================================
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { financialAccounts, transactions } from "@/db/schema";
+import { transactions } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { eq, inArray, or } from "drizzle-orm";
-import { ArrowDownRight, ArrowUpRight, Layers, TrendingUp, Wallet } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+
+import { getDashboardSummary } from '@/services/balanceService';
+import { formatCurrency } from '@/utils/currency';
 
 export default async function AdminPage() {
   const session = await auth();
@@ -18,7 +21,11 @@ export default async function AdminPage() {
   }
 
   const userId = session.user.id;
+  
+  // getUserHouseholdIds retorna string[]
   const householdIds = await getUserHouseholdIds(userId);
+  // Pegamos o primeiro ID do grupo doméstico para o serviço, se existir
+  const householdId = householdIds.length > 0 ? householdIds[0] : null;
 
   const accessCondition = (table: any) => {
     const conditions = [eq(table.userId, userId)];
@@ -28,14 +35,8 @@ export default async function AdminPage() {
     return conditions.length > 1 ? or(...conditions) : conditions[0];
   };
 
-  // Busca paralela de contas e transações para calcular o saldo real dinâmico
-  const [accountsList, allTransactions, recentTransactions] = await Promise.all([
-    db.query.financialAccounts.findMany({
-      where: accessCondition(financialAccounts),
-    }),
-    db.query.transactions.findMany({
-      where: accessCondition(transactions),
-    }),
+  // Busca paralela de contas e transações recentes
+  const [recentTransactions] = await Promise.all([
     db.query.transactions.findMany({
       where: accessCondition(transactions),
       limit: 5,
@@ -43,19 +44,8 @@ export default async function AdminPage() {
     }),
   ]);
 
-  // Cálculo Dinâmico do Saldo Total Real (Saldo Inicial + Receitas - Despesas)
-  const totalInitial = accountsList.reduce((acc, curr) => {
-    return acc + (curr.initialBalance ? Number(curr.initialBalance) : 0);
-  }, 0);
-
-  const totalTransactions = allTransactions.reduce((acc, tx) => {
-    const amount = Number(tx.amount || 0);
-    if (tx.type === "income") return acc + amount;
-    if (tx.type === "expense") return acc - amount;
-    return acc;
-  }, 0);
-
-  const totalBalance = totalInitial + totalTransactions;
+  const now = new Date();
+  const summary = await getDashboardSummary(userId, householdId, now);
 
   return (
     <div className="flex flex-col gap-6">
@@ -69,26 +59,35 @@ export default async function AdminPage() {
 
       {/* Grid de Métricas Principais */}
       <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Saldo Total Consolidado</span>
-            <Wallet className="h-4 w-4 text-emerald-500" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">
-              {totalBalance.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-            </span>
-          </div>
-        </div>
+        <div className="rounded-xl border bg-card p-6 shadow-sm md:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Card 1: Saldo Real */}
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <h3 className="text-gray-500 text-sm">Saldo Bancário Atual</h3>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatCurrency(summary.bankBalanceCents)}
+              </p>
+            </div>
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-muted-foreground">Contas Conectadas</span>
-            <Layers className="h-4 w-4 text-blue-500" />
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold">{accountsList.length}</span>
-            <span className="text-xs text-muted-foreground">instituições/carteiras</span>
+            {/* Card 2: Compromissos */}
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <h3 className="text-gray-500 text-sm">Compromissos do Mês</h3>
+              <p className="text-2xl font-bold text-red-600">
+                {formatCurrency(summary.totalPendingObligationsCents)}
+              </p>
+              <div className="text-xs text-gray-400 mt-1">
+                <span>Cartões: {formatCurrency(summary.pendingCardObligationsCents)}</span>
+                <span className="ml-2">Outros: {formatCurrency(summary.pendingExpensesCents)}</span>
+              </div>
+            </div>
+
+            {/* Card 3: Previsão */}
+            <div className="p-4 border rounded-lg bg-white shadow-sm">
+              <h3 className="text-gray-500 text-sm">Saldo Disponível (Previsto)</h3>
+              <p className="text-2xl font-bold text-blue-600">
+                {formatCurrency(summary.expectedAvailableBalanceCents)}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -169,13 +168,13 @@ export default async function AdminPage() {
               </li>
               <li>
                 <Link href="/admin/blog" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
-                  <span> Blog</span>
+                  <span>Blog</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
               <li>
                 <Link href="/admin/livros" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
-                  <span> Livros</span>
+                  <span>Livros</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>

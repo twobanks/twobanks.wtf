@@ -231,6 +231,7 @@ export interface CreditCardsSectionProps {
     formData: FormData
   ) => Promise<void>
   faturaAno: number
+  accounts?: any[]
   faturaMesNum: number
   payInvoiceAction?: (formData: FormData) => Promise<void>;
 }
