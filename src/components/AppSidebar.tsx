@@ -39,6 +39,7 @@ const financeiroItems = [
   { title: "Investimentos", href: "/admin/carteira/investimentos", icon: TrendingUp },
   { title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket },
   { title: "Tarefas", href: "/admin/tarefas", icon: KanbanSquare },
+  { title: "Contratos", href: "/admin/contratos/novo", icon: FileText },
 ]
 
 const contentItems = [

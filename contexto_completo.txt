@@ -567,13 +567,13 @@ export async function deleteCreditCard(formData: FormData) {
 // Arquivo: src/actions/expenses.ts
 // ==========================================
 
+// src/actions/expenses.ts
 "use server"
 
 import { auth } from "@/auth"
 import { db } from "@/db"
 import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
 import { and, eq, gte, or } from "drizzle-orm"
-
 import { revalidatePath } from "next/cache"
 
 const DEFAULT_RECURRING_MONTHS = 12;
@@ -586,8 +586,7 @@ export async function createExpense(formData: FormData) {
 
   const description = String(formData.get('description') ?? '').trim();
   const amount = Number(formData.get('amount'));
-  const dateStr = String(formData.get('date') ?? '');
-  const baseDate = new Date(dateStr);
+  const dateStr = String(formData.get('date') ?? ''); // Formato "YYYY-MM-DD"
   const categoryId = formData.get('categoryId')
     ? Number(formData.get('categoryId'))
     : null;
@@ -604,30 +603,31 @@ export async function createExpense(formData: FormData) {
     MAX_RECURRING_MONTHS,
   );
 
-  if (!description || isNaN(amount) || isNaN(baseDate.getTime())) {
+  if (!description || isNaN(amount) || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     throw new Error('Dados inválidos');
   }
 
-  // ─── Dia de vencimento (só faz sentido para recorrente) ──────────
-  // Se o usuário informou `dueDay`, usa. Senão, usa o dia da data-base.
-  let dueDay = baseDate.getDate();
+  // 1. Desestruturação direta da string sem usar new Date(dateStr)
+  const [year, month, day] = dateStr.split('-').map(Number);
+
+  let dueDay = day;
   if (isRecurring) {
     const raw = Number(formData.get('dueDay'));
     if (raw >= 1 && raw <= 31) dueDay = raw;
   }
 
-  // Retorna a data-alvo ajustando para o último dia quando o mês é mais curto
-  // (ex.: dueDay=31 em fev vira 28/29)
-  function targetDate(year: number, monthIndex: number) {
-    const lastDay = new Date(year, monthIndex + 1, 0).getDate();
-    return new Date(year, monthIndex, Math.min(dueDay, lastDay));
+  // Helper imutável para formatar datas YYYY-MM-DD sem desvio de timezone
+  function getFormattedDate(y: number, m: number, d: number) {
+    const lastDayOfTargetMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    const finalDay = Math.min(d, lastDayOfTargetMonth);
+    const monthStr = String(m).padStart(2, '0');
+    const dayStr = String(finalDay).padStart(2, '0');
+    return `${y}-${monthStr}-${dayStr}`;
   }
 
-  const seedDate = isRecurring
-    ? targetDate(baseDate.getFullYear(), baseDate.getMonth())
-    : baseDate;
+  const seedDateStr = getFormattedDate(year, month, dueDay);
 
-  // ─── 1) Semente ──────────────────────────────────────────────────
+  // ─── 2. Inserção da Semente ─────────────────────────────────────────
   const [seed] = await db
     .insert(transactions)
     .values({
@@ -635,7 +635,7 @@ export async function createExpense(formData: FormData) {
       description,
       amount: amount.toFixed(2),
       type: 'expense',
-      date: seedDate.toISOString().split('T')[0],
+      date: seedDateStr,
       source: 'manual',
       categoryId,
       accountId,
@@ -645,19 +645,21 @@ export async function createExpense(formData: FormData) {
     })
     .returning();
 
-  // ─── 2) Filhos ───────────────────────────────────────────────────
+  // ─── 3. Inserção das Filhas Recorrentes ──────────────────────────────
   if (isRecurring && seed) {
-    const children = Array.from({ length: recurringMonths }, (_, i) => {
-      const d = targetDate(
-        baseDate.getFullYear(),
-        baseDate.getMonth() + i + 1,
-      );
+    const children = Array.from({ length: recurringMonths - 1 }, (_, i) => {
+      const targetMonthRaw = month + i + 1;
+      const targetYear = year + Math.floor((targetMonthRaw - 1) / 12);
+      const normalizedMonth = ((targetMonthRaw - 1) % 12) + 1;
+
+      const childDateStr = getFormattedDate(targetYear, normalizedMonth, dueDay);
+
       return {
         userId,
         description,
         amount: amount.toFixed(2),
         type: 'expense' as const,
-        date: d.toISOString().split('T')[0],
+        date: childDateStr,
         source: 'recurring',
         categoryId,
         accountId,
@@ -685,7 +687,6 @@ export async function updateExpense(formData: FormData) {
   const description = String(formData.get('description') ?? '').trim();
   const amount = Number(formData.get('amount'));
   const dateStr = String(formData.get('date') ?? '');
-  const date = new Date(dateStr);
   const categoryId = formData.get('categoryId')
     ? Number(formData.get('categoryId'))
     : null;
@@ -694,21 +695,48 @@ export async function updateExpense(formData: FormData) {
     : null;
   const paid = formData.get('paid') === 'on';
 
-  if (!id || !description || isNaN(amount) || isNaN(date.getTime())) {
+  if (!id || !description || isNaN(amount) || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     throw new Error('Dados inválidos');
   }
 
-  await db
-    .update(transactions)
-    .set({
-      description,
-      amount: amount.toFixed(2),
-      date: date.toISOString().split('T')[0],
-      categoryId,
-      accountId,
-      paid,
-    })
-    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  const [tx] = await db
+    .select()
+    .from(transactions)
+    .where(and(eq(transactions.id, id), eq(transactions.userId, userId)))
+    .limit(1);
+
+  if (!tx) throw new Error('Transação não encontrada');
+
+  const seedId = tx.isRecurring ? tx.id : tx.recurringParentId;
+
+  const patch = {
+    description,
+    amount: amount.toFixed(2),
+    categoryId,
+    accountId,
+    paid,
+  };
+
+  if (seedId) {
+    await db
+      .update(transactions)
+      .set(patch)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          or(
+            eq(transactions.id, seedId),
+            eq(transactions.recurringParentId, seedId),
+          ),
+          gte(transactions.date, tx.date),
+        ),
+      );
+  } else {
+    await db
+      .update(transactions)
+      .set({ ...patch, date: dateStr })
+      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+  }
 
   revalidatePath('/admin/carteira');
   revalidatePath('/admin/recorrentes');
@@ -750,7 +778,6 @@ export async function deleteExpense(formData: FormData) {
   if (!transaction) throw new Error("Transação não encontrada");
 
   if (transaction.source === "recurring") {
-    // Encontrar log
     const [log] = await db.select()
       .from(recurringPaymentLogs)
       .where(eq(recurringPaymentLogs.transactionId, id))
@@ -758,7 +785,6 @@ export async function deleteExpense(formData: FormData) {
 
     if (!log) throw new Error("Log de despesa recorrente não encontrado");
 
-    // Excluir logs e transações futuros (mês atual em diante)
     const now = new Date();
     const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
@@ -777,10 +803,8 @@ export async function deleteExpense(formData: FormData) {
       await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, logFuturo.id));
     }
 
-    // Excluir a despesa recorrente
     await db.delete(recurringExpenses).where(eq(recurringExpenses.id, log.recurringExpenseId));
   } else {
-    // Excluir transação avulsa
     await db.delete(transactions).where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   }
 
@@ -1601,6 +1625,21 @@ import { revalidatePath } from "next/cache"
 
 const DEFAULT_RECURRING_MONTHS = 12;
 
+function addMonthsToDateString(dateStr: string, monthsToAdd: number): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const targetDate = new Date(Date.UTC(y, m - 1 + monthsToAdd, 1));
+  const targetYear = targetDate.getUTCFullYear();
+  const targetMonth = targetDate.getUTCMonth();
+  
+  const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, targetMonth + 1, 0)).getUTCDate();
+  const finalDay = Math.min(d, lastDayOfTargetMonth);
+  
+  const finalMonthStr = String(targetMonth + 1).padStart(2, "0");
+  const finalDayStr = String(finalDay).padStart(2, "0");
+  
+  return `${targetYear}-${finalMonthStr}-${finalDayStr}`;
+}
+
 export async function createTransaction(formData: FormData) {
   const session = await auth();
   if (!session?.user) throw new Error('Não autorizado');
@@ -1614,20 +1653,18 @@ export async function createTransaction(formData: FormData) {
   const accountId = formData.get('accountId') ? Number(formData.get('accountId')) : null;
 
   const isRecurring = formData.get('isRecurring') === 'on';
-  const recurringMonths = Math.min(
+  const totalMonths = Math.min(
     Math.max(Number(formData.get('recurringMonths') ?? DEFAULT_RECURRING_MONTHS), 1),
     60,
   );
 
-  const date = new Date(dateStr);
-  if (!description || isNaN(amount) || isNaN(date.getTime())) {
+  if (!description || isNaN(amount) || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     throw new Error('Dados inválidos');
   }
 
   const householdId = await getPrimaryHouseholdId(userId);
-  const isoDate = date.toISOString().split('T')[0];
 
-  // 1) Insere a linha-semente
+  // 1) Insere a transação Semente (Mês 1)
   const [seed] = await db
     .insert(transactions)
     .values({
@@ -1636,28 +1673,27 @@ export async function createTransaction(formData: FormData) {
       description,
       amount: amount.toFixed(2),
       type,
-      date: isoDate,
+      date: dateStr,
       categoryId,
       accountId,
       paid: true,
       source: 'manual',
-      isRecurring,            // true só na semente
+      isRecurring,
       recurringParentId: null,
     })
     .returning();
 
-  // 2) Se recorrente, replica para os próximos N meses
-  if (isRecurring && seed) {
-    const children = Array.from({ length: recurringMonths }, (_, i) => {
-      const d = new Date(date);
-      d.setMonth(d.getMonth() + i + 1);
+  // 2) Se for recorrente, gera as filhas para os (totalMonths - 1) meses seguintes
+  if (isRecurring && seed && totalMonths > 1) {
+    const children = Array.from({ length: totalMonths - 1 }, (_, i) => {
+      const nextDateStr = addMonthsToDateString(dateStr, i + 1);
       return {
         userId,
         householdId,
         description,
         amount: amount.toFixed(2),
         type,
-        date: d.toISOString().split('T')[0],
+        date: nextDateStr,
         categoryId,
         accountId,
         paid: true,
@@ -1673,8 +1709,10 @@ export async function createTransaction(formData: FormData) {
   }
 
   revalidatePath('/admin/carteira');
+  revalidatePath('/admin');
 }
 
+// File: src/actions/wallet.ts
 export async function createInstallmentPurchase(formData: FormData) {
   const session = await auth()
   if (!session?.user) throw new Error("Não autorizado")
@@ -1684,7 +1722,7 @@ export async function createInstallmentPurchase(formData: FormData) {
   const description = String(formData.get("description"))
   const totalAmount = Number(formData.get("totalAmount"))
   const installmentsCount = Number(formData.get("installments"))
-  const firstDueDate = formData.get("firstDueDate") as string
+  const firstDueDate = formData.get("firstDueDate") as string // Ex: "2026-10-01"
   const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(firstDueDate)) {
@@ -1695,12 +1733,7 @@ export async function createInstallmentPurchase(formData: FormData) {
     throw new Error("Dados inválidos")
   }
 
-  const householdIds = await getUserHouseholdIds(userId)
-  const canAccess = or(
-    eq(transactions.userId, userId),
-    householdIds.length > 0 ? inArray(transactions.householdId, householdIds) : undefined
-  )
-
+  // 1. Grava a compra original (pai)
   const [purchase] = await db.insert(purchases).values({
     userId,
     creditCardId,
@@ -1714,18 +1747,35 @@ export async function createInstallmentPurchase(formData: FormData) {
   const installmentAmount = totalAmount / installmentsCount
   const installmentsData = []
 
+  // 2. Extrai os valores reais da string para ignorar Fusos Horários
+  const [startYear, startMonth, startDay] = firstDueDate.split("-").map(Number);
+
+  // 3. Gera as parcelas caindo exatamente no mesmo dia nos meses seguintes
   for (let i = 0; i < installmentsCount; i++) {
-    const dueDate = new Date(firstDueDate)
-    dueDate.setMonth(dueDate.getMonth() + i)
+    const targetMonthRaw = startMonth + i;
+    
+    // Cálculo seguro de virada de ano (ex: Mês 13 vira Mês 1 do ano seguinte)
+    const targetYear = startYear + Math.floor((targetMonthRaw - 1) / 12);
+    const normalizedMonth = ((targetMonthRaw - 1) % 12) + 1;
+
+    // Proteção para meses mais curtos (ex: dia 31 caindo em Fevereiro vira dia 28)
+    const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, normalizedMonth, 0)).getUTCDate();
+    const finalDay = Math.min(startDay, lastDayOfTargetMonth);
+
+    const monthFormatted = String(normalizedMonth).padStart(2, "0");
+    const dayFormatted = String(finalDay).padStart(2, "0");
+    
+    const dueDateStr = `${targetYear}-${monthFormatted}-${dayFormatted}`;
 
     installmentsData.push({
       purchaseId: purchase.id,
       number: i + 1,
       amount: installmentAmount.toFixed(2),
-      dueDate: dueDate.toISOString().split("T")[0],
+      dueDate: dueDateStr,
     })
   }
 
+  // 4. Insere todas as parcelas
   await db.insert(installments).values(installmentsData)
 
   revalidatePath("/admin/carteira")
@@ -2004,93 +2054,85 @@ export async function updateExpense(formData: FormData) {
 }
 
 export async function createTransfer(formData: FormData) {
-  const session = await auth();
-  if (!session?.user) throw new Error("Não autorizado");
-  const userId = session.user.id;
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
 
-  const sourceAccountId = Number(formData.get("sourceAccountId"));
-  const destinationAccountId = Number(formData.get("destinationAccountId"));
-  const amount = Number(formData.get("amount"));
-  const dateStr = String(formData.get("date") ?? "");
-  const description = String(formData.get("description") ?? "Transferência entre contas").trim();
+  const sourceAccountId = Number(formData.get("sourceAccountId"))
+  const destinationAccountId = Number(formData.get("destinationAccountId"))
+  const amount = Number(formData.get("amount"))
+  const dateStr = String(formData.get("date") ?? "")
+  const description = String(formData.get("description") ?? "Transferência entre contas").trim()
 
   if (!sourceAccountId || !destinationAccountId || sourceAccountId === destinationAccountId) {
-    throw new Error("Contas de origem e destino inválidas ou iguais");
+    throw new Error("Contas de origem e destino inválidas ou iguais")
   }
 
-  if (isNaN(amount) || amount <= 0) {
-    throw new Error("Valor inválido");
-  }
+  if (isNaN(amount) || amount <= 0) throw new Error("Valor inválido")
 
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) {
-    throw new Error("Data inválida");
-  }
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) throw new Error("Data inválida")
 
-  // 1. Obter os IDs de household do utilizador (suporta o modelo individual e familiar/casal)
-  const householdIds = await getUserHouseholdIds(userId);
+  const householdIds = await getUserHouseholdIds(userId)
 
-  // 2. Condição de segurança para validar se o utilizador tem acesso à conta
   const getAccountValidationCondition = (accountId: number) => {
     return and(
       eq(financialAccounts.id, accountId),
       householdIds.length > 0
         ? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
         : eq(financialAccounts.userId, userId)
-    );
-  };
+    )
+  }
 
-  // 3. Validar e buscar a conta de origem
-  const [sourceAccount] = await db.select()
+  const [sourceAccount] = await db
+    .select()
     .from(financialAccounts)
     .where(getAccountValidationCondition(sourceAccountId))
-    .limit(1);
+    .limit(1)
 
-  if (!sourceAccount) {
-    throw new Error("Conta de origem não encontrada ou sem permissão de acesso.");
-  }
+  if (!sourceAccount) throw new Error("Conta de origem não encontrada ou sem acesso")
 
-  // 4. Validar e buscar a conta de destino
-  const [destinationAccount] = await db.select()
+  const [destinationAccount] = await db
+    .select()
     .from(financialAccounts)
     .where(getAccountValidationCondition(destinationAccountId))
-    .limit(1);
+    .limit(1)
 
-  if (!destinationAccount) {
-    throw new Error("Conta de destino não encontrada ou sem permissão de acesso.");
-  }
+  if (!destinationAccount) throw new Error("Conta de destino não encontrada ou sem acesso")
 
-  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null;
-  const isoDate = date.toISOString().split("T")[0];
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+  const isoDate = date.toISOString().split("T")[0]
 
-  // 5. Inserção do par de lançamentos (Saída na origem e Entrada no destino)
-  await db.insert(transactions).values([
-    {
-      userId,
-      householdId: sourceAccount.householdId || primaryHouseholdId,
-      description: `${description} (Saída para ${destinationAccount.name})`,
-      amount: amount.toFixed(2),
-      type: 'transfer',
-      date: isoDate,
-      accountId: sourceAccountId,
-      paid: true,
-      source: 'manual',
-    },
-    {
-      userId,
-      householdId: destinationAccount.householdId || primaryHouseholdId,
-      description: `${description} (Entrada de ${sourceAccount.name})`,
-      amount: amount.toFixed(2),
-      type: 'transfer',
-      date: isoDate,
-      accountId: destinationAccountId,
-      paid: true,
-      source: 'manual',
-    },
-  ]);
+  // Bloco de transação atômica
+  await db.transaction(async (tx) => {
+    await tx.insert(transactions).values([
+      {
+        userId,
+        householdId: sourceAccount.householdId || primaryHouseholdId,
+        description: `${description} (Saída para ${destinationAccount.name})`,
+        amount: amount.toFixed(2),
+        type: 'transfer',
+        date: isoDate,
+        accountId: sourceAccountId,
+        paid: true,
+        source: 'manual',
+      },
+      {
+        userId,
+        householdId: destinationAccount.householdId || primaryHouseholdId,
+        description: `${description} (Entrada de ${sourceAccount.name})`,
+        amount: amount.toFixed(2),
+        type: 'transfer',
+        date: isoDate,
+        accountId: destinationAccountId,
+        paid: true,
+        source: 'manual',
+      },
+    ])
+  })
 
-  revalidatePath("/admin/carteira");
-  revalidatePath("/admin");
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin")
 }
 
 // ==========================================
@@ -4673,6 +4715,36 @@ export default async function ListasPage() {
 }
 
 // ==========================================
+// Arquivo: src/app/admin/carteira/loading.tsx
+// ==========================================
+
+// File: src/app/admin/carteira/loading.tsx
+import { Skeleton } from "@/components/ui/skeleton"
+
+export default function LoadingCarteira() {
+  return (
+    <div className="space-y-6">
+      {/* Skeleton dos três cards de topo */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Skeleton className="h-28 w-full rounded-xl bg-zinc-900/60" />
+        <Skeleton className="h-28 w-full rounded-xl bg-zinc-900/60" />
+        <Skeleton className="h-28 w-full rounded-xl bg-zinc-900/60" />
+      </div>
+
+      {/* Skeleton da barra de abas e filtros */}
+      <Skeleton className="h-14 w-full rounded-2xl bg-zinc-900/60" />
+
+      {/* Skeleton da tabela de lançamentos */}
+      <div className="space-y-3">
+        <Skeleton className="h-12 w-full rounded-lg bg-zinc-900/40" />
+        <Skeleton className="h-12 w-full rounded-lg bg-zinc-900/40" />
+        <Skeleton className="h-12 w-full rounded-lg bg-zinc-900/40" />
+      </div>
+    </div>
+  )
+}
+
+// ==========================================
 // Arquivo: src/app/admin/carteira/page.tsx
 // ==========================================
 
@@ -4750,14 +4822,10 @@ export default async function CarteiraPage({
       faturaMesNum = mesNum;
     }
   }
-
-  // Garante a geração automática das despesas recorrentes para o mês consultado
   await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
-
-  const primeiroDia = new Date(faturaAno, faturaMesNum - 1, 1);
-  const ultimoDia = new Date(faturaAno, faturaMesNum, 0);
-  const firstDayStr = primeiroDia.toISOString().split("T")[0];
-  const lastDayStr = ultimoDia.toISOString().split("T")[0];
+  const firstDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-01`;
+  const lastDayNum = new Date(Date.UTC(faturaAno, faturaMesNum, 0)).getUTCDate();
+  const lastDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-${String(lastDayNum).padStart(2, "0")}`;
 
   function getPreviousMonth(year: number, month: number) {
     const date = new Date(year, month - 1, 1);
@@ -9671,11 +9739,13 @@ export function RecurringExpenseDrawer({
 // Arquivo: src/components/Drawers/TransferDrawer.tsx
 // ==========================================
 
-"use client";
+// File: src/components/Drawers/TransferDrawer.tsx
+"use client"
 
-import { createTransfer } from "@/actions/wallet";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { createTransfer } from "@/actions/wallet"
+import { Button } from "@/components/ui/button"
+import { FloatingAlert } from "@/components/ui/floating-alert"
+import { Input } from "@/components/ui/input"
 import {
   Sheet,
   SheetContent,
@@ -9683,146 +9753,114 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { ArrowLeftRight } from "lucide-react";
-import { useState } from "react";
+} from "@/components/ui/sheet"
+import { ArrowLeftRight } from "lucide-react"
+import { useState } from "react"
 
 interface Account {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
-interface TransferDrawerProps {
-  accounts: Account[];
-  triggerLabel?: string;
-}
-
-export function TransferDrawer({ accounts, triggerLabel = "Transferir" }: TransferDrawerProps) {
-  console.log("TransferDrawer accounts:", accounts); // Log the accounts to verify they are being passed correctly
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+export function TransferDrawer({ accounts, triggerLabel = "Transferir" }: { accounts: Account[]; triggerLabel?: string }) {
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setLoading(true);
+    event.preventDefault()
+    setLoading(true)
 
     try {
-      const formData = new FormData(event.currentTarget);
-      await createTransfer(formData);
-      setOpen(false);
-    } catch (error) {
-      console.error("Erro ao realizar transferência:", error);
-      alert("Erro ao realizar transferência. Verifique os dados.");
+      const formData = new FormData(event.currentTarget)
+      await createTransfer(formData)
+      setOpen(false)
+      setAlert({ type: "success", message: "Transferência realizada com sucesso!" })
+    } catch (error: any) {
+      setAlert({
+        type: "error",
+        message: error?.message || "Erro ao realizar transferência. Verifique os dados.",
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 px-3 cursor-pointer">
-        <ArrowLeftRight size={16} />
-        {triggerLabel}
-      </SheetTrigger>
-      <SheetContent className="sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>Nova Transferência</SheetTitle>
-          <SheetDescription>
-            Mova fundos entre as suas contas próprias sem afetar o resultado das despesas ou receitas da casa.
-          </SheetDescription>
-        </SheetHeader>
+    <>
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-8 px-3 cursor-pointer">
+          <ArrowLeftRight size={16} />
+          {triggerLabel}
+        </SheetTrigger>
+        <SheetContent className="sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Nova Transferência</SheetTitle>
+            <SheetDescription>
+              Mova saldos entre contas sem alterar o balanço de despesas/receitas do período.
+            </SheetDescription>
+          </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="space-y-2">
-            <label htmlFor="sourceAccountId" className="text-sm font-medium leading-none">
-              Conta de Origem
-            </label>
-            <select
-              id="sourceAccountId"
-              name="sourceAccountId"
-              required
-              defaultValue=""
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
-            >
-              <option value="" disabled className="bg-background text-muted-foreground">
-                Selecione a conta de origem
-              </option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id} className="bg-background text-foreground py-1">
-                  {acc.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <label htmlFor="sourceAccountId" className="text-sm font-medium">Conta de Origem</label>
+              <select
+                id="sourceAccountId"
+                name="sourceAccountId"
+                required
+                defaultValue=""
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground"
+              >
+                <option value="" disabled className="text-muted-foreground">Selecione a conta de origem</option>
+                {accounts.map((acc) => (
+                  <option key={acc.id} value={acc.id}>{acc.name}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="space-y-2">
-            <label htmlFor="destinationAccountId" className="text-sm font-medium leading-none">
-              Conta de Destino
-            </label>
-            <select
-              id="destinationAccountId"
-              name="destinationAccountId"
-              required
-              defaultValue=""
-              className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
-            >
-              <option value="" disabled className="bg-background text-muted-foreground">
-                Selecione a conta de destino
-              </option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id} className="bg-background text-foreground py-1">
-                  {acc.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="destinationAccountId" className="text-sm font-medium">Conta de Destino</label>
+              <select
+                id="destinationAccountId"
+                name="destinationAccountId"
+                required
+                defaultValue=""
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground"
+              >
+                <option value="" disabled className="text-muted-foreground">Selecione a conta de destino</option>
+                {accounts.map((acc) => (
+                  <option key={acc.id} value={acc.id}>{acc.name}</option>
+                ))}
+              </select>
+            </div>
 
-          <div className="space-y-2">
-            <label htmlFor="amount" className="text-sm font-medium leading-none">
-              Valor (R$)
-            </label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="amount" className="text-sm font-medium">Valor (R$)</label>
+              <Input id="amount" name="amount" type="number" step="0.01" placeholder="0.00" required />
+            </div>
 
-          <div className="space-y-2">
-            <label htmlFor="date" className="text-sm font-medium leading-none">
-              Data
-            </label>
-            <Input
-              id="date"
-              name="date"
-              type="date"
-              defaultValue={new Date().toISOString().split("T")[0]}
-              required
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="date" className="text-sm font-medium">Data</label>
+              <Input id="date" name="date" type="date" defaultValue={new Date().toISOString().split("T")[0]} required />
+            </div>
 
-          <div className="space-y-2">
-            <label htmlFor="description" className="text-sm font-medium leading-none">
-              Descrição
-            </label>
-            <Input
-              id="description"
-              name="description"
-              placeholder="Ex: Transferência para investimentos"
-              defaultValue="Transferência entre contas"
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="description" className="text-sm font-medium">Descrição</label>
+              <Input id="description" name="description" placeholder="Ex: Reserva financeira" defaultValue="Transferência entre contas" />
+            </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "A processar..." : "Confirmar Transferência"}
-          </Button>
-        </form>
-      </SheetContent>
-    </Sheet>
-  );
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "A processar..." : "Confirmar Transferência"}
+            </Button>
+          </form>
+        </SheetContent>
+      </Sheet>
+
+      {alert && (
+        <FloatingAlert type={alert.type} message={alert.message} onClose={() => setAlert(null)} />
+      )}
+    </>
+  )
 }
 
 // ==========================================
@@ -12804,12 +12842,12 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
 
   const handleEdit = (transaction: any) => {
     setEditingExpense(transaction);
-    openDrawer('expense');
+    openDrawer("expense");
   };
 
   return (
     <div className="w-full flex flex-col justify-start gap-4">
-      {/* Cabeçalho de Seção */}
+      {/* Cabeçalho de Seção (Mantido Original) */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-xs">
@@ -12822,54 +12860,93 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
         <IncomeDrawer onSuccess={() => router.refresh()} />
       </div>
 
-      {/* Container da Tabela Padronizado com Cores Dinâmicas */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow className="border-border hover:bg-transparent">
-              <TableHead className="text-muted-foreground font-semibold h-11">Descrição</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold h-11">Valor</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold h-11">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.length === 0 ? (
-              <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={3} className="h-40 text-center">
-                  <div className="flex flex-col items-center justify-center text-muted-foreground gap-2">
-                    <Inbox className="h-10 w-10 opacity-20" />
-                    <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              transactions.map((transaction) => (
-                <TableRow 
-                  key={transaction.id} 
-                  className="border-border hover:bg-muted/40 transition-colors h-14"
-                >
-                  <TableCell className="font-medium text-foreground">
-                    {transaction.description}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
-                    {formatCurrency(Number(transaction.amount))}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end">
-                      <TableActions
-                        id={transaction.id}
-                        isPaid={transaction.paid}
-                        onEdit={() => handleEdit(transaction)}
-                        isRecurring={!!transaction.recurringParentId || (transaction as any).source === "recurring"}
-                      />
-                    </div>
-                  </TableCell>
+      {/* Estado Vazio (Zero Transações) */}
+      {transactions.length === 0 ? (
+        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-8 flex flex-col items-center justify-center text-muted-foreground gap-2">
+          <Inbox className="h-10 w-10 opacity-20" />
+          <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
+        </div>
+      ) : (
+        <>
+          {/* Visualização Tabular - Telas Médias e Grandes (Desktop / Tablet) */}
+          <div className="hidden md:block overflow-hidden rounded-2xl border border-border bg-card shadow-xs">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow className="border-border hover:bg-transparent">
+                  <TableHead className="text-muted-foreground font-semibold h-11">
+                    Descrição
+                  </TableHead>
+                  <TableHead className="text-right text-muted-foreground font-semibold h-11">
+                    Valor
+                  </TableHead>
+                  <TableHead className="text-right text-muted-foreground font-semibold h-11">
+                    Ações
+                  </TableHead>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              </TableHeader>
+              <TableBody>
+                {transactions.map((transaction) => (
+                  <TableRow
+                    key={transaction.id}
+                    className="border-border hover:bg-muted/40 transition-colors h-14"
+                  >
+                    <TableCell className="font-medium text-foreground">
+                      {transaction.description}
+                    </TableCell>
+                    <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
+                      {formatCurrency(Number(transaction.amount))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end">
+                        <TableActions
+                          id={transaction.id}
+                          isPaid={transaction.paid}
+                          onEdit={() => handleEdit(transaction)}
+                          isRecurring={
+                            !!transaction.recurringParentId ||
+                            (transaction as any).source === "recurring"
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Visualização em Cards - Telas Pequenas (Mobile) */}
+          <div className="grid grid-cols-1 gap-3 md:hidden">
+            {transactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="p-4 rounded-2xl border border-border bg-card shadow-xs flex items-center justify-between gap-3"
+              >
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="font-medium text-foreground text-sm truncate">
+                    {transaction.description}
+                  </span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                    {formatCurrency(Number(transaction.amount))}
+                  </span>
+                </div>
+
+                <div className="flex items-center shrink-0">
+                  <TableActions
+                    id={transaction.id}
+                    isPaid={transaction.paid}
+                    onEdit={() => handleEdit(transaction)}
+                    isRecurring={
+                      !!transaction.recurringParentId ||
+                      (transaction as any).source === "recurring"
+                    }
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -17421,6 +17498,7 @@ import {
   AnyPgColumn,
   boolean,
   date,
+  index,
   integer,
   jsonb,
   numeric,
@@ -17650,19 +17728,16 @@ export const transactions = pgTable('transactions', {
   accountId: integer('account_id').references(() => financialAccounts.id),
   paid: boolean('paid').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
-
-  // ─── Novos campos ───────────────────────────────────────────────
-  // Marca a linha "semente" que iniciou a série recorrente.
-  // Filhos têm isRecurring = false.
   isRecurring: boolean('is_recurring').notNull().default(false),
-
-  // Aponta para a linha-semente. Null na semente; preenchido em cada cópia.
   // onDelete cascade: se a semente morre, o histórico inteiro vai junto.
   recurringParentId: integer('recurring_parent_id').references(
     (): AnyPgColumn => transactions.id,
     { onDelete: 'cascade' },
   ),
-});
+}, (table) => [
+  index("idx_transactions_user_date").on(table.userId, table.date),
+  index("idx_transactions_household_date").on(table.householdId, table.date),
+]);
 
 export const recurringExpenses = pgTable("recurring_expenses", {
   id: serial("id").primaryKey(),
@@ -17732,15 +17807,19 @@ export const purchases = pgTable('purchases', {
   firstDueDate: date('first_due_date').notNull(),
   categoryId: integer('category_id').references(() => categories.id),
   createdAt: timestamp('created_at').defaultNow(),
-});
+}, (table) => [
+  index("idx_purchases_card_user").on(table.creditCardId, table.userId),
+]);
 
 // Parcelas de uma compra
+// src/db/schema.ts
+
 export const installments = pgTable('installments', {
   id: serial('id').primaryKey(),
   purchaseId: integer('purchase_id')
-    .references(() => purchases.id)
+    .references(() => purchases.id, { onDelete: 'cascade' }) // <--- Adicione aqui
     .notNull(),
-  number: integer('number').notNull(), // 1, 2, 3...
+  number: integer('number').notNull(),
   amount: numeric('amount').notNull(),
   dueDate: date('due_date').notNull(),
   paid: boolean('paid').notNull().default(false),
@@ -17840,6 +17919,7 @@ export const recurringPaymentLogs = pgTable("recurring_payment_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   uniqueCombination: uniqueIndex("unique_recurring_month").on(table.recurringExpenseId, table.month),
+  
 }));
 
 export const recurringExpensesRelations = relations(recurringExpenses, ({ one, many }) => ({
@@ -18204,95 +18284,116 @@ export const config = {
 // ==========================================
 
 // src/services/balanceService.ts
-import { db } from '@/db'; // Ajuste o caminho do seu banco se necessário (ex: '@/db/index')
-import { financialAccounts, installments, purchases, transactions } from '@/db/schema';
-import { toCents } from '@/utils/currency';
-import { and, eq, gte, lte, or } from 'drizzle-orm';
+import { db } from "@/db";
+import { financialAccounts, installments, purchases, transactions } from "@/db/schema";
+import { and, eq, lte, or, sql } from "drizzle-orm";
 
-export async function getDashboardSummary(userId: string, householdId: string | null, targetMonth: Date) {
-  // 1. Delimitar o mês atual
-  const startOfMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), 1);
-  const endOfMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0, 23, 59, 59, 999);
+export async function getDashboardSummary(userId: string, householdId: string | null, date: Date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const currentMonthStr = `${year}-${String(month).padStart(2, "0")}`;
 
-  const householdCondition = householdId
+  // Data limite do último dia do mês vigente (ex: "2026-10-31")
+  const lastDayOfCurrentMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const lastDayOfCurrentMonthStr = `${currentMonthStr}-${String(lastDayOfCurrentMonth).padStart(2, "0")}`;
+
+  const accessAccounts = householdId
     ? or(eq(financialAccounts.userId, userId), eq(financialAccounts.householdId, householdId))
     : eq(financialAccounts.userId, userId);
 
-  const txHouseholdCondition = householdId
+  const accessTransactions = householdId
     ? or(eq(transactions.userId, userId), eq(transactions.householdId, householdId))
     : eq(transactions.userId, userId);
 
-  // --- A. SALDO BANCÁRIO ATUAL (Histórico Completo) ---
-  const accounts = await db.select().from(financialAccounts).where(householdCondition);
-  const allTransactions = await db.select().from(transactions).where(txHouseholdCondition);
-
-  let bankBalanceCents = 0;
-
-  // Soma saldos iniciais
-  accounts.forEach((acc) => {
-    bankBalanceCents += toCents(acc.initialBalance);
-  });
-
-  // Soma movimentações efetivadas (ignoramos 'transfer' para o saldo consolidado global)
-  allTransactions.forEach((tx) => {
-    if (tx.paid === true) {
-      if (tx.type === 'income') bankBalanceCents += toCents(tx.amount);
-      if (tx.type === 'expense') bankBalanceCents -= toCents(tx.amount);
-    }
-  });
-
-
-  // --- B. COMPROMISSOS PENDENTES DO MÊS ---
-  let pendingExpensesCents = 0;
-  
-  // Despesas pendentes
-  allTransactions.forEach((tx) => {
-    if (
-      tx.type === 'expense' &&
-      tx.paid === false &&
-      new Date(tx.date) >= startOfMonth &&
-      new Date(tx.date) <= endOfMonth
-    ) {
-      pendingExpensesCents += toCents(tx.amount);
-    }
-  });
-
-  // Faturas de Cartão (Parcelas abertas do mês)
-  // Como `installments` não tem userId direto, precisamos fazer um join com `purchases`
-  const monthlyInstallments = await db
+  // 1. Saldo inicial base das contas bancárias
+  const [initialBalanceRes] = await db
     .select({
-      amount: installments.amount,
-      paid: installments.paid,
+      total: sql<string>`COALESCE(SUM(CAST(${financialAccounts.initialBalance} AS DECIMAL)), 0)`,
+    })
+    .from(financialAccounts)
+    .where(accessAccounts);
+
+  // 2. Total de receitas pagas ATÉ O FIM DO MÊS VIGENTE
+  const [paidIncomeRes] = await db
+    .select({
+      total: sql<string>`COALESCE(SUM(CAST(${transactions.amount} AS DECIMAL)), 0)`,
+    })
+    .from(transactions)
+    .where(
+      and(
+        accessTransactions,
+        eq(transactions.type, "income"),
+        eq(transactions.paid, true),
+        lte(transactions.date, lastDayOfCurrentMonthStr)
+      )
+    );
+
+  // 3. Total de despesas pagas (inclui pagamentos de faturas efetuados) ATÉ O FIM DO MÊS VIGENTE
+  const [paidExpenseRes] = await db
+    .select({
+      total: sql<string>`COALESCE(SUM(CAST(${transactions.amount} AS DECIMAL)), 0)`,
+    })
+    .from(transactions)
+    .where(
+      and(
+        accessTransactions,
+        eq(transactions.type, "expense"),
+        eq(transactions.paid, true),
+        lte(transactions.date, lastDayOfCurrentMonthStr)
+      )
+    );
+
+  // 4. Despesas avulsas/recorrentes pendentes do mês vigente
+  const [pendingExpensesRes] = await db
+    .select({
+      total: sql<string>`COALESCE(SUM(CAST(${transactions.amount} AS DECIMAL)), 0)`,
+    })
+    .from(transactions)
+    .where(
+      and(
+        accessTransactions,
+        eq(transactions.type, "expense"),
+        eq(transactions.paid, false),
+        sql`TO_CHAR(CAST(${transactions.date} AS DATE), 'YYYY-MM') = ${currentMonthStr}`
+      )
+    );
+
+  // 5. Parcelas de Cartão de Crédito pendentes no mês vigente
+  const [pendingCardRes] = await db
+    .select({
+      total: sql<string>`COALESCE(SUM(CAST(${installments.amount} AS DECIMAL)), 0)`,
     })
     .from(installments)
     .innerJoin(purchases, eq(installments.purchaseId, purchases.id))
     .where(
       and(
-        householdId
-          ? or(eq(purchases.userId, userId), eq(transactions.householdId, householdId)) // Nota: se purchases não tem householdId, use userId
-          : eq(purchases.userId, userId),
+        eq(purchases.userId, userId),
         eq(installments.paid, false),
-        gte(installments.dueDate, startOfMonth.toISOString()), // Ajuste de formatação de data dependendo do seu DB
-        lte(installments.dueDate, endOfMonth.toISOString())
+        sql`TO_CHAR(CAST(${installments.dueDate} AS DATE), 'YYYY-MM') = ${currentMonthStr}`
       )
     );
 
-  let pendingCardObligationsCents = 0;
-  monthlyInstallments.forEach((inst) => {
-    pendingCardObligationsCents += toCents(inst.amount);
-  });
+  const initialBalance = Number(initialBalanceRes?.total || 0);
+  const paidIncome = Number(paidIncomeRes?.total || 0);
+  const paidExpense = Number(paidExpenseRes?.total || 0);
+  const pendingExpenses = Number(pendingExpensesRes?.total || 0);
+  const pendingCard = Number(pendingCardRes?.total || 0);
 
+  // Saldo bancário em conta
+  const realBankBalance = initialBalance + paidIncome - paidExpense;
+  const bankBalanceCents = Math.round(realBankBalance * 100);
 
-  // --- C. SALDO DISPONÍVEL PREVISTO ---
+  // Obrigações pendentes (Outras despesas + Faturas de cartão do mês)
+  const pendingExpensesCents = Math.round(pendingExpenses * 100);
+  const pendingCardObligationsCents = Math.round(pendingCard * 100);
   const totalPendingObligationsCents = pendingExpensesCents + pendingCardObligationsCents;
-  const expectedAvailableBalanceCents = bankBalanceCents - totalPendingObligationsCents;
 
   return {
     bankBalanceCents,
+    totalPendingObligationsCents,
     pendingExpensesCents,
     pendingCardObligationsCents,
-    totalPendingObligationsCents,
-    expectedAvailableBalanceCents,
+    expectedAvailableBalanceCents: bankBalanceCents - totalPendingObligationsCents,
   };
 }
 
