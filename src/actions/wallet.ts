@@ -106,7 +106,7 @@ export async function createInstallmentPurchase(formData: FormData) {
   const description = String(formData.get("description"))
   const totalAmount = Number(formData.get("totalAmount"))
   const installmentsCount = Number(formData.get("installments"))
-  const firstDueDate = formData.get("firstDueDate") as string // Ex: "2026-10-01"
+  const firstDueDate = formData.get("firstDueDate") as string 
   const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(firstDueDate)) {
@@ -117,7 +117,7 @@ export async function createInstallmentPurchase(formData: FormData) {
     throw new Error("Dados inválidos")
   }
 
-  // 1. Grava a compra original (pai)
+  // Grava a compra original
   const [purchase] = await db.insert(purchases).values({
     userId,
     creditCardId,
@@ -128,40 +128,41 @@ export async function createInstallmentPurchase(formData: FormData) {
     categoryId,
   }).returning()
 
-  const installmentAmount = totalAmount / installmentsCount
   const installmentsData = []
+  
+  // MELHORIA: Cálculo com Precisão Monetária (Centavos)
+  // Evita o erro de R$ 100 / 3 virar R$ 33.33333... e perder 1 centavo no final
+  const totalCents = Math.round(totalAmount * 100)
+  const baseInstallmentCents = Math.floor(totalCents / installmentsCount)
+  const remainderCents = totalCents % installmentsCount
 
-  // 2. Extrai os valores reais da string para ignorar Fusos Horários
   const [startYear, startMonth, startDay] = firstDueDate.split("-").map(Number);
 
-  // 3. Gera as parcelas caindo exatamente no mesmo dia nos meses seguintes
   for (let i = 0; i < installmentsCount; i++) {
     const targetMonthRaw = startMonth + i;
-    
-    // Cálculo seguro de virada de ano (ex: Mês 13 vira Mês 1 do ano seguinte)
     const targetYear = startYear + Math.floor((targetMonthRaw - 1) / 12);
     const normalizedMonth = ((targetMonthRaw - 1) % 12) + 1;
 
-    // Proteção para meses mais curtos (ex: dia 31 caindo em Fevereiro vira dia 28)
     const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, normalizedMonth, 0)).getUTCDate();
     const finalDay = Math.min(startDay, lastDayOfTargetMonth);
 
     const monthFormatted = String(normalizedMonth).padStart(2, "0");
     const dayFormatted = String(finalDay).padStart(2, "0");
-    
     const dueDateStr = `${targetYear}-${monthFormatted}-${dayFormatted}`;
+
+    // Distribui o resto dos centavos nas primeiras parcelas
+    const currentInstallmentCents = baseInstallmentCents + (i < remainderCents ? 1 : 0);
+    const installmentAmountStr = (currentInstallmentCents / 100).toFixed(2);
 
     installmentsData.push({
       purchaseId: purchase.id,
       number: i + 1,
-      amount: installmentAmount.toFixed(2),
+      amount: installmentAmountStr,
       dueDate: dueDateStr,
     })
   }
 
-  // 4. Insere todas as parcelas
   await db.insert(installments).values(installmentsData)
-
   revalidatePath("/admin/carteira")
 }
 
@@ -245,22 +246,63 @@ export async function toggleInstallmentPaid(formData: FormData) {
 
   if (!installmentId) throw new Error("ID inválido")
 
-  // Verificar se a parcela pertence a uma compra do usuário
+  const householdIds = await getUserHouseholdIds(userId)
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+
+  // Busca dados completos para criar o espelho bancário
   const [purchase] = await db
-    .select({ userId: purchases.userId })
+    .select({
+      userId: purchases.userId,
+      description: purchases.description,
+      cardName: creditCards.name
+    })
     .from(purchases)
     .innerJoin(installments, eq(installments.purchaseId, purchases.id))
+    .innerJoin(creditCards, eq(purchases.creditCardId, creditCards.id))
     .where(and(eq(installments.id, installmentId), eq(purchases.userId, userId)))
     .limit(1)
 
   if (!purchase) throw new Error("Parcela não encontrada")
 
-  await db
-    .update(installments)
-    .set({ paid, paidAt: paid ? new Date() : null })
-    .where(eq(installments.id, installmentId))
+  const [parcela] = await db.select().from(installments).where(eq(installments.id, installmentId)).limit(1)
+  
+  // Assinatura única para garantir a idempotência e permitir encontrar o registro ao desmarcar
+  const txDescription = `Pagamento Avulso - ${purchase.description} (${purchase.cardName} - Px ${parcela.number})`
 
-  revalidatePath("/admin/cartoes/[id]", "page")
+  // MELHORIA: Transação Atômica e Sincronização de Caixa
+  await db.transaction(async (tx) => {
+    // 1. Atualiza o status da parcela
+    await tx.update(installments)
+      .set({ paid, paidAt: paid ? new Date() : null })
+      .where(eq(installments.id, installmentId))
+
+    if (paid) {
+      // 2. Verifica Idempotência: Se já existe, não duplica a saída
+      const [existing] = await tx.select().from(transactions).where(
+        and(eq(transactions.userId, userId), eq(transactions.description, txDescription))
+      ).limit(1)
+
+      if (!existing) {
+        await tx.insert(transactions).values({
+          userId,
+          householdId: primaryHouseholdId,
+          description: txDescription,
+          amount: Number(parcela.amount).toFixed(2),
+          type: 'expense',
+          date: new Date().toISOString().split("T")[0],
+          paid: true,
+          source: 'manual',
+        })
+      }
+    } else {
+      // 3. Reversão: Se desmarcou como paga, estorna do fluxo de caixa removendo a transação
+      await tx.delete(transactions).where(
+        and(eq(transactions.userId, userId), eq(transactions.description, txDescription))
+      )
+    }
+  })
+
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
 }
 
 export async function markInvoiceAsPaid(formData: FormData) {
@@ -274,20 +316,23 @@ export async function markInvoiceAsPaid(formData: FormData) {
 
   if (!cardId || !month) throw new Error("Dados inválidos")
 
+  const householdIds = await getUserHouseholdIds(userId)
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+
   const [year, monthNum] = month.split("-").map(Number)
   const primeiroDia = new Date(year, monthNum - 1, 1)
   const ultimoDia = new Date(year, monthNum, 0)
 
-  // Busca dados do cartão para a descrição da despesa
-  const [card] = await db.select().from(creditCards).where(eq(creditCards.id, cardId)).limit(1)
-  const cardName = card ? card.name : "Cartão de Crédito"
+  const [card] = await db.select().from(creditCards).where(
+    and(eq(creditCards.id, cardId), eq(creditCards.userId, userId))
+  ).limit(1)
+  
+  if (!card) throw new Error("Cartão não encontrado")
+  const cardName = card.name
+  const invoiceDescription = `Pagamento Fatura - ${cardName} (${month})`
 
-  // Buscar todas as parcelas do cartão no mês
   const compras = await db.query.purchases.findMany({
-    where: and(
-      eq(purchases.creditCardId, cardId),
-      eq(purchases.userId, userId)
-    ),
+    where: and(eq(purchases.creditCardId, cardId), eq(purchases.userId, userId)),
     with: { installments: true },
   })
 
@@ -300,30 +345,65 @@ export async function markInvoiceAsPaid(formData: FormData) {
 
   if (parcelasDoMes.length === 0) return
 
-  const totalAmount = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0)
+  const totalCents = parcelasDoMes.reduce((sum, p) => sum + Math.round(Number(p.amount) * 100), 0)
+  const totalAmountStr = (totalCents / 100).toFixed(2)
+
   const ids = parcelasDoMes.map(p => p.id)
   const hojeIso = new Date().toISOString().split("T")[0]
 
-  // Execução sequencial compatível com o driver neon-http:
-  // 1. Marca as parcelas do cartão como pagas
-  await db.update(installments)
-    .set({ paid: true, paidAt: new Date() })
-    .where(inArray(installments.id, ids))
+  await db.transaction(async (tx) => {
+    // BLOQUEIO DE CONCORRÊNCIA: Se uma conta foi informada, travamos a linha dela para leitura/escrita concorrente
+    if (accountId) {
+      const [account] = await tx
+        .select()
+        .from(financialAccounts)
+        .where(eq(financialAccounts.id, accountId))
+        .for("update") // Garante exclusividade de acesso ao saldo nesta fração de segundo
+        .limit(1)
 
-  // 2. Insere a transação de despesa correspondente para abater o Saldo Bancário Atual
-  await db.insert(transactions).values({
-    userId,
-    description: `Pagamento Fatura - ${cardName} (${month})`,
-    amount: totalAmount.toFixed(2),
-    type: 'expense',
-    date: hojeIso,
-    paid: true,
-    source: 'manual',
-    accountId: accountId, // Conta bancária escolhida para o pagamento
+      if (!account) throw new Error("Conta bancária de pagamento não encontrada")
+      
+      // Validação Opcional de Saldo (Descomente abaixo caso queira bloquear saldo negativo)
+      /*
+      const currentBalance = Number(account.initialBalance) + ... (calcular transações da conta)
+      if (currentBalance < (totalCents / 100)) {
+        throw new Error("Saldo bancário insuficiente para quitar esta fatura.")
+      }
+      */
+    }
+
+    // Verifica Idempotência
+    const [existingTx] = await tx.select().from(transactions).where(
+      and(
+        eq(transactions.userId, userId),
+        eq(transactions.description, invoiceDescription),
+        eq(transactions.date, hojeIso),
+        eq(transactions.amount, totalAmountStr)
+      )
+    ).limit(1)
+
+    await tx.update(installments)
+      .set({ paid: true, paidAt: new Date() })
+      .where(inArray(installments.id, ids))
+
+    if (!existingTx) {
+      await tx.insert(transactions).values({
+        userId,
+        householdId: primaryHouseholdId,
+        description: invoiceDescription,
+        amount: totalAmountStr,
+        type: 'expense',
+        date: hojeIso,
+        paid: true,
+        source: 'manual',
+        accountId: accountId,
+      })
+    }
   })
 
   revalidatePath("/admin/carteira")
-  revalidatePath("/admin/cartoes/[id]", "page")
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
+  revalidatePath("/admin/carteira/faturas")
   revalidatePath("/admin")
 }
 
@@ -517,4 +597,30 @@ export async function createTransfer(formData: FormData) {
 
   revalidatePath("/admin/carteira")
   revalidatePath("/admin")
+}
+
+export async function deletePurchase(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const purchaseId = Number(formData.get("purchaseId"))
+  if (!purchaseId) throw new Error("ID da compra inválido")
+
+  // Garante que a compra pertence ao usuário autenticado
+  const [purchase] = await db
+    .select()
+    .from(purchases)
+    .where(and(eq(purchases.id, purchaseId), eq(purchases.userId, userId)))
+    .limit(1)
+
+  if (!purchase) throw new Error("Compra não encontrada ou sem permissão")
+
+  // Execução sequencial compatível com o driver HTTP do Neon
+  await db.delete(installments).where(eq(installments.purchaseId, purchaseId))
+  await db.delete(purchases).where(eq(purchases.id, purchaseId))
+
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin/carteira/cartoes")
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
 }

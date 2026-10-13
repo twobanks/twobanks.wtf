@@ -68,8 +68,8 @@ export default async function CartoesPage() {
             <div className="flex items-center gap-2">
               {/* Botão Fatura Neutro e Elegante */}
               <Link
-                href={`/admin/cartoes/${cartao.id}`}
-                className="inline-flex items-center gap-1.5 bg-zinc-100 hover:bg-white text-zinc-900 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                href={`/admin/carteira/cartoes/${cartao.id}`}
+                className="inline-flex items-center gap-1.5..."
               >
                 Ver fatura
                 <ChevronRight size={16} />

@@ -1,11 +1,13 @@
+import { deletePurchase } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { OptimisticInstallmentButton } from "@/components/OptimisticInstallmentButton";
 import { db } from "@/db";
-import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
+import { creditCards, purchases } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { Trash2 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation"; // Importado notFound
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -17,7 +19,6 @@ export const metadata: Metadata = {
 }
 
 export default async function FaturaPage({ params, searchParams }: PageProps) {
-  // Aguardar as Promises
   const { id } = await params
   const { mes: mesParam } = await searchParams
 
@@ -26,7 +27,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
   const userId = session.user.id
 
   const cardId = Number(id)
-  if (isNaN(cardId)) redirect("/admin/cartoes")
+  if (isNaN(cardId)) notFound()
 
   const [cartao] = await db
     .select()
@@ -34,11 +35,14 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
     .where(and(eq(creditCards.id, cardId), eq(creditCards.userId, userId)))
     .limit(1)
 
-  if (!cartao) redirect("/admin/cartoes")
+  if (!cartao) notFound() // Retorna 404 semântico caso o cartão não exista
 
-  // Definir mês/ano
+  // Validação estrita do formato do mês via Regex (YYYY-MM)
+  const isValidMonthFormat = mesParam && /^\d{4}-(0[1-9]|1[0-2])$/.test(mesParam)
+
   const now = new Date()
-  const mes = mesParam || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  const mes = isValidMonthFormat ? mesParam! : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  
   const [ano, mesNum] = mes.split("-").map(Number)
   const primeiroDia = new Date(ano, mesNum - 1, 1)
   const ultimoDia = new Date(ano, mesNum, 0)
@@ -86,7 +90,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
         <h1 className="text-3xl font-bold">{cartao.name}</h1>
         <div className="flex items-center gap-2">
           <Link
-            href={`/admin/cartoes/${cartao.id}?mes=${mesAnterior.getFullYear()}-${String(mesAnterior.getMonth() + 1).padStart(2, "0")}`}
+            href={`/admin/carteira/cartoes/${cartao.id}?mes=${mesAnterior.getFullYear()}-${String(mesAnterior.getMonth() + 1).padStart(2, "0")}`}
             className="bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded-lg"
           >
             ←
@@ -95,7 +99,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
             {new Date(ano, mesNum - 1, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
           </span>
           <Link
-            href={`/admin/cartoes/${cartao.id}?mes=${mesSeguinte.getFullYear()}-${String(mesSeguinte.getMonth() + 1).padStart(2, "0")}`}
+            href={`/admin/carteira/cartoes/${cartao.id}?mes=${mesSeguinte.getFullYear()}-${String(mesSeguinte.getMonth() + 1).padStart(2, "0")}`}
             className="bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded-lg"
           >
             →
@@ -144,6 +148,16 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
                     parcelaId={parcela.id} 
                     initialPaid={parcela.paid} 
                   />
+                  
+                  <form action={deletePurchase}>
+                    <input type="hidden" name="purchaseId" value={parcela.purchaseId} />
+                    <button 
+                      title="Excluir compra e todas as parcelas"
+                      className="text-zinc-500 hover:text-red-400 p-1.5 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </form>
                 </div>
               </div>
             ))}

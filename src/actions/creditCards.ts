@@ -2,8 +2,8 @@
 
 import { auth } from "@/auth"
 import { db } from "@/db"
-import { creditCards } from "@/db/schema"
-import { and, eq } from "drizzle-orm"
+import { creditCards, installments, purchases } from "@/db/schema"
+import { and, eq, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 export async function createCreditCard(formData: FormData) {
@@ -71,10 +71,34 @@ export async function deleteCreditCard(formData: FormData) {
   const id = Number(formData.get("id"))
   if (!id) throw new Error("ID inválido")
 
+  // Garante que o cartão pertence ao usuário antes de excluir
+  const [card] = await db
+    .select()
+    .from(creditCards)
+    .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
+    .limit(1)
+
+  if (!card) throw new Error("Cartão não encontrado ou sem permissão")
+
+  // Busca todas as compras associadas a este cartão
+  const cardPurchases = await db
+    .select({ id: purchases.id })
+    .from(purchases)
+    .where(eq(purchases.creditCardId, id))
+
+  const purchaseIds = cardPurchases.map(p => p.id)
+
+  // Execução compatível com o driver HTTP do Neon (sequencial segura)
+  if (purchaseIds.length > 0) {
+    await db.delete(installments).where(inArray(installments.purchaseId, purchaseIds))
+    await db.delete(purchases).where(eq(purchases.creditCardId, id))
+  }
+
   await db
     .delete(creditCards)
     .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
 
   revalidatePath("/admin/cartoes")
   revalidatePath("/admin/carteira")
+  revalidatePath("/admin/carteira/faturas")
 }

@@ -161,9 +161,8 @@ export default async function FaturasPage() {
                   <TableCell className="text-center">
                     <div className="flex justify-center">
                       <Link
-                        href={`/admin/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
+                        href={`/admin/carteira/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
                         title="Ver detalhes da fatura"
-                        // Botão tipo Ghost igual ao de Excluir da tela anterior
                         className="inline-flex items-center justify-center p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
                       >
                         <Eye size={18} strokeWidth={1.5} />

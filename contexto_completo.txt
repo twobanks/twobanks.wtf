@@ -130,6 +130,7 @@ import "./.next/dev/types/root-params.d.ts";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["pdf-parse"],
   transpilePackages: ['react-map-gl', 'mapbox-gl', '@mapbox/polyline'],
   devIndicators: false,
   images: {
@@ -18559,35 +18560,6 @@ export function formatCurrency(cents: number): string {
 }
 
 // ==========================================
-// Arquivo: src/utils/hooks/OnlineTracker.tsx
-// ==========================================
-
-"use client"
-
-import { useEffect } from "react"
-
-export function OnlineTracker() {
-  useEffect(() => {
-    const ping = async () => {
-      try {
-        await fetch("/api/presence", { method: "POST" })
-      } catch (error) {
-        // Silencia erros de rede em segundo plano
-      }
-    }
-
-    // Ping inicial ao carregar
-    ping()
-
-    // Ping a cada 30 segundos
-    const interval = setInterval(ping, 30000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return null
-}
-
-// ==========================================
 // Arquivo: src/utils/mocks/index.ts
 // ==========================================
 
@@ -18659,6 +18631,76 @@ export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100, 200] as const
 export const DEFAULT_PAGE_SIZE = 10
 
 
+
+// ==========================================
+// Arquivo: src/utils/types/contracts.ts
+// ==========================================
+
+export type FieldStatus = "valid" | "review" | "missing";
+
+export interface ExtractedField {
+  value: string;
+  status: FieldStatus;
+  originalText?: string;
+}
+
+export interface ContractData {
+  vendedora: {
+    nome: ExtractedField;
+    cnpj: ExtractedField;
+    endereco: ExtractedField;
+    municipio: ExtractedField;
+    estado: ExtractedField;
+    ie: ExtractedField;
+  };
+  comprador: {
+    nome: ExtractedField;
+    documento: ExtractedField; // CNPJ ou CPF
+    endereco: ExtractedField;
+    municipio: ExtractedField;
+    estado: ExtractedField;
+    cep: ExtractedField;
+    telefone: ExtractedField;
+    ie: ExtractedField;
+  };
+  representante: {
+    nome: ExtractedField;
+    nacionalidade: ExtractedField;
+    estadoCivil: ExtractedField;
+    profissao: ExtractedField;
+    rg: ExtractedField;
+    cpf: ExtractedField;
+    endereco: ExtractedField;
+  };
+  comercial: {
+    quantidade: ExtractedField;
+    descricao: ExtractedField;
+    orcamento: ExtractedField;
+  };
+}
+
+export type SectionType = "paragrafo" | "clausula";
+
+export interface TemplateSection {
+  tipo: SectionType;
+  numero?: string;
+  titulo?: string;
+  conteudo: string;
+}
+
+export interface ContractTemplate {
+  id: string;
+  titulo: string;
+  secoes: TemplateSection[];
+}
+
+// ==========================================
+// Arquivo: src/utils/types/declarations.d.ts.ts
+// ==========================================
+
+declare module 'pizzip';
+declare module 'docxtemplater';
+declare module 'unpdf';
 
 // ==========================================
 // Arquivo: src/utils/types/index.ts
