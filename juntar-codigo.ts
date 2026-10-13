@@ -14,7 +14,7 @@ const ignoredFolders = new Set([
   "build",
 ]);
 
-const allowedExtensions = new Set([".ts", ".tsx"]);
+const allowedExtensions = new Set([".ts", ".tsx", ".json", ".md", ".css"]);
 
 const outputPath = path.join(rootDir, outputFileName);
 const collectedFiles: any = [];

@@ -1,7 +1,7 @@
 "use client";
 
-import { FaCcVisa, FaCreditCard } from "react-icons/fa6";
-import { SiMastercard } from "react-icons/si";
+import { CreditCardIcon } from "lucide-react";
+
 
 interface CreditCardBrandProps {
   brand: string;
@@ -10,15 +10,15 @@ interface CreditCardBrandProps {
 
 const brandMap: Record<
   string,
-  { name: string; Icon: typeof FaCreditCard; className?: string }
+  { name: string; Icon: typeof CreditCardIcon; className?: string }
 > = {
   visa: {
     name: "Visa",
-    Icon: FaCcVisa,
+    Icon: CreditCardIcon,
   },
   master: {
     name: "Mastercard",
-    Icon: SiMastercard ,
+    Icon: CreditCardIcon ,
   },
 };
 
@@ -29,7 +29,7 @@ export function CreditCardBrand({
   const normalized = brand.toLowerCase();
   const config = brandMap[normalized] ?? {
     name: brand,
-    Icon: FaCreditCard,
+    Icon: CreditCardIcon,
     className: "text-muted-foreground",
   };
 

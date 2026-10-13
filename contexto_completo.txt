@@ -1,6 +1,116 @@
 
 
 // ==========================================
+// Arquivo: AGENTS.md
+// ==========================================
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+
+
+// ==========================================
+// Arquivo: CLAUDE.md
+// ==========================================
+
+@AGENTS.md
+
+
+// ==========================================
+// Arquivo: README.md
+// ==========================================
+
+<p align="center">
+  <img src="./public/two.svg" alt="Logo do Projeto" width="350" />
+</p>
+
+---
+
+📂 Estrutura do Projeto
+
+```
+.
+├── .env.local
+├── .eslintrc.json
+├── .gitignore
+├── README.md
+├── drizzle.config.ts
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+├── tailwind.config.ts
+├── tsconfig.json
+├── public
+│   └── two.svg
+└── src
+    ├── actions
+    │   ├── creditCards.ts
+    │   └── wallet.ts
+    ├── app
+    │   ├── admin
+    │   │   ├── carteira
+    │   │   │   ├── cartoes
+    │   │   │   │   ├── [id]
+    │   │   │   │   │   └── page.tsx
+    │   │   │   │   └── page.tsx
+    │   │   │   ├── faturas
+    │   │   │   │   └── page.tsx
+    │   │   │   └── page.tsx
+    │   │   └── page.tsx
+    │   ├── favicon.ico
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   └── page.tsx
+    ├── auth.ts
+    ├── components
+    │   └── OptimisticInstallmentButton.tsx
+    ├── db
+    │   ├── index.ts
+    │   └── schema.ts
+    └── lib
+        └── household.ts
+```
+
+// ==========================================
+// Arquivo: components.json
+// ==========================================
+
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "rtl": false,
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "registries": {
+    "@mapcn": "https://mapcn.dev/r/{name}.json"
+  }
+}
+
+
+// ==========================================
 // Arquivo: drizzle.config.ts
 // ==========================================
 
@@ -39,7 +149,7 @@ const ignoredFolders = new Set([
   "build",
 ]);
 
-const allowedExtensions = new Set([".ts", ".tsx"]);
+const allowedExtensions = new Set([".ts", ".tsx", ".json", ".md", ".css"]);
 
 const outputPath = path.join(rootDir, outputFileName);
 const collectedFiles: any = [];
@@ -116,8 +226,8 @@ collectedFiles
 
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
-import "./.next/dev/types/routes.d.ts";
-import "./.next/dev/types/root-params.d.ts";
+import "./.next/types/routes.d.ts";
+import "./.next/types/root-params.d.ts";
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
@@ -148,6 +258,71 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// ==========================================
+// Arquivo: package.json
+// ==========================================
+
+{
+  "name": "twobanks_test",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@auth/drizzle-adapter": "^1.11.3",
+    "@base-ui/react": "^1.7.0",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@mapbox/polyline": "^1.2.1",
+    "@neondatabase/serverless": "^1.1.0",
+    "@radix-ui/react-navigation-menu": "^1.2.22",
+    "@tailwindcss/typography": "^0.5.20",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "drizzle-orm": "^0.45.2",
+    "lucide-react": "^1.31.0",
+    "mapbox-gl": "^3.28.1",
+    "next": "16.3.0",
+    "next-auth": "^5.0.0-beta.32",
+    "next-themes": "^0.4.6",
+    "react": "19.0.0-rc-6230622a1a-20240610",
+    "react-day-picker": "^10.0.1",
+    "react-dom": "19.0.0-rc-6230622a1a-20240610",
+    "react-icons": "^5.7.0",
+    "react-markdown": "^10.1.0",
+    "recharts": "3.8.0",
+    "resend": "^6.20.0",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/geojson": "^7946.0.16",
+    "@types/mapbox-gl": "^3.5.0",
+    "@types/mapbox__polyline": "^1.0.5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.0",
+    "raw-loader": "^4.0.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+
 
 // ==========================================
 // Arquivo: src/actions/accounts.ts
@@ -487,8 +662,8 @@ export async function deleteCategory(formData: FormData) {
 
 import { auth } from "@/auth"
 import { db } from "@/db"
-import { creditCards } from "@/db/schema"
-import { and, eq } from "drizzle-orm"
+import { creditCards, installments, purchases } from "@/db/schema"
+import { and, eq, inArray } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
 export async function createCreditCard(formData: FormData) {
@@ -556,12 +731,36 @@ export async function deleteCreditCard(formData: FormData) {
   const id = Number(formData.get("id"))
   if (!id) throw new Error("ID inválido")
 
+  // Garante que o cartão pertence ao usuário antes de excluir
+  const [card] = await db
+    .select()
+    .from(creditCards)
+    .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
+    .limit(1)
+
+  if (!card) throw new Error("Cartão não encontrado ou sem permissão")
+
+  // Busca todas as compras associadas a este cartão
+  const cardPurchases = await db
+    .select({ id: purchases.id })
+    .from(purchases)
+    .where(eq(purchases.creditCardId, id))
+
+  const purchaseIds = cardPurchases.map(p => p.id)
+
+  // Execução compatível com o driver HTTP do Neon (sequencial segura)
+  if (purchaseIds.length > 0) {
+    await db.delete(installments).where(inArray(installments.purchaseId, purchaseIds))
+    await db.delete(purchases).where(eq(purchases.creditCardId, id))
+  }
+
   await db
     .delete(creditCards)
     .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
 
   revalidatePath("/admin/cartoes")
   revalidatePath("/admin/carteira")
+  revalidatePath("/admin/carteira/faturas")
 }
 
 // ==========================================
@@ -1723,7 +1922,7 @@ export async function createInstallmentPurchase(formData: FormData) {
   const description = String(formData.get("description"))
   const totalAmount = Number(formData.get("totalAmount"))
   const installmentsCount = Number(formData.get("installments"))
-  const firstDueDate = formData.get("firstDueDate") as string // Ex: "2026-10-01"
+  const firstDueDate = formData.get("firstDueDate") as string 
   const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(firstDueDate)) {
@@ -1734,7 +1933,7 @@ export async function createInstallmentPurchase(formData: FormData) {
     throw new Error("Dados inválidos")
   }
 
-  // 1. Grava a compra original (pai)
+  // Grava a compra original
   const [purchase] = await db.insert(purchases).values({
     userId,
     creditCardId,
@@ -1745,40 +1944,41 @@ export async function createInstallmentPurchase(formData: FormData) {
     categoryId,
   }).returning()
 
-  const installmentAmount = totalAmount / installmentsCount
   const installmentsData = []
+  
+  // MELHORIA: Cálculo com Precisão Monetária (Centavos)
+  // Evita o erro de R$ 100 / 3 virar R$ 33.33333... e perder 1 centavo no final
+  const totalCents = Math.round(totalAmount * 100)
+  const baseInstallmentCents = Math.floor(totalCents / installmentsCount)
+  const remainderCents = totalCents % installmentsCount
 
-  // 2. Extrai os valores reais da string para ignorar Fusos Horários
   const [startYear, startMonth, startDay] = firstDueDate.split("-").map(Number);
 
-  // 3. Gera as parcelas caindo exatamente no mesmo dia nos meses seguintes
   for (let i = 0; i < installmentsCount; i++) {
     const targetMonthRaw = startMonth + i;
-    
-    // Cálculo seguro de virada de ano (ex: Mês 13 vira Mês 1 do ano seguinte)
     const targetYear = startYear + Math.floor((targetMonthRaw - 1) / 12);
     const normalizedMonth = ((targetMonthRaw - 1) % 12) + 1;
 
-    // Proteção para meses mais curtos (ex: dia 31 caindo em Fevereiro vira dia 28)
     const lastDayOfTargetMonth = new Date(Date.UTC(targetYear, normalizedMonth, 0)).getUTCDate();
     const finalDay = Math.min(startDay, lastDayOfTargetMonth);
 
     const monthFormatted = String(normalizedMonth).padStart(2, "0");
     const dayFormatted = String(finalDay).padStart(2, "0");
-    
     const dueDateStr = `${targetYear}-${monthFormatted}-${dayFormatted}`;
+
+    // Distribui o resto dos centavos nas primeiras parcelas
+    const currentInstallmentCents = baseInstallmentCents + (i < remainderCents ? 1 : 0);
+    const installmentAmountStr = (currentInstallmentCents / 100).toFixed(2);
 
     installmentsData.push({
       purchaseId: purchase.id,
       number: i + 1,
-      amount: installmentAmount.toFixed(2),
+      amount: installmentAmountStr,
       dueDate: dueDateStr,
     })
   }
 
-  // 4. Insere todas as parcelas
   await db.insert(installments).values(installmentsData)
-
   revalidatePath("/admin/carteira")
 }
 
@@ -1862,22 +2062,63 @@ export async function toggleInstallmentPaid(formData: FormData) {
 
   if (!installmentId) throw new Error("ID inválido")
 
-  // Verificar se a parcela pertence a uma compra do usuário
+  const householdIds = await getUserHouseholdIds(userId)
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+
+  // Busca dados completos para criar o espelho bancário
   const [purchase] = await db
-    .select({ userId: purchases.userId })
+    .select({
+      userId: purchases.userId,
+      description: purchases.description,
+      cardName: creditCards.name
+    })
     .from(purchases)
     .innerJoin(installments, eq(installments.purchaseId, purchases.id))
+    .innerJoin(creditCards, eq(purchases.creditCardId, creditCards.id))
     .where(and(eq(installments.id, installmentId), eq(purchases.userId, userId)))
     .limit(1)
 
   if (!purchase) throw new Error("Parcela não encontrada")
 
-  await db
-    .update(installments)
-    .set({ paid, paidAt: paid ? new Date() : null })
-    .where(eq(installments.id, installmentId))
+  const [parcela] = await db.select().from(installments).where(eq(installments.id, installmentId)).limit(1)
+  
+  // Assinatura única para garantir a idempotência e permitir encontrar o registro ao desmarcar
+  const txDescription = `Pagamento Avulso - ${purchase.description} (${purchase.cardName} - Px ${parcela.number})`
 
-  revalidatePath("/admin/cartoes/[id]", "page")
+  // MELHORIA: Transação Atômica e Sincronização de Caixa
+  await db.transaction(async (tx) => {
+    // 1. Atualiza o status da parcela
+    await tx.update(installments)
+      .set({ paid, paidAt: paid ? new Date() : null })
+      .where(eq(installments.id, installmentId))
+
+    if (paid) {
+      // 2. Verifica Idempotência: Se já existe, não duplica a saída
+      const [existing] = await tx.select().from(transactions).where(
+        and(eq(transactions.userId, userId), eq(transactions.description, txDescription))
+      ).limit(1)
+
+      if (!existing) {
+        await tx.insert(transactions).values({
+          userId,
+          householdId: primaryHouseholdId,
+          description: txDescription,
+          amount: Number(parcela.amount).toFixed(2),
+          type: 'expense',
+          date: new Date().toISOString().split("T")[0],
+          paid: true,
+          source: 'manual',
+        })
+      }
+    } else {
+      // 3. Reversão: Se desmarcou como paga, estorna do fluxo de caixa removendo a transação
+      await tx.delete(transactions).where(
+        and(eq(transactions.userId, userId), eq(transactions.description, txDescription))
+      )
+    }
+  })
+
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
 }
 
 export async function markInvoiceAsPaid(formData: FormData) {
@@ -1891,20 +2132,23 @@ export async function markInvoiceAsPaid(formData: FormData) {
 
   if (!cardId || !month) throw new Error("Dados inválidos")
 
+  const householdIds = await getUserHouseholdIds(userId)
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+
   const [year, monthNum] = month.split("-").map(Number)
   const primeiroDia = new Date(year, monthNum - 1, 1)
   const ultimoDia = new Date(year, monthNum, 0)
 
-  // Busca dados do cartão para a descrição da despesa
-  const [card] = await db.select().from(creditCards).where(eq(creditCards.id, cardId)).limit(1)
-  const cardName = card ? card.name : "Cartão de Crédito"
+  const [card] = await db.select().from(creditCards).where(
+    and(eq(creditCards.id, cardId), eq(creditCards.userId, userId))
+  ).limit(1)
+  
+  if (!card) throw new Error("Cartão não encontrado")
+  const cardName = card.name
+  const invoiceDescription = `Pagamento Fatura - ${cardName} (${month})`
 
-  // Buscar todas as parcelas do cartão no mês
   const compras = await db.query.purchases.findMany({
-    where: and(
-      eq(purchases.creditCardId, cardId),
-      eq(purchases.userId, userId)
-    ),
+    where: and(eq(purchases.creditCardId, cardId), eq(purchases.userId, userId)),
     with: { installments: true },
   })
 
@@ -1917,30 +2161,65 @@ export async function markInvoiceAsPaid(formData: FormData) {
 
   if (parcelasDoMes.length === 0) return
 
-  const totalAmount = parcelasDoMes.reduce((sum, p) => sum + Number(p.amount), 0)
+  const totalCents = parcelasDoMes.reduce((sum, p) => sum + Math.round(Number(p.amount) * 100), 0)
+  const totalAmountStr = (totalCents / 100).toFixed(2)
+
   const ids = parcelasDoMes.map(p => p.id)
   const hojeIso = new Date().toISOString().split("T")[0]
 
-  // Execução sequencial compatível com o driver neon-http:
-  // 1. Marca as parcelas do cartão como pagas
-  await db.update(installments)
-    .set({ paid: true, paidAt: new Date() })
-    .where(inArray(installments.id, ids))
+  await db.transaction(async (tx) => {
+    // BLOQUEIO DE CONCORRÊNCIA: Se uma conta foi informada, travamos a linha dela para leitura/escrita concorrente
+    if (accountId) {
+      const [account] = await tx
+        .select()
+        .from(financialAccounts)
+        .where(eq(financialAccounts.id, accountId))
+        .for("update") // Garante exclusividade de acesso ao saldo nesta fração de segundo
+        .limit(1)
 
-  // 2. Insere a transação de despesa correspondente para abater o Saldo Bancário Atual
-  await db.insert(transactions).values({
-    userId,
-    description: `Pagamento Fatura - ${cardName} (${month})`,
-    amount: totalAmount.toFixed(2),
-    type: 'expense',
-    date: hojeIso,
-    paid: true,
-    source: 'manual',
-    accountId: accountId, // Conta bancária escolhida para o pagamento
+      if (!account) throw new Error("Conta bancária de pagamento não encontrada")
+      
+      // Validação Opcional de Saldo (Descomente abaixo caso queira bloquear saldo negativo)
+      /*
+      const currentBalance = Number(account.initialBalance) + ... (calcular transações da conta)
+      if (currentBalance < (totalCents / 100)) {
+        throw new Error("Saldo bancário insuficiente para quitar esta fatura.")
+      }
+      */
+    }
+
+    // Verifica Idempotência
+    const [existingTx] = await tx.select().from(transactions).where(
+      and(
+        eq(transactions.userId, userId),
+        eq(transactions.description, invoiceDescription),
+        eq(transactions.date, hojeIso),
+        eq(transactions.amount, totalAmountStr)
+      )
+    ).limit(1)
+
+    await tx.update(installments)
+      .set({ paid: true, paidAt: new Date() })
+      .where(inArray(installments.id, ids))
+
+    if (!existingTx) {
+      await tx.insert(transactions).values({
+        userId,
+        householdId: primaryHouseholdId,
+        description: invoiceDescription,
+        amount: totalAmountStr,
+        type: 'expense',
+        date: hojeIso,
+        paid: true,
+        source: 'manual',
+        accountId: accountId,
+      })
+    }
   })
 
   revalidatePath("/admin/carteira")
-  revalidatePath("/admin/cartoes/[id]", "page")
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
+  revalidatePath("/admin/carteira/faturas")
   revalidatePath("/admin")
 }
 
@@ -2134,6 +2413,32 @@ export async function createTransfer(formData: FormData) {
 
   revalidatePath("/admin/carteira")
   revalidatePath("/admin")
+}
+
+export async function deletePurchase(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const purchaseId = Number(formData.get("purchaseId"))
+  if (!purchaseId) throw new Error("ID da compra inválido")
+
+  // Garante que a compra pertence ao usuário autenticado
+  const [purchase] = await db
+    .select()
+    .from(purchases)
+    .where(and(eq(purchases.id, purchaseId), eq(purchases.userId, userId)))
+    .limit(1)
+
+  if (!purchase) throw new Error("Compra não encontrada ou sem permissão")
+
+  // Execução sequencial compatível com o driver HTTP do Neon
+  await db.delete(installments).where(eq(installments.purchaseId, purchaseId))
+  await db.delete(purchases).where(eq(purchases.id, purchaseId))
+
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin/carteira/cartoes")
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
 }
 
 // ==========================================
@@ -3831,14 +4136,16 @@ export default async function AdminBlogPage() {
 // Arquivo: src/app/admin/carteira/cartoes/[id]/page.tsx
 // ==========================================
 
+import { deletePurchase } from "@/actions/wallet";
 import { auth } from "@/auth";
 import { OptimisticInstallmentButton } from "@/components/OptimisticInstallmentButton";
 import { db } from "@/db";
-import { creditCards, purchases } from "@/db/schema"; // remova installments se não usar diretamente
+import { creditCards, purchases } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { Trash2 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation"; // Importado notFound
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -3850,7 +4157,6 @@ export const metadata: Metadata = {
 }
 
 export default async function FaturaPage({ params, searchParams }: PageProps) {
-  // Aguardar as Promises
   const { id } = await params
   const { mes: mesParam } = await searchParams
 
@@ -3859,7 +4165,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
   const userId = session.user.id
 
   const cardId = Number(id)
-  if (isNaN(cardId)) redirect("/admin/cartoes")
+  if (isNaN(cardId)) notFound()
 
   const [cartao] = await db
     .select()
@@ -3867,11 +4173,14 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
     .where(and(eq(creditCards.id, cardId), eq(creditCards.userId, userId)))
     .limit(1)
 
-  if (!cartao) redirect("/admin/cartoes")
+  if (!cartao) notFound() // Retorna 404 semântico caso o cartão não exista
 
-  // Definir mês/ano
+  // Validação estrita do formato do mês via Regex (YYYY-MM)
+  const isValidMonthFormat = mesParam && /^\d{4}-(0[1-9]|1[0-2])$/.test(mesParam)
+
   const now = new Date()
-  const mes = mesParam || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  const mes = isValidMonthFormat ? mesParam! : `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  
   const [ano, mesNum] = mes.split("-").map(Number)
   const primeiroDia = new Date(ano, mesNum - 1, 1)
   const ultimoDia = new Date(ano, mesNum, 0)
@@ -3919,7 +4228,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
         <h1 className="text-3xl font-bold">{cartao.name}</h1>
         <div className="flex items-center gap-2">
           <Link
-            href={`/admin/cartoes/${cartao.id}?mes=${mesAnterior.getFullYear()}-${String(mesAnterior.getMonth() + 1).padStart(2, "0")}`}
+            href={`/admin/carteira/cartoes/${cartao.id}?mes=${mesAnterior.getFullYear()}-${String(mesAnterior.getMonth() + 1).padStart(2, "0")}`}
             className="bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded-lg"
           >
             ←
@@ -3928,7 +4237,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
             {new Date(ano, mesNum - 1, 1).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
           </span>
           <Link
-            href={`/admin/cartoes/${cartao.id}?mes=${mesSeguinte.getFullYear()}-${String(mesSeguinte.getMonth() + 1).padStart(2, "0")}`}
+            href={`/admin/carteira/cartoes/${cartao.id}?mes=${mesSeguinte.getFullYear()}-${String(mesSeguinte.getMonth() + 1).padStart(2, "0")}`}
             className="bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded-lg"
           >
             →
@@ -3977,6 +4286,16 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
                     parcelaId={parcela.id} 
                     initialPaid={parcela.paid} 
                   />
+                  
+                  <form action={deletePurchase}>
+                    <input type="hidden" name="purchaseId" value={parcela.purchaseId} />
+                    <button 
+                      title="Excluir compra e todas as parcelas"
+                      className="text-zinc-500 hover:text-red-400 p-1.5 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </form>
                 </div>
               </div>
             ))}
@@ -4061,8 +4380,8 @@ export default async function CartoesPage() {
             <div className="flex items-center gap-2">
               {/* Botão Fatura Neutro e Elegante */}
               <Link
-                href={`/admin/cartoes/${cartao.id}`}
-                className="inline-flex items-center gap-1.5 bg-zinc-100 hover:bg-white text-zinc-900 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                href={`/admin/carteira/cartoes/${cartao.id}`}
+                className="inline-flex items-center gap-1.5..."
               >
                 Ver fatura
                 <ChevronRight size={16} />
@@ -4396,9 +4715,8 @@ export default async function FaturasPage() {
                   <TableCell className="text-center">
                     <div className="flex justify-center">
                       <Link
-                        href={`/admin/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
+                        href={`/admin/carteira/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
                         title="Ver detalhes da fatura"
-                        // Botão tipo Ghost igual ao de Excluir da tela anterior
                         className="inline-flex items-center justify-center p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
                       >
                         <Eye size={18} strokeWidth={1.5} />
@@ -6272,6 +6590,191 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Erro no Webhook:", error)
     return new NextResponse("Erro interno", { status: 500 })
+  }
+}
+
+// ==========================================
+// Arquivo: src/app/globals.css
+// ==========================================
+
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  /* =========================================
+     Cores da Marca Extraídas da Logo 
+     Isso gera: bg-brand-blue, text-brand-pink, etc.
+  ========================================= */
+  --color-brand-blue: #5EACCF;
+  --color-brand-pink: #F35894;
+  --color-brand-yellow: #FBE122;
+  --color-brand-skin: #C88D5D;
+
+  /* Mapeamento Shadcn/UI Padrão */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans); 
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Fundo claro e limpo */
+  --background: #ffffff;
+  --foreground: #09090b; /* zinc-950 */
+  
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+
+  /* Identidade Visual - Light Mode */
+  --primary: #5EACCF;          /* Azul da Logo */
+  --primary-foreground: #ffffff; 
+  --secondary: #F35894;        /* Rosa da Logo */
+  --secondary-foreground: #ffffff;
+  --accent: #FBE122;           /* Amarelo da Logo */
+  --accent-foreground: #000000;
+  
+  --destructive: #ef4444;
+  --muted: #f4f4f5; /* zinc-100 */
+  --muted-foreground: #71717a; /* zinc-500 */
+  --border: #e4e4e7; /* zinc-200 */
+  --input: #e4e4e7; /* zinc-200 */
+  --ring: #5EACCF; /* Foco dos inputs e botões no Azul da Logo */
+
+  /* Gráficos usando a paleta da logo */
+  --chart-1: #5EACCF;
+  --chart-2: #F35894;
+  --chart-3: #FBE122;
+  --chart-4: #C88D5D;
+  --chart-5: #09090b;
+  
+  --radius: 0.625rem;
+  
+  /* Sidebar Light */
+  --sidebar: #f4f4f5; /* zinc-100 */
+  --sidebar-foreground: #09090b;
+  --sidebar-primary: #5EACCF;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e4e4e7;
+  --sidebar-accent-foreground: #09090b;
+  --sidebar-border: #d4d4d8; /* zinc-300 */
+  --sidebar-ring: #5EACCF;
+}
+
+.dark {
+  /* Fundo profundo elegante, foge do preto absoluto */
+  --background: #0c0c0c; /* zinc-950 */
+  --foreground: #fafafa;
+  
+  /* Cards levemente destacados para gerar profundidade */
+  --card: #18181b; /* zinc-900 */
+  --card-foreground: #fafafa;
+  --popover: #18181b;
+  --popover-foreground: #fafafa;
+
+  /* Identidade Visual - Dark Mode (Neon Vibe) */
+  --primary: #5EACCF;          /* Azul da Logo */
+  --primary-foreground: #000000; /* Texto preto para contraste forte no azul */
+  --secondary: #F35894;        /* Rosa da Logo */
+  --secondary-foreground: #ffffff;
+  --accent: #FBE122;           /* Amarelo da Logo */
+  --accent-foreground: #000000;
+  
+  --destructive: #ef4444;
+  --muted: #27272a; /* zinc-800 */
+  --muted-foreground: #a1a1aa; /* zinc-400 */
+  --border: #27272a; /* zinc-800 */
+  --input: #27272a; /* zinc-800 */
+  --ring: #5EACCF; /* Foco neon */
+
+  /* Gráficos em Dark Mode */
+  --chart-1: #5EACCF;
+  --chart-2: #F35894;
+  --chart-3: #FBE122;
+  --chart-4: #C88D5D;
+  --chart-5: #fafafa;
+  
+  /* Sidebar Dark - Mescla no fundo com borda suave */
+  --sidebar: #09090b;
+  --sidebar-foreground: #fafafa;
+  --sidebar-primary: #5EACCF;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #27272a; /* zinc-800 */
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #27272a; /* zinc-800 */
+  --sidebar-ring: #5EACCF;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  
+  /* MapLibre custom styles mantidos originais */
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+  }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+  }
+  .maplibregl-ctrl-attrib {
+    @apply bg-background! text-muted-foreground! border-border! rounded-md! border! shadow-sm!;
+  }
+  .maplibregl-ctrl-attrib a {
+    @apply text-muted-foreground!;
+  }
+  .maplibregl-ctrl-attrib a:hover {
+    @apply text-foreground!;
+  }
+  .maplibregl-ctrl-attrib-button {
+    @apply bg-transparent! dark:invert;
   }
 }
 
@@ -11000,51 +11503,47 @@ export function ModeToggle() {
 // Arquivo: src/components/OptimisticInstallmentButton.tsx
 // ==========================================
 
-"use client";
+// Exemplo conceitual para o src/components/OptimisticInstallmentButton.tsx
+"use client"
 
 import { toggleInstallmentPaid } from "@/actions/wallet";
-import { startTransition, useOptimistic } from "react";
+import { useOptimistic, useTransition } from "react";
 
-interface OptimisticButtonProps {
-  parcelaId: number | string;
-  initialPaid: boolean;
-}
-
-export function OptimisticInstallmentButton({ parcelaId, initialPaid }: OptimisticButtonProps) {
-  // Configura o estado otimista: assume que a ação deu certo imediatamente
-  const [optimisticPaid, addOptimisticToggle] = useOptimistic(
+export function OptimisticInstallmentButton({ parcelaId, initialPaid }: { parcelaId: number; initialPaid: boolean }) {
+  const [isPending, startTransition] = useTransition()
+  const [paid, setOptimisticPaid] = useOptimistic(
     initialPaid,
-    (state, newPaidStatus: boolean) => newPaidStatus
-  );
+    (state, newPaid: boolean) => newPaid
+  )
 
-  const handleToggle = async () => {
-    const newStatus = !optimisticPaid;
-    
-    // 1. Atualiza a UI na hora (60fps)
-    startTransition(() => {
-      addOptimisticToggle(newStatus);
-    });
-
-    // 2. Dispara a ação no servidor em background
-    const formData = new FormData();
-    formData.append("id", String(parcelaId));
-    formData.append("paid", String(newStatus));
-    
-    await toggleInstallmentPaid(formData);
-  };
+  const handleClick = async () => {
+    const nextState = !paid
+    startTransition(async () => {
+      setOptimisticPaid(nextState)
+      try {
+        const formData = new FormData()
+        formData.append("id", String(parcelaId))
+        formData.append("paid", String(nextState))
+        await toggleInstallmentPaid(formData)
+      } catch (error) {
+        // Se falhar no servidor, reverte visualmente ou avisa o usuário
+        alert("Erro ao atualizar o status da parcela. Tente novamente.")
+      }
+    })
+  }
 
   return (
     <button
-      onClick={handleToggle}
-      className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-        optimisticPaid
-          ? "bg-green-900/40 text-green-300"
-          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+      type="button"
+      disabled={isPending}
+      onClick={handleClick}
+      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+        paid ? "bg-emerald-500/20 text-emerald-400" : "bg-zinc-800 text-zinc-400 hover:text-white"
       }`}
     >
-      {optimisticPaid ? "Pago ✓" : "Marcar pago"}
+      {paid ? "Pago" : "Pendente"}
     </button>
-  );
+  )
 }
 
 // ==========================================
@@ -17491,6 +17990,2286 @@ const sql = neon(process.env.DATABASE_URL!);
 export const db = drizzle(sql, { schema });
 
 // ==========================================
+// Arquivo: src/db/migrations/meta/0000_snapshot.json
+// ==========================================
+
+{
+  "id": "8c42f879-4c64-4e7b-bc80-c8f063ceb043",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.account": {
+      "name": "account",
+      "schema": "",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "providerAccountId": {
+          "name": "providerAccountId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_type": {
+          "name": "token_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "session_state": {
+          "name": "session_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "account_userId_user_id_fk": {
+          "name": "account_userId_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "account_provider_providerAccountId_pk": {
+          "name": "account_provider_providerAccountId_pk",
+          "columns": [
+            "provider",
+            "providerAccountId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.assets": {
+      "name": "assets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ticker": {
+          "name": "ticker",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'stock'"
+        },
+        "current_price": {
+          "name": "current_price",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "average_price": {
+          "name": "average_price",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "assets_user_id_user_id_fk": {
+          "name": "assets_user_id_user_id_fk",
+          "tableFrom": "assets",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "assets_household_id_households_id_fk": {
+          "name": "assets_household_id_households_id_fk",
+          "tableFrom": "assets",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.book": {
+      "name": "book",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author": {
+          "name": "author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'lido'"
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "book_userId_user_id_fk": {
+          "name": "book_userId_user_id_fk",
+          "tableFrom": "book",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.categories": {
+      "name": "categories",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "transaction_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "categories_user_id_user_id_fk": {
+          "name": "categories_user_id_user_id_fk",
+          "tableFrom": "categories",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "categories_household_id_households_id_fk": {
+          "name": "categories_household_id_households_id_fk",
+          "tableFrom": "categories",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.credit_cards": {
+      "name": "credit_cards",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "brand": {
+          "name": "brand",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "credit_limit": {
+          "name": "credit_limit",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_day": {
+          "name": "due_day",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "closing_day": {
+          "name": "closing_day",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "credit_cards_user_id_user_id_fk": {
+          "name": "credit_cards_user_id_user_id_fk",
+          "tableFrom": "credit_cards",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.financial_accounts": {
+      "name": "financial_accounts",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "account_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "initial_balance": {
+          "name": "initial_balance",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "financial_accounts_user_id_user_id_fk": {
+          "name": "financial_accounts_user_id_user_id_fk",
+          "tableFrom": "financial_accounts",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "financial_accounts_household_id_households_id_fk": {
+          "name": "financial_accounts_household_id_households_id_fk",
+          "tableFrom": "financial_accounts",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.gear": {
+      "name": "gear",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nickname": {
+          "name": "nickname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "brand_name": {
+          "name": "brand_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "model_name": {
+          "name": "model_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "distance": {
+          "name": "distance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resource_state": {
+          "name": "resource_state",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Tênis'"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.household_members": {
+      "name": "household_members",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'member'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "unique_household_member": {
+          "name": "unique_household_member",
+          "columns": [
+            {
+              "expression": "household_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "household_members_household_id_households_id_fk": {
+          "name": "household_members_household_id_households_id_fk",
+          "tableFrom": "household_members",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "household_members_user_id_user_id_fk": {
+          "name": "household_members_user_id_user_id_fk",
+          "tableFrom": "household_members",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.households": {
+      "name": "households",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.installments": {
+      "name": "installments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "purchase_id": {
+          "name": "purchase_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "due_date": {
+          "name": "due_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paid": {
+          "name": "paid",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "paid_at": {
+          "name": "paid_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "installments_purchase_id_purchases_id_fk": {
+          "name": "installments_purchase_id_purchases_id_fk",
+          "tableFrom": "installments",
+          "tableTo": "purchases",
+          "columnsFrom": [
+            "purchase_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.investment_transactions": {
+      "name": "investment_transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "asset_id": {
+          "name": "asset_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price": {
+          "name": "price",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fees": {
+          "name": "fees",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'0'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "investment_transactions_user_id_user_id_fk": {
+          "name": "investment_transactions_user_id_user_id_fk",
+          "tableFrom": "investment_transactions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "investment_transactions_household_id_households_id_fk": {
+          "name": "investment_transactions_household_id_households_id_fk",
+          "tableFrom": "investment_transactions",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "investment_transactions_asset_id_assets_id_fk": {
+          "name": "investment_transactions_asset_id_assets_id_fk",
+          "tableFrom": "investment_transactions",
+          "tableTo": "assets",
+          "columnsFrom": [
+            "asset_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.otp_codes": {
+      "name": "otp_codes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code_hash": {
+          "name": "code_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "otp_codes_user_id_user_id_fk": {
+          "name": "otp_codes_user_id_user_id_fk",
+          "tableFrom": "otp_codes",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.photo": {
+      "name": "photo",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imageUrl": {
+          "name": "imageUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "camera": {
+          "name": "camera",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lens": {
+          "name": "lens",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aperture": {
+          "name": "aperture",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shutterSpeed": {
+          "name": "shutterSpeed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "iso": {
+          "name": "iso",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "photo_userId_user_id_fk": {
+          "name": "photo_userId_user_id_fk",
+          "tableFrom": "photo",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.planned_workout": {
+      "name": "planned_workout",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "steps": {
+          "name": "steps",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rawPayload": {
+          "name": "rawPayload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "planned_workout_userId_user_id_fk": {
+          "name": "planned_workout_userId_user_id_fk",
+          "tableFrom": "planned_workout",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.post": {
+      "name": "post",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "excerpt": {
+          "name": "excerpt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "published": {
+          "name": "published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "authorId": {
+          "name": "authorId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "post_authorId_user_id_fk": {
+          "name": "post_authorId_user_id_fk",
+          "tableFrom": "post",
+          "tableTo": "user",
+          "columnsFrom": [
+            "authorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "post_slug_unique": {
+          "name": "post_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.purchases": {
+      "name": "purchases",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "credit_card_id": {
+          "name": "credit_card_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_amount": {
+          "name": "total_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "installments": {
+          "name": "installments",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "first_due_date": {
+          "name": "first_due_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "purchases_user_id_user_id_fk": {
+          "name": "purchases_user_id_user_id_fk",
+          "tableFrom": "purchases",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "purchases_credit_card_id_credit_cards_id_fk": {
+          "name": "purchases_credit_card_id_credit_cards_id_fk",
+          "tableFrom": "purchases",
+          "tableTo": "credit_cards",
+          "columnsFrom": [
+            "credit_card_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "purchases_category_id_categories_id_fk": {
+          "name": "purchases_category_id_categories_id_fk",
+          "tableFrom": "purchases",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recurring_expenses": {
+      "name": "recurring_expenses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "due_day": {
+          "name": "due_day",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "frequency": {
+          "name": "frequency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'monthly'"
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recurring_expenses_user_id_user_id_fk": {
+          "name": "recurring_expenses_user_id_user_id_fk",
+          "tableFrom": "recurring_expenses",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recurring_expenses_household_id_households_id_fk": {
+          "name": "recurring_expenses_household_id_households_id_fk",
+          "tableFrom": "recurring_expenses",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "recurring_expenses_category_id_categories_id_fk": {
+          "name": "recurring_expenses_category_id_categories_id_fk",
+          "tableFrom": "recurring_expenses",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "recurring_expenses_account_id_financial_accounts_id_fk": {
+          "name": "recurring_expenses_account_id_financial_accounts_id_fk",
+          "tableFrom": "recurring_expenses",
+          "tableTo": "financial_accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recurring_payment_logs": {
+      "name": "recurring_payment_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "recurring_expense_id": {
+          "name": "recurring_expense_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "month": {
+          "name": "month",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "unique_recurring_month": {
+          "name": "unique_recurring_month",
+          "columns": [
+            {
+              "expression": "recurring_expense_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "month",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "recurring_payment_logs_recurring_expense_id_recurring_expenses_id_fk": {
+          "name": "recurring_payment_logs_recurring_expense_id_recurring_expenses_id_fk",
+          "tableFrom": "recurring_payment_logs",
+          "tableTo": "recurring_expenses",
+          "columnsFrom": [
+            "recurring_expense_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "recurring_payment_logs_transaction_id_transactions_id_fk": {
+          "name": "recurring_payment_logs_transaction_id_transactions_id_fk",
+          "tableFrom": "recurring_payment_logs",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "transaction_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "sessionToken": {
+          "name": "sessionToken",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_userId_user_id_fk": {
+          "name": "session_userId_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shopping_items": {
+      "name": "shopping_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "list_id": {
+          "name": "list_id",
+          "type": "serial",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 1
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "checked": {
+          "name": "checked",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "shopping_items_list_id_shopping_lists_id_fk": {
+          "name": "shopping_items_list_id_shopping_lists_id_fk",
+          "tableFrom": "shopping_items",
+          "tableTo": "shopping_lists",
+          "columnsFrom": [
+            "list_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.shopping_lists": {
+      "name": "shopping_lists",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "list_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.strava_workout": {
+      "name": "strava_workout",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "distance": {
+          "name": "distance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "movingTime": {
+          "name": "movingTime",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "elapsedTime": {
+          "name": "elapsedTime",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "totalElevationGain": {
+          "name": "totalElevationGain",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "averageSpeed": {
+          "name": "averageSpeed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maxSpeed": {
+          "name": "maxSpeed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "averageHeartrate": {
+          "name": "averageHeartrate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maxHeartrate": {
+          "name": "maxHeartrate",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "averageCadence": {
+          "name": "averageCadence",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "averageWatts": {
+          "name": "averageWatts",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kilojoules": {
+          "name": "kilojoules",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sufferScore": {
+          "name": "sufferScore",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gearId": {
+          "name": "gearId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mapPolyline": {
+          "name": "mapPolyline",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rawPayload": {
+          "name": "rawPayload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isDetailed": {
+          "name": "isDetailed",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "detailedPayload": {
+          "name": "detailedPayload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "streamPayload": {
+          "name": "streamPayload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "strava_workout_userId_user_id_fk": {
+          "name": "strava_workout_userId_user_id_fk",
+          "tableFrom": "strava_workout",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transactions": {
+      "name": "transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "household_id": {
+          "name": "household_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "transaction_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'manual'"
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "paid": {
+          "name": "paid",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "is_recurring": {
+          "name": "is_recurring",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "recurring_parent_id": {
+          "name": "recurring_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transactions_user_id_user_id_fk": {
+          "name": "transactions_user_id_user_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "transactions_household_id_households_id_fk": {
+          "name": "transactions_household_id_households_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "households",
+          "columnsFrom": [
+            "household_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "transactions_category_id_categories_id_fk": {
+          "name": "transactions_category_id_categories_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_account_id_financial_accounts_id_fk": {
+          "name": "transactions_account_id_financial_accounts_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "financial_accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "transactions_recurring_parent_id_transactions_id_fk": {
+          "name": "transactions_recurring_parent_id_transactions_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "transactions",
+          "columnsFrom": [
+            "recurring_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'Atleta'"
+        },
+        "phone": {
+          "name": "phone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.verificationToken": {
+      "name": "verificationToken",
+      "schema": "",
+      "columns": {
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires": {
+          "name": "expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "verificationToken_identifier_token_pk": {
+          "name": "verificationToken_identifier_token_pk",
+          "columns": [
+            "identifier",
+            "token"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.account_type": {
+      "name": "account_type",
+      "schema": "public",
+      "values": [
+        "checking",
+        "savings",
+        "cash",
+        "investment",
+        "other"
+      ]
+    },
+    "public.list_type": {
+      "name": "list_type",
+      "schema": "public",
+      "values": [
+        "supermercado",
+        "varejao",
+        "acougue"
+      ]
+    },
+    "public.transaction_type": {
+      "name": "transaction_type",
+      "schema": "public",
+      "values": [
+        "income",
+        "expense",
+        "transfer"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
+
+// ==========================================
+// Arquivo: src/db/migrations/meta/_journal.json
+// ==========================================
+
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1789057510536,
+      "tag": "0000_ordinary_lightspeed",
+      "breakpoints": true
+    }
+  ]
+}
+
+// ==========================================
 // Arquivo: src/db/schema.ts
 // ==========================================
 
@@ -18633,76 +21412,6 @@ export const DEFAULT_PAGE_SIZE = 10
 
 
 // ==========================================
-// Arquivo: src/utils/types/contracts.ts
-// ==========================================
-
-export type FieldStatus = "valid" | "review" | "missing";
-
-export interface ExtractedField {
-  value: string;
-  status: FieldStatus;
-  originalText?: string;
-}
-
-export interface ContractData {
-  vendedora: {
-    nome: ExtractedField;
-    cnpj: ExtractedField;
-    endereco: ExtractedField;
-    municipio: ExtractedField;
-    estado: ExtractedField;
-    ie: ExtractedField;
-  };
-  comprador: {
-    nome: ExtractedField;
-    documento: ExtractedField; // CNPJ ou CPF
-    endereco: ExtractedField;
-    municipio: ExtractedField;
-    estado: ExtractedField;
-    cep: ExtractedField;
-    telefone: ExtractedField;
-    ie: ExtractedField;
-  };
-  representante: {
-    nome: ExtractedField;
-    nacionalidade: ExtractedField;
-    estadoCivil: ExtractedField;
-    profissao: ExtractedField;
-    rg: ExtractedField;
-    cpf: ExtractedField;
-    endereco: ExtractedField;
-  };
-  comercial: {
-    quantidade: ExtractedField;
-    descricao: ExtractedField;
-    orcamento: ExtractedField;
-  };
-}
-
-export type SectionType = "paragrafo" | "clausula";
-
-export interface TemplateSection {
-  tipo: SectionType;
-  numero?: string;
-  titulo?: string;
-  conteudo: string;
-}
-
-export interface ContractTemplate {
-  id: string;
-  titulo: string;
-  secoes: TemplateSection[];
-}
-
-// ==========================================
-// Arquivo: src/utils/types/declarations.d.ts.ts
-// ==========================================
-
-declare module 'pizzip';
-declare module 'docxtemplater';
-declare module 'unpdf';
-
-// ==========================================
 // Arquivo: src/utils/types/index.ts
 // ==========================================
 
@@ -19088,4 +21797,43 @@ declare module '*.svg?raw' {
 declare module '*.svg' {
   const content: any;
   export default content;
+}
+
+// ==========================================
+// Arquivo: tsconfig.json
+// ==========================================
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts",
+  ],
+  "exclude": ["node_modules"]
 }
