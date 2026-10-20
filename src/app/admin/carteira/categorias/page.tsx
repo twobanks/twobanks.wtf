@@ -29,7 +29,7 @@ export default async function CategoriasPage() {
   })
 
   return (
-    <main className="min-h-screen bg-black text-gray-100 p-6 md:p-10">
+    <main className="min-h-screen bg-background text-foreground p-6 md:p-10">
       <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex justify-between items-center">
           <CategoryDrawer />
@@ -42,7 +42,7 @@ export default async function CategoriasPage() {
           {categorias.map((cat) => (
             <div
               key={cat.id}
-              className="bg-gray-900 p-4 rounded-xl border border-gray-800 flex justify-between items-center"
+              className="p-4 rounded-xl border bg-card border-border flex justify-between items-center"
             >
               <div>
                 <p className="font-medium">{cat.name}</p>

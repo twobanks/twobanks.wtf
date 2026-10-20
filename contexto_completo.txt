@@ -30,9 +30,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
   <img src="./public/two.svg" alt="Logo do Projeto" width="350" />
 </p>
 
----
-
-📂 Estrutura do Projeto
+## 📂 Estrutura do Projeto
 
 ```
 .
@@ -40,42 +38,57 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ├── .eslintrc.json
 ├── .gitignore
 ├── README.md
+├── components.json
 ├── drizzle.config.ts
 ├── next.config.ts
 ├── package.json
 ├── postcss.config.mjs
 ├── tailwind.config.ts
 ├── tsconfig.json
-├── public
+├── public/
+│   ├── icons/
 │   └── two.svg
-└── src
-    ├── actions
-    │   ├── creditCards.ts
-    │   └── wallet.ts
-    ├── app
-    │   ├── admin
-    │   │   ├── carteira
-    │   │   │   ├── cartoes
-    │   │   │   │   ├── [id]
-    │   │   │   │   │   └── page.tsx
-    │   │   │   │   └── page.tsx
-    │   │   │   ├── faturas
-    │   │   │   │   └── page.tsx
-    │   │   │   └── page.tsx
-    │   │   └── page.tsx
-    │   ├── favicon.ico
-    │   ├── globals.css
-    │   ├── layout.tsx
-    │   └── page.tsx
-    ├── auth.ts
-    ├── components
-    │   └── OptimisticInstallmentButton.tsx
-    ├── db
-    │   ├── index.ts
-    │   └── schema.ts
-    └── lib
-        └── household.ts
+└── src/
+    ├── actions/        # Server Actions (carteira, blog, kanban, investimentos, etc.)
+    ├── app/            # App Router (rotas agrupadas: (auth), (public), admin, api)
+    ├── auth.ts         # Configurações do Auth.js (NextAuth)
+    ├── components/     # Componentes de interface (UI, Drawers, Forms, Kanban, Charts)
+    ├── contexts/       # Contextos globais do React (DrawerContext, VisibilityContext)
+    ├── db/             # Schemas do banco de dados e configuração do Drizzle ORM
+    ├── lib/            # Funções utilitárias e integrações externas (Strava, Household)
+    ├── services/       # Regras de negócio avançadas (recorrências, balanços, faturas)
+    └── utils/          # Constantes, tipagens e formatações gerais
 ```
+
+## 💻 Tecnologias Utilizadas
+
+- **Core & Framework**
+  - **Next.js 16.4.0:** Framework React utilizando o paradigma do App Router e Server Actions.
+  - **React 19.3.0:** Biblioteca base para a construção das interfaces dinâmicas.
+  - **TypeScript:** Tipagem estática rigorosa para maior segurança e previsibilidade do código.
+
+- **Banco de Dados & ORM**
+  - **Neon Serverless:** Banco de dados PostgreSQL em nuvem otimizado, operado via driver HTTP (`@neondatabase/serverless`).
+  - **Drizzle ORM:** ORM leve e *type-safe* responsável pelas migrações (`drizzle-kit`) e queries.
+
+- **Autenticação & Segurança**
+  - **NextAuth.js (Auth.js v5 Beta):** Sistema de sessões de usuário integrado ao banco de dados via `@auth/drizzle-adapter`.
+  - **Bcryptjs:** Criptografia para a geração de hashes seguros na funcionalidade de login por *One-Time Password* (OTP).
+
+- **Estilização & Interface**
+  - **Tailwind CSS v4:** Motor de estilos nativo, gerenciado via `@tailwindcss/postcss`.
+  - **Shadcn UI:** Base de arquitetura de componentes utilizando `class-variance-authority`, `clsx` e `tailwind-merge`.
+  - **Lucide React:** Iconografia vetorizada leve e moderna.
+  - **Next Themes:** Alternância e persistência de temas (Light/Dark mode).
+
+- **Dados & Visualização Interativa**
+  - **Recharts:** Criação de gráficos analíticos (fluxo de caixa, zonas cardíacas, ritmos esportivos).
+  - **Mapbox GL & Polyline:** Exibição interativa e decodificação de rotas geográficas (integração Strava).
+  - **@dnd-kit:** Motor de *Drag & Drop* responsável pelo funcionamento fluido do Kanban de tarefas.
+  - **React Markdown:** Renderização de conteúdo salvo em banco para os artigos do Blog.
+
+- **Comunicações & APIs**
+  - **Resend:** Provedor oficial para disparo rápido de e-mails transacionais (envio de códigos OTP).
 
 // ==========================================
 // Arquivo: components.json
@@ -226,8 +239,8 @@ collectedFiles
 
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
-import "./.next/types/routes.d.ts";
-import "./.next/types/root-params.d.ts";
+import "./.next/dev/types/routes.d.ts";
+import "./.next/dev/types/root-params.d.ts";
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
@@ -241,7 +254,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["pdf-parse"],
-  transpilePackages: ['react-map-gl', 'mapbox-gl', '@mapbox/polyline'],
+  transpilePackages: ['mapbox-gl', '@mapbox/polyline'],
   devIndicators: false,
   images: {
     remotePatterns: [
@@ -264,7 +277,7 @@ export default nextConfig;
 // ==========================================
 
 {
-  "name": "twobanks_test",
+  "name": "twobanks.wtf",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -281,22 +294,19 @@ export default nextConfig;
     "@dnd-kit/utilities": "^3.2.2",
     "@mapbox/polyline": "^1.2.1",
     "@neondatabase/serverless": "^1.1.0",
-    "@radix-ui/react-navigation-menu": "^1.2.22",
     "@tailwindcss/typography": "^0.5.20",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "date-fns": "^4.4.0",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.31.0",
     "mapbox-gl": "^3.28.1",
-    "next": "16.3.0",
+    "next": "^16.4.0",
     "next-auth": "^5.0.0-beta.32",
     "next-themes": "^0.4.6",
-    "react": "19.0.0-rc-6230622a1a-20240610",
+    "react": "^19.3.0",
     "react-day-picker": "^10.0.1",
-    "react-dom": "19.0.0-rc-6230622a1a-20240610",
-    "react-icons": "^5.7.0",
+    "react-dom": "^19.3.0",
     "react-markdown": "^10.1.0",
     "recharts": "3.8.0",
     "resend": "^6.20.0",
@@ -304,20 +314,18 @@ export default nextConfig;
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^3.0.0",
     "@types/geojson": "^7946.0.16",
     "@types/mapbox-gl": "^3.5.0",
     "@types/mapbox__polyline": "^1.0.5",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
-    "eslint-config-next": "16.3.0",
-    "raw-loader": "^4.0.2",
+    "eslint-config-next": "^16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
@@ -3473,7 +3481,7 @@ export default async function PublicLayout({ children }: { children: React.React
   const session = await auth()
   
   return (
-    <div className="flex min-h-screen flex-col bg-[#053f1a] text-foreground">
+    <div className="flex min-h-screen flex-col bg-[#202528] text-foreground">
       <main className="flex flex-1 flex-col">
         {children}
       </main>
@@ -6802,8 +6810,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://twobanks.wtf"),
   title: {
-    template: "BANKS | %s",
-    default: "BANKS 🛸",
+    template: "🏹 BANKS | %s",
+    default: "🏹 BANKS",
   },
   description: "where i register my randomness 🛸",
   keywords: ["desenvolvimento", "tecnologia", "portfólio", "blog", "randomness"],
@@ -6813,7 +6821,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: "/",
-    title: "BANKS 🛸",
+    title: "🏹 BANKS",
     description: "where i register my randomness 🛸",
     siteName: "BANKS",
     images: [
@@ -6821,13 +6829,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png", 
         width: 1200,
         height: 630,
-        alt: "BANKS 🛸 - Onde registro minhas aleatoriedades",
+        alt: "🏹 BANKS - Onde registro minhas aleatoriedades",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BANKS 🛸",
+    title: "🏹 BANKS",
     description: "where i register my randomness 🛸",
     creator: "@otwobanks", 
     images: ["/twitter-image.png"],
@@ -8104,8 +8112,8 @@ export function CreateListForm() {
 
 "use client";
 
-import { FaCcVisa, FaCreditCard } from "react-icons/fa6";
-import { SiMastercard } from "react-icons/si";
+import { CreditCardIcon } from "lucide-react";
+
 
 interface CreditCardBrandProps {
   brand: string;
@@ -8114,15 +8122,15 @@ interface CreditCardBrandProps {
 
 const brandMap: Record<
   string,
-  { name: string; Icon: typeof FaCreditCard; className?: string }
+  { name: string; Icon: typeof CreditCardIcon; className?: string }
 > = {
   visa: {
     name: "Visa",
-    Icon: FaCcVisa,
+    Icon: CreditCardIcon,
   },
   master: {
     name: "Mastercard",
-    Icon: SiMastercard ,
+    Icon: CreditCardIcon ,
   },
 };
 
@@ -8133,7 +8141,7 @@ export function CreditCardBrand({
   const normalized = brand.toLowerCase();
   const config = brandMap[normalized] ?? {
     name: brand,
-    Icon: FaCreditCard,
+    Icon: CreditCardIcon,
     className: "text-muted-foreground",
   };
 
@@ -10583,7 +10591,7 @@ import Link from "next/link";
 
 const styleFooter = {
   links: 'flex items-center justify-center rounded-xl p-2 text-[#B8DE53] transition-colors hover:bg-zinc-800 hover:text-zinc-100',
-  container: 'flex h-16 w-full items-center justify-end px-6 gap-6 bg-[#053f1a]'
+  container: 'flex h-16 w-full items-center justify-end px-6 gap-6 bg-[#202528]'
 }
 
 export default function Footer({ logged }: { logged: boolean }) {

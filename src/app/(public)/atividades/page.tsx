@@ -1,12 +1,12 @@
 // src/app/atividades/page.tsx
 import AtividadesFooter from "@/components/AtividadesFooter"
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table"
 import { db } from "@/db"
 import { gear, stravaWorkouts } from "@/db/schema"
@@ -148,7 +148,7 @@ export default async function AtividadesPage({
   }
 
   return (
-    <main className="min-h-screen w-full max-w-6xl mx-auto bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100 p-4">
+    <main className="min-h-screen w-full max-w-6xl mx-auto bg-background text-zinc-900 dark:text-zinc-100 p-4">
       <div className="space-y-12">
         <header className="flex mb-12 flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
@@ -169,7 +169,7 @@ export default async function AtividadesPage({
             Nenhuma atividade encontrada com os filtros aplicados.
           </p>
         ) : (
-          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900 shadow-sm">
+          <div className="rounded-lg border border-border overflow-hidden bg-card shadow-sm">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>

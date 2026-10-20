@@ -103,47 +103,43 @@
   --sidebar-ring: #5EACCF;
 }
 
+/* src/app/globals.css */
+
 .dark {
-  /* Fundo profundo elegante, foge do preto absoluto */
-  --background: #0c0c0c; /* zinc-950 */
+  /* Novo Background Global */
+  --background: #202528; 
   --foreground: #fafafa;
   
-  /* Cards levemente destacados para gerar profundidade */
-  --card: #18181b; /* zinc-900 */
+  /* Cards e superfícies elevadas (tom mais profundo para contraste) */
+  --card: #171A1C; 
   --card-foreground: #fafafa;
-  --popover: #18181b;
+  --popover: #171A1C;
   --popover-foreground: #fafafa;
 
-  /* Identidade Visual - Dark Mode (Neon Vibe) */
-  --primary: #5EACCF;          /* Azul da Logo */
-  --primary-foreground: #000000; /* Texto preto para contraste forte no azul */
-  --secondary: #F35894;        /* Rosa da Logo */
+  /* Identidade Visual - Dark Mode (Mantida) */
+  --primary: #5EACCF;          
+  --primary-foreground: #000000; 
+  --secondary: #F35894;        
   --secondary-foreground: #ffffff;
-  --accent: #FBE122;           /* Amarelo da Logo */
+  --accent: #FBE122;           
   --accent-foreground: #000000;
   
+  /* Bordas e elementos mutados adaptados ao novo fundo */
   --destructive: #ef4444;
-  --muted: #27272a; /* zinc-800 */
-  --muted-foreground: #a1a1aa; /* zinc-400 */
-  --border: #27272a; /* zinc-800 */
-  --input: #27272a; /* zinc-800 */
-  --ring: #5EACCF; /* Foco neon */
+  --muted: #2A3036; 
+  --muted-foreground: #a1a1aa; 
+  --border: #2A3036; 
+  --input: #2A3036; 
+  --ring: #5EACCF; 
 
-  /* Gráficos em Dark Mode */
-  --chart-1: #5EACCF;
-  --chart-2: #F35894;
-  --chart-3: #FBE122;
-  --chart-4: #C88D5D;
-  --chart-5: #fafafa;
-  
-  /* Sidebar Dark - Mescla no fundo com borda suave */
-  --sidebar: #09090b;
+  /* Sidebar mesclando com os cards */
+  --sidebar: #171A1C;
   --sidebar-foreground: #fafafa;
   --sidebar-primary: #5EACCF;
   --sidebar-primary-foreground: #000000;
-  --sidebar-accent: #27272a; /* zinc-800 */
+  --sidebar-accent: #2A3036; 
   --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #27272a; /* zinc-800 */
+  --sidebar-border: #2A3036; 
   --sidebar-ring: #5EACCF;
 }
 

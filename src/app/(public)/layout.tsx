@@ -7,7 +7,7 @@ export default async function PublicLayout({ children }: { children: React.React
   const session = await auth()
   
   return (
-    <div className="flex min-h-screen flex-col bg-[#053f1a] text-foreground">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
       <main className="flex flex-1 flex-col">
         {children}
       </main>

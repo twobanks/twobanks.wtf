@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://twobanks.wtf"),
   title: {
-    template: "BANKS | %s",
-    default: "BANKS 🛸",
+    template: "🏹 BANKS | %s",
+    default: "🏹 BANKS",
   },
   description: "where i register my randomness 🛸",
   keywords: ["desenvolvimento", "tecnologia", "portfólio", "blog", "randomness"],
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     url: "/",
-    title: "BANKS 🛸",
+    title: "🏹 BANKS",
     description: "where i register my randomness 🛸",
     siteName: "BANKS",
     images: [
@@ -37,13 +37,13 @@ export const metadata: Metadata = {
         url: "/opengraph-image.png", 
         width: 1200,
         height: 630,
-        alt: "BANKS 🛸 - Onde registro minhas aleatoriedades",
+        alt: "🏹 BANKS - Onde registro minhas aleatoriedades",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BANKS 🛸",
+    title: "🏹 BANKS",
     description: "where i register my randomness 🛸",
     creator: "@otwobanks", 
     images: ["/twitter-image.png"],

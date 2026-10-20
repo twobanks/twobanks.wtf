@@ -6,7 +6,7 @@ import Link from "next/link";
 
 const styleFooter = {
   links: 'flex items-center justify-center rounded-xl p-2 text-[#B8DE53] transition-colors hover:bg-zinc-800 hover:text-zinc-100',
-  container: 'flex h-16 w-full items-center justify-end px-6 gap-6 bg-[#053f1a]'
+  container: 'flex h-16 w-full items-center justify-end px-6 gap-6 bg-background'
 }
 
 export default function Footer({ logged }: { logged: boolean }) {

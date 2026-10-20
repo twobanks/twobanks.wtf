@@ -186,7 +186,7 @@ export default async function CarteiraPage({
         
         <Tabs defaultValue="all" className="flex flex-col w-full space-y-5">
           <Card className="flex flex-row items-center p-2.5 justify-between flex-wrap gap-4 bg-zinc-950/40 border-zinc-800/60 rounded-2xl shadow-sm">
-            <TabsList className="flex-wrap bg-zinc-900/50 p-1 rounded-xl">
+            <TabsList className="flex-wrap bg-card/40 p-1 rounded-xl">
               <TabsTrigger 
                 value="all" 
                 className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
