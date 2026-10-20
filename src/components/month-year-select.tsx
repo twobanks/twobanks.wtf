@@ -56,9 +56,7 @@ export function MonthYearPicker({
       return { label: y, value: y };
     });
   }, [startYear, yearsAhead]);
-
   const monthItems = useMemo(() => [...MONTHS], []);
-
   return (
     <div className={`grid grid-cols-2 gap-4 ${className ?? ''}`}>
       <Select

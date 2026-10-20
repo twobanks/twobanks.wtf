@@ -162,6 +162,7 @@ export function PurchaseDrawer({
         onMonthChange={setDueMonth}
         onYearChange={setDueYear}
         className="md:col-span-2"
+        startYear={2025}
       />
     </DrawerShell>
   );
