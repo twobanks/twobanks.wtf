@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth"
 import { db } from "@/db"
-import { creditCards, financialAccounts, installments, purchases, transactions } from "@/db/schema"
+import { creditCardAdjustments, creditCards, financialAccounts, installments, purchases, transactions } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
 import { and, eq, gte, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
@@ -117,6 +117,8 @@ export async function createInstallmentPurchase(formData: FormData) {
     throw new Error("Dados inválidos")
   }
 
+  const purchaseDateStr = formData.get("purchaseDate") as string || firstDueDate;
+
   // Grava a compra original
   const [purchase] = await db.insert(purchases).values({
     userId,
@@ -126,6 +128,8 @@ export async function createInstallmentPurchase(formData: FormData) {
     installments: installmentsCount,
     firstDueDate,
     categoryId,
+    purchaseDate: purchaseDateStr, 
+    status: 'active'               
   }).returning()
 
   const installmentsData = []
@@ -397,6 +401,7 @@ export async function markInvoiceAsPaid(formData: FormData) {
         paid: true,
         source: 'manual',
         accountId: accountId,
+        isInvoicePayment: true,
       })
     }
   })
@@ -619,6 +624,90 @@ export async function deletePurchase(formData: FormData) {
   // Execução sequencial compatível com o driver HTTP do Neon
   await db.delete(installments).where(eq(installments.purchaseId, purchaseId))
   await db.delete(purchases).where(eq(purchases.id, purchaseId))
+
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin/carteira/cartoes")
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
+}
+
+export async function createCreditCardAdjustment(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const creditCardId = Number(formData.get("creditCardId"))
+  const amount = Number(formData.get("amount"))
+  const date = String(formData.get("date")) 
+  const description = String(formData.get("description"))
+  const type = String(formData.get("type")) // 'refund', 'fee', 'cashback', 'rescue'
+  const purchaseId = formData.get("purchaseId") ? Number(formData.get("purchaseId")) : null
+
+  if (!creditCardId || isNaN(amount) || !date || !description || !type) {
+    throw new Error("Dados inválidos para o ajuste")
+  }
+
+  await db.insert(creditCardAdjustments).values({
+    userId,
+    creditCardId,
+    purchaseId,
+    type,
+    amount: amount.toFixed(2),
+    date,
+    description,
+  })
+
+  revalidatePath("/admin/carteira")
+  revalidatePath("/admin/carteira/cartoes")
+  revalidatePath("/admin/carteira/cartoes/[id]", "page")
+  revalidatePath("/admin/carteira/faturas")
+}
+
+export async function rescueCreditBalance(formData: FormData) {
+  const session = await auth()
+  if (!session?.user) throw new Error("Não autorizado")
+  const userId = session.user.id
+
+  const creditCardId = Number(formData.get("creditCardId"))
+  const accountId = Number(formData.get("accountId"))
+  const amount = Number(formData.get("amount"))
+  const month = String(formData.get("month")) // Formato YYYY-MM
+  const description = String(formData.get("description") || "Resgate de Crédito de Fatura")
+
+  if (!creditCardId || !accountId || isNaN(amount) || !month) {
+    throw new Error("Dados inválidos para resgate")
+  }
+
+  const [ano, mes] = month.split("-")
+  // Usamos o último dia do mês para o resgate
+  const dataResgate = new Date(Number(ano), Number(mes), 0).toISOString().split("T")[0]
+
+  const householdIds = await getUserHouseholdIds(userId)
+  const primaryHouseholdId = householdIds.length > 0 ? householdIds[0] : null
+
+  await db.transaction(async (tx) => {
+    // 1. Zera o crédito na fatura lançando um ajuste positivo (rescue)
+    await tx.insert(creditCardAdjustments).values({
+      userId,
+      creditCardId,
+      type: 'rescue',
+      amount: amount.toFixed(2),
+      date: dataResgate,
+      description,
+    })
+
+    // 2. Adiciona o dinheiro na conta bancária
+    await tx.insert(transactions).values({
+      userId,
+      householdId: primaryHouseholdId,
+      description,
+      amount: amount.toFixed(2),
+      type: 'income',
+      date: dataResgate,
+      accountId: accountId,
+      paid: true,
+      source: 'manual',
+    })
+  })
 
   revalidatePath("/admin/carteira")
   revalidatePath("/admin/carteira/cartoes")

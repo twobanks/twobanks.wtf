@@ -13,7 +13,8 @@ import {
   serial,
   text,
   timestamp,
-  uniqueIndex
+  uniqueIndex,
+  varchar
 } from "drizzle-orm/pg-core";
 import { AdapterAccount } from "next-auth/adapters";
 
@@ -234,7 +235,7 @@ export const transactions = pgTable('transactions', {
   paid: boolean('paid').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
   isRecurring: boolean('is_recurring').notNull().default(false),
-  // onDelete cascade: se a semente morre, o histórico inteiro vai junto.
+  isInvoicePayment: boolean("is_invoice_payment").default(false).notNull(),
   recurringParentId: integer('recurring_parent_id').references(
     (): AnyPgColumn => transactions.id,
     { onDelete: 'cascade' },
@@ -312,6 +313,8 @@ export const purchases = pgTable('purchases', {
   firstDueDate: date('first_due_date').notNull(),
   categoryId: integer('category_id').references(() => categories.id),
   createdAt: timestamp('created_at').defaultNow(),
+  purchaseDate: date("purchase_date").notNull().defaultNow(), 
+  status: varchar("status", { length: 20 }).default("active").notNull(),
 }, (table) => [
   index("idx_purchases_card_user").on(table.creditCardId, table.userId),
 ]);
@@ -526,3 +529,31 @@ export const kanbanTasks = pgTable("kanban_tasks", {
     .notNull()
     .$onUpdate(() => new Date()), // Atualiza automaticamente a data na edição
 })
+
+// Nova tabela para registrar estornos, taxas e resgates de crédito
+export const creditCardAdjustments = pgTable("credit_card_adjustments", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(), // Referência ao usuário logado
+  creditCardId: integer("credit_card_id")
+    .references(() => creditCards.id, { onDelete: "cascade" })
+    .notNull(),
+  purchaseId: integer("purchase_id")
+    .references(() => purchases.id, { onDelete: "set null" }), // Nullable para créditos avulsos
+  type: varchar("type", { length: 20 }).notNull(), // Valores: 'refund', 'fee', 'cashback', 'rescue'
+  amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
+  date: date("date").notNull(),
+  description: varchar("description", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Relacionamentos (se você estiver usando Drizzle Relations)
+export const creditCardAdjustmentsRelations = relations(creditCardAdjustments, ({ one }) => ({
+  creditCard: one(creditCards, {
+    fields: [creditCardAdjustments.creditCardId],
+    references: [creditCards.id],
+  }),
+  purchase: one(purchases, {
+    fields: [creditCardAdjustments.purchaseId],
+    references: [purchases.id],
+  }),
+}));

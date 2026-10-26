@@ -73,6 +73,8 @@ export default async function CarteiraPage({
     }
   }
   await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
+  
+  // Datas do mês atual
   const firstDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-01`;
   const lastDayNum = new Date(Date.UTC(faturaAno, faturaMesNum, 0)).getUTCDate();
   const lastDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-${String(lastDayNum).padStart(2, "0")}`;
@@ -83,6 +85,10 @@ export default async function CarteiraPage({
     return { year: date.getFullYear(), month: date.getMonth() + 1 };
   }
 
+  const prev = getPreviousMonth(faturaAno, faturaMesNum);
+  const prevPrev = getPreviousMonth(prev.year, prev.month);
+
+  // --- MÊS ATUAL ---
   const allTransactions = await db.query.transactions.findMany({
     where: and(
       accessCondition(transactions),
@@ -97,14 +103,15 @@ export default async function CarteiraPage({
 
   const obraCategory = categorias.find((c) => c.name.toLowerCase().includes("obra"));
 
+  // Filtramos !isInvoicePayment para a transação de pagamento do cartão não duplicar no painel
   const obraTransactions = obraCategory
     ? allTransactions.filter(
-        (t) => t.type === "expense" && t.categoryId === obraCategory.id
+        (t) => t.type === "expense" && t.categoryId === obraCategory.id && !t.isInvoicePayment
       )
     : [];
 
   const outrasDespesas = allTransactions.filter(
-    (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
+    (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id) && !t.isInvoicePayment
   ).map((t) => ({
     id: t.id,
     description: t.description,
@@ -117,16 +124,25 @@ export default async function CarteiraPage({
     date: t.date,
   }));
 
+  // ABA CARTÕES: Mostra o fluxo de compras do mês selecionado (O que entrará para pagar no futuro)
   const cartoesComFatura = await getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum);
 
+  // DESPESAS DE CARTÃO: Busca a fatura do MÊS ANTERIOR (Ex: Em Outubro, pagamos Setembro)
+  const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
+  const totalFaturaAnterior = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
+
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
+  
+  // O Cálculo de Despesa agora soma CAIXA (Mês atual) + CARTÃO (Mês anterior)
   const totalDespesas =
     outrasDespesas.reduce((sum, t) => sum + t.amount, 0) +
     obraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
-    cartoesComFatura.reduce((sum, c) => sum + c.total, 0);
+    totalFaturaAnterior;
+    
   const saldo = totalReceitas - totalDespesas;
 
-  const prev = getPreviousMonth(faturaAno, faturaMesNum);
+
+  // --- MÊS ANTERIOR (Para Cálculo de Variação) ---
   const prevPrimeiroDia = new Date(prev.year, prev.month - 1, 1);
   const prevUltimoDia = new Date(prev.year, prev.month, 0);
   const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
@@ -142,23 +158,27 @@ export default async function CarteiraPage({
   });
 
   const prevReceitas = prevAllTransactions.filter((t) => t.type === "income");
+  
   const prevObraTransactions = obraCategory
     ? prevAllTransactions.filter(
-        (t) => t.type === "expense" && t.categoryId === obraCategory.id
+        (t) => t.type === "expense" && t.categoryId === obraCategory.id && !t.isInvoicePayment
       )
     : [];
+    
   const prevOutrasDespesas = prevAllTransactions.filter(
-    (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id)
+    (t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id) && !t.isInvoicePayment
   );
 
-  const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
-  const prevTotalCartoes = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
+  // Para calcular a variação, pegamos a fatura de DOIS meses atrás (Ex: Em Setembro, paga-se Agosto)
+  const prevPrevCartoesSummary = await getCreditCardInvoicesSummary(userId, prevPrev.year, prevPrev.month);
+  const totalFaturaRetrasada = prevPrevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
 
   const prevTotalReceitas = prevReceitas.reduce((sum, t) => sum + Number(t.amount), 0);
   const prevTotalDespesas =
     prevOutrasDespesas.reduce((sum, t) => sum + Number(t.amount), 0) +
     prevObraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
-    prevTotalCartoes;
+    totalFaturaRetrasada;
+    
   const prevSaldo = prevTotalReceitas - prevTotalDespesas;
 
   const calcVariacao = (atual: number, anterior: number): number | null => {
@@ -285,7 +305,7 @@ export default async function CarteiraPage({
             </Card>
           </TabsContent>
 
-          {/* Aba Despesas (unificada) */}
+          {/* Aba Despesas */}
           <TabsContent value="despesas" className="mt-0">
             <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
               <div className="p-0 sm:p-2">
