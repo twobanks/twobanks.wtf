@@ -319,13 +319,11 @@ export const purchases = pgTable('purchases', {
   index("idx_purchases_card_user").on(table.creditCardId, table.userId),
 ]);
 
-// Parcelas de uma compra
-// src/db/schema.ts
 
 export const installments = pgTable('installments', {
   id: serial('id').primaryKey(),
   purchaseId: integer('purchase_id')
-    .references(() => purchases.id, { onDelete: 'cascade' }) // <--- Adicione aqui
+    .references(() => purchases.id, { onDelete: 'cascade' }) 
     .notNull(),
   number: integer('number').notNull(),
   amount: numeric('amount').notNull(),
@@ -333,8 +331,6 @@ export const installments = pgTable('installments', {
   paid: boolean('paid').notNull().default(false),
   paidAt: timestamp('paid_at'),
 });
-
-// ---------- RELAÇÕES (para queries com joins) ----------
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
   transactions: many(transactions),
@@ -389,7 +385,7 @@ export const shoppingLists = pgTable("shopping_lists", {
   id: serial('id').primaryKey(),
   name: text("name").notNull(),
   type: listTypeEnum("type").notNull(),
-  userId: text("user_id").notNull(), // ID do usuário vindo do Auth.js
+  userId: text("user_id").notNull(), 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -409,18 +405,16 @@ export const shoppingItems = pgTable("shopping_items", {
 export type ShoppingList = InferSelectModel<typeof shoppingLists>;
 export type ShoppingItem = InferSelectModel<typeof shoppingItems>;
 
-// Tipo combinado para lista com itens
 export type ShoppingListWithItems = ShoppingList & {
   items: ShoppingItem[];
 };
 
-// Log de geração mensal para evitar duplicatas
 export const recurringPaymentLogs = pgTable("recurring_payment_logs", {
   id: serial("id").primaryKey(),
   recurringExpenseId: integer("recurring_expense_id")
     .notNull()
     .references(() => recurringExpenses.id, { onDelete: "cascade" }),
-  month: text("month").notNull(), // formato "YYYY-MM"
+  month: text("month").notNull(), 
   transactionId: integer("transaction_id")
     .notNull()
     .references(() => transactions.id, { onDelete: "cascade" }),
@@ -453,7 +447,6 @@ export const recurringPaymentLogsRelations = relations(recurringPaymentLogs, ({ 
   }),
 }));
 
-// Relações
 export const assetsRelations = relations(assets, ({ many }) => ({
   transactions: many(investmentTransactions),
 }));
@@ -501,7 +494,6 @@ export const kanbanUrgencyEnum = pgEnum("kanban_urgency", [
   "high"
 ])
 
-// 2. Criamos a Tabela
 export const kanbanTasks = pgTable("kanban_tasks", {
   id: text("id")
     .primaryKey()
@@ -515,7 +507,6 @@ export const kanbanTasks = pgTable("kanban_tasks", {
   
   dueDate: timestamp("due_date", { mode: "string" }),
   
-  // Relacionamentos com os 2 usuários do sistema
   assignedToId: text("assigned_to_id").references(() => users.id, { 
     onDelete: "set null" 
   }),
@@ -527,26 +518,24 @@ export const kanbanTasks = pgTable("kanban_tasks", {
   updatedAt: timestamp("updated_at")
     .defaultNow()
     .notNull()
-    .$onUpdate(() => new Date()), // Atualiza automaticamente a data na edição
+    .$onUpdate(() => new Date()), 
 })
 
-// Nova tabela para registrar estornos, taxas e resgates de crédito
 export const creditCardAdjustments = pgTable("credit_card_adjustments", {
   id: serial("id").primaryKey(),
-  userId: text("user_id").notNull(), // Referência ao usuário logado
+  userId: text("user_id").notNull(), 
   creditCardId: integer("credit_card_id")
     .references(() => creditCards.id, { onDelete: "cascade" })
     .notNull(),
   purchaseId: integer("purchase_id")
-    .references(() => purchases.id, { onDelete: "set null" }), // Nullable para créditos avulsos
-  type: varchar("type", { length: 20 }).notNull(), // Valores: 'refund', 'fee', 'cashback', 'rescue'
+    .references(() => purchases.id, { onDelete: "set null" }), 
+  type: varchar("type", { length: 20 }).notNull(), 
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),
   date: date("date").notNull(),
   description: varchar("description", { length: 255 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Relacionamentos (se você estiver usando Drizzle Relations)
 export const creditCardAdjustmentsRelations = relations(creditCardAdjustments, ({ one }) => ({
   creditCard: one(creditCards, {
     fields: [creditCardAdjustments.creditCardId],
@@ -557,3 +546,4 @@ export const creditCardAdjustmentsRelations = relations(creditCardAdjustments, (
     references: [purchases.id],
   }),
 }));
+

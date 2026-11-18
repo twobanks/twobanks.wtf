@@ -9,7 +9,7 @@ import { ArrowRight, Calendar, Compass, MapPin, Mountain } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
-  title: "Viagens & Expedições | TwoBanks",
+  title: "Viajando",
   description:
     "Relatos, mapas interativos, altimetria e diários de bordo de cicloviagens.",
 }

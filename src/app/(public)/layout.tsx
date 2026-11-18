@@ -1,17 +1,13 @@
-// src/app/(public)/layout.tsx
-
 import { auth } from "@/auth";
-import Footer from "@/components/Footer";
+import { PublicShell } from "@/components/PublicShell";
 
-export default async function PublicLayout({ children }: { children: React.ReactNode; }) {
-  const session = await auth()
-  
-  return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <main className="flex flex-1 flex-col">
-        {children}
-      </main>
-      <Footer logged={!!session} />
-    </div>
-  );
+export default async function PublicLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth();
+  const isLoggedIn = Boolean(session?.user);
+
+  return <PublicShell isLoggedIn={isLoggedIn}>{children}</PublicShell>;
 }

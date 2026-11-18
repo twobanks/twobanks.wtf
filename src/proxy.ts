@@ -1,21 +1,34 @@
-// src/proxy.ts
 import { auth } from "@/auth";
+
+const PUBLIC_PATHS = [
+  "/",
+  "/login",
+  "/atividades",
+  "/treinos",
+  "/viagens",
+  "/blog",
+  "/livros",
+  "/sobre",
+];
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
 
-  // Permitir acesso público estrito à raiz (/) e à tela de login (/login)
-  const isPublicRoute =
-    pathname === "/" ||
-    pathname === "/login" ||
+  const isPublicPage = PUBLIC_PATHS.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  const isPublicAssetOrApi =
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/otp") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.startsWith("/icons/");
+    pathname.startsWith("/gpx/") ||
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/icons/") ||
+    /\.(svg|png|jpg|jpeg|webp|gif|ico|gpx|css|js)$/i.test(pathname);
 
-  if (!isLoggedIn && !isPublicRoute) {
+  if (!isLoggedIn && !isPublicPage && !isPublicAssetOrApi) {
     return Response.redirect(new URL("/login", req.url));
   }
 
