@@ -1,7 +1,7 @@
 // src/components/BottomNav.tsx
 "use client";
 
-import { LayoutDashboard, Lock } from "lucide-react";
+import { Bike, LayoutDashboard, Lock } from "lucide-react";
 import Link from "next/link";
 
 const styleFooter = {
@@ -13,6 +13,10 @@ export default function Footer({ logged }: { logged: boolean }) {
   return (
     <footer className="sticky bottom-0 z-50 w-full bg-transparent" suppressHydrationWarning>
       <div className={styleFooter.container}>
+        <Link href="/viagens" title="Viagens" className={styleFooter.links}>
+          <Bike size={20} />
+          <span className="sr-only">Viagens</span>
+        </Link>
         {!logged && (
           <Link href="/login" title="Fazer Login" className={styleFooter.links}>
             <Lock size={20} />
