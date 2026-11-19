@@ -1,3 +1,4 @@
+import { TripRoutePreview } from "@/components/TripRoutePreview"
 import {
   formatDatePtBr,
   formatElevation,
@@ -5,7 +6,7 @@ import {
   getAllEnrichedTrips,
 } from "@/lib/viagens"
 import { EnrichedTrip, TripStatus } from "@/utils/types/viagens"
-import { ArrowRight, Calendar, Compass, MapPin, Mountain } from "lucide-react"
+import { ArrowRight, Calendar, MapPin, Mountain } from "lucide-react"
 import Link from "next/link"
 
 export const metadata = {
@@ -32,31 +33,9 @@ const STATUS_BADGE: Record<TripStatus, { label: string; className: string }> = {
 export default async function ViagensPage() {
   const trips: EnrichedTrip[] = await getAllEnrichedTrips()
 
-  const totalKm = trips.reduce(
-    (acc, t) =>
-      acc +
-      (t.actualTotalDistanceMeters > 0
-        ? t.actualTotalDistanceMeters
-        : t.plannedTotalDistanceMeters),
-    0
-  )
-  const totalElevation = trips.reduce(
-    (acc, t) =>
-      acc +
-      (t.actualTotalElevationGain > 0
-        ? t.actualTotalElevationGain
-        : t.plannedTotalElevationGain),
-    0
-  )
-  const totalDays = trips.reduce((acc, t) => acc + t.days.length, 0)
-
   return (
     <main className="min-h-screen w-full max-w-6xl mx-auto px-4 py-10 space-y-10">
       <header className="space-y-3">
-        <div className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#5EACCF]">
-          <Compass className="size-4" />
-          Bikepacking & Cicloturismo
-        </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
           Viagens na Bike
         </h1>
@@ -64,39 +43,6 @@ export default async function ViagensPage() {
           Roteiros planejados, mapas interativos, telemetria sincronizada do Strava e diários de bordo etapa por etapa.
         </p>
       </header>
-
-      {/* KPIs Consolidados */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-          <span className="text-xs text-zinc-500 uppercase font-mono">
-            Expedições
-          </span>
-          <p className="mt-1 text-2xl font-extrabold font-mono text-zinc-900 dark:text-white">
-            {trips.length}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-          <span className="text-xs text-zinc-500 uppercase font-mono">
-            Distância Total
-          </span>
-          <p className="mt-1 text-2xl font-extrabold font-mono text-zinc-900 dark:text-white">
-            {formatKm(totalKm, 0)}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-          <span className="text-xs text-zinc-500 uppercase font-mono">
-            Altimetria / Dias
-          </span>
-          <p className="mt-1 text-2xl font-extrabold font-mono text-zinc-900 dark:text-white">
-            {formatElevation(totalElevation)}{" "}
-            <span className="text-sm font-normal text-zinc-500">
-              • {totalDays} dias
-            </span>
-          </p>
-        </div>
-      </section>
 
       {/* Lista de Viagens */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -118,12 +64,9 @@ export default async function ViagensPage() {
               className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors hover:border-[#5EACCF]/60"
             >
               <div className="relative h-52 w-full overflow-hidden bg-zinc-950">
-                <img
-                  src={trip.coverImage}
-                  alt={trip.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-zinc-950/30 to-transparent" />
+                <TripRoutePreview trip={trip} status={trip.status} />
+
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-zinc-950/20" />
                 <span
                   className={`absolute top-4 left-4 px-2.5 py-1 rounded-full text-xs font-medium border backdrop-blur-md ${badge.className}`}
                 >
