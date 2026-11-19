@@ -6,6 +6,7 @@ const PUBLIC_PATHS = [
   "/atividades",
   "/treinos",
   "/viagens",
+  "/fotos",
   "/blog",
   "/livros",
   "/sobre",
