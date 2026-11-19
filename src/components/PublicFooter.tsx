@@ -32,7 +32,7 @@ export function PublicFooter({ isLoggedIn = false }: PublicFooterProps) {
   const navItems = [...PUBLIC_NAV_ITEMS, authItem];
 
   return (
-    <footer className="fixed bottom-0 inset-x-0 z-40 h-16 border-t border-white/10 bg-transparent backdrop-blur-md">
+    <footer className="fixed bottom-0 inset-x-0 z-40 h-16 bg-transparent backdrop-blur-md">
       <nav
         aria-label="Navegação principal"
         className="max-w-5xl mx-auto h-full px-2 flex items-center justify-center gap-0.5 sm:gap-4"

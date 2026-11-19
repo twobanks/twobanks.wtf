@@ -8,11 +8,9 @@ import {
 import { RaceItem } from "@/data/provas";
 import {
   ArrowUpRight,
-  Bike,
   Calendar,
   ChevronLeft,
   ChevronRight,
-  Footprints,
   MapPin,
   Mountain,
   Timer,
@@ -21,6 +19,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useMemo, useRef, useState, useTransition } from "react";
+import { SyncStravaButton } from "./SyncStravaButton";
 
 export interface ModalityDataset {
   totalMeters: number;
@@ -37,10 +36,64 @@ interface AtividadesViewProps {
   races: RaceItem[];
 }
 
-const BIKE_TYPES = ["Ride", "MountainBikeRide", "GravelRide", "VirtualRide", "EBikeRide"];
+const BIKE_TYPE_ICONS: Record<string, string> = {
+  Ride: "/icons/bike.svg",
+  MountainBikeRide: "/icons/bikeIcon.svg",
+  GravelRide: "/icons/bike.svg",
+  VirtualRide: "/icons/bike.svg",
+  EBikeRide: "/icons/bike.svg",
+};
+
+const RUN_TYPE_ICONS: Record<string, string> = {
+  Running: "/icons/running.svg",
+  Run: "/icons/running.svg",
+  VirtualRun: "/icons/running.svg",
+  TrailRunning: "/icons/trail.svg",
+  TrailRun: "/icons/trail.svg",
+};
+
+const BIKE_TYPES = Object.keys(BIKE_TYPE_ICONS);
 
 function isBikeType(type: string | null) {
-  return Boolean(type && BIKE_TYPES.includes(type));
+  if (!type) return false;
+  if (BIKE_TYPES.includes(type)) return true;
+  const lower = type.toLowerCase();
+  return lower.includes("bike") || lower.includes("ride");
+}
+
+function getActivityIconSrc(type: string | null) {
+  if (!type) return RUN_TYPE_ICONS.Running;
+
+  const normalized = type.trim();
+  if (BIKE_TYPE_ICONS[normalized]) {
+    return BIKE_TYPE_ICONS[normalized];
+  }
+  if (RUN_TYPE_ICONS[normalized]) {
+    return RUN_TYPE_ICONS[normalized];
+  }
+
+  const lower = normalized.toLowerCase();
+  if (lower.includes("mountainbike")) return "/icons/bikeIcon.svg";
+  if (lower.includes("bike") || lower.includes("ride")) return "/icons/bike.svg";
+  if (lower.includes("trail")) return "/icons/trail.svg";
+  return "/icons/running.svg";
+}
+
+function CustomSvgIcon({
+  src,
+  className = "size-4",
+}: {
+  src: string;
+  className?: string;
+}) {
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      className={`${className} object-contain brightness-0 invert`}
+    />
+  );
 }
 
 function formatKm(meters: number) {
@@ -119,8 +172,8 @@ function YoYBadge({
             : "text-zinc-500"
       }`}
     >
-      {isPositive && <TrendingUp className="size-3" />}
-      {isNegative && <TrendingDown className="size-3" />}
+      {isPositive && <TrendingUp className="size-3 text-white" />}
+      {isNegative && <TrendingDown className="size-3 text-white" />}
       {isPositive ? "+" : ""}
       {yoyChange.toFixed(1).replace(".", ",")}%
     </span>
@@ -130,13 +183,11 @@ function YoYBadge({
 function CombinedModalityCard({
   title,
   icon,
-  accentClass,
   selectedYear,
   stats,
 }: {
   title: string;
   icon: React.ReactNode;
-  accentClass: string;
   selectedYear: string;
   stats: ReturnType<typeof computeYearStats>;
 }) {
@@ -145,7 +196,9 @@ function CombinedModalityCard({
   return (
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden">
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
-        <span className={`p-1.5 rounded-lg border ${accentClass}`}>{icon}</span>
+        <span className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-white">
+          {icon}
+        </span>
         <h3 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
           {title}
         </h3>
@@ -342,6 +395,7 @@ export function AtividadesView({
               </button>
             );
           })}
+          <SyncStravaButton />
         </nav>
       </header>
 
@@ -353,7 +407,7 @@ export function AtividadesView({
           </h2>
 
           <label className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-            <Calendar className="size-3.5 text-zinc-400" />
+            <Calendar className="size-3.5 text-white" />
             <span>Ano:</span>
             <select
               value={selectedYear}
@@ -374,15 +428,13 @@ export function AtividadesView({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <CombinedModalityCard
               title="Bike"
-              icon={<Bike className="size-4" />}
-              accentClass="bg-sky-500/10 text-sky-500 border-sky-500/20"
+              icon={<CustomSvgIcon src={BIKE_TYPE_ICONS.Ride} className="size-4" />}
               selectedYear={selectedYear}
               stats={bikeStats}
             />
             <CombinedModalityCard
               title="Corrida"
-              icon={<Footprints className="size-4" />}
-              accentClass="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+              icon={<CustomSvgIcon src={RUN_TYPE_ICONS.Running} className="size-4" />}
               selectedYear={selectedYear}
               stats={runStats}
             />
@@ -433,14 +485,11 @@ export function AtividadesView({
                   className="group flex items-center justify-between gap-4 px-4 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span
-                      className={`p-2 rounded-xl border shrink-0 ${
-                        bike
-                          ? "bg-sky-500/10 text-sky-500 border-sky-500/20"
-                          : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                      }`}
-                    >
-                      {bike ? <Bike className="size-4" /> : <Footprints className="size-4" />}
+                    <span className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-white shrink-0">
+                      <CustomSvgIcon
+                        src={getActivityIconSrc(workout.type)}
+                        className="size-4"
+                      />
                     </span>
 
                     <div className="min-w-0">
@@ -470,7 +519,7 @@ export function AtividadesView({
                       +{Math.round(Number(workout.totalElevationGain || 0))} m
                     </span>
 
-                    <ArrowUpRight className="size-4 text-zinc-400 group-hover:text-orange-500 transition-colors" />
+                    <ArrowUpRight className="size-4 text-white transition-colors" />
                   </div>
                 </a>
               );
@@ -493,7 +542,7 @@ export function AtividadesView({
                 onClick={() => handlePageChange(workoutsPage.page - 1)}
                 className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
               >
-                <ChevronLeft className="size-3.5" />
+                <ChevronLeft className="size-3.5 text-white" />
                 Anterior
               </button>
 
@@ -508,7 +557,7 @@ export function AtividadesView({
                 className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 Próxima
-                <ChevronRight className="size-3.5" />
+                <ChevronRight className="size-3.5 text-white" />
               </button>
             </div>
           </div>
@@ -518,7 +567,7 @@ export function AtividadesView({
       {/* 3. Provas */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <Trophy className="size-4 text-amber-500" />
+          <Trophy className="size-4 text-white" />
           <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Provas
           </h2>
@@ -532,6 +581,18 @@ export function AtividadesView({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredRaces.map((race) => {
               const isBike = race.modality === "bike";
+              const raceWithOptionalType = race as RaceItem & {
+                type?: string;
+                sportType?: string;
+              };
+              const resolvedRaceType =
+                raceWithOptionalType.type ??
+                raceWithOptionalType.sportType ??
+                (isBike
+                  ? "Ride"
+                  : /trail/i.test(race.name)
+                    ? "TrailRunning"
+                    : "Running");
               const key = race.id ?? `${race.date}-${race.name}`;
               return (
                 <a
@@ -543,14 +604,11 @@ export function AtividadesView({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1.5">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border ${
-                          isBike
-                            ? "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20"
-                            : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                        }`}
-                      >
-                        {isBike ? <Bike className="size-3" /> : <Footprints className="size-3" />}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border border-zinc-800 bg-zinc-900 text-zinc-200">
+                        <CustomSvgIcon
+                          src={getActivityIconSrc(resolvedRaceType)}
+                          className="size-3"
+                        />
                         {isBike ? "Bike" : "Corrida"}
                       </span>
                       <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-amber-500 transition-colors">
@@ -558,12 +616,12 @@ export function AtividadesView({
                       </h3>
                     </div>
 
-                    <ArrowUpRight className="size-4 text-zinc-400 group-hover:text-amber-500 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    <ArrowUpRight className="size-4 text-white shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </div>
 
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500">
                     <span className="inline-flex items-center gap-1">
-                      <Calendar className="size-3.5" />
+                      <Calendar className="size-3.5 text-white" />
                       {formatDate(race.date)}
                     </span>
                     {race.distanceKm !== undefined && (
@@ -573,19 +631,19 @@ export function AtividadesView({
                     )}
                     {race.elevationGain !== undefined && (
                       <span className="inline-flex items-center gap-1">
-                        <Mountain className="size-3.5" />
+                        <Mountain className="size-3.5 text-white" />
                         {race.elevationGain} m
                       </span>
                     )}
                     {race.duration && (
                       <span className="inline-flex items-center gap-1">
-                        <Timer className="size-3.5" />
+                        <Timer className="size-3.5 text-white" />
                         {race.duration}
                       </span>
                     )}
                     {race.location && (
                       <span className="inline-flex items-center gap-1">
-                        <MapPin className="size-3.5" />
+                        <MapPin className="size-3.5 text-white" />
                         {race.location}
                       </span>
                     )}

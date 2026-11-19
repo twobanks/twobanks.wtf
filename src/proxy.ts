@@ -12,6 +12,9 @@ const PUBLIC_PATHS = [
 ];
 
 export default auth((req) => {
+  if (req.nextUrl.pathname.startsWith("/api/webhooks")) {
+    return;
+  }
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
 
@@ -38,5 +41,7 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!api/auth|api/webhooks|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

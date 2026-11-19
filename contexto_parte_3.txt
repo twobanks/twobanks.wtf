@@ -1,0 +1,2916 @@
+// ==========================================
+// Arquivo: src/app/admin/carteira/cartoes/page.tsx
+// ==========================================
+import { deleteCreditCard } from "@/actions/creditCards"
+import { auth } from "@/auth"
+import { CreditCardDrawer } from "@/components/Drawers/CreditCardDrawer"
+import { db } from "@/db"
+import { creditCards } from "@/db/schema"
+import { eq } from "drizzle-orm"
+import { ChevronRight, CreditCard, Trash2 } from "lucide-react"
+import { Metadata } from "next"
+import Link from "next/link"
+import { redirect } from "next/navigation"
+export const metadata: Metadata = {
+title: "Cartões de Crédito",
+}
+export default async function CartoesPage() {
+const session = await auth()
+if (!session?.user) redirect("/login")
+const userId = session.user.id
+const cartoes = await db.query.creditCards.findMany({
+where: eq(creditCards.userId, userId),
+orderBy: (c, { asc }) => [asc(c.name)],
+})
+return (
+<div className="space-y-8">
+<div className="flex justify-between items-center">
+{/* Esse botão "+ Adicionar Cartão" deve estar com bg-zinc-800 no Drawer */}
+<CreditCardDrawer />
+</div>
+<div className="grid gap-3">
+{cartoes.length === 0 && (
+<div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
+<p className="text-zinc-500">Nenhum cartão cadastrado ainda.</p>
+</div>
+)}
+{cartoes.map((cartao) => (
+<div
+key={cartao.id}
+// Trocado de bg-gray-900 para bg-zinc-900/40 para casar com o sidebar
+className="bg-zinc-900/40 p-5 rounded-xl border border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-colors"
+>
+<div className="flex items-center gap-4">
+{/* Ícone decorativo opcional para enriquecer a UI */}
+<div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full bg-zinc-800/50 text-zinc-400">
+<CreditCard size={20} strokeWidth={1.5} />
+</div>
+<div>
+<h3 className="font-medium text-zinc-100 flex items-center gap-2">
+{cartao.name}
+{/* Se você já tiver a coluna lastFourDigits, exibe ela sutilmente aqui */}
+{cartao.lastFourDigits && (
+<span className="text-xs font-normal text-zinc-500">
+••• {cartao.lastFourDigits}
+</span>
+)}
+</h3>
+{cartao.brand && (
+<p className="text-sm text-zinc-400 mt-0.5">{cartao.brand}</p>
+)}
+</div>
+</div>
+<div className="flex items-center gap-2">
+{/* Botão Fatura Neutro e Elegante */}
+<Link
+href={`/admin/carteira/cartoes/${cartao.id}`}
+className="inline-flex items-center gap-1.5..."
+>
+Ver fatura
+<ChevronRight size={16} />
+</Link>
+{/* Botão Editar (vem do componente CreditCardDrawer) */}
+<CreditCardDrawer creditCard={cartao} />
+{/* Botão Excluir Ghost com Ícone */}
+<form action={deleteCreditCard}>
+<input type="hidden" name="id" value={cartao.id} />
+<button
+title="Excluir cartão"
+className="inline-flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-400/10 p-2 rounded-lg transition-colors"
+>
+<Trash2 size={18} />
+<span className="sr-only">Excluir</span>
+</button>
+</form>
+</div>
+</div>
+))}
+</div>
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/categorias/page.tsx
+// ==========================================
+import { deleteCategory } from "@/actions/categories"
+import { auth } from "@/auth"
+import { CategoryDrawer } from "@/components/Drawers/CategoryDrawer"
+import { db } from "@/db"
+import { categories } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+export const metadata: Metadata = {
+title: "Categorias",
+}
+export default async function CategoriasPage() {
+const session = await auth()
+if (!session?.user) redirect("/login")
+const userId = session.user.id
+const householdIds = await getUserHouseholdIds(userId)
+const where = householdIds.length > 0
+? or(eq(categories.userId, userId), inArray(categories.householdId, householdIds))
+: eq(categories.userId, userId)
+const categorias = await db.query.categories.findMany({
+where,
+orderBy: (c, { asc }) => [asc(c.name)],
+})
+return (
+<main className="min-h-screen bg-background text-foreground p-6 md:p-10">
+<div className="max-w-4xl mx-auto space-y-8">
+<div className="flex justify-between items-center">
+<CategoryDrawer />
+</div>
+<div className="grid gap-3">
+{categorias.length === 0 && (
+<p className="text-gray-500">Nenhuma categoria cadastrada.</p>
+)}
+{categorias.map((cat) => (
+<div
+key={cat.id}
+className="p-4 rounded-xl border bg-card border-border flex justify-between items-center"
+>
+<div>
+<p className="font-medium">{cat.name}</p>
+<span className="text-sm text-gray-400">{cat.type}</span>
+</div>
+<div className="flex gap-2">
+<CategoryDrawer category={cat} />
+<form action={deleteCategory}>
+<input type="hidden" name="id" value={cat.id} />
+<button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
+</form>
+</div>
+</div>
+))}
+</div>
+</div>
+</main>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/contas/page.tsx
+// ==========================================
+import { deleteAccount } from "@/actions/accounts"
+import { auth } from "@/auth"
+import { AccountDrawer } from "@/components/Drawers/AccountDrawer"
+import { db } from "@/db"
+import { financialAccounts } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+export const metadata: Metadata = {
+title: "Contas",
+}
+export default async function ContasPage() {
+const session = await auth()
+if (!session?.user) redirect("/login")
+const userId = session.user.id
+const householdIds = await getUserHouseholdIds(userId)
+const where = householdIds.length > 0
+? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
+: eq(financialAccounts.userId, userId)
+const contas = await db.query.financialAccounts.findMany({
+where,
+orderBy: (a, { asc }) => [asc(a.name)],
+})
+return (
+<main className="min-h-screen bg-black text-gray-100 p-6 md:p-10">
+<div className="max-w-4xl mx-auto space-y-8">
+<div className="flex justify-between items-center">
+<AccountDrawer />
+</div>
+<div className="grid gap-3">
+{contas.length === 0 && (
+<p className="text-gray-500">Nenhuma conta cadastrada.</p>
+)}
+{contas.map((acc) => (
+<div
+key={acc.id}
+className="bg-gray-900 p-4 rounded-xl border border-gray-800 flex justify-between items-center"
+>
+<div>
+<p className="font-medium">{acc.name}</p>
+<span className="text-sm text-gray-400">{acc.type}</span>
+<span className="text-sm text-gray-400 ml-2">Saldo: R$ {acc.initialBalance}</span>
+</div>
+<div className="flex gap-2">
+<AccountDrawer account={acc} />
+<form action={deleteAccount}>
+<input type="hidden" name="id" value={acc.id} />
+<button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
+</form>
+</div>
+</div>
+))}
+</div>
+</div>
+</main>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/faturas/page.tsx
+// ==========================================
+import { auth } from "@/auth";
+import {
+Table,
+TableBody,
+TableCell,
+TableHead,
+TableHeader,
+TableRow,
+} from "@/components/ui/table";
+import { db } from "@/db";
+import { creditCards, purchases } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { Eye } from "lucide-react"; // Importamos o ícone Eye
+import { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+export const metadata: Metadata = {
+title: "Faturas",
+}
+export default async function FaturasPage() {
+const session = await auth();
+if (!session?.user) redirect("/login");
+const userId = session.user.id;
+// Buscar todos os cartões do usuário
+const cartoes = await db.query.creditCards.findMany({
+where: eq(creditCards.userId, userId),
+orderBy: (c, { asc }) => [asc(c.name)],
+});
+// Buscar todas as compras de todos os cartões, com parcelas
+const compras = await db.query.purchases.findMany({
+where: eq(purchases.userId, userId),
+with: {
+installments: true,
+},
+});
+// Mapa: key = cartaoId + "|" + mes (YYYY-MM)
+const faturasMap = new Map<string, {
+cartao: typeof cartoes[number];
+mes: string; // YYYY-MM
+total: number;
+pago: number;
+status: "Aberta" | "Fechada";
+}>();
+for (const compra of compras) {
+const cartao = cartoes.find(c => c.id === compra.creditCardId);
+if (!cartao) continue;
+// Agrupar parcelas por mês
+const parcelasPorMes = new Map<string, number[]>();
+for (const parcela of compra.installments) {
+const [y, m] = parcela.dueDate.split("-");
+const mesKey = `${y}-${m}`;
+const valores = parcelasPorMes.get(mesKey) || [];
+valores.push(Number(parcela.amount));
+parcelasPorMes.set(mesKey, valores);
+}
+// Calcular pago por mês
+const pagoPorMes = new Map<string, number>();
+for (const parcela of compra.installments) {
+if (parcela.paid) {
+const [y, m] = parcela.dueDate.split("-");
+const mesKey = `${y}-${m}`;
+pagoPorMes.set(mesKey, (pagoPorMes.get(mesKey) || 0) + Number(parcela.amount));
+}
+}
+// Consolidar no faturasMap
+for (const [mesKey, valores] of parcelasPorMes.entries()) {
+const total = valores.reduce((s, v) => s + v, 0);
+const pago = pagoPorMes.get(mesKey) || 0;
+const status = pago >= total ? "Fechada" : "Aberta";
+const chave = `${cartao.id}|${mesKey}`;
+if (!faturasMap.has(chave)) {
+faturasMap.set(chave, {
+cartao,
+mes: mesKey,
+total,
+pago,
+status,
+});
+} else {
+const fatura = faturasMap.get(chave)!;
+fatura.total += total;
+fatura.pago += pago;
+fatura.status = fatura.pago >= fatura.total ? "Fechada" : "Aberta";
+}
+}
+}
+const faturas = Array.from(faturasMap.values()).sort((a, b) => {
+if (a.cartao.name !== b.cartao.name) return a.cartao.name.localeCompare(b.cartao.name);
+return a.mes.localeCompare(b.mes);
+});
+const formatCurrency = (valor: number) =>
+valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+// Nova formatação para "agosto|26"
+const formatMes = (mes: string) => {
+const [y, m] = mes.split("-").map(Number);
+const date = new Date(y, m - 1, 1);
+const nomeMes = date.toLocaleDateString("pt-BR", { month: "long" });
+const anoCurto = date.toLocaleDateString("pt-BR", { year: "2-digit" });
+return `${nomeMes}|${anoCurto}`;
+};
+return (
+<div className="space-y-8">
+{/* Trocado para bg-zinc-900/40 para manter a estética do sidebar */}
+<div className="bg-zinc-900/40 rounded-xl border border-zinc-800/80 p-1 md:p-4">
+{faturas.length === 0 ? (
+<div className="p-8 text-center text-zinc-500">
+Nenhuma fatura encontrada.
+</div>
+) : (
+<Table>
+<TableHeader>
+<TableRow className="border-zinc-800/80 hover:bg-transparent">
+<TableHead className="text-zinc-400">Cartão</TableHead>
+<TableHead className="text-zinc-400">Mês/Ano</TableHead>
+<TableHead className="text-right text-zinc-400">Total</TableHead>
+<TableHead className="text-center text-zinc-400">Status</TableHead>
+<TableHead className="text-center text-zinc-400">Ação</TableHead>
+</TableRow>
+</TableHeader>
+<TableBody>
+{faturas.map((fatura) => (
+<TableRow
+key={`${fatura.cartao.id}-${fatura.mes}`}
+className="border-zinc-800/80 hover:bg-zinc-800/30 transition-colors"
+>
+<TableCell className="font-medium text-zinc-200">
+{fatura.cartao.name}
+</TableCell>
+<TableCell className="text-zinc-300">
+<span className="capitalize">{formatMes(fatura.mes)}</span>
+</TableCell>
+<TableCell className="text-right font-medium text-zinc-200">
+{formatCurrency(fatura.total)}
+</TableCell>
+<TableCell className="text-center">
+{/* Badges modernizadas com borda e transparência */}
+<span
+className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide  border ${
+fatura.status === "Fechada"
+? "bg-brand-blue/10 text-brand-blue border-brand-blue/20" /* Azul da marca para algo OK/Fechado */
+: "bg-brand-yellow/10 text-brand-yellow border-brand-yellow/20" /* Amarelo elétrico para Aberto */
+}`}
+>
+{fatura.status}
+</span>
+</TableCell>
+<TableCell className="text-center">
+<div className="flex justify-center">
+<Link
+href={`/admin/carteira/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
+title="Ver detalhes da fatura"
+className="inline-flex items-center justify-center p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
+>
+<Eye size={18} strokeWidth={1.5} />
+</Link>
+</div>
+</TableCell>
+</TableRow>
+))}
+</TableBody>
+</Table>
+)}
+</div>
+</div>
+);
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/investimentos/page.tsx
+// ==========================================
+import { deleteAsset, deleteInvestmentTransaction } from "@/actions/investments"
+import { auth } from "@/auth"
+import { AssetDrawer } from "@/components/Drawers/AssetDrawer"
+import { InvestmentTransactionDrawer } from "@/components/Drawers/InvestmentTransactionDrawer"
+import { db } from "@/db"
+import { assets, investmentTransactions } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
+import {
+Briefcase,
+LineChart,
+PieChart,
+Trash2,
+TrendingDown,
+TrendingUp,
+Wallet
+} from "lucide-react"
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+export const metadata: Metadata = {
+title: "Investimentos",
+}
+export default async function InvestimentosPage() {
+const session = await auth()
+if (!session?.user) redirect("/login")
+const userId = session.user.id
+const householdIds = await getUserHouseholdIds(userId)
+const whereAssets = householdIds.length > 0
+? or(eq(assets.userId, userId), inArray(assets.householdId, householdIds))
+: eq(assets.userId, userId)
+const whereTransactions = householdIds.length > 0
+? or(eq(investmentTransactions.userId, userId), inArray(investmentTransactions.householdId, householdIds))
+: eq(investmentTransactions.userId, userId)
+const ativos = await db.query.assets.findMany({
+where: whereAssets,
+orderBy: (a, { asc }) => [asc(a.name)],
+})
+const transacoes = await db.query.investmentTransactions.findMany({
+where: whereTransactions,
+with: { asset: true },
+orderBy: (t, { desc }) => [desc(t.date), desc(t.createdAt)],
+limit: 50,
+})
+// Calcular totais
+let totalInvestido = 0
+let totalPatrimonio = 0
+ativos.forEach((ativo) => {
+const qtd = Number(ativo.quantity) || 0
+const precoAtual = Number(ativo.currentPrice) || Number(ativo.averagePrice) || 0
+totalPatrimonio += qtd * precoAtual
+totalInvestido += qtd * (Number(ativo.averagePrice) || 0)
+})
+const rentabilidade = totalInvestido > 0 ? ((totalPatrimonio - totalInvestido) / totalInvestido) * 100 : 0
+const isPositivo = rentabilidade >= 0
+// Helper para formatar moeda
+const formatCurrency = (valor: number) =>
+valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+// Helper para formatar data (ex: 2026-09-16 para 16/09/2026)
+const formatDate = (dateString: string) => {
+const [y, m, d] = dateString.split("-")
+return `${d}/${m}/${y}`
+}
+return (
+<div className="space-y-8">
+<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+<div className="flex gap-2">
+<AssetDrawer />
+<InvestmentTransactionDrawer assets={ativos} />
+</div>
+</div>
+{/* Cards de Resumo */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div className="bg-zinc-900/40 p-5 rounded-xl border border-zinc-800/80 flex flex-col gap-2">
+<div className="flex items-center gap-2 text-zinc-400">
+<Wallet size={18} />
+<p className="text-sm font-medium">Patrimônio total</p>
+</div>
+<p className="text-2xl font-bold text-zinc-100">{formatCurrency(totalPatrimonio)}</p>
+</div>
+<div className="bg-zinc-900/40 p-5 rounded-xl border border-zinc-800/80 flex flex-col gap-2">
+<div className="flex items-center gap-2 text-zinc-400">
+<PieChart size={18} />
+<p className="text-sm font-medium">Total investido</p>
+</div>
+<p className="text-2xl font-bold text-zinc-100">{formatCurrency(totalInvestido)}</p>
+</div>
+<div className="bg-zinc-900/40 p-5 rounded-xl border border-zinc-800/80 flex flex-col gap-2">
+<div className="flex items-center gap-2 text-zinc-400">
+{isPositivo ? <TrendingUp size={18} className="text-emerald-400" /> : <TrendingDown size={18} className="text-rose-400" />}
+<p className="text-sm font-medium">Rentabilidade</p>
+</div>
+<p className={`text-2xl font-bold ${isPositivo ? "text-emerald-400" : "text-rose-400"}`}>
+{rentabilidade > 0 ? "+" : ""}{rentabilidade.toFixed(2)}%
+</p>
+</div>
+</div>
+{/* Seção de Ativos */}
+<section className="space-y-4">
+<h2 className="text-lg font-medium text-zinc-200 flex items-center gap-2">
+<Briefcase size={20} className="text-zinc-500" />
+Meus Ativos
+</h2>
+<div className="grid gap-3">
+{ativos.length === 0 && (
+<div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
+<p className="text-zinc-500">Nenhum ativo cadastrado.</p>
+</div>
+)}
+{ativos.map((ativo) => {
+const qtd = Number(ativo.quantity) || 0
+const precoAtual = Number(ativo.currentPrice) || Number(ativo.averagePrice) || 0
+const total = qtd * precoAtual
+return (
+<div
+key={ativo.id}
+className="bg-zinc-900/40 p-5 rounded-xl border border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-zinc-700/80 transition-colors"
+>
+<div className="flex-1">
+<div className="flex items-center gap-2">
+<p className="font-medium text-zinc-100">{ativo.name}</p>
+{ativo.ticker && (
+<span className="px-2 py-0.5 rounded-md bg-zinc-800 text-xs font-medium text-zinc-300 uppercase">
+{ativo.ticker}
+</span>
+)}
+</div>
+<div className="text-sm text-zinc-400 mt-1 flex flex-wrap gap-x-4 gap-y-1">
+<span>{ativo.type}</span>
+<span>Qtd: <strong className="text-zinc-300 font-medium">{ativo.quantity || "-"}</strong></span>
+<span>PM: {formatCurrency(Number(ativo.averagePrice || 0))}</span>
+</div>
+<div className="text-sm text-zinc-500 mt-1">
+Preço atual: <span className="text-zinc-300">{formatCurrency(precoAtual)}</span> <span className="mx-1">•</span>
+Total: <span className="text-zinc-300 font-medium">{formatCurrency(total)}</span>
+</div>
+</div>
+<div className="flex items-center gap-2">
+{/* Esses botões vêm dos Drawers, assumindo que já estão estilizados com botões cinzas */}
+<InvestmentTransactionDrawer assets={ativos} selectedAssetId={ativo.id} />
+<AssetDrawer asset={ativo} />
+{/* Botão Excluir Ghost */}
+<form action={deleteAsset}>
+<input type="hidden" name="id" value={ativo.id} />
+<button
+title="Excluir ativo"
+className="inline-flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-400/10 p-2 rounded-lg transition-colors"
+>
+<Trash2 size={18} />
+</button>
+</form>
+</div>
+</div>
+);
+})}
+</div>
+</section>
+{/* Seção de Transações */}
+<section className="space-y-4">
+<h2 className="text-lg font-medium text-zinc-200 flex items-center gap-2">
+<LineChart size={20} className="text-zinc-500" />
+Últimas Transações
+</h2>
+<div className="grid gap-3">
+{transacoes.length === 0 && (
+<div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
+<p className="text-zinc-500">Nenhuma transação lançada.</p>
+</div>
+)}
+{transacoes.map((transacao) => (
+<div
+key={transacao.id}
+className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800/80 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:border-zinc-700/80 transition-colors"
+>
+<div className="flex-1">
+<p className="font-medium text-zinc-200 flex items-center gap-2">
+{transacao.asset?.name}
+<span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ${
+transacao.type.toLowerCase() === 'compra' || transacao.type.toLowerCase() === 'buy'
+? 'bg-emerald-500/10 text-emerald-400'
+: 'bg-rose-500/10 text-rose-400'
+}`}>
+{transacao.type}
+</span>
+</p>
+<div className="text-sm text-zinc-400 mt-1 flex flex-wrap gap-x-4 gap-y-1">
+<span>{formatDate(transacao.date)}</span>
+<span>Valor: <strong className="text-zinc-300 font-medium">{formatCurrency(Number(transacao.amount))}</strong></span>
+{transacao.quantity && <span>Qtd: {transacao.quantity}</span>}
+{transacao.price && <span>Preço: {formatCurrency(Number(transacao.price))}</span>}
+</div>
+</div>
+<div className="flex items-center">
+<form action={deleteInvestmentTransaction}>
+<input type="hidden" name="id" value={transacao.id} />
+<button
+title="Excluir transação"
+className="inline-flex items-center justify-center text-zinc-500 hover:text-red-400 hover:bg-red-400/10 p-2 rounded-lg transition-colors"
+>
+<Trash2 size={18} />
+</button>
+</form>
+</div>
+</div>
+))}
+</div>
+</section>
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/listas/page.tsx
+// ==========================================
+import { auth } from "@/auth";
+import { CreateListForm } from "@/components/CreateList";
+import { ListCard } from "@/components/ListCard";
+import { db } from "@/db";
+import type { ShoppingListWithItems } from "@/db/schema";
+import { shoppingItems, shoppingLists } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+title: "Listas de Compras",
+}
+export default async function ListasPage() {
+const session = await auth();
+if (!session?.user?.id) {
+redirect("/login");
+}
+const lists = await db
+.select()
+.from(shoppingLists)
+.where(eq(shoppingLists.userId, session.user.id))
+.orderBy(shoppingLists.createdAt);
+const listsWithItems: ShoppingListWithItems[] = await Promise.all(
+lists.map(async (list) => ({
+...list,
+items: await db
+.select()
+.from(shoppingItems)
+.where(eq(shoppingItems.listId, list.id))
+.orderBy(shoppingItems.createdAt),
+}))
+);
+return (
+<div className="space-y-8">
+<div className="flex justify-between items-center">
+{/* O formulário/botão de criar lista renderiza aqui */}
+<CreateListForm />
+</div>
+{listsWithItems.length === 0 ? (
+<div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
+<p className="text-zinc-500">Nenhuma lista criada ainda.</p>
+</div>
+) : (
+<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+{listsWithItems.map((list) => (
+<ListCard key={list.id} list={list} />
+))}
+</div>
+)}
+</div>
+);
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/loading.tsx
+// ==========================================
+// File: src/app/admin/carteira/loading.tsx
+import { Skeleton } from "@/components/ui/skeleton"
+export default function LoadingCarteira() {
+return (
+<div className="space-y-6">
+{/* Skeleton dos três cards de topo */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+<Skeleton className="h-28 w-full rounded-xl bg-zinc-900/60" />
+<Skeleton className="h-28 w-full rounded-xl bg-zinc-900/60" />
+<Skeleton className="h-28 w-full rounded-xl bg-zinc-900/60" />
+</div>
+{/* Skeleton da barra de abas e filtros */}
+<Skeleton className="h-14 w-full rounded-2xl bg-zinc-900/60" />
+{/* Skeleton da tabela de lançamentos */}
+<div className="space-y-3">
+<Skeleton className="h-12 w-full rounded-lg bg-zinc-900/40" />
+<Skeleton className="h-12 w-full rounded-lg bg-zinc-900/40" />
+<Skeleton className="h-12 w-full rounded-lg bg-zinc-900/40" />
+</div>
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/page.tsx
+// ==========================================
+import { createInstallmentPurchase, markInvoiceAsPaid } from "@/actions/wallet";
+import { auth } from "@/auth";
+import { CarteiraDrawersHost } from "@/components/Drawers/carteira-drawers-host";
+import { DrawerInitializer } from "@/components/Drawers/DrawerInitializer";
+import { TransferDrawer } from "@/components/Drawers/TransferDrawer";
+import { MonthYearPicker } from "@/components/month-year-picker";
+import { SummaryCards } from "@/components/SummaryCards";
+import { CreditCardsSection } from "@/components/Tables/credit-cards-section";
+import { ExpensesTable } from "@/components/Tables/expenses-table";
+import { ObraTransactionsTable } from "@/components/Tables/obra-transactions-table";
+import { TransactionsTable } from "@/components/Tables/transactions-table";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { db } from "@/db";
+import {
+categories,
+creditCards,
+financialAccounts,
+transactions,
+} from "@/db/schema";
+import { getUserHouseholdIds } from "@/lib/household";
+import { getCreditCardInvoicesSummary } from "@/services/invoiceService";
+import { ensureRecurringExpensesGenerated } from "@/services/recurringService";
+import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+export const metadata: Metadata = {
+title: "Carteira",
+};
+export default async function CarteiraPage({
+searchParams,
+}: {
+searchParams: Promise<{ open?: string; mes?: string }>;
+}) {
+const { open, mes } = await searchParams;
+const session = await auth();
+if (!session?.user) redirect("/login");
+const userId = session.user.id;
+const householdIds = await getUserHouseholdIds(userId);
+const accessCondition = (table: any) => {
+const conditions = [eq(table.userId, userId)];
+if (householdIds.length > 0) {
+conditions.push(inArray(table.householdId, householdIds));
+}
+return conditions.length > 1 ? or(...conditions) : conditions[0];
+};
+const categorias = await db.query.categories.findMany({
+where: accessCondition(categories),
+});
+const accounts = await db.query.financialAccounts.findMany({
+where: accessCondition(financialAccounts),
+});
+const cartoes = await db.query.creditCards.findMany({
+where: eq(creditCards.userId, userId),
+});
+const now = new Date();
+let faturaAno = now.getFullYear();
+let faturaMesNum = now.getMonth() + 1;
+if (mes) {
+const [ano, mesNum] = mes.split("-").map(Number);
+if (!isNaN(ano) && !isNaN(mesNum) && mesNum >= 1 && mesNum <= 12) {
+faturaAno = ano;
+faturaMesNum = mesNum;
+}
+}
+await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
+// Datas do mês atual
+const firstDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-01`;
+const lastDayNum = new Date(Date.UTC(faturaAno, faturaMesNum, 0)).getUTCDate();
+const lastDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-${String(lastDayNum).padStart(2, "0")}`;
+function getPreviousMonth(year: number, month: number) {
+const date = new Date(year, month - 1, 1);
+date.setMonth(date.getMonth() - 1);
+return { year: date.getFullYear(), month: date.getMonth() + 1 };
+}
+const prev = getPreviousMonth(faturaAno, faturaMesNum);
+const prevPrev = getPreviousMonth(prev.year, prev.month);
+// --- MÊS ATUAL ---
+const allTransactions = await db.query.transactions.findMany({
+where: and(
+accessCondition(transactions),
+gte(transactions.date, firstDayStr),
+lte(transactions.date, lastDayStr)
+),
+with: { category: true, account: true },
+orderBy: (t, { desc }) => [desc(t.date)],
+});
+const receitasDoMes = allTransactions.filter((t) => t.type === "income");
+const obraCategory = categorias.find((c) => c.name.toLowerCase().includes("obra"));
+// Filtramos !isInvoicePayment para a transação de pagamento do cartão não duplicar no painel
+const obraTransactions = obraCategory
+? allTransactions.filter(
+(t) => t.type === "expense" && t.categoryId === obraCategory.id && !t.isInvoicePayment
+)
+: [];
+const outrasDespesas = allTransactions.filter(
+(t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id) && !t.isInvoicePayment
+).map((t) => ({
+id: t.id,
+description: t.description,
+amount: Number(t.amount),
+paid: t.paid,
+isRecurring: t.source === "recurring",
+recurringParentId: t.recurringParentId,
+categoryId: t.categoryId,
+accountId: t.accountId,
+date: t.date,
+}));
+// ABA CARTÕES: Mostra o fluxo de compras do mês selecionado (O que entrará para pagar no futuro)
+const cartoesComFatura = await getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum);
+// DESPESAS DE CARTÃO: Busca a fatura do MÊS ANTERIOR (Ex: Em Outubro, pagamos Setembro)
+const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
+const totalFaturaAnterior = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
+const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
+// O Cálculo de Despesa agora soma CAIXA (Mês atual) + CARTÃO (Mês anterior)
+const totalDespesas =
+outrasDespesas.reduce((sum, t) => sum + t.amount, 0) +
+obraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
+totalFaturaAnterior;
+const saldo = totalReceitas - totalDespesas;
+// --- MÊS ANTERIOR (Para Cálculo de Variação) ---
+const prevPrimeiroDia = new Date(prev.year, prev.month - 1, 1);
+const prevUltimoDia = new Date(prev.year, prev.month, 0);
+const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
+const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
+const prevAllTransactions = await db.query.transactions.findMany({
+where: and(
+accessCondition(transactions),
+gte(transactions.date, prevFirstDayStr),
+lte(transactions.date, prevLastDayStr)
+),
+with: { category: true, account: true },
+});
+const prevReceitas = prevAllTransactions.filter((t) => t.type === "income");
+const prevObraTransactions = obraCategory
+? prevAllTransactions.filter(
+(t) => t.type === "expense" && t.categoryId === obraCategory.id && !t.isInvoicePayment
+)
+: [];
+const prevOutrasDespesas = prevAllTransactions.filter(
+(t) => t.type === "expense" && (!obraCategory || t.categoryId !== obraCategory.id) && !t.isInvoicePayment
+);
+// Para calcular a variação, pegamos a fatura de DOIS meses atrás (Ex: Em Setembro, paga-se Agosto)
+const prevPrevCartoesSummary = await getCreditCardInvoicesSummary(userId, prevPrev.year, prevPrev.month);
+const totalFaturaRetrasada = prevPrevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
+const prevTotalReceitas = prevReceitas.reduce((sum, t) => sum + Number(t.amount), 0);
+const prevTotalDespesas =
+prevOutrasDespesas.reduce((sum, t) => sum + Number(t.amount), 0) +
+prevObraTransactions.reduce((sum, t) => sum + Number(t.amount), 0) +
+totalFaturaRetrasada;
+const prevSaldo = prevTotalReceitas - prevTotalDespesas;
+const calcVariacao = (atual: number, anterior: number): number | null => {
+if (anterior === 0) return null;
+return ((atual - anterior) / Math.abs(anterior)) * 100;
+};
+const receitasVariacao = calcVariacao(totalReceitas, prevTotalReceitas);
+const despesasVariacao = calcVariacao(totalDespesas, prevTotalDespesas);
+const saldoVariacao = calcVariacao(saldo, prevSaldo);
+return (
+<>
+<DrawerInitializer drawerOpen={open} />
+<div className="space-y-6">
+<SummaryCards
+totalReceitas={totalReceitas}
+totalDespesas={totalDespesas}
+saldo={saldo}
+mes={`${faturaMesNum}/${faturaAno}`}
+receitasVariacao={receitasVariacao}
+despesasVariacao={despesasVariacao}
+saldoVariacao={saldoVariacao}
+/>
+<Tabs defaultValue="all" className="flex flex-col w-full space-y-5">
+<Card className="flex flex-row items-center p-2.5 justify-between flex-wrap gap-4 bg-zinc-950/40 border-zinc-800/60 rounded-2xl shadow-sm">
+<TabsList className="flex-wrap bg-card/40 p-1 rounded-xl">
+<TabsTrigger
+value="all"
+className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+>
+Todas
+</TabsTrigger>
+<TabsTrigger
+value="receitas"
+className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+>
+Receitas
+</TabsTrigger>
+<TabsTrigger
+value="despesas"
+className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+>
+Despesas
+</TabsTrigger>
+<TabsTrigger
+value="obra"
+className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+>
+Construção
+</TabsTrigger>
+<TabsTrigger
+value="cartoes"
+className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-medium transition-all"
+>
+Cartões
+</TabsTrigger>
+</TabsList>
+<div className="flex items-center gap-2">
+<TransferDrawer accounts={accounts} />
+<MonthYearPicker ano={faturaAno} mes={faturaMesNum} />
+</div>
+</Card>
+<TabsContent value="all" className="space-y-6 mt-0">
+<div className="grid grid-cols-1 gap-6">
+<section className="space-y-3 min-w-0">
+<Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<TransactionsTable transactions={receitasDoMes} />
+</div>
+</Card>
+</section>
+<section className="space-y-3 min-w-0">
+<Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<ExpensesTable expenses={outrasDespesas} />
+</div>
+</Card>
+</section>
+</div>
+<div className="grid grid-cols-1 gap-6">
+<section className="space-y-3 min-w-0">
+<Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<ObraTransactionsTable
+obraCategoryExists={!!obraCategory}
+transactions={obraTransactions}
+categories={categorias}
+accounts={accounts}
+/>
+</div>
+</Card>
+</section>
+</div>
+<section className="space-y-3">
+<Card className="bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<CreditCardsSection
+cartoesComFatura={cartoesComFatura}
+categorias={categorias}
+cartoes={cartoes}
+accounts={accounts}
+createInstallmentPurchaseAction={createInstallmentPurchase}
+faturaAno={faturaAno}
+faturaMesNum={faturaMesNum}
+payInvoiceAction={markInvoiceAsPaid}
+/>
+</div>
+</Card>
+</section>
+</TabsContent>
+{/* Aba Receitas */}
+<TabsContent value="receitas" className="mt-0">
+<Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<TransactionsTable transactions={receitasDoMes} />
+</div>
+</Card>
+</TabsContent>
+{/* Aba Despesas */}
+<TabsContent value="despesas" className="mt-0">
+<Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<ExpensesTable expenses={outrasDespesas} />
+</div>
+</Card>
+</TabsContent>
+{/* Aba Obra */}
+<TabsContent value="obra" className="mt-0">
+<Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<ObraTransactionsTable
+obraCategoryExists={!!obraCategory}
+transactions={obraTransactions}
+categories={categorias}
+accounts={accounts}
+/>
+</div>
+</Card>
+</TabsContent>
+{/* Aba Cartões de Crédito */}
+<TabsContent value="cartoes" className="mt-0">
+<Card className="bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+<div className="p-0 sm:p-2">
+<CreditCardsSection
+cartoesComFatura={cartoesComFatura}
+categorias={categorias}
+cartoes={cartoes}
+accounts={accounts}
+createInstallmentPurchaseAction={createInstallmentPurchase}
+faturaAno={faturaAno}
+faturaMesNum={faturaMesNum}
+payInvoiceAction={markInvoiceAsPaid}
+/>
+</div>
+</Card>
+</TabsContent>
+</Tabs>
+</div>
+<CarteiraDrawersHost categories={categorias} accounts={accounts} />
+</>
+);
+}
+
+// ==========================================
+// Arquivo: src/app/admin/carteira/recorrentes/page.tsx
+// ==========================================
+import { deleteRecurringExpense, generateMonthlyRecurring } from "@/actions/recurringExpenses";
+import { auth } from "@/auth";
+import { RecurringExpenseDrawer } from "@/components/Drawers/RecurringExpenseDrawer";
+import { db } from "@/db";
+import { categories, financialAccounts, recurringExpenses } from "@/db/schema";
+import { getUserHouseholdIds } from "@/lib/household";
+import { eq, inArray, or } from "drizzle-orm";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+export const metadata: Metadata = {
+title: "Recorrentes",
+}
+export default async function RecorrentesPage() {
+const session = await auth();
+if (!session?.user) redirect("/login");
+const userId = session.user.id;
+const householdIds = await getUserHouseholdIds(userId);
+// Condição de acesso para despesas recorrentes (compartilhadas)
+const acessoRecorrentes = householdIds.length > 0
+? or(eq(recurringExpenses.userId, userId), inArray(recurringExpenses.householdId, householdIds))
+: eq(recurringExpenses.userId, userId);
+const despesas = await db.query.recurringExpenses.findMany({
+where: acessoRecorrentes,
+with: {
+category: true,
+account: true,
+},
+orderBy: (d, { asc }) => [asc(d.name)],
+});
+// Categorias e contas também podem ser compartilhadas
+const acessoCategorias = householdIds.length > 0
+? or(eq(categories.userId, userId), inArray(categories.householdId, householdIds))
+: eq(categories.userId, userId);
+const acessoContas = householdIds.length > 0
+? or(eq(financialAccounts.userId, userId), inArray(financialAccounts.householdId, householdIds))
+: eq(financialAccounts.userId, userId);
+const categorias = await db.query.categories.findMany({
+where: acessoCategorias,
+});
+const contas = await db.query.financialAccounts.findMany({
+where: acessoContas,
+});
+return (
+<div className="space-y-8">
+<div className="flex justify-between items-center">
+<div className="flex gap-2">
+<form action={generateMonthlyRecurring}>
+<button
+type="submit"
+className="bg-green-600 hover:bg-green-500 text-white font-medium px-4 py-2 rounded-lg transition-colors"
+>
+Gerar transações do mês
+</button>
+</form>
+<RecurringExpenseDrawer categories={categorias} accounts={contas} />
+</div>
+</div>
+<div className="grid gap-4">
+{despesas.length === 0 && (
+<p className="text-gray-500">Nenhuma despesa recorrente cadastrada.</p>
+)}
+{despesas.map((despesa) => (
+<div
+key={despesa.id}
+className="bg-gray-900 p-4 rounded-xl border border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-3"
+>
+<div className="flex-1">
+<div className="flex items-center gap-2">
+<p className="font-medium">{despesa.name}</p>
+{!despesa.active && (
+<span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">Inativa</span>
+)}
+</div>
+<p className="text-sm text-gray-400">
+R$ {Number(despesa.amount).toFixed(2)} · Venc: dia {despesa.dueDay}
+{despesa.category?.name && ` · ${despesa.category.name}`}
+{despesa.account?.name && ` · ${despesa.account.name}`}
+</p>
+</div>
+<div className="flex gap-2">
+<RecurringExpenseDrawer
+recurringExpense={despesa}
+categories={categorias}
+accounts={contas}
+/>
+<form action={deleteRecurringExpense}>
+<input type="hidden" name="id" value={despesa.id} />
+<button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
+</form>
+</div>
+</div>
+))}
+</div>
+</div>
+);
+}
+
+// ==========================================
+// Arquivo: src/app/admin/layout.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/app/admin/layout.tsx (Atualizado)
+// ==========================================
+import { auth } from "@/auth"
+import { AppSidebar } from "@/components/AppSidebar"
+import { GlobalDrawersHost } from "@/components/Drawers/GlobalDrawersHost"
+import { SiteHeader } from "@/components/SiteHeader"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { DrawerProvider } from "@/contexts/DrawerContext"
+import { VisibilityProvider } from "@/contexts/VisibilityContext"
+import { db } from "@/db"
+import { categories, financialAccounts } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, inArray, or } from "drizzle-orm"
+import { redirect } from "next/navigation"
+export default async function AdminLayout({
+children,
+}: {
+children: React.ReactNode
+}) {
+const session = await auth()
+if (!session?.user?.id) {
+redirect("/")
+}
+const userId = session.user.id
+const householdIds = await getUserHouseholdIds(userId)
+const accessCondition = (table: any) => {
+const conditions = [eq(table.userId, userId)];
+if (householdIds.length > 0) {
+conditions.push(inArray(table.householdId, householdIds));
+}
+return conditions.length > 1 ? or(...conditions) : conditions[0];
+};
+const [userCategories, userAccounts] = await Promise.all([
+db.query.categories.findMany({
+where: accessCondition(categories),
+}),
+db.query.financialAccounts.findMany({
+where: accessCondition(financialAccounts),
+}),
+])
+const styleSidebarProvider = {
+"--sidebar-width": "calc(var(--spacing) * 72)",
+"--header-height": "calc(var(--spacing) * 12)",
+} as React.CSSProperties
+return (
+<SidebarProvider style={styleSidebarProvider}>
+<VisibilityProvider>
+<DrawerProvider>
+<AppSidebar variant="inset" />
+<SidebarInset>
+<SiteHeader />
+<div className="flex flex-1 flex-col">
+<div className="@container/main flex flex-1 flex-col gap-2">
+<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+{children}
+</div>
+</div>
+</div>
+</SidebarInset>
+<GlobalDrawersHost categories={userCategories} accounts={userAccounts} />
+</DrawerProvider>
+</VisibilityProvider>
+</SidebarProvider>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/livros/[id]/page.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/app/admin/livros/[id]/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { BookForm } from "@/components/Forms/BookForm"
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
+import { Metadata } from "next"
+import { revalidatePath } from "next/cache"
+import { notFound, redirect } from "next/navigation"
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+const session = await auth();
+if (!session?.user?.id) return { title: "Editar Livro" };
+const resolvedParams = await params;
+const book = await db.query.books.findFirst({
+where: and(eq(books.id, resolvedParams.id), eq(books.userId, session.user.id)),
+});
+return {
+title: book ? `Editar: ${book.title}` : "Livro não encontrado",
+};
+}
+async function updateBookAction(formData: FormData) {
+"use server"
+const session = await auth()
+if (!session?.user?.id) redirect("/")
+const id = formData.get("id") as string
+const title = formData.get("title") as string
+const author = formData.get("author") as string
+const status = formData.get("status") as string
+await db.update(books)
+.set({ title, author, status })
+.where(and(eq(books.id, id), eq(books.userId, session.user.id)))
+revalidatePath("/admin/livros")
+redirect("/admin/livros")
+}
+export default async function EditBookPage({ params }: { params: { id: string } }) {
+const session = await auth()
+if (!session?.user?.id) redirect("/")
+const bookId = params.id;
+if (!bookId) notFound()
+const book = await db.query.books.findFirst({
+where: and(eq(books.id, bookId), eq(books.userId, session.user.id)),
+})
+if (!book) notFound()
+return (
+<div className="flex flex-col gap-6">
+<h1 className="text-2xl font-bold tracking-tight">Editar Livro</h1>
+<BookForm initialData={book} action={updateBookAction} submitLabel="Salvar Alterações" />
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/livros/BooksClient.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/app/admin/livros/BooksClient.tsx
+// ==========================================
+"use client"
+import { deleteBook } from "@/actions/books"
+import { BookDrawer } from "@/components/Drawers/BookDrawer"
+import { TableActions } from "@/components/Tables/table-actions"
+import { BookOpen, Plus } from "lucide-react"
+import { useState } from "react"
+interface BooksClientProps {
+initialBooks: any[]
+}
+export function BooksClient({ initialBooks }: BooksClientProps) {
+const [isOpen, setIsOpen] = useState(false)
+const [selectedBook, setSelectedBook] = useState<any | null>(null)
+const handleOpenCreate = () => {
+setSelectedBook(null)
+setIsOpen(true)
+}
+const handleOpenEdit = (book: any) => {
+setSelectedBook(book)
+setIsOpen(true)
+}
+const handleDelete = async (id: string) => {
+if (confirm("Tem certeza que deseja remover este livro?")) {
+await deleteBook(id)
+}
+}
+return (
+<div className="flex flex-col gap-6">
+<div className="flex items-center justify-between">
+<div>
+<h1 className="text-2xl font-bold tracking-tight">Gerenciamento de Livros</h1>
+<p className="text-sm text-muted-foreground">Acompanhe suas leituras e catálogo literário.</p>
+</div>
+<button
+onClick={handleOpenCreate}
+className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
+>
+<Plus className="h-4 w-4" /> Novo Livro
+</button>
+</div>
+<div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+<div className="p-6">
+{!initialBooks || initialBooks.length === 0 ? (
+<div className="text-center py-12 text-muted-foreground flex flex-col items-center gap-2">
+<BookOpen className="h-8 w-8 opacity-40" />
+<p>Nenhum livro cadastrado.</p>
+</div>
+) : (
+<div className="divide-y divide-border">
+{initialBooks.map((book) => (
+<div key={book.id} className="py-4 flex items-center justify-between">
+<div className="flex items-center gap-3">
+<div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500">
+<BookOpen className="h-4 w-4" />
+</div>
+<div>
+<p className="font-semibold text-sm">{book.title}</p>
+<p className="text-xs text-muted-foreground">{book.author} • <span className="capitalize">{book.status}</span></p>
+</div>
+</div>
+<TableActions
+id={book.id}
+isPaid={true}
+onEdit={() => handleOpenEdit(book)}
+onDelete={() => handleDelete(book.id)}
+/>
+</div>
+))}
+</div>
+)}
+</div>
+</div>
+<BookDrawer
+open={isOpen}
+onClose={() => setIsOpen(false)}
+book={selectedBook}
+/>
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/livros/novo/page.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/app/admin/livros/novo/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { BookForm } from "@/components/Forms/BookForm"
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+async function createBookAction(formData: FormData) {
+"use server"
+const session = await auth()
+if (!session?.user?.id) redirect("/")
+const title = formData.get("title") as string
+const author = formData.get("author") as string
+const status = formData.get("status") as string
+await db.insert(books).values({
+title,
+author,
+status,
+userId: session.user.id,
+})
+revalidatePath("/admin/livros")
+redirect("/admin/livros")
+}
+export default async function NewBookPage() {
+return (
+<div className="flex flex-col gap-6">
+<h1 className="text-2xl font-bold tracking-tight">Adicionar Novo Livro</h1>
+<BookForm action={createBookAction} submitLabel="Cadastrar Livro" />
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/admin/livros/page.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/app/admin/livros/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { books } from "@/db/schema"
+import { getUserHouseholdIds } from "@/lib/household"
+import { eq, or } from "drizzle-orm"
+import { Metadata } from "next"
+import { redirect } from "next/navigation"
+import { BooksClient } from "./BooksClient"
+export const metadata: Metadata = {
+title: "Livros",
+}
+export default async function AdminLivrosPage() {
+const session = await auth()
+if (!session?.user?.id) {
+redirect("/")
+}
+const userId = session.user.id
+const householdIds = await getUserHouseholdIds(userId)
+const accessCondition = (tableColumn: any) => {
+const conditions = [eq(tableColumn, userId)]
+return conditions.length > 1 ? or(...conditions) : conditions[0]
+}
+const userBooks = await db.query.books.findMany({
+where: accessCondition(books.userId),
+orderBy: (b, { desc }) => [desc(b.createdAt)],
+})
+return <BooksClient initialBooks={userBooks} />
+}
+
+// ==========================================
+// Arquivo: src/app/admin/page.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/app/admin/page.tsx (Corrigido para o array de householdIds)
+// ==========================================
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { transactions } from "@/db/schema";
+import { getUserHouseholdIds } from "@/lib/household";
+import { eq, inArray, or } from "drizzle-orm";
+import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getDashboardSummary } from '@/services/balanceService';
+import { formatCurrency } from '@/utils/currency';
+export default async function AdminPage() {
+const session = await auth();
+if (!session?.user) {
+redirect("/");
+}
+const userId = session.user.id;
+// getUserHouseholdIds retorna string[]
+const householdIds = await getUserHouseholdIds(userId);
+// Pegamos o primeiro ID do grupo doméstico para o serviço, se existir
+const householdId = householdIds.length > 0 ? householdIds[0] : null;
+const accessCondition = (table: any) => {
+const conditions = [eq(table.userId, userId)];
+if (householdIds.length > 0) {
+conditions.push(inArray(table.householdId, householdIds));
+}
+return conditions.length > 1 ? or(...conditions) : conditions[0];
+};
+// Busca paralela de contas e transações recentes
+const [recentTransactions] = await Promise.all([
+db.query.transactions.findMany({
+where: accessCondition(transactions),
+limit: 5,
+orderBy: (t, { desc }) => [desc(t.date)],
+}),
+]);
+const now = new Date();
+const summary = await getDashboardSummary(userId, householdId, now);
+return (
+<div className="flex flex-col gap-6">
+{/* Cabeçalho de Boas-Vindas */}
+<div className="flex flex-col gap-1">
+<h1 className="text-2xl font-bold tracking-tight">Painel Administrativo</h1>
+<p className="text-sm text-muted-foreground">
+Visão geral consolidada das suas finanças e atalhos rápidos do sistema.
+</p>
+</div>
+{/* Grid de Métricas Principais */}
+<div className="grid gap-4 md:grid-cols-3">
+<div className="rounded-xl border bg-card p-6 shadow-sm md:col-span-2">
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+{/* Card 1: Saldo Real */}
+<div className="p-4 border rounded-lg bg-white shadow-sm">
+<h3 className="text-gray-500 text-sm">Saldo Bancário Atual</h3>
+<p className="text-2xl font-bold text-gray-900">
+{formatCurrency(summary.bankBalanceCents)}
+</p>
+</div>
+{/* Card 2: Compromissos */}
+<div className="p-4 border rounded-lg bg-white shadow-sm">
+<h3 className="text-gray-500 text-sm">Compromissos do Mês</h3>
+<p className="text-2xl font-bold text-red-600">
+{formatCurrency(summary.totalPendingObligationsCents)}
+</p>
+<div className="text-xs text-gray-400 mt-1">
+<span>Cartões: {formatCurrency(summary.pendingCardObligationsCents)}</span>
+<span className="ml-2">Outros: {formatCurrency(summary.pendingExpensesCents)}</span>
+</div>
+</div>
+{/* Card 3: Previsão */}
+<div className="p-4 border rounded-lg bg-white shadow-sm">
+<h3 className="text-gray-500 text-sm">Saldo Disponível (Previsto)</h3>
+<p className="text-2xl font-bold text-blue-600">
+{formatCurrency(summary.expectedAvailableBalanceCents)}
+</p>
+</div>
+</div>
+</div>
+<div className="rounded-xl border bg-card p-6 shadow-sm">
+<div className="flex items-center justify-between">
+<span className="text-sm font-medium text-muted-foreground">Atalho Rápido</span>
+<TrendingUp className="h-4 w-4 text-purple-500" />
+</div>
+<div className="mt-4 flex gap-2">
+<Link
+href="/admin/carteira"
+className="text-xs font-semibold bg-primary text-primary-foreground px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+>
+Acessar Carteira Completa &rarr;
+</Link>
+</div>
+</div>
+</div>
+{/* Seção de Transações Recentes e Atalhos de Gestão */}
+<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+<div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
+<div className="flex items-center justify-between mb-4">
+<h2 className="text-lg font-semibold">Últimas Movimentações</h2>
+<Link href="/admin/carteira" className="text-sm text-primary hover:underline">
+Ver todas
+</Link>
+</div>
+<div className="divide-y divide-border">
+{recentTransactions.length === 0 ? (
+<p className="py-4 text-sm text-muted-foreground text-center">Nenhuma transação recente encontrada.</p>
+) : (
+recentTransactions.map((tx) => (
+<div key={tx.id} className="py-3 flex items-center justify-between">
+<div className="flex items-center gap-3">
+<div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
+{tx.type === 'income' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
+</div>
+<div>
+<p className="text-sm font-medium">{tx.description || "Transação sem descrição"}</p>
+<p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString("pt-BR")}</p>
+</div>
+</div>
+<span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+{Number(tx.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+</span>
+</div>
+))
+)}
+</div>
+</div>
+{/* Card de Atalhos de Gerenciamento (Incluindo Blog e Livros) */}
+<div className="rounded-xl border bg-card p-6 shadow-sm flex flex-col justify-between">
+<div>
+<h2 className="text-lg font-semibold mb-2">Gerenciamento</h2>
+<p className="text-sm text-muted-foreground mb-4">Acesse rapidamente as ferramentas e conteúdos do sistema.</p>
+<ul className="space-y-1.5 text-sm">
+<li>
+<Link href="/admin/categorias" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+<span>Categorias</span>
+<span className="text-xs text-muted-foreground">&rarr;</span>
+</Link>
+</li>
+<li>
+<Link href="/admin/contas" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+<span>Contas Bancárias</span>
+<span className="text-xs text-muted-foreground">&rarr;</span>
+</Link>
+</li>
+<li>
+<Link href="/admin/investimentos" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+<span>Investimentos</span>
+<span className="text-xs text-muted-foreground">&rarr;</span>
+</Link>
+</li>
+<li>
+<Link href="/admin/blog" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+<span>Blog</span>
+<span className="text-xs text-muted-foreground">&rarr;</span>
+</Link>
+</li>
+<li>
+<Link href="/admin/livros" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+<span>Livros</span>
+<span className="text-xs text-muted-foreground">&rarr;</span>
+</Link>
+</li>
+</ul>
+</div>
+<div className="mt-6 pt-4 border-t text-xs text-muted-foreground text-center">
+TwoBanks Dashboard &copy; 2026
+</div>
+</div>
+</div>
+</div>
+);
+}
+
+// ==========================================
+// Arquivo: src/app/admin/tarefas/page.tsx
+// ==========================================
+import { auth } from "@/auth"
+import { KanbanBoard } from "@/components/Kanban/KanbanBoard"
+import { db } from "@/db"
+import { redirect } from "next/navigation"
+export const metadata = { title: "Tarefas" }
+export default async function KanbanPage() {
+const session = await auth()
+if (!session?.user?.id) redirect("/")
+// Busca inicial das tarefas no banco
+const [tasks, appUsers] = await Promise.all([
+db.query.kanbanTasks.findMany({
+orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
+}),
+db.query.users.findMany({ limit: 2 }),
+])
+return (
+<div className="flex flex-col gap-4 h-full">
+<div className="flex flex-col gap-1">
+<h1 className="text-2xl font-bold tracking-tight">Board Operacional</h1>
+<p className="text-sm text-muted-foreground">
+Gerencie tarefas, prioridades e acompanhe o fluxo de trabalho.
+</p>
+</div>
+{/* Renderiza o Client Component */}
+<KanbanBoard initialTasks={tasks} users={appUsers} />
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/app/api/auth/[...nextauth]/route.ts
+// ==========================================
+import { handlers } from "@/auth"
+export const { GET, POST } = handlers
+
+// ==========================================
+// Arquivo: src/app/api/coros-sync/route.ts
+// ==========================================
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { plannedWorkouts } from "@/db/schema"
+import { NextResponse } from "next/server"
+function formatDateToCoros(date: Date) {
+return date.toISOString().slice(0, 10).replace(/-/g, '')
+}
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
+export async function GET(request: Request) {
+const session = await auth()
+if (!session?.user?.id) {
+return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+}
+const token = process.env.COROS_AUTH_TOKEN
+if (!token) {
+return NextResponse.json({ error: "Token do COROS não configurado no .env" }, { status: 500 })
+}
+let currentDate = new Date("2023-07-31T00:00:00Z")
+const finalDate = new Date("2026-09-27T00:00:00Z")
+let totalImportados = 0
+while (currentDate <= finalDate) {
+let chunkEnd = new Date(currentDate)
+chunkEnd.setDate(chunkEnd.getDate() + 28)
+if (chunkEnd > finalDate) chunkEnd = finalDate
+const startStr = formatDateToCoros(currentDate)
+const endStr = formatDateToCoros(chunkEnd)
+console.log(`📡 Buscando treinos COROS de ${startStr} a ${endStr}...`)
+try {
+const response = await fetch(
+`https://teamapi.coros.com/training/schedule/query?startDate=${startStr}&endDate=${endStr}&supportRestExercise=1`,
+{
+headers: {
+"Cookie": `CPL-coros-token=${token};`,
+"accesstoken": token,
+"Content-Type": "application/json",
+"Accept": "application/json, text/plain, */*",
+"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+},
+}
+)
+const json = await response.json()
+if (json.result !== "0000") {
+console.error(`❌ COROS recusou. Resposta:`, json)
+}
+if (json.data && json.data.entities && json.data.entities.length > 0) {
+const treinos = json.data.entities
+console.log(`✅ Achou ${treinos.length} treinos neste mês!`)
+for (const treino of treinos) {
+let titulo = `Treino de ${treino.exerciseBarChart?.[0]?.name || "Corrida"}`
+await db.insert(plannedWorkouts).values({
+id: treino.id,
+date: treino.happenDay.toString(),
+title: titulo,
+status: treino.executeStatus,
+steps: treino.exerciseBarChart,
+rawPayload: treino,
+userId: session.user.id,
+}).onConflictDoNothing()
+totalImportados++
+}
+} else {
+console.log(`⚠️ Nenhum treino encontrado entre ${startStr} e ${endStr}`)
+}
+await delay(1000)
+currentDate = new Date(chunkEnd)
+currentDate.setDate(currentDate.getDate() + 1)
+} catch (error) {
+console.error("Erro na requisição da API:", error)
+return NextResponse.json({ error: "Falha na sincronização", details: error }, { status: 500 })
+}
+}
+return NextResponse.json({
+success: true,
+message: `A importação terminou! ${totalImportados} treinos foram salvos no seu banco de dados Neon.`
+})
+}
+
+// ==========================================
+// Arquivo: src/app/api/otp/send-email/route.ts
+// ==========================================
+import { db } from "@/db";
+import { otpCodes, users } from "@/db/schema";
+import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
+const OTP_EXPIRATION_MINUTES = 5;
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "noreply@twobanks.wtf";
+function generateOtp(): string {
+return Math.floor(100000 + Math.random() * 900000).toString();
+}
+async function sendOtpEmail(to: string, code: string): Promise<void> {
+await resend.emails.send({
+from: FROM_EMAIL,
+to,
+subject: "Seu código de acesso twobanks",
+html: `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #09090b; padding: 40px 0; color: #fafafa;">
+<div style="max-width: 440px; margin: 0 auto; background-color: #18181b; padding: 32px; border-radius: 16px; border: 1px solid #27272a; text-align: center;">
+<!-- Logotipo em Tipografia Centralizada (Substitui a imagem com perfeição) -->
+<div style="margin-bottom: 24px;">
+<span style="font-size: 26px; font-weight: 800; color: #fafafa; letter-spacing: -0.5px;">
+BANKS<span style="color: #F35894;">.</span>
+</span>
+</div>
+<p style="color: #a1a1aa; font-size: 14px; line-height: 20px; margin-bottom: 24px;">
+Você solicitou um código de acesso para entrar na sua conta. Utilize o código abaixo:
+</p>
+<!-- Caixa do Código com destaque em Azul Celeste -->
+<div style="margin: 24px 0; padding: 20px; background-color: #09090b; border: 1px solid #27272a; border-radius: 12px; text-align: center;">
+<span style="font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #5EACCF;">
+${code}
+</span>
+</div>
+<p style="color: #71717a; font-size: 12px; line-height: 16px; margin-top: 24px; margin-bottom: 0;">
+Este código é válido por ${OTP_EXPIRATION_MINUTES} minutos. Se você não solicitou este acesso, ignore este e-mail com segurança.
+</p>
+</div>
+</div>
+`,
+});
+}
+export async function POST(req: Request) {
+try {
+const { identifier } = await req.json();
+if (!identifier) {
+return NextResponse.json({ error: "Informe seu email." }, { status: 400 });
+}
+const normalizedEmail = String(identifier).toLowerCase();
+const [user] = await db
+.select({ id: users.id, email: users.email })
+.from(users)
+.where(eq(users.email, normalizedEmail));
+if (!user || !user.email) {
+return NextResponse.json({ success: true });
+}
+const code = generateOtp();
+const codeHash = await bcrypt.hash(code, 10);
+const expiresAt = new Date(Date.now() + OTP_EXPIRATION_MINUTES * 60 * 1000);
+await db.insert(otpCodes).values({
+userId: user.id,
+codeHash,
+expiresAt,
+});
+await sendOtpEmail(user.email, code);
+return NextResponse.json({ success: true });
+} catch (error) {
+console.error("Erro ao enviar email:", error);
+return NextResponse.json({ error: "Falha ao enviar o código." }, { status: 500 });
+}
+}
+
+// ==========================================
+// Arquivo: src/app/api/presence/route.ts
+// ==========================================
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { users } from "@/db/schema"; // ajuste para sua tabela de usuários
+import { eq } from "drizzle-orm"
+import { NextResponse } from "next/server"
+export async function POST() {
+const session = await auth()
+if (!session?.user?.id) {
+return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+}
+// Atualiza o timestamp do usuário logado para o horário atual
+await db.update(users)
+.set({ lastSeen: new Date() })
+.where(eq(users.id, session.user.id))
+return NextResponse.json({ success: true })
+}
+
+// ==========================================
+// Arquivo: src/app/api/strava-sync/route.ts
+// ==========================================
+// src/app/api/strava-sync/route.ts
+import { auth } from "@/auth"
+import { db } from "@/db"
+import { stravaWorkouts } from "@/db/schema"
+import { and, eq } from "drizzle-orm"
+import { NextResponse } from "next/server"
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
+export async function GET(request: Request) {
+const session = await auth()
+if (!session?.user?.id) {
+return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+}
+const clientId = process.env.STRAVA_CLIENT_ID
+const clientSecret = process.env.STRAVA_CLIENT_SECRET
+const refreshToken = process.env.STRAVA_REFRESH_TOKEN
+if (!clientId || !clientSecret || !refreshToken) {
+return NextResponse.json({ error: "Chaves do Strava ausentes" }, { status: 500 })
+}
+try {
+const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+client_id: clientId,
+client_secret: clientSecret,
+refresh_token: refreshToken,
+grant_type: "refresh_token"
+})
+})
+const tokenData = await tokenResponse.json()
+if (!tokenData.access_token) throw new Error("Falha ao gerar access_token")
+const url = new URL(request.url)
+const fullSync = url.searchParams.get('full') === 'true'
+let startDate: number
+let endDate: number
+let syncType: string
+if (fullSync) {
+startDate = 1356998400
+endDate = Math.floor(Date.now() / 1000)
+syncType = "completa (2013-atual)"
+console.log("📡 Iniciando sincronização COMPLETA do Strava...")
+} else {
+const yesterday = new Date()
+yesterday.setDate(yesterday.getDate() - 1)
+yesterday.setHours(0, 0, 0, 0)
+startDate = Math.floor(yesterday.getTime() / 1000)
+endDate = Math.floor(Date.now() / 1000)
+syncType = "incremental (a partir de ontem)"
+console.log(`📡 Iniciando sincronização INCREMENTAL do Strava (a partir de ${yesterday.toISOString().split('T')[0]})...`)
+}
+let totalImportados = 0
+let page = 1
+let hasMoreActivities = true
+while (hasMoreActivities) {
+console.log(`Buscando Página ${page} da sincronização ${syncType}...`)
+const activitiesResponse = await fetch(
+`https://www.strava.com/api/v3/athlete/activities?after=${startDate}&before=${endDate}&page=${page}&per_page=200`,
+{ headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+)
+const activities = await activitiesResponse.json()
+if (!Array.isArray(activities) || activities.length === 0) {
+hasMoreActivities = false
+break
+}
+for (const activity of activities) {
+const existingActivity = await db.select()
+.from(stravaWorkouts)
+.where(and(
+eq(stravaWorkouts.name, activity.name),
+eq(stravaWorkouts.startDate, activity.start_date_local)
+))
+.limit(1)
+if (!fullSync && existingActivity.length > 0) {
+console.log(`⏭️ Atividade ${activity.id} já existe no banco, pulando...`)
+continue
+}
+let streamsData = null
+try {
+const streamsResponse = await fetch(
+`https://www.strava.com/api/v3/activities/${activity.id}/streams?keys=time,heartrate,velocity_smooth,latlng,altitude,distance&key_by_type=true`,
+{ headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+)
+if (streamsResponse.ok) {
+streamsData = await streamsResponse.json()
+}
+} catch (err) {
+console.warn(`Aviso: Não foi possível baixar streams para a atividade ${activity.id}`)
+}
+await db.insert(stravaWorkouts).values({
+id: activity.id.toString(),
+name: activity.name,
+type: activity.type,
+distance: activity.distance?.toString(),
+movingTime: activity.moving_time,
+elapsedTime: activity.elapsed_time,
+totalElevationGain: activity.total_elevation_gain?.toString(),
+averageSpeed: activity.average_speed?.toString(),
+maxSpeed: activity.max_speed?.toString(),
+averageHeartrate: activity.has_heartrate ? Math.round(activity.average_heartrate) : null,
+maxHeartrate: activity.has_heartrate ? Math.round(activity.max_heartrate) : null,
+averageCadence: activity.average_cadence?.toString(),
+averageWatts: activity.average_watts?.toString(),
+kilojoules: activity.kilojoules?.toString(),
+sufferScore: activity.suffer_score,
+gearId: activity.gear_id,
+mapPolyline: activity.map?.summary_polyline || null,
+startDate: activity.start_date_local,
+timezone: activity.timezone,
+rawPayload: activity,
+streamPayload: streamsData,
+userId: 'b3c34ca9-ee8a-489a-aca6-78004baf1cbf',
+}).onConflictDoNothing()
+totalImportados++
+await delay(150)
+}
+page++
+}
+return NextResponse.json({
+success: true,
+message: `Sincronização ${syncType} concluída! ${totalImportados} atividades importadas com sucesso.`,
+syncType: syncType,
+totalActivities: totalImportados,
+startDate: new Date(startDate * 1000).toISOString(),
+endDate: new Date(endDate * 1000).toISOString()
+})
+} catch (error) {
+console.error("Erro fatal:", error)
+return NextResponse.json({ error: "Falha na sincronização" }, { status: 500 })
+}
+}
+
+// ==========================================
+// Arquivo: src/app/api/sync-gears/route.ts
+// ==========================================
+import { fetchAndSaveAllGearDetails } from "@/lib/strava"
+import { NextResponse } from "next/server"
+export async function GET() {
+try {
+await fetchAndSaveAllGearDetails()
+return NextResponse.json({ success: true })
+} catch (error) {
+return NextResponse.json({ error: String(error) }, { status: 500 })
+}
+}
+
+// ==========================================
+// Arquivo: src/app/api/webhooks/strava/route.ts
+// ==========================================
+// src/app/api/webhooks/strava/route.ts
+import { db } from "@/db"
+import { stravaWorkouts } from "@/db/schema"
+import { NextResponse } from "next/server"
+const VERIFY_TOKEN = process.env.STRAVA_WEBHOOK_VERIFY_TOKEN || "meu_token_secreto_123"
+// 🟢 GET: Validação do Webhook (Strava)
+export async function GET(request: Request) {
+const { searchParams } = new URL(request.url)
+const mode = searchParams.get("hub.mode")
+const token = searchParams.get("hub.verify_token")
+const challenge = searchParams.get("hub.challenge")
+if (mode === "subscribe" && token === VERIFY_TOKEN) {
+console.log("Webhook do Strava validado com sucesso!")
+return NextResponse.json({ "hub.challenge": challenge })
+}
+return new NextResponse("Token inválido", { status: 403 })
+}
+// 🟢 POST: Recebe o aviso e baixa o treino novo
+export async function POST(request: Request) {
+try {
+const body = await request.json()
+// Se for a CRIAÇÃO de uma atividade nova
+if (body.object_type === "activity" && body.aspect_type === "create") {
+const activityId = body.object_id
+console.log(`Nova atividade detectada! Baixando dados do ID: ${activityId}`)
+const clientId = process.env.STRAVA_CLIENT_ID
+const clientSecret = process.env.STRAVA_CLIENT_SECRET
+const refreshToken = process.env.STRAVA_REFRESH_TOKEN
+if (!clientId || !clientSecret || !refreshToken) {
+throw new Error("Chaves do Strava ausentes nas variáveis de ambiente.")
+}
+// 1. Gera um Token Novo
+const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({
+client_id: clientId,
+client_secret: clientSecret,
+refresh_token: refreshToken,
+grant_type: "refresh_token"
+})
+})
+const tokenData = await tokenResponse.json()
+if (!tokenData.access_token) throw new Error("Falha ao gerar access_token")
+// 2. Busca OS DETALHES principais da atividade
+const activityResponse = await fetch(
+`https://www.strava.com/api/v3/activities/${activityId}`,
+{ headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+)
+const activity = await activityResponse.json()
+// 3. Busca as STREAMS (Telemetria para o Gráfico e Mapa)
+// Passamos key_by_type=true para o Strava devolver o formato exato que os nossos componentes esperam
+const streamsResponse = await fetch(
+`https://www.strava.com/api/v3/activities/${activityId}/streams?keys=time,heartrate,velocity_smooth,latlng,altitude,distance&key_by_type=true`,
+{ headers: { "Authorization": `Bearer ${tokenData.access_token}` } }
+)
+let streamsData = null
+if (streamsResponse.ok) {
+streamsData = await streamsResponse.json()
+} else {
+console.warn(`Aviso: Não foi possível buscar as streams da atividade ${activityId}`)
+}
+// 4. Salva no banco de dados
+await db.insert(stravaWorkouts).values({
+id: activity.id.toString(),
+name: activity.name,
+type: activity.type,
+distance: activity.distance?.toString(),
+movingTime: activity.moving_time,
+elapsedTime: activity.elapsed_time,
+totalElevationGain: activity.total_elevation_gain?.toString(),
+averageSpeed: activity.average_speed?.toString(),
+maxSpeed: activity.max_speed?.toString(),
+averageHeartrate: activity.has_heartrate ? Math.round(activity.average_heartrate) : null,
+maxHeartrate: activity.has_heartrate ? Math.round(activity.max_heartrate) : null,
+averageCadence: activity.average_cadence?.toString(),
+averageWatts: activity.average_watts?.toString(),
+kilojoules: activity.kilojoules?.toString(),
+sufferScore: activity.suffer_score,
+gearId: activity.gear_id,
+mapPolyline: activity.map?.summary_polyline || null,
+startDate: activity.start_date_local,
+timezone: activity.timezone,
+rawPayload: activity,
+streamPayload: streamsData,
+userId: "COLOQUE_SEU_USER_ID_AQUI",
+}).onConflictDoNothing()
+console.log(`✅ Atividade ${activityId} salva no banco com mapa e gráfico!`)
+}
+// Retorna 200 rápido para o Strava
+return NextResponse.json({ message: "Recebido" }, { status: 200 })
+} catch (error) {
+console.error("Erro no Webhook:", error)
+return new NextResponse("Erro interno", { status: 500 })
+}
+}
+
+// ==========================================
+// Arquivo: src/app/globals.css
+// ==========================================
+@import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+@theme inline {
+/* =========================================
+Cores da Marca Extraídas da Logo
+Isso gera: bg-brand-blue, text-brand-pink, etc.
+========================================= */
+--color-brand-blue: #5EACCF;
+--color-brand-pink: #F35894;
+--color-brand-yellow: #FBE122;
+--color-brand-skin: #C88D5D;
+/* Mapeamento Shadcn/UI Padrão */
+--color-background: var(--background);
+--color-foreground: var(--foreground);
+--font-sans: var(--font-geist-sans);
+--font-mono: var(--font-geist-mono);
+--font-heading: var(--font-geist-sans);
+--color-sidebar-ring: var(--sidebar-ring);
+--color-sidebar-border: var(--sidebar-border);
+--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+--color-sidebar-accent: var(--sidebar-accent);
+--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+--color-sidebar-primary: var(--sidebar-primary);
+--color-sidebar-foreground: var(--sidebar-foreground);
+--color-sidebar: var(--sidebar);
+--color-chart-5: var(--chart-5);
+--color-chart-4: var(--chart-4);
+--color-chart-3: var(--chart-3);
+--color-chart-2: var(--chart-2);
+--color-chart-1: var(--chart-1);
+--color-ring: var(--ring);
+--color-input: var(--input);
+--color-border: var(--border);
+--color-destructive: var(--destructive);
+--color-accent-foreground: var(--accent-foreground);
+--color-accent: var(--accent);
+--color-muted-foreground: var(--muted-foreground);
+--color-muted: var(--muted);
+--color-secondary-foreground: var(--secondary-foreground);
+--color-secondary: var(--secondary);
+--color-primary-foreground: var(--primary-foreground);
+--color-primary: var(--primary);
+--color-popover-foreground: var(--popover-foreground);
+--color-popover: var(--popover);
+--color-card-foreground: var(--card-foreground);
+--color-card: var(--card);
+--radius-sm: calc(var(--radius) * 0.6);
+--radius-md: calc(var(--radius) * 0.8);
+--radius-lg: var(--radius);
+--radius-xl: calc(var(--radius) * 1.4);
+--radius-2xl: calc(var(--radius) * 1.8);
+--radius-3xl: calc(var(--radius) * 2.2);
+--radius-4xl: calc(var(--radius) * 2.6);
+}
+:root {
+/* Fundo claro e limpo */
+--background: #ffffff;
+--foreground: #09090b; /* zinc-950 */
+--card: #ffffff;
+--card-foreground: #09090b;
+--popover: #ffffff;
+--popover-foreground: #09090b;
+/* Identidade Visual - Light Mode */
+--primary: #5EACCF;          /* Azul da Logo */
+--primary-foreground: #ffffff;
+--secondary: #F35894;        /* Rosa da Logo */
+--secondary-foreground: #ffffff;
+--accent: #FBE122;           /* Amarelo da Logo */
+--accent-foreground: #000000;
+--destructive: #ef4444;
+--muted: #f4f4f5; /* zinc-100 */
+--muted-foreground: #71717a; /* zinc-500 */
+--border: #e4e4e7; /* zinc-200 */
+--input: #e4e4e7; /* zinc-200 */
+--ring: #5EACCF; /* Foco dos inputs e botões no Azul da Logo */
+/* Gráficos usando a paleta da logo */
+--chart-1: #5EACCF;
+--chart-2: #F35894;
+--chart-3: #FBE122;
+--chart-4: #C88D5D;
+--chart-5: #09090b;
+--radius: 0.625rem;
+/* Sidebar Light */
+--sidebar: #f4f4f5; /* zinc-100 */
+--sidebar-foreground: #09090b;
+--sidebar-primary: #5EACCF;
+--sidebar-primary-foreground: #ffffff;
+--sidebar-accent: #e4e4e7;
+--sidebar-accent-foreground: #09090b;
+--sidebar-border: #d4d4d8; /* zinc-300 */
+--sidebar-ring: #5EACCF;
+}
+/* src/app/globals.css */
+.dark {
+/* Novo Background Global */
+--background: #202528;
+--foreground: #fafafa;
+/* Cards e superfícies elevadas (tom mais profundo para contraste) */
+--card: #171A1C;
+--card-foreground: #fafafa;
+--popover: #171A1C;
+--popover-foreground: #fafafa;
+/* Identidade Visual - Dark Mode (Mantida) */
+--primary: #5EACCF;
+--primary-foreground: #000000;
+--secondary: #F35894;
+--secondary-foreground: #ffffff;
+--accent: #FBE122;
+--accent-foreground: #000000;
+/* Bordas e elementos mutados adaptados ao novo fundo */
+--destructive: #ef4444;
+--muted: #2A3036;
+--muted-foreground: #a1a1aa;
+--border: #2A3036;
+--input: #2A3036;
+--ring: #5EACCF;
+/* Sidebar mesclando com os cards */
+--sidebar: #171A1C;
+--sidebar-foreground: #fafafa;
+--sidebar-primary: #5EACCF;
+--sidebar-primary-foreground: #000000;
+--sidebar-accent: #2A3036;
+--sidebar-accent-foreground: #fafafa;
+--sidebar-border: #2A3036;
+--sidebar-ring: #5EACCF;
+}
+@layer base {
+* {
+@apply border-border outline-ring/50;
+}
+body {
+@apply bg-background text-foreground;
+}
+html {
+@apply font-sans;
+}
+/* MapLibre custom styles mantidos originais */
+.maplibregl-popup-content {
+@apply bg-transparent! shadow-none! p-0! rounded-none!;
+}
+.maplibregl-popup-tip {
+@apply hidden!;
+}
+.maplibregl-ctrl-attrib {
+@apply bg-background! text-muted-foreground! border-border! rounded-md! border! shadow-sm!;
+}
+.maplibregl-ctrl-attrib a {
+@apply text-muted-foreground!;
+}
+.maplibregl-ctrl-attrib a:hover {
+@apply text-foreground!;
+}
+.maplibregl-ctrl-attrib-button {
+@apply bg-transparent! dark:invert;
+}
+}
+
+// ==========================================
+// Arquivo: src/app/layout.tsx
+// ==========================================
+// src/app/layout.tsx
+import "@/app/globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { DrawerProvider } from "@/contexts/DrawerContext";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+const geistSans = Geist({
+variable: "--font-geist-sans",
+subsets: ["latin"],
+});
+const geistMono = Geist_Mono({
+variable: "--font-geist-mono",
+subsets: ["latin"],
+});
+export const metadata: Metadata = {
+metadataBase: new URL("https://twobanks.wtf"),
+title: {
+template: "BANKS | %s 🏹",
+default: "BANKS 🏹",
+},
+description: "where i register my randomness 🛸",
+keywords: ["desenvolvimento", "tecnologia", "portfólio", "blog", "randomness"],
+authors: [{ name: "Thiago Gonçalves Soares" }],
+creator: "otwobanks",
+openGraph: {
+type: "website",
+locale: "pt_BR",
+url: "/",
+title: "BANKS 🏹",
+description: "where i register my randomness 🛸",
+siteName: "BANKS",
+images: [
+{
+url: "/opengraph-image.png",
+width: 1200,
+height: 630,
+alt: "BANKS 🏹 - Onde registro minhas aleatoriedades",
+},
+],
+},
+twitter: {
+card: "summary_large_image",
+title: "BANKS 🏹",
+description: "where i register my randomness 🛸",
+creator: "@otwobanks",
+images: ["/twitter-image.png"],
+},
+robots: {
+index: true,
+follow: true,
+googleBot: {
+index: true,
+follow: true,
+"max-video-preview": -1,
+"max-image-preview": "large",
+"max-snippet": -1,
+},
+},
+};
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+return (
+<html
+lang="pt-BR"
+className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+suppressHydrationWarning
+>
+<body className="min-h-full flex flex-col" suppressHydrationWarning>
+<ThemeProvider
+attribute="class"
+defaultTheme="system"
+enableSystem
+disableTransitionOnChange
+>
+<DrawerProvider>
+{children}
+</DrawerProvider>
+</ThemeProvider>
+</body>
+</html>
+);
+}
+
+// ==========================================
+// Arquivo: src/auth.ts
+// ==========================================
+import { db } from "@/db";
+import { otpCodes, users } from "@/db/schema";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import bcrypt from "bcryptjs";
+import { and, desc, eq, gt, isNull } from "drizzle-orm";
+import NextAuth, { type DefaultSession } from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+declare module "next-auth" {
+interface User {
+role?: string | null;
+}
+interface Session {
+user: {
+id: string;
+role?: string | null;
+} & DefaultSession["user"];
+}
+}
+export const { handlers, auth, signIn, signOut } = NextAuth({
+adapter: DrizzleAdapter(db),
+session: {
+strategy: "jwt",
+maxAge: 24 * 60 * 60, // 24 horas
+},
+providers: [
+Credentials({
+name: "OTP",
+credentials: {
+identifier: { label: "Email", type: "text" },
+otp: { label: "OTP", type: "text" },
+},
+async authorize(credentials) {
+if (!credentials?.identifier || !credentials?.otp) return null;
+const identifier = String(credentials.identifier).toLowerCase();
+const otp = String(credentials.otp);
+const [user] = await db
+.select()
+.from(users)
+.where(eq(users.email, identifier));
+if (!user) return null;
+const [otpRecord] = await db
+.select()
+.from(otpCodes)
+.where(
+and(
+eq(otpCodes.userId, user.id),
+isNull(otpCodes.consumedAt),
+gt(otpCodes.expiresAt, new Date())
+)
+)
+.orderBy(desc(otpCodes.createdAt))
+.limit(1);
+if (!otpRecord) return null;
+const isValid = await bcrypt.compare(otp, otpRecord.codeHash);
+if (!isValid) return null;
+await db
+.update(otpCodes)
+.set({ consumedAt: new Date() })
+.where(eq(otpCodes.id, otpRecord.id));
+return {
+id: user.id,
+name: user.name,
+email: user.email,
+role: user.role,
+};
+},
+}),
+],
+callbacks: {
+async jwt({ token, user }) {
+if (user) token.role = user.role;
+return token;
+},
+async session({ session, token }) {
+if (session.user) {
+session.user.id = token.sub as string;
+session.user.role = token.role as string;
+}
+return session;
+},
+},
+});
+
+// ==========================================
+// Arquivo: src/components/ActivityChart.tsx
+// ==========================================
+"use client"
+import { useMemo } from "react"
+import {
+CartesianGrid,
+Line,
+LineChart,
+ResponsiveContainer,
+Tooltip,
+XAxis,
+YAxis
+} from "recharts"
+function formatTime(seconds: number) {
+const m = Math.floor(seconds / 60)
+const s = Math.floor(seconds % 60)
+return `${m}:${s.toString().padStart(2, "0")}`
+}
+export default function ActivityChart({ streams }: { streams: any }) {
+// Mapeamento dos dados com downsample
+const chartData = useMemo(() => {
+if (!streams || !streams.time || !streams.time.data) return []
+const rawTime = streams.time.data
+const rawHr = streams.heartrate?.data || []
+const rawPace = streams.velocity_smooth?.data || []
+const totalPoints = rawTime.length
+if (totalPoints === 0) return []
+const data = []
+const step = Math.max(1, Math.ceil(totalPoints / 150))
+for (let i = 0; i < totalPoints; i += step) {
+let paceDecimal = null
+// Filtra ruídos de velocidade (abaixo de 0.5 m/s é considerado parado/pausado)
+if (rawPace[i] && rawPace[i] > 0.5) {
+paceDecimal = parseFloat(((1000 / rawPace[i]) / 60).toFixed(2))
+}
+data.push({
+timeStr: formatTime(rawTime[i]),
+hr: rawHr[i] || null,
+pace: paceDecimal, // Mantém null onde está pausado
+})
+}
+return data
+}, [streams])
+if (chartData.length === 0) {
+return <p className="text-zinc-500">Dados de gráfico não disponíveis.</p>
+}
+// Tooltip interno customizado
+const CustomTooltip = ({ active, payload, label }: any) => {
+if (active && payload && payload.length) {
+return (
+<div className="bg-zinc-900/95 backdrop-blur-sm text-white p-3 rounded-lg border border-zinc-700 shadow-xl text-xs space-y-1.5 z-50 w-[160px]">
+<p className="font-bold text-zinc-400 border-b border-zinc-800 pb-1">Tempo: {label}</p>
+{payload.map((entry: any, index: number) => {
+// Não exibe a linha tracejada no tooltip
+if (entry.dataKey === "paceDashed") return null
+if (entry.value === null || entry.value === undefined) return null
+let val = entry.value
+if (entry.dataKey === "pace") {
+const m = Math.floor(val)
+const s = Math.round((val - m) * 60)
+val = `${m}:${s.toString().padStart(2, "0")} /km`
+} else {
+val = `${val} bpm`
+}
+return (
+<p key={index} className="font-semibold flex justify-between gap-4" style={{ color: entry.color }}>
+<span>{entry.name === "pace" ? "Ritmo" : "Coração"}:</span>
+<span>{val}</span>
+</p>
+)
+})}
+</div>
+)
+}
+return null
+}
+return (
+<div className="h-72 w-full mt-6 select-none dark:border-zinc-800 rounded-2xl p-4 bg-white dark:bg-zinc-950">
+<ResponsiveContainer width="100%" height="100%">
+<LineChart
+data={chartData}
+margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+>
+<CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#3f3f46" opacity={0.2} />
+<XAxis
+dataKey="timeStr"
+tick={{ fontSize: 12, fill: "#71717a" }}
+minTickGap={30}
+/>
+<YAxis
+yAxisId="hr"
+orientation="left"
+tick={{ fontSize: 12, fill: "#ef4444" }}
+domain={['dataMin - 5', 'dataMax + 5']}
+/>
+<YAxis
+yAxisId="pace"
+orientation="right"
+reversed={true}
+domain={['dataMin - 0.5', 'dataMax + 2']}
+hide={true}
+/>
+<Tooltip
+content={<CustomTooltip />}
+isAnimationActive={false}
+/>
+{/* Linha do Coração (Vermelha) */}
+<Line
+yAxisId="hr"
+type="monotone"
+dataKey="hr"
+stroke="#ef4444"
+strokeWidth={2}
+dot={false}
+activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2 }}
+isAnimationActive={false}
+/>
+{/* 🟢 LINHA 1: Tracejada de Fundo (Pace com connectNulls) */}
+<Line
+yAxisId="pace"
+type="monotone"
+dataKey="pace" // Usa o mesmo dataKey
+stroke="#3b82f6"
+strokeWidth={1}
+strokeDasharray="5 5" // Estilo tracejado
+dot={false}
+opacity={0.5} // Mais clara
+connectNulls={true} // CONECTA OS ESPAÇOS VAZIOS
+activeDot={false}
+legendType="none" // Não mostra na legenda
+isAnimationActive={false}
+/>
+<Line
+yAxisId="pace"
+type="monotone"
+dataKey="pace"
+stroke="#3b82f6"
+strokeWidth={2}
+dot={false}
+opacity={0.9}
+connectNulls={false} // Comportamento padrão: quebra a linha
+activeDot={{ r: 5, stroke: "#ffffff", strokeWidth: 2 }}
+isAnimationActive={false}
+/>
+</LineChart>
+</ResponsiveContainer>
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/AppBreadcrumb.tsx
+// ==========================================
+"use client"
+import {
+Breadcrumb,
+BreadcrumbItem,
+BreadcrumbLink,
+BreadcrumbList,
+BreadcrumbPage,
+BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { usePathname } from "next/navigation"
+const routeLabels: Record<string, string> = {
+"/admin": "Admin",
+"/admin/carteira": "Carteira",
+"/admin/carteira/cartoes": "Cartões",
+"/admin/carteira/categorias": "Categorias",
+"/admin/carteira/contas": "Contas",
+"/admin/carteira/recorrentes": "Recorrentes",
+"/admin/carteira/investimentos": "Investimentos",
+"/admin/carteira/listas": "Listas de Compras",
+"/admin/carteira/faturas": "Faturas",
+"/admin/blog": "Blog",
+"/admin/livros": "Livros",
+"/admin/tarefas": "Tarefas",
+}
+export function AppBreadcrumb() {
+const pathname = usePathname()
+const pathSegments = pathname.split("/").filter(Boolean)
+let accumulatedPath = ""
+const items = pathSegments.map((segment, index) => {
+accumulatedPath += `/${segment}`
+const isLast = index === pathSegments.length - 1
+const label = routeLabels[accumulatedPath] || segment // fallback: capitaliza?
+return {
+href: accumulatedPath,
+label,
+isLast,
+}
+})
+return (
+<Breadcrumb>
+<BreadcrumbList>
+<BreadcrumbItem>
+<BreadcrumbLink href="/">Home</BreadcrumbLink>
+</BreadcrumbItem>
+{items.map((item) => (
+<div key={item.href} className="flex items-center gap-1">
+<BreadcrumbSeparator />
+<BreadcrumbItem>
+{item.isLast ? (
+<BreadcrumbPage>{item.label}</BreadcrumbPage>
+) : (
+<BreadcrumbLink href={item.href}>{item.label}</BreadcrumbLink>
+)}
+</BreadcrumbItem>
+</div>
+))}
+</BreadcrumbList>
+</Breadcrumb>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/AppSidebar.tsx
+// ==========================================
+"use client"
+import {
+Sidebar,
+SidebarContent,
+SidebarGroup,
+SidebarGroupContent,
+SidebarGroupLabel,
+SidebarHeader,
+SidebarMenu,
+SidebarMenuButton,
+SidebarMenuItem,
+SidebarSeparator
+} from "@/components/ui/sidebar"
+import { useDrawer } from "@/contexts/DrawerContext"
+import {
+BookOpen,
+CreditCard,
+FileText,
+FolderPlus,
+KanbanSquare,
+Landmark,
+MinusCircle,
+PlusCircle,
+Repeat,
+ShoppingBasket,
+TrendingUp,
+Wallet
+} from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { LogoTwoBanks } from "./twobanks"
+const financeiroItems = [
+{ title: "Carteira", href: "/admin/carteira", icon: Wallet },
+{ title: "Cartões", href: "/admin/carteira/cartoes", icon: CreditCard },
+{ title: "Faturas", href: "/admin/carteira/faturas", icon: FileText },
+{ title: "Contas", href: "/admin/carteira/contas", icon: Landmark },
+{ title: "Investimentos", href: "/admin/carteira/investimentos", icon: TrendingUp },
+{ title: "Lista de Compras", href: "/admin/carteira/listas", icon: ShoppingBasket },
+{ title: "Tarefas", href: "/admin/tarefas", icon: KanbanSquare },
+]
+const contentItems = [
+{ title: "Blog", href: "/admin/blog", icon: FileText },
+{ title: "Livros", href: "/admin/livros", icon: BookOpen },
+]
+const styleSidebar = {
+actions: 'transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink',
+links: {
+container: 'transition-all duration-200 relative overflow-hidden ',
+default: 'text-zinc-400 hover:bg-brand-blue/10 hover:text-brand-blue',
+hover: 'bg-brand-blue/15 text-brand-blue hover:bg-brand-blue/20 hover:text-brand-blue font-semibold'
+}
+}
+interface AppSidebarProps {
+variant?: "sidebar" | "floating" | "inset"
+}
+export function AppSidebar({ variant = "sidebar" }: AppSidebarProps) {
+const pathname = usePathname()
+const { openDrawer } = useDrawer()
+return (
+<Sidebar collapsible="icon" variant={variant}>
+<SidebarHeader className="py-4">
+<Link href="/" className="flex items-center px-4 w-full transition-all">
+<div className="relative flex items-center justify-center shrink-0 w-40 group-data-[collapsible=icon]:w-10 transition-all duration-300">
+<LogoTwoBanks className="w-full h-auto text-sky-400" />
+</div>
+</Link>
+</SidebarHeader>
+<SidebarSeparator className="bg-border" />
+<SidebarContent>
+<SidebarGroup>
+<SidebarGroupLabel>Financeiro</SidebarGroupLabel>
+<SidebarGroupContent>
+<SidebarMenu>
+{financeiroItems.map((item, index) => {
+const isActive = pathname === item.href;
+return (
+<SidebarMenuItem key={`${item.href}-${index}`}>
+<SidebarMenuButton
+render={<Link href={item.href} />}
+isActive={isActive}
+className={`${styleSidebar.links.container} ${ isActive ? styleSidebar.links.hover : styleSidebar.links.default }`}
+>
+{isActive && (
+<span className="absolute left-0 top-1/2 h-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-blue" />
+)}
+<item.icon className="h-4 w-4 transition-colors" />
+<span>{item.title}</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+)
+})}
+</SidebarMenu>
+</SidebarGroupContent>
+</SidebarGroup>
+<SidebarSeparator className="my-2 bg-border" />
+<SidebarGroup>
+<SidebarGroupLabel>Conteúdo</SidebarGroupLabel>
+<SidebarGroupContent>
+<SidebarMenu>
+{contentItems.map((item, index) => {
+const isActive = pathname === item.href;
+return (
+<SidebarMenuItem key={`${item.href}-${index}`}>
+<SidebarMenuButton
+render={<Link href={item.href} />}
+isActive={isActive}
+className={`${styleSidebar.links.container} ${ isActive ? styleSidebar.links.hover : styleSidebar.links.default }`}
+>
+{isActive && (
+<span className="absolute left-0 top-1/2 h-1/2 w-[3px] -translate-y-1/2 rounded-r-full bg-brand-blue" />
+)}
+<item.icon className="h-4 w-4 transition-colors" />
+<span>{item.title}</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+)
+})}
+</SidebarMenu>
+</SidebarGroupContent>
+</SidebarGroup>
+<SidebarSeparator className="my-2 bg-border" />
+<SidebarGroup>
+<SidebarGroupLabel>Ações Rápidas</SidebarGroupLabel>
+<SidebarGroupContent>
+<SidebarMenu>
+<SidebarMenuItem>
+<SidebarMenuButton onClick={() => openDrawer("income")} className={styleSidebar.actions}>
+<PlusCircle className="h-4 w-4" />
+<span>Nova Receita</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+<SidebarMenuItem>
+<SidebarMenuButton onClick={() => openDrawer("expense")} className={styleSidebar.actions}>
+<MinusCircle className="h-4 w-4" />
+<span>Nova Despesa</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+<SidebarMenuItem>
+<SidebarMenuButton onClick={() => openDrawer("purchase")} className={styleSidebar.actions}>
+<CreditCard className="h-4 w-4" />
+<span>Nova Compra Cartão</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+<SidebarMenuItem>
+<SidebarMenuButton onClick={() => openDrawer("recurring")} className={styleSidebar.actions}>
+<Repeat className="h-4 w-4" />
+<span>Despesa Recorrente</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+<SidebarMenuItem>
+<SidebarMenuButton onClick={() => openDrawer("creditCard")} className={styleSidebar.actions}>
+<CreditCard className="h-4 w-4" />
+<span>Adicionar Cartão</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+<SidebarMenuItem>
+<SidebarMenuButton onClick={() => openDrawer("category")} className={styleSidebar.actions}>
+<FolderPlus className="h-4 w-4" />
+<span>Adicionar Categoria</span>
+</SidebarMenuButton>
+</SidebarMenuItem>
+</SidebarMenu>
+</SidebarGroupContent>
+</SidebarGroup>
+</SidebarContent>
+</Sidebar>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/AtividadesFilters.tsx
+// ==========================================
+// src/components/AtividadesFilters.tsx
+"use client"
+import { SORT_OPTIONS } from "@/utils/mocks"
+import { FiltersProps } from "@/utils/types"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+export default function AtividadesFilters({
+activityType,
+gearId,
+sortValue,
+typeOptions,
+shoes,
+bikes,
+}: FiltersProps) {
+const router = useRouter()
+const [isOpen, setIsOpen] = useState(false)
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+e.preventDefault()
+const form = e.currentTarget
+const formData = new FormData(form)
+const params = new URLSearchParams()
+for (const [key, value] of formData.entries()) {
+const stringValue = String(value)
+if (stringValue === "" || stringValue === null || stringValue === undefined) continue
+if (key === "sort" && stringValue === "date_desc") continue
+params.set(key, stringValue)
+}
+const queryString = params.toString()
+router.push(queryString ? `/atividades?${queryString}` : "/atividades")
+setIsOpen(false) // Fecha o dropdown após aplicar
+}
+const handleClearFilters = () => {
+router.push("/atividades")
+setIsOpen(false)
+}
+// Verifica se há filtros ativos
+const hasActiveFilters = activityType !== "all" || gearId !== "" || sortValue !== "date_desc"
+return (
+<div className="relative">
+{/* Botão de Filtro */}
+<button
+onClick={() => setIsOpen(!isOpen)}
+className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
+hasActiveFilters
+? "bg-orange-600 text-white hover:bg-orange-700"
+: "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+}`}
+>
+<svg
+className="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+<path
+strokeLinecap="round"
+strokeLinejoin="round"
+strokeWidth={2}
+d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+/>
+</svg>
+FILTROS
+{hasActiveFilters && (
+<span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-orange-600 rounded-full">
+!
+</span>
+)}
+</button>
+{/* Dropdown */}
+{isOpen && (
+<>
+{/* Overlay para fechar ao clicar fora */}
+<div
+className="fixed inset-0 z-10"
+onClick={() => setIsOpen(false)}
+/>
+{/* Conteúdo do dropdown */}
+<div className="absolute left-0 top-full mt-2 z-20 w-[400px] md:w-[600px]">
+<form
+onSubmit={handleSubmit}
+className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-6 space-y-6"
+>
+<div className="flex items-center justify-between">
+<h2 className="text-lg font-semibold">Filtros</h2>
+{hasActiveFilters && (
+<button
+type="button"
+onClick={handleClearFilters}
+className="text-sm text-[#FC4C02] hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+>
+Limpar filtros
+</button>
+)}
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+{/* Tipo de atividade */}
+<div className="space-y-1">
+<label htmlFor="type" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Tipo de atividade
+</label>
+<select
+id="type"
+name="type"
+defaultValue={activityType === "all" ? "" : activityType}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value="">Todos</option>
+{typeOptions.map(type => (
+<option key={type} value={type}>{type}</option>
+))}
+</select>
+</div>
+{/* Equipamento */}
+<div className="space-y-1">
+<label htmlFor="gearId" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Equipamento
+</label>
+<select
+id="gearId"
+name="gearId"
+defaultValue={gearId || ""}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value="">Todos</option>
+<optgroup label="👟 Tênis">
+{shoes.map(item => (
+<option key={item.id} value={item.id}>{item.name}</option>
+))}
+</optgroup>
+<optgroup label="🚴 Bicicleta">
+{bikes.map(item => (
+<option key={item.id} value={item.id}>{item.name}</option>
+))}
+</optgroup>
+</select>
+</div>
+{/* Ordenação */}
+<div className="space-y-1">
+<label htmlFor="sort" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Ordenar por
+</label>
+<select
+id="sort"
+name="sort"
+defaultValue={sortValue}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+{SORT_OPTIONS.map(option => (
+<option key={option.value} value={option.value}>{option.label}</option>
+))}
+</select>
+</div>
+</div>
+<div className="flex justify-end gap-3">
+<button
+type="button"
+onClick={() => setIsOpen(false)}
+className="px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+>
+Cancelar
+</button>
+<button
+type="submit"
+className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#FC4C02] hover:bg-orange-700 text-white transition-colors"
+>
+Aplicar Filtros
+</button>
+</div>
+</form>
+</div>
+</>
+)}
+</div>
+)
+}

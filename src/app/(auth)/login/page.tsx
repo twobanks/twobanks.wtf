@@ -102,10 +102,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-1 h-full min-h-[calc(100vh-5rem)] w-full bg-[#0a0a0a] overflow-hidden">
-      
-      {/* Coluna Esquerda - Decorativa */}
       <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 border-r border-gray-800 relative overflow-hidden">
-        {/* Fundo de grade geométrica */}
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03]">
           <div className="w-[200%] h-[1px] bg-white absolute rotate-0" />
           <div className="w-[200%] h-[1px] bg-white absolute rotate-90" />
@@ -113,28 +110,17 @@ export default function LoginPage() {
           <div className="w-[200%] h-[1px] bg-white absolute -rotate-45" />
         </div>
 
-        {/* Logo Central */}
         <div className="z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="relative w-62 md:w-[200px] lg:w-[400px] flex items-center justify-center">
-            <LogoTwoBanks 
-              variant="3d" 
-              extrusionColor="#0369a1" 
-              fillColor="#5bb4d8"
-              className="w-full h-auto text-[#5bb4d8] transition-colors duration-300 " 
-            />
+            <LogoTwoBanks className="w-full h-auto text-[#5bb4d8] transition-colors duration-300 ease-in-out" />
           </div>
         </div>
       </div>
 
-      {/* Coluna Direita - Formulário Empilhado (Card Style) */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 relative overflow-y-auto">
-        
-        {/* Card Container */}
         <div className="w-full max-w-[420px] bg-[#141414] border border-gray-800/60 rounded-[24px] p-8 sm:p-10 shadow-2xl flex flex-col items-center">
-          
           {!user ? (
             <div className="flex flex-col items-center text-center w-full">
-              {/* Ícone de Email Genérico */}
               <div className="w-12 h-12 mb-6 rounded-full bg-gray-900 flex items-center justify-center border border-gray-800">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
                   <path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" />
@@ -210,7 +196,6 @@ export default function LoginPage() {
                       </div>
                     );
                   })}
-                  {/* Substituído o onChange antigo pela nova função */}
                   <input
                     type="text"
                     inputMode="numeric"
