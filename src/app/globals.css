@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
@@ -59,11 +59,11 @@
 }
 
 :root {
-  /* Fundo claro e limpo */
-  --background: #ffffff;
-  --foreground: #09090b; /* zinc-950 */
-  
-  --card: #ffffff;
+  --background: #120706; /* Rocha escura no topo e laterais da caverna */
+  --foreground: #f4ece1; /* Tom osso/pergaminho para leitura confortável */
+  --card: #1c0c0a;       /* Pedra interna levemente iluminada pela fogueira */
+  --border: rgba(232, 122, 61, 0.16);
+
   --card-foreground: #09090b;
   --popover: #ffffff;
   --popover-foreground: #09090b;
@@ -103,15 +103,12 @@
   --sidebar-ring: #5EACCF;
 }
 
-/* src/app/globals.css */
-
 .dark {
   /* Novo Background Global */
-  --background: #202528; 
-  --foreground: #fafafa;
-  
-  /* Cards e superfícies elevadas (tom mais profundo para contraste) */
-  --card: #171A1C; 
+  --background: #120706; /* Rocha escura no topo e laterais da caverna */
+  --foreground: #f4ece1; /* Tom osso/pergaminho para leitura confortável */
+  --card: #1c0c0a;       /* Pedra interna levemente iluminada pela fogueira */
+  --border: rgba(232, 122, 61, 0.16);
   --card-foreground: #fafafa;
   --popover: #171A1C;
   --popover-foreground: #fafafa;
@@ -174,3 +171,9 @@
     @apply bg-transparent! dark:invert;
   }
 }
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+

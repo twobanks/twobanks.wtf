@@ -19,6 +19,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { useMemo, useRef, useState, useTransition } from "react";
+import { MaosOlhosTitle } from "./MaosOlhosTitle";
 import { SyncStravaButton } from "./SyncStravaButton";
 
 export interface ModalityDataset {
@@ -369,7 +370,8 @@ export function AtividadesView({
       {/* Cabeçalho + Abas de Modalidade */}
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h1 className="flex items-center gap-2.5 text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            <MaosOlhosTitle className="h-8 w-auto text-zinc-500 transition-colors hover:text-amber-500" />
             Atividades
           </h1>
           <p className="text-sm text-zinc-500 mt-1">

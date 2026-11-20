@@ -16,19 +16,19 @@ export default function Sobre() {
       </section>
 
       <section className="grid md:grid-cols-3 gap-6 mb-12">
-        <div className="p-6 border rounded-lg shadow-sm">
+        <div className="rounded-xl border border-[#F28C38]/15 bg-[#1D0D0B]/80 p-6 shadow-lg backdrop-blur-sm transition-colors hover:border-[#F28C38]/30">
           <h3 className="text-xl font-semibold mb-2">Missão</h3>
           <p className="text-gray-600 dark:text-gray-400">
             Entregar experiências de alta qualidade que impactem positivamente a vida das pessoas.
           </p>
         </div>
-        <div className="p-6 border rounded-lg shadow-sm">
+        <div className="rounded-xl border border-[#F28C38]/15 bg-[#1D0D0B]/80 p-6 shadow-lg backdrop-blur-sm transition-colors hover:border-[#F28C38]/30">
           <h3 className="text-xl font-semibold mb-2">Visão</h3>
           <p className="text-gray-600 dark:text-gray-400">
             Ser referência no mercado através da inovação constante e excelência técnica.
           </p>
         </div>
-        <div className="p-6 border rounded-lg shadow-sm">
+        <div className="rounded-xl border border-[#F28C38]/15 bg-[#1D0D0B]/80 p-6 shadow-lg backdrop-blur-sm transition-colors hover:border-[#F28C38]/30">
           <h3 className="text-xl font-semibold mb-2">Valores</h3>
           <p className="text-gray-600 dark:text-gray-400">
             Transparência, empatia, compromisso com resultados e melhoria contínua.
