@@ -261,3 +261,70 @@ export async function fetchAndSaveAllGearDetails() {
     console.error("Erro ao sincronizar equipamentos:", error)
   }
 }
+
+export interface StravaYearlyStats {
+  totalKm: number
+  runKm: number
+  rideKm: number
+  totalHours: number
+  activitiesCount: number
+}
+
+const RUN_TYPES = ["Run", "TrailRun", "VirtualRun"]
+const RIDE_TYPES = ["Ride", "MountainBikeRide", "GravelRide", "VirtualRide", "EBikeRide"]
+
+export async function getStravaYearlyStats(
+  userId: string = DEFAULT_USER_ID,
+  year: number = new Date().getFullYear()
+): Promise<StravaYearlyStats> {
+  const rows = await db
+    .select({
+      type: stravaWorkouts.type,
+      totalDistance: sql<number>`COALESCE(SUM(CAST(${stravaWorkouts.distance} AS NUMERIC)), 0)`,
+      totalMovingTime: sql<number>`COALESCE(SUM(${stravaWorkouts.movingTime}), 0)`,
+      count: sql<number>`COUNT(*)`,
+    })
+    .from(stravaWorkouts)
+    .where(
+      sql`${stravaWorkouts.userId} = ${userId} AND EXTRACT(YEAR FROM ${stravaWorkouts.startDate}::timestamp) = ${year}`
+    )
+    .groupBy(stravaWorkouts.type)
+
+  let runMeters = 0
+  let rideMeters = 0
+  let otherMeters = 0
+  let runAndRideSeconds = 0
+  let activitiesCount = 0
+
+  for (const row of rows) {
+    const workoutType = row.type ?? ""
+    const dist = Number(row.totalDistance) || 0
+    const seconds = Number(row.totalMovingTime) || 0
+    const count = Number(row.count) || 0
+
+    if (RUN_TYPES.includes(workoutType)) {
+      runMeters += dist
+      runAndRideSeconds += seconds
+    } else if (RIDE_TYPES.includes(workoutType)) {
+      rideMeters += dist
+      runAndRideSeconds += seconds
+    } else {
+      otherMeters += dist
+    }
+
+    activitiesCount += count
+  }
+
+  const runKm = Math.round(runMeters / 1000)
+  const rideKm = Math.round(rideMeters / 1000)
+  const totalKm = Math.round((runMeters + rideMeters + otherMeters) / 1000)
+  const totalHours = Number((runAndRideSeconds / 3600).toFixed(1))
+
+  return {
+    totalKm,
+    runKm,
+    rideKm,
+    totalHours,
+    activitiesCount,
+  }
+}
