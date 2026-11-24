@@ -263,19 +263,33 @@ export async function fetchAndSaveAllGearDetails() {
 }
 
 export interface StravaYearlyStats {
-  totalKm: number
-  runKm: number
-  rideKm: number
-  totalHours: number
-  activitiesCount: number
+  totalKm: number;
+  runKm: number;
+  rideKm: number;
+  totalHours: number;
+  activitiesCount: number;
 }
 
-const RUN_TYPES = ["Run", "TrailRun", "VirtualRun"]
-const RIDE_TYPES = ["Ride", "MountainBikeRide", "GravelRide", "VirtualRide", "EBikeRide"]
+const RUN_TYPES = ["Run", "TrailRun", "VirtualRun"];
+const RIDE_TYPES = [
+  "Ride",
+  "MountainBikeRide",
+  "GravelRide",
+  "VirtualRide",
+  "EBikeRide",
+];
+
+function getCurrentYearSaoPaulo(): number {
+  const yearStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+  }).format(new Date());
+  return Number(yearStr);
+}
 
 export async function getStravaYearlyStats(
   userId: string = DEFAULT_USER_ID,
-  year: number = new Date().getFullYear()
+  year: number = getCurrentYearSaoPaulo()
 ): Promise<StravaYearlyStats> {
   const rows = await db
     .select({
@@ -286,39 +300,38 @@ export async function getStravaYearlyStats(
     })
     .from(stravaWorkouts)
     .where(
-      sql`${stravaWorkouts.userId} = ${userId} AND EXTRACT(YEAR FROM ${stravaWorkouts.startDate}::timestamp) = ${year}`
+      sql`${stravaWorkouts.userId} = ${userId} AND LEFT(${stravaWorkouts.startDate}, 4) = ${String(year)}`
     )
-    .groupBy(stravaWorkouts.type)
+    .groupBy(stravaWorkouts.type);
 
-  let runMeters = 0
-  let rideMeters = 0
-  let otherMeters = 0
-  let runAndRideSeconds = 0
-  let activitiesCount = 0
+  let runMeters = 0;
+  let rideMeters = 0;
+  let otherMeters = 0;
+  let totalSeconds = 0;
+  let activitiesCount = 0;
 
   for (const row of rows) {
-    const workoutType = row.type ?? ""
-    const dist = Number(row.totalDistance) || 0
-    const seconds = Number(row.totalMovingTime) || 0
-    const count = Number(row.count) || 0
+    const workoutType = row.type ?? "";
+    const dist = Number(row.totalDistance) || 0;
+    const seconds = Number(row.totalMovingTime) || 0;
+    const count = Number(row.count) || 0;
 
     if (RUN_TYPES.includes(workoutType)) {
-      runMeters += dist
-      runAndRideSeconds += seconds
+      runMeters += dist;
     } else if (RIDE_TYPES.includes(workoutType)) {
-      rideMeters += dist
-      runAndRideSeconds += seconds
+      rideMeters += dist;
     } else {
-      otherMeters += dist
+      otherMeters += dist;
     }
 
-    activitiesCount += count
+    totalSeconds += seconds;
+    activitiesCount += count;
   }
 
-  const runKm = Math.round(runMeters / 1000)
-  const rideKm = Math.round(rideMeters / 1000)
-  const totalKm = Math.round((runMeters + rideMeters + otherMeters) / 1000)
-  const totalHours = Number((runAndRideSeconds / 3600).toFixed(1))
+  const runKm = Math.round(runMeters / 1000);
+  const rideKm = Math.round(rideMeters / 1000);
+  const totalKm = Math.round((runMeters + rideMeters + otherMeters) / 1000);
+  const totalHours = Number((totalSeconds / 3600).toFixed(1));
 
   return {
     totalKm,
@@ -326,5 +339,5 @@ export async function getStravaYearlyStats(
     rideKm,
     totalHours,
     activitiesCount,
-  }
+  };
 }

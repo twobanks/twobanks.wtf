@@ -1,7 +1,23 @@
-import { getNowPlaying, getSpotifyAlbum, getSpotifyAlbumCover } from "@/lib/spotify";
+import { db } from "@/db";
+import { books } from "@/db/schema";
+import { getNowPlaying, getSpotifyAlbum } from "@/lib/spotify";
 import { getStravaYearlyStats } from "@/lib/strava";
+import { desc, eq } from "drizzle-orm";
+import {
+  ArrowUpRight,
+  BookOpen,
+  Disc3,
+  Headphones
+} from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Sobre",
+  description:
+    "Um pouco sobre quem eu sou, o que ando ouvindo, lendo e acumulando de quilômetros.",
+};
 
 interface SocialLink {
   name: string;
@@ -10,21 +26,11 @@ interface SocialLink {
   icon: React.ReactNode;
 }
 
-interface BookItem {
-  title: string;
-  author: string;
-  status: string;
-  rating: string;
-  coverBg: string;
-  authorUrl: string;
-}
-
 const PROFILE_AVATAR_URL = "https://avatars.githubusercontent.com/u/2577611?v=4";
 
-// No topo da página:
 const RECOMMENDED_ALBUM_ID = "5rcMJNWebtl2r2S18Je1A0?si=lv_VJknYRxCSlFgA078XEA";
 
-
+// No topo da página:
 
 const SOCIAL_LINKS: SocialLink[] = [
   {
@@ -111,66 +117,43 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
 ];
 
-const RECENT_BOOKS: BookItem[] = [
-  {
-    title: "Grande Sertão: Veredas",
-    author: "João Guimarães Rosa",
-    status: "Lendo",
-    rating: "★★★★★",
-    coverBg: "from-stone-500/20 to-amber-800/20 border-stone-500/30",
-    authorUrl: "https://www.academia.org.br/academicos/joao-guimaraes-rosa/biografia",
-  },
-  {
-    title: "Nós: O Atlântico em Solitário",
-    author: "Tamara Klink",
-    status: "Lido",
-    rating: "★★★★★",
-    coverBg: "from-sky-500/20 to-blue-700/20 border-sky-500/30",
-    authorUrl: "https://www.tamaraklink.com/",
-  },
-  {
-    title: "Nascido para Correr",
-    author: "Christopher McDougall",
-    status: "Lido",
-    rating: "★★★★★",
-    coverBg: "from-amber-500/20 to-orange-600/20 border-amber-500/30",
-    authorUrl: "https://www.chrismcdougall.com/",
-  },
-];
+function getCurrentYearSaoPaulo(): number {
+  const yearStr = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+  }).format(new Date());
+  return Number(yearStr);
+}
 
-const RECOMMENDED_ALBUM = {
-  title: "Sobrevivendo no Inferno",
-  artist: "Racionais MC's",
-  year: "1997",
-  genre: "Rap Nacional",
-  highlightTrack: "Capítulo 4, Versículo 3",
-  spotifyUrl: "https://open.spotify.com/album/1UzrzuayupauRaS3wEjX13",
-};
+function formatStars(rating: number | null): string | null {
+  if (!rating || rating < 1) return null;
+  const clamped = Math.min(5, Math.max(1, Math.round(rating)));
+  return "★".repeat(clamped);
+}
 
-const SPOTIFY_ICON = (
-  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-    <path d="M12 1.5A10.5 10.5 0 1 0 22.5 12 10.5 10.5 0 0 0 12 1.5Zm4.82 15.14a.65.65 0 0 1-.9.22c-2.46-1.5-5.56-1.84-9.21-1a.65.65 0 1 1-.29-1.27c4-.91 7.42-.52 10.18 1.16a.65.65 0 0 1 .22.89Zm1.28-2.86a.82.82 0 0 1-1.12.27c-2.82-1.73-7.12-2.23-10.45-1.22a.82.82 0 1 1-.48-1.56c3.8-1.15 8.54-.59 11.78 1.4a.82.82 0 0 1 .27 1.11Zm.11-2.98C14.83 8.79 9.25 8.6 6.02 9.58a.98.98 0 1 1-.57-1.88c3.71-1.12 9.87-.91 13.76 1.4a.98.98 0 0 1-1 1.7Z" />
-  </svg>
-);
+export default async function SobrePage() {
+  const currentYear = getCurrentYearSaoPaulo();
 
-export default async function Sobre() {
-  const [stravaStats, currentTrack, albumCoverUrl, recommendedAlbum] = await Promise.all([
-    getStravaYearlyStats(),
-    getNowPlaying(),
-    getSpotifyAlbumCover(RECOMMENDED_ALBUM.spotifyUrl),
-    getSpotifyAlbum(RECOMMENDED_ALBUM_ID)
-  ]);
-  const currentYear = new Date().getFullYear();
+  const [currentTrack, recommendedAlbum, stravaStats, recentBooks] =
+    await Promise.all([
+      getNowPlaying(),
+      getSpotifyAlbum(RECOMMENDED_ALBUM_ID),
+      getStravaYearlyStats(undefined, currentYear),
+      db
+        .select({
+          id: books.id,
+          title: books.title,
+          author: books.author,
+          rating: books.rating,
+        })
+        .from(books)
+        .where(eq(books.status, "lido"))
+        .orderBy(desc(books.updatedAt))
+        .limit(4),
+    ]);
 
   return (
-    <main className="min-h-screen w-full max-w-6xl mx-auto px-4 py-10 space-y-12">
-      {/* Cabeçalho */}
-      <header className="space-y-3">
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-          Sobre
-        </h1>
-      </header>
-      {/* Hero: Bio + Redes Sociais à esquerda | Foto à direita */}
+    <main className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 space-y-12">
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <div className="lg:col-span-8 space-y-6">
           <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
@@ -229,30 +212,68 @@ export default async function Sobre() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Coluna da Foto */}
-        <div className="lg:col-span-4 order-first lg:order-last">
-          <div className="relative max-w-[260px] mx-auto lg:max-w-xs aspect-square rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 shadow-sm">
-            <Image
-              src={PROFILE_AVATAR_URL}
-              alt="Foto de Thiago"
-              fill
-              priority
-              sizes="(max-width: 1024px) 260px, 320px"
-              className="object-cover"
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-3.5">
-              <p className="text-xs font-medium text-white/90">
-                Uberaba, MG • Trail & MTB
-              </p>
+      {/* Spotify: Ouvindo agora + Álbum recomendado */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Headphones className="size-4 text-emerald-500" />
+          <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            Trilha sonora
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <a
+            href={recommendedAlbum.spotifyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col justify-between rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 hover:border-emerald-500/50 transition-all"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                Álbum recomendado • {recommendedAlbum.year}
+              </span>
+              <ArrowUpRight className="size-4 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
             </div>
-          </div>
+
+            <div className="mt-4 flex items-center gap-4">
+              {recommendedAlbum.coverUrl ? (
+                <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+                  <Image
+                    src={recommendedAlbum.coverUrl}
+                    alt={recommendedAlbum.title}
+                    fill
+                    sizes="80px"
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
+                  <Disc3 className="size-8 text-zinc-400" />
+                </div>
+              )}
+
+              <div className="min-w-0 space-y-1">
+                <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 truncate group-hover:text-emerald-500 transition-colors">
+                  {recommendedAlbum.title}
+                </h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 truncate">
+                  {recommendedAlbum.artist}
+                </p>
+                <p className="text-xs text-zinc-500 truncate">
+                  {recommendedAlbum.totalTracks} faixas •{" "}
+                  {recommendedAlbum.durationMinutes} min
+                </p>
+              </div>
+            </div>
+          </a>
         </div>
       </section>
 
-      {/* Telemetria & Música */}
-      <section className="space-y-6">
-        {/* Card Strava */}
+      {/* Strava: Resumo Anual */}
+      <section className="space-y-4">
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/50 p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">
@@ -297,143 +318,50 @@ export default async function Sobre() {
             </div>
           </div>
         </div>
-
-        {/* Grid 2 Colunas: Última Ouvida + Álbum Recomendado */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-          {/* Card 1: Ouvindo Agora / Última Ouvida */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/50 p-6 space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                {currentTrack.isPlaying ? (
-                  <>
-                    <span className="inline-flex items-end gap-0.5 h-3">
-                      <span className="w-0.5 h-2 bg-emerald-500 animate-pulse" />
-                      <span className="w-0.5 h-3 bg-emerald-500 animate-pulse [animation-delay:150ms]" />
-                      <span className="w-0.5 h-1.5 bg-emerald-500 animate-pulse [animation-delay:300ms]" />
-                    </span>
-                    Ouvindo agora
-                  </>
-                ) : (
-                  <>
-                    <span className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-500" />
-                    <span className="text-zinc-600 dark:text-zinc-400">Última ouvida</span>
-                  </>
-                )}
-              </div>
-
-              <div className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                <span>Spotify</span>
-                <Link
-                  href={currentTrack.songUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Abrir música no Spotify"
-                  title="Abrir música no Spotify"
-                  className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-                >
-                  {SPOTIFY_ICON}
-                </Link>
-              </div>
-            </div>
-
-            <div className="space-y-1.5 min-w-0">
-              <h2 className="text-xl font-bold text-zinc-900 dark:text-white leading-snug">
-                {currentTrack.title}
-              </h2>
-              <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                {currentTrack.artist}
-              </p>
-              <div className="pt-1">
-                <span className="inline-block max-w-full truncate text-xs font-medium px-2.5 py-1 rounded-md bg-zinc-200/70 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                  Álbum: {currentTrack.album}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2: Álbum Recomendado */}
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/50 p-6 space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                Álbum recomendado
-              </span>
-
-              <div className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-                <span>
-                  {recommendedAlbum.year} • {recommendedAlbum.totalTracks} faixas • {recommendedAlbum.durationMinutes} min
-                </span>
-                <Link
-                  href={recommendedAlbum.spotifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Abrir álbum no Spotify"
-                  title="Abrir álbum no Spotify"
-                  className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors shrink-0"
-                >
-                  {SPOTIFY_ICON}
-                </Link>
-              </div>
-            </div>
-
-            {/* Nome do álbum em destaque + Artista */}
-            <div className="space-y-1 min-w-0">
-              <h2 className="text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-white leading-tight">
-                {recommendedAlbum.title}
-              </h2>
-              <p className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">
-                {recommendedAlbum.artist}
-              </p>
-            </div>
-
-            
-          </div>
-        </div>
       </section>
 
-      {/* Seção: Últimos 3 Livros */}
+      {/* Leituras recentes (Banco de dados) */}
       <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+        <div className="flex items-center gap-2">
+          <BookOpen className="size-4 text-[#5EACCF]" />
+          <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
             Leituras recentes
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {RECENT_BOOKS.map((book) => (
-            <Link
-              key={book.title}
-              href={book.authorUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={`Conhecer o autor: ${book.author}`}
-              className="group rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/40 p-5 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all flex items-start gap-4"
-            >
-              <div
-                className={`w-12 h-16 shrink-0 rounded-lg bg-gradient-to-br ${book.coverBg} border flex items-end p-1.5`}
-              >
-                <span className="text-[10px] font-bold uppercase tracking-tighter text-zinc-700 dark:text-zinc-200">
-                  Book
-                </span>
-              </div>
+        {recentBooks.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-6 text-sm text-zinc-500">
+            Nenhum livro concluído cadastrado ainda.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {recentBooks.map((book) => {
+              const stars = formatStars(book.rating);
+              return (
+                <div
+                  key={book.id}
+                  className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 flex flex-col justify-between gap-2"
+                >
+                  <div>
+                    <h3 className="font-semibold text-base text-zinc-900 dark:text-zinc-100">
+                      {book.title}
+                    </h3>
+                    <p className="text-sm text-zinc-500 mt-0.5">{book.author}</p>
+                  </div>
 
-              <div className="space-y-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                    {book.status}
-                  </span>
-                  <span className="text-xs text-amber-500">{book.rating}</span>
+                  {stars && (
+                    <span
+                      aria-label={`Avaliação: ${book.rating} de 5 estrelas`}
+                      className="text-xs tracking-wider text-amber-400"
+                    >
+                      {stars}
+                    </span>
+                  )}
                 </div>
-
-                <h3 className="font-bold text-sm sm:text-base text-zinc-900 dark:text-white group-hover:underline line-clamp-1">
-                  {book.title}
-                </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-800 dark:group-hover:text-zinc-200 transition-colors truncate">
-                  {book.author} ↗
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </main>
   );

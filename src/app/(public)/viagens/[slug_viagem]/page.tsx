@@ -1,4 +1,3 @@
-import TripElevationChart from "@/components/viagens/TripElevationChart"
 import TripMap from "@/components/viagens/TripMap"
 import {
   formatDatePtBr,
@@ -11,24 +10,18 @@ import { TripDayType } from "@/utils/types/viagens"
 import {
   ArrowLeft,
   ArrowRight,
-  Backpack,
-  Bike,
   Calendar,
   CheckCircle2,
   Circle,
   Clock,
   Compass,
-  Info,
-  Luggage,
   MapPin,
   Mountain,
   Route,
-  Sparkles,
-  Wrench,
+  Wrench
 } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import ReactMarkdown from "react-markdown"
 
 const DAY_TYPE_BADGE: Record<
   TripDayType,
@@ -83,7 +76,9 @@ export default async function ViagemDetalhePage({
             {formatDatePtBr(trip.startDate)} a {formatDatePtBr(trip.endDate)}
           </span>
           <span>•</span>
-          <span>{trip.days.length} dias ({trip.rideDaysCount} etapas de pedal)</span>
+          <span>
+            {trip.days.length} dias ({trip.rideDaysCount} etapas de pedal)
+          </span>
         </div>
 
         <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
@@ -92,12 +87,6 @@ export default async function ViagemDetalhePage({
         <p className="text-zinc-600 dark:text-zinc-400 max-w-3xl">
           {trip.subtitle}
         </p>
-        {trip.styleDescription && (
-          <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3">
-            <strong className="text-zinc-800 dark:text-zinc-200">Estilo:</strong>{" "}
-            {trip.styleDescription}
-          </p>
-        )}
       </header>
 
       {/* KPIs Planejado vs. Executado */}
@@ -159,8 +148,8 @@ export default async function ViagemDetalhePage({
         </div>
       </section>
 
-      {/* Mapa & Perfil Altimétrico */}
-      <section className="space-y-4">
+      {/* Mapa */}
+      <section>
         <TripMap
           tripSlug={trip.slug}
           tripTitle={trip.title}
@@ -170,16 +159,6 @@ export default async function ViagemDetalhePage({
           days={trip.days}
           pois={trip.pois}
         />
-        {trip.elevationProfile && (
-          <TripElevationChart data={trip.elevationProfile} />
-        )}
-      </section>
-
-      {/* Visão Geral */}
-      <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6">
-        <div className="prose prose-zinc dark:prose-invert max-w-none prose-sm sm:prose-base">
-          <ReactMarkdown>{trip.overviewMarkdown}</ReactMarkdown>
-        </div>
       </section>
 
       {/* Cronograma Organizado por Fases */}
@@ -204,20 +183,6 @@ export default async function ViagemDetalhePage({
                     {phase.dayRangeLabel}
                   </span>
                 </div>
-
-                {phase.culturalNote && (
-                  <div className="flex items-start gap-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 px-4 py-3 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
-                    <Sparkles className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      {phase.culturalNoteTitle && (
-                        <strong className="text-amber-400 block mb-0.5">
-                          {phase.culturalNoteTitle}
-                        </strong>
-                      )}
-                      <span>{phase.culturalNote}</span>
-                    </div>
-                  </div>
-                )}
 
                 {phase.baseLogistics && (
                   <div className="flex items-start gap-2.5 rounded-xl bg-[#5EACCF]/10 border border-[#5EACCF]/20 px-4 py-3 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300">
@@ -312,123 +277,6 @@ export default async function ViagemDetalhePage({
             </div>
           )
         })}
-      </section>
-
-      {/* Bagagem, Checklist Oficial & Informações Úteis */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-6">
-          <div className="flex items-center gap-2">
-            <Backpack className="size-5 text-[#5EACCF]" />
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
-              Bagagem & Checklist Oficial
-            </h2>
-          </div>
-
-          {trip.bikeGear && (
-            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Bike className="size-5 text-[#FC4C02]" />
-                <div>
-                  <p className="text-sm font-bold text-zinc-900 dark:text-white">
-                    {trip.bikeGear.nickname || trip.bikeGear.name}
-                  </p>
-                  <p className="text-xs text-zinc-500">
-                    {[trip.bikeGear.brandName, trip.bikeGear.modelName]
-                      .filter(Boolean)
-                      .join(" • ")}
-                  </p>
-                </div>
-              </div>
-              <span className="text-xs font-mono text-zinc-400">
-                {formatKm(trip.bikeGear.distanceMeters, 0)} totais
-              </span>
-            </div>
-          )}
-
-          {/* Distribuição de Bolsas */}
-          {trip.luggageSetup && trip.luggageSetup.length > 0 && (
-            <div className="space-y-2.5">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
-                <Luggage className="size-3.5 text-[#5EACCF]" />
-                Distribuição de Volumes
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {trip.luggageSetup.map((bag) => (
-                  <div
-                    key={bag.name}
-                    className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 p-3 space-y-1"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-zinc-900 dark:text-white">
-                        {bag.name}
-                      </span>
-                      {bag.capacity && (
-                        <span className="text-[11px] font-mono text-[#5EACCF]">
-                          {bag.capacity}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-zinc-500 leading-snug">
-                      {bag.role}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Checklist Categorizado */}
-          <div className="space-y-4">
-            {trip.gearList.map((group) => (
-              <div key={group.category} className="space-y-2">
-                <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-500">
-                  {group.category}
-                </h3>
-                <ul className="space-y-1.5">
-                  {group.items.map((item) => (
-                    <li
-                      key={item.name}
-                      className="flex items-start justify-between gap-2 text-sm text-zinc-700 dark:text-zinc-300"
-                    >
-                      <span>• {item.name}</span>
-                      {item.detail && (
-                        <span className="text-xs text-zinc-500 text-right">
-                          {item.detail}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Logística & Informações Úteis */}
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 space-y-5 h-fit">
-          <div className="flex items-center gap-2">
-            <Info className="size-5 text-[#5EACCF]" />
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
-              Logística & Informações Úteis
-            </h2>
-          </div>
-
-          <div className="space-y-5">
-            {trip.usefulInfo.map((info) => (
-              <div
-                key={info.title}
-                className="space-y-1.5 border-b border-zinc-200 dark:border-zinc-800 pb-4 last:border-none last:pb-0"
-              >
-                <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                  {info.title}
-                </h3>
-                <div className="prose prose-zinc dark:prose-invert prose-sm max-w-none text-zinc-600 dark:text-zinc-400">
-                  <ReactMarkdown>{info.contentMarkdown}</ReactMarkdown>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
     </main>
   )

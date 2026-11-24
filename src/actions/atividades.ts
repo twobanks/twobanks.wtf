@@ -25,9 +25,59 @@ export interface PaginatedWorkoutsResult {
   pageSize: number;
 }
 
-const BIKE_TYPES = ["Ride", "MountainBikeRide", "GravelRide", "VirtualRide", "EBikeRide"];
+export interface RaceWorkoutItem {
+  id: string;
+  name: string;
+  type: string | null;
+  modality: "bike" | "corrida";
+  distanceMeters: number;
+  movingTime: number | null;
+  averageSpeed: string | null;
+  totalElevationGain: number;
+  startDate: string;
+  stravaUrl: string;
+}
+
+const BIKE_TYPES = [
+  "Ride",
+  "MountainBikeRide",
+  "GravelRide",
+  "VirtualRide",
+  "EBikeRide",
+];
 const RUN_TYPES = ["Run", "TrailRun", "VirtualRun"];
 const PAGE_SIZE = 10;
+
+// IDs extras para forçar como prova ou excluir caso necessário
+const MANUAL_RACE_IDS = new Set<string>([]);
+const EXCLUDED_RACE_IDS = new Set<string>([]);
+
+function extractWorkoutType(payload: unknown): number | null {
+  if (!payload || typeof payload !== "object") return null;
+  const record = payload as Record<string, unknown>;
+  const rawValue = record.workout_type ?? record.workoutType;
+  if (rawValue === null || rawValue === undefined || rawValue === "") {
+    return null;
+  }
+  const parsed = Number(rawValue);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function isRaceWorkoutRow(row: {
+  id: string;
+  rawPayload: unknown;
+  detailedPayload?: unknown;
+}): boolean {
+  if (EXCLUDED_RACE_IDS.has(row.id)) return false;
+  if (MANUAL_RACE_IDS.has(row.id)) return true;
+
+  const workoutType =
+    extractWorkoutType(row.detailedPayload) ??
+    extractWorkoutType(row.rawPayload);
+
+  // 1 = Corrida (Race), 11 = Ciclismo (Race) no Strava
+  return workoutType === 1 || workoutType === 11;
+}
 
 export async function fetchWorkoutsPage({
   tab,
@@ -89,4 +139,52 @@ export async function fetchWorkoutsPage({
     page: Math.min(safePage, totalPages),
     pageSize: PAGE_SIZE,
   };
+}
+
+export async function fetchRaceWorkouts({
+  tab = "todas",
+}: {
+  tab?: TabType;
+}): Promise<RaceWorkoutItem[]> {
+  const typesFilter =
+    tab === "bike"
+      ? BIKE_TYPES
+      : tab === "corrida"
+        ? RUN_TYPES
+        : [...BIKE_TYPES, ...RUN_TYPES];
+
+  const rows = await db
+    .select({
+      id: stravaWorkouts.id,
+      name: stravaWorkouts.name,
+      type: stravaWorkouts.type,
+      distance: stravaWorkouts.distance,
+      movingTime: stravaWorkouts.movingTime,
+      averageSpeed: stravaWorkouts.averageSpeed,
+      totalElevationGain: stravaWorkouts.totalElevationGain,
+      startDate: stravaWorkouts.startDate,
+      rawPayload: stravaWorkouts.rawPayload,
+      detailedPayload: stravaWorkouts.detailedPayload,
+    })
+    .from(stravaWorkouts)
+    .where(inArray(stravaWorkouts.type, typesFilter))
+    .orderBy(desc(stravaWorkouts.startDate));
+
+  return rows
+    .filter((row) => isRaceWorkoutRow(row))
+    .map((row) => {
+      const isBike = Boolean(row.type && BIKE_TYPES.includes(row.type));
+      return {
+        id: row.id,
+        name: row.name,
+        type: row.type,
+        modality: isBike ? "bike" : "corrida",
+        distanceMeters: Number(row.distance || 0),
+        movingTime: row.movingTime,
+        averageSpeed: row.averageSpeed,
+        totalElevationGain: Number(row.totalElevationGain || 0),
+        startDate: row.startDate,
+        stravaUrl: `https://www.strava.com/activities/${row.id}`,
+      };
+    });
 }

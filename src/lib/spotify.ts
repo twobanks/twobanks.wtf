@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 export interface SpotifyTrack {
   isPlaying: boolean;
   title: string;
@@ -46,7 +48,7 @@ async function getSpotifyAccessToken(): Promise<string | null> {
   return data.access_token ?? null;
 }
 
-export async function getNowPlaying(): Promise<SpotifyTrack> {
+export const getNowPlaying = cache(async (): Promise<SpotifyTrack> => {
   try {
     const accessToken = await getSpotifyAccessToken();
     if (!accessToken) return FALLBACK_TRACK;
@@ -102,8 +104,9 @@ export async function getNowPlaying(): Promise<SpotifyTrack> {
   } catch {
     return FALLBACK_TRACK;
   }
-}
+});
 
+/** @deprecated Prefira `getSpotifyAlbum`, que já retorna `coverUrl` diretamente da API. */
 export async function getSpotifyAlbumCover(spotifyUrl: string): Promise<string | null> {
   try {
     const response = await fetch(
@@ -159,20 +162,25 @@ function formatDuration(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 }
 
-export async function getSpotifyAlbum(albumId: string): Promise<SpotifyAlbumDetails> {
+export async function getSpotifyAlbum(
+  albumId: string,
+  trackLimit = 3
+): Promise<SpotifyAlbumDetails> {
+  const cleanId = albumId.split("?")[0].trim();
+
   try {
     const accessToken = await getSpotifyAccessToken();
-    if (!accessToken) return { ...FALLBACK_ALBUM, id: albumId };
+    if (!accessToken) return { ...FALLBACK_ALBUM, id: cleanId };
 
     const response = await fetch(
-      `https://api.spotify.com/v1/albums/${albumId}?market=BR`,
+      `https://api.spotify.com/v1/albums/${cleanId}?market=BR`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
-        next: { revalidate: 86400 }, // Cache de 24h (metadados de álbum não mudam)
+        next: { revalidate: 86400 },
       }
     );
 
-    if (!response.ok) return { ...FALLBACK_ALBUM, id: albumId };
+    if (!response.ok) return { ...FALLBACK_ALBUM, id: cleanId };
 
     const data = await response.json();
     const tracks = data.tracks?.items ?? [];
@@ -191,14 +199,17 @@ export async function getSpotifyAlbum(albumId: string): Promise<SpotifyAlbumDeta
       durationMinutes: Math.round(totalMs / 60000),
       label: data.label ?? "",
       coverUrl: data.images?.[0]?.url ?? null,
-      spotifyUrl: data.external_urls?.spotify ?? `https://open.spotify.com/album/${albumId}`,
-      topTracks: tracks.map((t: { track_number: number; name: string; duration_ms: number }) => ({
-        number: t.track_number,
-        name: t.name,
-        durationFormatted: formatDuration(t.duration_ms),
-      })),
+      spotifyUrl:
+        data.external_urls?.spotify ?? `https://open.spotify.com/album/${cleanId}`,
+      topTracks: tracks
+        .slice(0, trackLimit)
+        .map((t: { track_number: number; name: string; duration_ms: number }) => ({
+          number: t.track_number,
+          name: t.name,
+          durationFormatted: formatDuration(t.duration_ms),
+        })),
     };
   } catch {
-    return { ...FALLBACK_ALBUM, id: albumId };
+    return { ...FALLBACK_ALBUM, id: cleanId };
   }
 }

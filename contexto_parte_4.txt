@@ -1,0 +1,3336 @@
+// ==========================================
+// Arquivo: src/components/AtividadesFilters.tsx
+// ==========================================
+// src/components/AtividadesFilters.tsx
+"use client"
+import { SORT_OPTIONS } from "@/utils/mocks"
+import { FiltersProps } from "@/utils/types"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+export default function AtividadesFilters({
+activityType,
+gearId,
+sortValue,
+typeOptions,
+shoes,
+bikes,
+}: FiltersProps) {
+const router = useRouter()
+const [isOpen, setIsOpen] = useState(false)
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+e.preventDefault()
+const form = e.currentTarget
+const formData = new FormData(form)
+const params = new URLSearchParams()
+for (const [key, value] of formData.entries()) {
+const stringValue = String(value)
+if (stringValue === "" || stringValue === null || stringValue === undefined) continue
+if (key === "sort" && stringValue === "date_desc") continue
+params.set(key, stringValue)
+}
+const queryString = params.toString()
+router.push(queryString ? `/atividades?${queryString}` : "/atividades")
+setIsOpen(false) // Fecha o dropdown após aplicar
+}
+const handleClearFilters = () => {
+router.push("/atividades")
+setIsOpen(false)
+}
+// Verifica se há filtros ativos
+const hasActiveFilters = activityType !== "all" || gearId !== "" || sortValue !== "date_desc"
+return (
+<div className="relative">
+{/* Botão de Filtro */}
+<button
+onClick={() => setIsOpen(!isOpen)}
+className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
+hasActiveFilters
+? "bg-orange-600 text-white hover:bg-orange-700"
+: "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+}`}
+>
+<svg
+className="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+<path
+strokeLinecap="round"
+strokeLinejoin="round"
+strokeWidth={2}
+d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+/>
+</svg>
+FILTROS
+{hasActiveFilters && (
+<span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-orange-600 rounded-full">
+!
+</span>
+)}
+</button>
+{/* Dropdown */}
+{isOpen && (
+<>
+{/* Overlay para fechar ao clicar fora */}
+<div
+className="fixed inset-0 z-10"
+onClick={() => setIsOpen(false)}
+/>
+{/* Conteúdo do dropdown */}
+<div className="absolute left-0 top-full mt-2 z-20 w-[400px] md:w-[600px]">
+<form
+onSubmit={handleSubmit}
+className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-6 space-y-6"
+>
+<div className="flex items-center justify-between">
+<h2 className="text-lg font-semibold">Filtros</h2>
+{hasActiveFilters && (
+<button
+type="button"
+onClick={handleClearFilters}
+className="text-sm text-[#FC4C02] hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+>
+Limpar filtros
+</button>
+)}
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+{/* Tipo de atividade */}
+<div className="space-y-1">
+<label htmlFor="type" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Tipo de atividade
+</label>
+<select
+id="type"
+name="type"
+defaultValue={activityType === "all" ? "" : activityType}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value="">Todos</option>
+{typeOptions.map(type => (
+<option key={type} value={type}>{type}</option>
+))}
+</select>
+</div>
+{/* Equipamento */}
+<div className="space-y-1">
+<label htmlFor="gearId" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Equipamento
+</label>
+<select
+id="gearId"
+name="gearId"
+defaultValue={gearId || ""}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value="">Todos</option>
+<optgroup label="👟 Tênis">
+{shoes.map(item => (
+<option key={item.id} value={item.id}>{item.name}</option>
+))}
+</optgroup>
+<optgroup label="🚴 Bicicleta">
+{bikes.map(item => (
+<option key={item.id} value={item.id}>{item.name}</option>
+))}
+</optgroup>
+</select>
+</div>
+{/* Ordenação */}
+<div className="space-y-1">
+<label htmlFor="sort" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Ordenar por
+</label>
+<select
+id="sort"
+name="sort"
+defaultValue={sortValue}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+{SORT_OPTIONS.map(option => (
+<option key={option.value} value={option.value}>{option.label}</option>
+))}
+</select>
+</div>
+</div>
+<div className="flex justify-end gap-3">
+<button
+type="button"
+onClick={() => setIsOpen(false)}
+className="px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+>
+Cancelar
+</button>
+<button
+type="submit"
+className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#FC4C02] hover:bg-orange-700 text-white transition-colors"
+>
+Aplicar Filtros
+</button>
+</div>
+</form>
+</div>
+</>
+)}
+</div>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/AtividadesFooter.tsx
+// ==========================================
+// src/components/AtividadesFooter.tsx
+"use client"
+import { SORT_OPTIONS } from "@/utils/mocks"
+import { AtividadesFooterProps } from "@/utils/types"
+import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useState } from "react"
+export default function AtividadesFooter({
+currentPage,
+totalPages,
+pageSize,
+activityType,
+gearId,
+sortValue,
+typeOptions,
+shoes,
+bikes,
+}: AtividadesFooterProps) {
+const router = useRouter()
+const searchParams = useSearchParams()
+const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+const buildUrl = (newPage?: number, newPageSize?: number) => {
+const params = new URLSearchParams()
+// Copiar filtros atuais
+const currentType = searchParams.get("type")
+const currentGearId = searchParams.get("gearId")
+const currentSort = searchParams.get("sort")
+if (currentType && currentType !== "all") {
+params.set("type", currentType)
+}
+if (currentGearId && currentGearId !== "all") {
+params.set("gearId", currentGearId)
+}
+if (currentSort && currentSort !== "date_desc") {
+params.set("sort", currentSort)
+}
+// Adicionar página
+const finalPage = newPage ?? currentPage
+if (finalPage > 1) {
+params.set("page", String(finalPage))
+}
+// Adicionar pageSize
+const finalPageSize = newPageSize ?? pageSize
+if (finalPageSize !== 10) {
+params.set("pageSize", String(finalPageSize))
+}
+const queryString = params.toString()
+return queryString ? `/atividades?${queryString}` : "/atividades"
+}
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+e.preventDefault()
+const form = e.currentTarget
+const formData = new FormData(form)
+const params = new URLSearchParams()
+for (const [key, value] of formData.entries()) {
+const stringValue = String(value)
+if (stringValue === "" || stringValue === null || stringValue === undefined) continue
+if (key === "sort" && stringValue === "date_desc") continue
+params.set(key, stringValue)
+}
+const queryString = params.toString()
+router.push(queryString ? `/atividades?${queryString}` : "/atividades")
+setIsFiltersOpen(false)
+}
+const handleClearFilters = () => {
+router.push("/atividades")
+setIsFiltersOpen(false)
+}
+const handlePageSizeChange = (newPageSize: number) => {
+const url = buildUrl(1, newPageSize) // Reset para página 1
+router.push(url)
+}
+const hasActiveFilters = activityType !== "all" || gearId !== "" || sortValue !== "date_desc"
+return (
+<>
+{/* Footer fixo */}
+<footer className="fixed bottom-0 left-0 right-0 z-40 w-full border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-black/80 backdrop-blur-md">
+<div className="max-w-6xl mx-auto px-4 py-3">
+<div className="flex items-center justify-between gap-4">
+{/* Lado esquerdo: Paginação */}
+<div className="flex items-center gap-2">
+{currentPage > 1 ? (
+<Link
+href={buildUrl(currentPage - 1)}
+className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+aria-label="Página anterior"
+>
+←
+</Link>
+) : (
+<span className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-zinc-100/50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-600 cursor-not-allowed">
+←
+</span>
+)}
+<span className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
+Página {currentPage} de {totalPages}
+</span>
+{currentPage < totalPages ? (
+<Link
+href={buildUrl(currentPage + 1)}
+className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+aria-label="Próxima página"
+>
+→
+</Link>
+) : (
+<span className="px-3 py-1.5 text-sm font-semibold rounded-lg bg-zinc-100/50 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-600 cursor-not-allowed">
+→
+</span>
+)}
+{/* Itens por página */}
+<div className="flex items-center gap-2 ml-4">
+<span className="text-sm text-zinc-600 dark:text-zinc-400">Itens:</span>
+<select
+value={pageSize}
+onChange={(e) => handlePageSizeChange(parseInt(e.target.value))}
+className="bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value={10}>10</option>
+<option value={20}>20</option>
+<option value={50}>50</option>
+<option value={100}>100</option>
+</select>
+</div>
+</div>
+{/* Lado direito: Botão de Filtros */}
+<div className="relative">
+<button
+onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
+hasActiveFilters
+? "bg-orange-600 text-white hover:bg-orange-700"
+: "bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+}`}
+>
+<svg
+className="w-4 h-4"
+fill="none"
+stroke="currentColor"
+viewBox="0 0 24 24"
+>
+<path
+strokeLinecap="round"
+strokeLinejoin="round"
+strokeWidth={2}
+d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+/>
+</svg>
+FILTROS
+{hasActiveFilters && (
+<span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-orange-600 rounded-full">
+!
+</span>
+)}
+</button>
+{/* Dropdown de filtros */}
+{isFiltersOpen && (
+<>
+<div
+className="fixed inset-0 z-30"
+onClick={() => setIsFiltersOpen(false)}
+/>
+<div className="absolute right-0 bottom-full mb-2 z-40 w-[400px] md:w-[600px]">
+<form
+onSubmit={handleSubmit}
+className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-6 space-y-6"
+>
+<div className="flex items-center justify-between">
+<h2 className="text-lg font-semibold">Filtros</h2>
+{hasActiveFilters && (
+<button
+type="button"
+onClick={handleClearFilters}
+className="text-sm text-[#FC4C02]"
+>
+Limpar filtros
+</button>
+)}
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div className="space-y-1">
+<label htmlFor="type" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Tipo de atividade
+</label>
+<select
+id="type"
+name="type"
+defaultValue={activityType === "all" ? "" : activityType}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value="">Todos</option>
+{typeOptions.map(type => (
+<option key={type} value={type}>{type}</option>
+))}
+</select>
+</div>
+{/* Equipamento */}
+<div className="space-y-1">
+<label htmlFor="gearId" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Equipamento
+</label>
+<select
+id="gearId"
+name="gearId"
+defaultValue={gearId || ""}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+<option value="">Todos</option>
+<optgroup label="👟 Tênis">
+{shoes.map(item => (
+<option key={item.id} value={item.id}>{item.name}</option>
+))}
+</optgroup>
+<optgroup label="🚴 Bicicleta">
+{bikes.map(item => (
+<option key={item.id} value={item.id}>{item.name}</option>
+))}
+</optgroup>
+</select>
+</div>
+{/* Ordenação */}
+<div className="space-y-1">
+<label htmlFor="sort" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+Ordenar por
+</label>
+<select
+id="sort"
+name="sort"
+defaultValue={sortValue}
+className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+>
+{SORT_OPTIONS.map(option => (
+<option key={option.value} value={option.value}>{option.label}</option>
+))}
+</select>
+</div>
+</div>
+<div className="flex justify-end gap-3">
+<button
+type="button"
+onClick={() => setIsFiltersOpen(false)}
+className="px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+>
+Cancelar
+</button>
+<button
+type="submit"
+className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#FC4C02] hover:bg-orange-700 text-white transition-colors"
+>
+Aplicar Filtros
+</button>
+</div>
+</form>
+</div>
+</>
+)}
+</div>
+</div>
+</div>
+</footer>
+<div className="h-20" />
+</>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/AtividadesView.tsx
+// ==========================================
+"use client";
+import {
+fetchRaceWorkouts,
+fetchWorkoutsPage,
+PaginatedWorkoutsResult,
+RaceWorkoutItem,
+TabType,
+} from "@/actions/atividades";
+import {
+ArrowUpRight,
+Calendar,
+ChevronLeft,
+ChevronRight,
+MapPin,
+Mountain,
+Timer,
+TrendingDown,
+TrendingUp,
+Trophy,
+} from "lucide-react";
+import { useMemo, useRef, useState, useTransition } from "react";
+import { SyncStravaButton } from "./SyncStravaButton";
+export interface ModalityDataset {
+totalMeters: number;
+maxMeters: number;
+metersByYear: Record<string, number>;
+}
+interface AtividadesViewProps {
+availableYears: string[];
+defaultYear: string;
+bikeData: ModalityDataset;
+runData: ModalityDataset;
+initialWorkoutsPage: PaginatedWorkoutsResult;
+initialRaceWorkouts: RaceWorkoutItem[];
+}
+const BIKE_TYPE_ICONS: Record<string, string> = {
+Ride: "/icons/bike.svg",
+MountainBikeRide: "/icons/bikeIcon.svg",
+GravelRide: "/icons/bike.svg",
+VirtualRide: "/icons/bike.svg",
+EBikeRide: "/icons/bike.svg",
+};
+const RUN_TYPE_ICONS: Record<string, string> = {
+Running: "/icons/running.svg",
+Run: "/icons/running.svg",
+VirtualRun: "/icons/running.svg",
+TrailRunning: "/icons/trail.svg",
+TrailRun: "/icons/trail.svg",
+};
+const BIKE_TYPES = Object.keys(BIKE_TYPE_ICONS);
+function isBikeType(type: string | null) {
+if (!type) return false;
+if (BIKE_TYPES.includes(type)) return true;
+const lower = type.toLowerCase();
+return lower.includes("bike") || lower.includes("ride");
+}
+function getActivityIconSrc(type: string | null) {
+if (!type) return RUN_TYPE_ICONS.Running;
+const normalized = type.trim();
+if (BIKE_TYPE_ICONS[normalized]) {
+return BIKE_TYPE_ICONS[normalized];
+}
+if (RUN_TYPE_ICONS[normalized]) {
+return RUN_TYPE_ICONS[normalized];
+}
+const lower = normalized.toLowerCase();
+if (lower.includes("mountainbike")) return "/icons/bikeIcon.svg";
+if (lower.includes("bike") || lower.includes("ride")) return "/icons/bike.svg";
+if (lower.includes("trail")) return "/icons/trail.svg";
+return "/icons/running.svg";
+}
+function CustomSvgIcon({
+src,
+className = "size-4",
+}: {
+src: string;
+className?: string;
+}) {
+return (
+<img
+src={src}
+alt=""
+aria-hidden="true"
+className={`${className} object-contain brightness-0 invert`}
+/>
+);
+}
+function formatKm(meters: number) {
+return `${(meters / 1000).toLocaleString("pt-BR", {
+minimumFractionDigits: 1,
+maximumFractionDigits: 1,
+})} km`;
+}
+function formatDuration(seconds: number | null) {
+if (!seconds || seconds <= 0) return "--";
+const h = Math.floor(seconds / 3600);
+const m = Math.floor((seconds % 3600) / 60);
+return h > 0 ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}min`;
+}
+function formatPaceOrSpeed(averageSpeed: string | null, isBike: boolean) {
+const speedMs = Number(averageSpeed || 0);
+if (!speedMs || speedMs <= 0) return "--";
+if (isBike) {
+return `${(speedMs * 3.6).toFixed(1).replace(".", ",")} km/h`;
+}
+const totalSecondsPerKm = Math.round(1000 / speedMs);
+const mins = Math.floor(totalSecondsPerKm / 60);
+const secs = totalSecondsPerKm % 60;
+return `${mins}:${String(secs).padStart(2, "0")} /km`;
+}
+function formatDate(isoOrDate: string) {
+const datePart = isoOrDate.split("T")[0];
+const [y, m, d] = datePart.split("-");
+if (!y || !m || !d) return isoOrDate;
+return `${d}/${m}/${y}`;
+}
+function computeYearStats(dataset: ModalityDataset, selectedYear: string) {
+const yearMeters = dataset.metersByYear[selectedYear] ?? 0;
+const prevYear = String(Number(selectedYear) - 1);
+const prevYearMeters = dataset.metersByYear[prevYear] ?? 0;
+const yoyChange =
+prevYearMeters > 0
+? ((yearMeters - prevYearMeters) / prevYearMeters) * 100
+: null;
+return {
+totalMeters: dataset.totalMeters,
+maxMeters: dataset.maxMeters,
+yearMeters,
+yoyChange,
+};
+}
+function YoYBadge({
+yoyChange,
+previousYear,
+}: {
+yoyChange: number | null;
+previousYear: string;
+}) {
+if (yoyChange === null) return null;
+const isPositive = yoyChange > 0;
+const isNegative = yoyChange < 0;
+return (
+<span
+title={`Comparado a ${previousYear}`}
+className={`inline-flex items-center gap-0.5 text-xs font-semibold tabular-nums ${
+isPositive
+? "text-emerald-600 dark:text-emerald-400"
+: isNegative
+? "text-rose-600 dark:text-rose-400"
+: "text-zinc-500"
+}`}
+>
+{isPositive && <TrendingUp className="size-3 text-white" />}
+{isNegative && <TrendingDown className="size-3 text-white" />}
+{isPositive ? "+" : ""}
+{yoyChange.toFixed(1).replace(".", ",")}%
+</span>
+);
+}
+function CombinedModalityCard({
+title,
+icon,
+selectedYear,
+stats,
+}: {
+title: string;
+icon: React.ReactNode;
+selectedYear: string;
+stats: ReturnType<typeof computeYearStats>;
+}) {
+const prevYear = String(Number(selectedYear) - 1);
+return (
+<div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden">
+<div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+<span className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-white">
+{icon}
+</span>
+<h3 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+{title}
+</h3>
+</div>
+<div className="grid grid-cols-3 divide-x divide-zinc-100 dark:divide-zinc-800/80">
+<div className="p-4">
+<p className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
+Total
+</p>
+<p className="mt-1 text-lg sm:text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+{formatKm(stats.totalMeters)}
+</p>
+</div>
+<div className="p-4">
+<p className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
+Em {selectedYear}
+</p>
+<div className="mt-1 flex items-baseline gap-2 flex-wrap">
+<p className="text-lg sm:text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+{formatKm(stats.yearMeters)}
+</p>
+<YoYBadge yoyChange={stats.yoyChange} previousYear={prevYear} />
+</div>
+</div>
+<div className="p-4">
+<p className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
+Recorde
+</p>
+<p className="mt-1 text-lg sm:text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+{formatKm(stats.maxMeters)}
+</p>
+</div>
+</div>
+</div>
+);
+}
+function SingleModalityStats({
+selectedYear,
+stats,
+}: {
+selectedYear: string;
+stats: ReturnType<typeof computeYearStats>;
+}) {
+const prevYear = String(Number(selectedYear) - 1);
+return (
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5">
+<p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">
+Distância Total
+</p>
+<p className="mt-2 text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+{formatKm(stats.totalMeters)}
+</p>
+</div>
+<div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5">
+<p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">
+Em {selectedYear}
+</p>
+<div className="mt-2 flex items-baseline gap-2.5 flex-wrap">
+<p className="text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+{formatKm(stats.yearMeters)}
+</p>
+<YoYBadge yoyChange={stats.yoyChange} previousYear={prevYear} />
+</div>
+</div>
+<div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5">
+<p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">
+Maior Distância
+</p>
+<p className="mt-2 text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+{formatKm(stats.maxMeters)}
+</p>
+</div>
+</div>
+);
+}
+export function AtividadesView({
+availableYears,
+defaultYear,
+bikeData,
+runData,
+initialWorkoutsPage,
+initialRaceWorkouts,
+}: AtividadesViewProps) {
+const [activeTab, setActiveTab] = useState<TabType>("todas");
+const [selectedYear, setSelectedYear] = useState<string>(defaultYear);
+const [workoutsPage, setWorkoutsPage] =
+useState<PaginatedWorkoutsResult>(initialWorkoutsPage);
+const [raceWorkouts, setRaceWorkouts] =
+useState<RaceWorkoutItem[]>(initialRaceWorkouts);
+const [isPending, startTransition] = useTransition();
+const [isLoadingRaces, startRaceTransition] = useTransition();
+const workoutsSectionRef = useRef<HTMLElement>(null);
+const bikeStats = useMemo(
+() => computeYearStats(bikeData, selectedYear),
+[bikeData, selectedYear]
+);
+const runStats = useMemo(
+() => computeYearStats(runData, selectedYear),
+[runData, selectedYear]
+);
+function loadWorkouts(
+nextTab: TabType,
+nextYear: string,
+nextPage: number,
+scroll = false
+) {
+startTransition(async () => {
+const result = await fetchWorkoutsPage({
+tab: nextTab,
+year: nextYear,
+page: nextPage,
+});
+setWorkoutsPage(result);
+if (scroll) {
+workoutsSectionRef.current?.scrollIntoView({
+behavior: "smooth",
+block: "start",
+});
+}
+});
+}
+function loadRaces(nextTab: TabType) {
+startRaceTransition(async () => {
+const results = await fetchRaceWorkouts({ tab: nextTab });
+setRaceWorkouts(results);
+});
+}
+function handleTabChange(nextTab: TabType) {
+if (nextTab === activeTab) return;
+setActiveTab(nextTab);
+loadWorkouts(nextTab, selectedYear, 1);
+loadRaces(nextTab);
+}
+function handleYearChange(nextYear: string) {
+if (nextYear === selectedYear) return;
+setSelectedYear(nextYear);
+loadWorkouts(activeTab, nextYear, 1);
+}
+function handlePageChange(nextPage: number) {
+if (
+nextPage < 1 ||
+nextPage > workoutsPage.totalPages ||
+nextPage === workoutsPage.page
+) {
+return;
+}
+loadWorkouts(activeTab, selectedYear, nextPage, true);
+}
+const tabs: { key: TabType; label: string }[] = [
+{ key: "todas", label: "Todas Atividades" },
+{ key: "bike", label: "Bike" },
+{ key: "corrida", label: "Corrida" },
+];
+const startItem =
+workoutsPage.totalCount === 0
+? 0
+: (workoutsPage.page - 1) * workoutsPage.pageSize + 1;
+const endItem = Math.min(
+workoutsPage.page * workoutsPage.pageSize,
+workoutsPage.totalCount
+);
+return (
+<main className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+{/* Cabeçalho + Abas de Modalidade */}
+<header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div>
+<h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+Atividades
+</h1>
+<p className="text-sm text-zinc-500 mt-1">
+Volume acumulado, histórico anual e provas realizadas sincronizadas com
+o Strava.
+</p>
+</div>
+<nav className="inline-flex self-start sm:self-auto p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+{tabs.map((tab) => {
+const isActive = activeTab === tab.key;
+return (
+<button
+key={tab.key}
+type="button"
+onClick={() => handleTabChange(tab.key)}
+className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+isActive
+? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs"
+: "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+}`}
+>
+{tab.label}
+</button>
+);
+})}
+<SyncStravaButton />
+</nav>
+</header>
+{/* 1. Volume & Recordes */}
+<section className="space-y-4">
+<div className="flex items-center justify-between gap-3">
+<h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+Volume & Recordes
+</h2>
+<label className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+<Calendar className="size-3.5 text-white" />
+<span>Ano:</span>
+<select
+value={selectedYear}
+onChange={(e) => handleYearChange(e.target.value)}
+className="bg-transparent font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none cursor-pointer"
+aria-label="Selecionar ano"
+>
+{availableYears.map((yr) => (
+<option
+key={yr}
+value={yr}
+className="bg-zinc-900 text-zinc-100"
+>
+{yr}
+</option>
+))}
+</select>
+</label>
+</div>
+{activeTab === "todas" && (
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+<CombinedModalityCard
+title="Bike"
+icon={
+<CustomSvgIcon src={BIKE_TYPE_ICONS.Ride} className="size-4" />
+}
+selectedYear={selectedYear}
+stats={bikeStats}
+/>
+<CombinedModalityCard
+title="Corrida"
+icon={
+<CustomSvgIcon
+src={RUN_TYPE_ICONS.Running}
+className="size-4"
+/>
+}
+selectedYear={selectedYear}
+stats={runStats}
+/>
+</div>
+)}
+{activeTab === "bike" && (
+<SingleModalityStats selectedYear={selectedYear} stats={bikeStats} />
+)}
+{activeTab === "corrida" && (
+<SingleModalityStats selectedYear={selectedYear} stats={runStats} />
+)}
+</section>
+{/* 2. Treinos do Ano Selecionado (Paginado) */}
+<section ref={workoutsSectionRef} className="space-y-4 scroll-mt-6">
+<div className="flex items-center justify-between gap-2">
+<div className="flex items-center gap-2.5">
+<h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+Treinos de {selectedYear}
+</h2>
+<span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 tabular-nums">
+{workoutsPage.totalCount}
+</span>
+</div>
+<span className="text-xs text-zinc-500">Abre no Strava</span>
+</div>
+<div
+className={`divide-y divide-zinc-200 dark:divide-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden transition-opacity ${
+isPending ? "opacity-60 pointer-events-none" : "opacity-100"
+}`}
+>
+{workoutsPage.items.length === 0 ? (
+<p className="p-8 text-center text-sm text-zinc-500">
+Nenhum treino encontrado em {selectedYear}.
+</p>
+) : (
+workoutsPage.items.map((workout) => {
+const bike = isBikeType(workout.type);
+return (
+<a
+key={workout.id}
+href={`https://www.strava.com/activities/${workout.id}`}
+target="_blank"
+rel="noopener noreferrer"
+className="group flex items-center justify-between gap-4 px-4 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+>
+<div className="flex items-center gap-3 min-w-0">
+<span className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-white shrink-0">
+<CustomSvgIcon
+src={getActivityIconSrc(workout.type)}
+className="size-4"
+/>
+</span>
+<div className="min-w-0">
+<p className="font-medium text-sm text-zinc-900 dark:text-zinc-100 truncate group-hover:text-orange-500 transition-colors">
+{workout.name}
+</p>
+<p className="text-xs text-zinc-500">
+{formatDate(workout.startDate)}
+</p>
+</div>
+</div>
+<div className="flex items-center gap-4 sm:gap-6 shrink-0 text-xs sm:text-sm tabular-nums text-right">
+<span className="font-semibold text-zinc-900 dark:text-zinc-100 w-18">
+{formatKm(Number(workout.distance || 0))}
+</span>
+<span className="text-zinc-600 dark:text-zinc-300 w-22">
+{formatPaceOrSpeed(workout.averageSpeed, bike)}
+</span>
+<span className="hidden sm:inline text-zinc-500 w-16">
+{formatDuration(workout.movingTime)}
+</span>
+<span className="hidden md:inline text-zinc-500 w-16">
++{Math.round(Number(workout.totalElevationGain || 0))} m
+</span>
+<ArrowUpRight className="size-4 text-white transition-colors" />
+</div>
+</a>
+);
+})
+)}
+</div>
+{/* Controles de Paginação */}
+{workoutsPage.totalPages > 1 && (
+<div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 text-xs text-zinc-500">
+<p className="tabular-nums">
+Mostrando{" "}
+<span className="font-semibold text-zinc-700 dark:text-zinc-300">
+{startItem}–{endItem}
+</span>{" "}
+de{" "}
+<span className="font-semibold text-zinc-700 dark:text-zinc-300">
+{workoutsPage.totalCount}
+</span>{" "}
+treinos
+</p>
+<div className="inline-flex items-center gap-2">
+<button
+type="button"
+disabled={workoutsPage.page <= 1 || isPending}
+onClick={() => handlePageChange(workoutsPage.page - 1)}
+className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+>
+<ChevronLeft className="size-3.5 text-white" />
+Anterior
+</button>
+<span className="px-2 font-medium tabular-nums text-zinc-600 dark:text-zinc-400">
+Página {workoutsPage.page} de {workoutsPage.totalPages}
+</span>
+<button
+type="button"
+disabled={
+workoutsPage.page >= workoutsPage.totalPages || isPending
+}
+onClick={() => handlePageChange(workoutsPage.page + 1)}
+className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+>
+Próxima
+<ChevronRight className="size-3.5 text-white" />
+</button>
+</div>
+</div>
+)}
+</section>
+{/* 3. Provas Realizadas */}
+<section className="space-y-4">
+<div className="flex items-center gap-2.5">
+<Trophy className="size-4 text-amber-400" />
+<h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+Provas Realizadas
+</h2>
+<span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 tabular-nums">
+{raceWorkouts.length}
+</span>
+</div>
+{raceWorkouts.length === 0 ? (
+<div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-8 text-center text-sm text-zinc-500">
+Nenhuma prova encontrada na base de atividades para este filtro.
+</div>
+) : (
+<div
+className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-opacity ${
+isLoadingRaces ? "opacity-60" : "opacity-100"
+}`}
+>
+{raceWorkouts.map((race) => {
+const isBike = race.modality === "bike";
+const paceOrSpeed = formatPaceOrSpeed(race.averageSpeed, isBike);
+return (
+<a
+key={race.id}
+href={race.stravaUrl}
+target="_blank"
+rel="noopener noreferrer"
+className="group rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-4 hover:border-amber-500/50 transition-all flex flex-col justify-between gap-3"
+>
+<div className="flex items-start justify-between gap-3">
+<div className="space-y-1.5 min-w-0">
+<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border border-zinc-800 bg-zinc-900 text-zinc-200">
+<CustomSvgIcon
+src={getActivityIconSrc(race.type)}
+className="size-3"
+/>
+{isBike ? "Bike" : "Corrida"}
+{race.type ? ` • ${race.type}` : ""}
+</span>
+<h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-amber-500 transition-colors truncate">
+{race.name}
+</h3>
+</div>
+<ArrowUpRight className="size-4 text-white shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+</div>
+<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500 tabular-nums">
+<span className="inline-flex items-center gap-1">
+<Calendar className="size-3.5 text-white" />
+{formatDate(race.startDate)}
+</span>
+<span className="font-semibold text-zinc-700 dark:text-zinc-300">
+{formatKm(race.distanceMeters)}
+</span>
+<span className="inline-flex items-center gap-1">
+<Mountain className="size-3.5 text-white" />+{Math.round(race.totalElevationGain)} m
+</span>
+<span className="inline-flex items-center gap-1">
+<Timer className="size-3.5 text-white" />
+{formatDuration(race.movingTime)}
+</span>
+{paceOrSpeed !== "--" && (
+<span className="inline-flex items-center gap-1">
+<MapPin className="size-3.5 text-white" />
+{paceOrSpeed}
+</span>
+)}
+</div>
+</a>
+);
+})}
+</div>
+)}
+</section>
+</main>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/Charts/MonthlyCashFlowChart.tsx
+// ==========================================
+"use client";
+import {
+Card,
+CardContent,
+CardDescription,
+CardHeader,
+CardTitle,
+} from "@/components/ui/card";
+import {
+ChartContainer,
+ChartTooltip,
+ChartTooltipContent,
+type ChartConfig,
+} from "@/components/ui/chart";
+import {
+Tabs,
+TabsList,
+TabsTrigger,
+} from "@/components/ui/tabs";
+import * as React from "react";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+interface DataPoint {
+month: string;
+income: number;
+expense: number;
+}
+interface MonthlyCashFlowChartProps {
+data: DataPoint[]; // dados dos últimos 6 meses
+}
+const chartConfig = {
+income: {
+label: "Receitas",
+color: "#10B981", // verde
+},
+expense: {
+label: "Despesas",
+color: "#EF4444", // vermelho
+},
+} satisfies ChartConfig;
+export function MonthlyCashFlowChart({ data }: MonthlyCashFlowChartProps) {
+const [timeRange, setTimeRange] = React.useState("6m");
+// Filtra os dados de acordo com o intervalo selecionado
+const filteredData = React.useMemo(() => {
+const monthsToShow =
+timeRange === "1m" ? 1 : timeRange === "3m" ? 3 : 6;
+return data.slice(-monthsToShow);
+}, [data, timeRange]);
+const periodLabel = React.useMemo(() => {
+if (timeRange === "6m") return "6 meses";
+if (timeRange === "3m") return "3 meses";
+return "1 mês";
+}, [timeRange]);
+return (
+<Card className="bg-gray-900 border-gray-800">
+<CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+<div>
+<CardTitle className="text-xl font-semibold text-gray-100">
+Fluxo Mensal
+</CardTitle>
+<CardDescription className="text-gray-400">
+Receitas vs Despesas – últimos {periodLabel}
+</CardDescription>
+</div>
+<Tabs value={timeRange} onValueChange={setTimeRange} className="w-full sm:w-auto">
+<TabsList className="bg-gray-800 border border-gray-700">
+<TabsTrigger value="6m" className="text-gray-200 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+6 meses
+</TabsTrigger>
+<TabsTrigger value="3m" className="text-gray-200 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+3 meses
+</TabsTrigger>
+<TabsTrigger value="1m" className="text-gray-200 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+1 mês
+</TabsTrigger>
+</TabsList>
+</Tabs>
+</CardHeader>
+<CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+<ChartContainer
+config={chartConfig}
+className="aspect-auto h-[300px] w-full"
+>
+<AreaChart data={filteredData} accessibilityLayer>
+<defs>
+<linearGradient id="fillIncome" x1="0" y1="0" x2="0" y2="1">
+<stop
+offset="5%"
+stopColor="var(--color-income)"
+stopOpacity={0.8}
+/>
+<stop
+offset="95%"
+stopColor="var(--color-income)"
+stopOpacity={0.1}
+/>
+</linearGradient>
+<linearGradient id="fillExpense" x1="0" y1="0" x2="0" y2="1">
+<stop
+offset="5%"
+stopColor="var(--color-expense)"
+stopOpacity={0.8}
+/>
+<stop
+offset="95%"
+stopColor="var(--color-expense)"
+stopOpacity={0.1}
+/>
+</linearGradient>
+</defs>
+<CartesianGrid vertical={false} stroke="#374151" />
+<XAxis
+dataKey="month"
+tickLine={false}
+axisLine={false}
+tickMargin={8}
+minTickGap={32}
+stroke="#9CA3AF"
+/>
+<YAxis
+tickLine={false}
+axisLine={false}
+tickMargin={8}
+stroke="#9CA3AF"
+/>
+<ChartTooltip
+cursor={false}
+content={<ChartTooltipContent indicator="dot" />}
+/>
+<Area
+dataKey="income"
+type="natural"
+fill="url(#fillIncome)"
+stroke="var(--color-income)"
+strokeWidth={2}
+/>
+<Area
+dataKey="expense"
+type="natural"
+fill="url(#fillExpense)"
+stroke="var(--color-expense)"
+strokeWidth={2}
+/>
+</AreaChart>
+</ChartContainer>
+</CardContent>
+</Card>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/CreateList.tsx
+// ==========================================
+"use client";
+import { createList } from "@/actions/shopping";
+import { Plus } from "lucide-react"; // Lembre-se de importar do lucide-react
+import { useFormStatus } from "react-dom";
+function SubmitButton() {
+const { pending } = useFormStatus();
+return (
+<button
+type="submit"
+disabled={pending}
+className="inline-flex items-center justify-center gap-2 bg-zinc-100 hover:bg-white text-zinc-900 font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto h-10"
+>
+<Plus size={16} />
+{pending ? "Criando..." : "Nova lista"}
+</button>
+);
+}
+export function CreateListForm() {
+return (
+<form
+action={createList}
+className="w-full bg-zinc-900/40 border border-zinc-800/80 p-4 rounded-xl flex flex-col md:flex-row md:items-end gap-4"
+>
+<div className="flex-1">
+<label htmlFor="name" className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">
+Nome da lista
+</label>
+<input
+id="name"
+name="name"
+required
+placeholder="Ex: Compras da semana"
+className="w-full h-10 bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-3 py-2 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all"
+/>
+</div>
+<div className="w-full md:w-48">
+<label htmlFor="type" className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">
+Categoria
+</label>
+<select
+id="type"
+name="type"
+required
+className="w-full h-10 bg-zinc-800/50 border border-zinc-700/50 rounded-lg px-3 py-2 text-zinc-100 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all appearance-none"
+>
+<option value="supermercado">Supermercado</option>
+<option value="varejao">Varejão</option>
+<option value="acougue">Açougue</option>
+</select>
+</div>
+<SubmitButton />
+</form>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/CreditCardBrand.tsx
+// ==========================================
+"use client";
+import { CreditCardIcon } from "lucide-react";
+interface CreditCardBrandProps {
+brand: string;
+showName?: boolean;
+}
+const brandMap: Record<
+string,
+{ name: string; Icon: typeof CreditCardIcon; className?: string }
+> = {
+visa: {
+name: "Visa",
+Icon: CreditCardIcon,
+},
+master: {
+name: "Mastercard",
+Icon: CreditCardIcon ,
+},
+};
+export function CreditCardBrand({
+brand,
+showName = true,
+}: CreditCardBrandProps) {
+const normalized = brand.toLowerCase();
+const config = brandMap[normalized] ?? {
+name: brand,
+Icon: CreditCardIcon,
+className: "text-muted-foreground",
+};
+return (
+<span className="inline-flex items-center gap-2">
+<config.Icon className={`h-5 w-5 ${config.className}`} />
+{showName && <span>{config.name}</span>}
+</span>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/DashboardSection.tsx
+// ==========================================
+// components/dashboard/DashboardSection.tsx
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+export function DashboardSection({
+title,
+action,
+children,
+}: {
+title: string;
+action?: React.ReactNode;
+children: React.ReactNode;
+}) {
+return (
+<Card>
+<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+<CardTitle className="text-xl font-semibold">{title}</CardTitle>
+{action}
+</CardHeader>
+<CardContent>{children}</CardContent>
+</Card>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/DeleteButton.tsx
+// ==========================================
+"use client"
+export function DeleteButton() {
+return (
+<button
+type="submit"
+className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 font-medium transition-colors"
+onClick={(e) => {
+if (!window.confirm("Tem certeza que deseja apagar este livro?")) {
+e.preventDefault()
+}
+}}
+>
+Excluir
+</button>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/AccountDrawer.tsx
+// ==========================================
+"use client"
+import { createAccount, updateAccount } from "@/actions/accounts"
+import {
+Drawer,
+DrawerContent,
+DrawerDescription,
+DrawerHeader,
+DrawerTitle,
+DrawerTrigger,
+} from "@/components/ui/drawer"
+import { FloatingAlert } from "@/components/ui/floating-alert"
+import { AccountDrawerProps } from "@/utils/types"
+import { useState } from "react"
+export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
+const [open, setOpen] = useState(false)
+const [floatingAlert, setFloatingAlert] = useState<{
+type: "success" | "error"
+message: string
+} | null>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+if (account) {
+formData.append("id", String(account.id))
+await updateAccount(formData)
+} else {
+await createAccount(formData)
+}
+setOpen(false)
+setFloatingAlert({
+type: "success",
+message: account ? "Conta atualizada!" : "Conta criada!",
+})
+onSuccess?.()
+} catch (error) {
+setFloatingAlert({
+type: "error",
+message: "Não foi possível salvar a conta.",
+})
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<>
+<Drawer open={open} onOpenChange={setOpen}>
+<DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
+{account ? "Editar" : "+ Nova Conta"}
+</DrawerTrigger>
+<DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+<DrawerHeader>
+<DrawerTitle className="text-xl font-semibold text-gray-100">
+{account ? "Editar Conta" : "Nova Conta"}
+</DrawerTitle>
+<DrawerDescription className="text-sm text-gray-400 mb-4">
+{account ? "Atualize os dados da conta" : "Informe os dados da conta"}
+</DrawerDescription>
+</DrawerHeader>
+<form action={handleSubmit} className="grid grid-cols-1 gap-4">
+<input
+name="name"
+placeholder="Nome da conta"
+defaultValue={account?.name}
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<select
+name="type"
+defaultValue={account?.type}
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+<option value="checking">Conta Corrente</option>
+<option value="savings">Poupança</option>
+<option value="cash">Dinheiro</option>
+<option value="investment">Investimento</option>
+<option value="other">Outro</option>
+</select>
+<input
+name="initialBalance"
+type="number"
+step="0.01"
+placeholder="Saldo inicial"
+defaultValue={account?.initialBalance ?? ""}
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<button
+type="submit"
+disabled={isSubmitting}
+className="bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+>
+{isSubmitting ? "Salvando..." : "Salvar"}
+</button>
+</form>
+</DrawerContent>
+</Drawer>
+{floatingAlert && (
+<FloatingAlert
+type={floatingAlert.type}
+message={floatingAlert.message}
+onClose={() => setFloatingAlert(null)}
+/>
+)}
+</>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/AssetDrawer.tsx
+// ==========================================
+"use client"
+import { createAsset, updateAsset } from "@/actions/investments"
+import {
+Drawer,
+DrawerContent,
+DrawerDescription,
+DrawerHeader,
+DrawerTitle,
+DrawerTrigger,
+} from "@/components/ui/drawer"
+import { FloatingAlert } from "@/components/ui/floating-alert"
+import type { AssetDrawerProps } from "@/utils/types"
+import { useState } from "react"
+export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
+const [open, setOpen] = useState(false)
+const [floatingAlert, setFloatingAlert] = useState<{
+type: "success" | "error"
+message: string
+} | null>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+if (asset) {
+formData.append("id", String(asset.id))
+await updateAsset(formData)
+} else {
+await createAsset(formData)
+}
+setOpen(false)
+setFloatingAlert({
+type: "success",
+message: asset ? "Ativo atualizado!" : "Ativo criado!",
+})
+onSuccess?.()
+} catch (error) {
+setFloatingAlert({
+type: "error",
+message: "Não foi possível salvar o ativo.",
+})
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<>
+<Drawer open={open} onOpenChange={setOpen}>
+<DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
+{asset ? "Editar" : "+ Ativo"}
+</DrawerTrigger>
+<DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+<DrawerHeader>
+<DrawerTitle className="text-xl font-semibold text-gray-100">
+{asset ? "Editar Ativo" : "Novo Ativo"}
+</DrawerTitle>
+<DrawerDescription className="text-sm text-gray-400 mb-4">
+Informe os dados do ativo
+</DrawerDescription>
+</DrawerHeader>
+<form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<input
+name="name"
+placeholder="Nome (ex: Ações XPTO)"
+defaultValue={asset?.name}
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="ticker"
+placeholder="Código (ex: XPTO3)"
+defaultValue={asset?.ticker ?? ""}
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<select
+name="type"
+defaultValue={asset?.type ?? "stock"}
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+<option value="stock">Ação</option>
+<option value="fii">FII</option>
+<option value="crypto">Cripto</option>
+<option value="fixed_income">Renda Fixa</option>
+<option value="other">Outro</option>
+</select>
+<input
+name="currentPrice"
+type="number"
+step="0.01"
+placeholder="Preço atual"
+defaultValue={asset?.currentPrice ?? ""}
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="quantity"
+type="number"
+step="0.01"
+placeholder="Quantidade"
+defaultValue={asset?.quantity ?? ""}
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="averagePrice"
+type="number"
+step="0.01"
+placeholder="Preço médio"
+defaultValue={asset?.averagePrice ?? ""}
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<button
+type="submit"
+disabled={isSubmitting}
+className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+>
+{isSubmitting ? "Salvando..." : "Salvar"}
+</button>
+</form>
+</DrawerContent>
+</Drawer>
+{floatingAlert && (
+<FloatingAlert
+type={floatingAlert.type}
+message={floatingAlert.message}
+onClose={() => setFloatingAlert(null)}
+/>
+)}
+</>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/BookDrawer.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/components/Drawers/BookDrawer.tsx
+// ==========================================
+"use client"
+import { saveBook } from "@/actions/books"
+import { DrawerAlert, DrawerShell, drawerFieldClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react"
+interface BookDrawerProps {
+open: boolean
+onClose: () => void
+book?: { id: string; title: string; author: string; status: string } | null
+onSuccess?: () => void
+}
+export function BookDrawer({ open, onClose, book, onSuccess }: BookDrawerProps) {
+const [alert, setAlert] = useState<DrawerAlert>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+if (book?.id) {
+formData.append("id", book.id)
+}
+await saveBook(formData)
+setAlert({ type: "success", message: book ? "Livro atualizado com sucesso!" : "Livro cadastrado com sucesso!" })
+onSuccess?.()
+onClose()
+} catch (error) {
+setAlert({ type: "error", message: "Erro ao salvar o livro." })
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<DrawerShell
+open={open}
+onClose={onClose}
+title={book ? "Editar Livro" : "Novo Livro"}
+description="Preencha os dados da obra literária"
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Salvar"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+>
+<Input
+name="title"
+placeholder="Título do Livro"
+defaultValue={book?.title ?? ""}
+required
+autoFocus
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<Input
+name="author"
+placeholder="Autor"
+defaultValue={book?.author ?? ""}
+required
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<div className="md:col-span-2">
+<Select name="status" defaultValue={book?.status ?? "planning"}>
+<SelectTrigger className={`!h-[52px] ${drawerFieldClass}`}>
+<SelectValue placeholder="Status da Leitura" />
+</SelectTrigger>
+<SelectContent>
+<SelectItem value="planning">Planejado</SelectItem>
+<SelectItem value="reading">Lendo</SelectItem>
+<SelectItem value="completed">Concluído</SelectItem>
+</SelectContent>
+</Select>
+</div>
+</DrawerShell>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/carteira-drawers-host.tsx
+// ==========================================
+'use client';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { useRouter } from 'next/navigation';
+import { ExpenseDrawer } from './ExpenseDrawer';
+export function CarteiraDrawersHost({
+categories,
+accounts,
+}: {
+categories: any[];
+accounts: any[];
+}) {
+const router = useRouter();
+const { editingExpense, setEditingExpense } = useDrawer();
+return (
+<ExpenseDrawer
+categories={categories}
+accounts={accounts}
+expense={editingExpense ?? undefined}
+onSuccess={() => {
+setEditingExpense(null);
+router.refresh();
+}}
+/>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/CategoryDrawer.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/components/Drawers/CategoryDrawer.tsx
+// ==========================================
+"use client"
+import { createCategory, updateCategory } from "@/actions/categories"
+import { DrawerAlert, DrawerShell, drawerFieldClass, drawerSelectContentClass, drawerSelectItemClass, drawerSelectTriggerClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useDrawer } from "@/contexts/DrawerContext"; // 1. IMPORTAR O CONTEXTO
+import { CategoryDrawerProps } from "@/utils/types"
+import { useState } from "react"
+export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
+const { activeDrawer, closeDrawer } = useDrawer()
+const [alert, setAlert] = useState<DrawerAlert>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+// Se passou uma categoria por prop (edição na tabela), ele abre.
+// Senão, abre se o activeDrawer global for "category".
+const isOpen = Boolean(category) || activeDrawer === "category"
+const handleClose = () => {
+closeDrawer()
+}
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+if (category) {
+formData.append("id", String(category.id))
+await updateCategory(formData)
+} else {
+await createCategory(formData)
+}
+handleClose()
+setAlert({
+type: "success",
+message: category ? "Categoria atualizada!" : "Categoria criada!",
+})
+onSuccess?.()
+} catch (error) {
+setAlert({
+type: "error",
+message: "Não foi possível salvar a categoria.",
+})
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<DrawerShell
+open={isOpen}
+onClose={handleClose}
+title={category ? "Editar Categoria" : "Nova Categoria"}
+description={category ? "Atualize os dados da categoria" : "Informe os dados da categoria"}
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Salvar"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+// Removido o 'trigger' fixo para evitar que um botão indesejado apareça no host global
+>
+<Input
+name="name"
+placeholder="Nome da categoria"
+defaultValue={category?.name}
+required
+autoFocus
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<div className="md:col-span-2">
+<Select name="type" defaultValue={category?.type ?? "expense"} required>
+<SelectTrigger className={drawerSelectTriggerClass}>
+<SelectValue placeholder="Selecione o tipo" />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass}>
+<SelectItem value="expense" className={drawerSelectItemClass}>Despesa</SelectItem>
+<SelectItem value="income" className={drawerSelectItemClass}>Receita</SelectItem>
+</SelectContent>
+</Select>
+</div>
+</DrawerShell>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/CreditCardAdjustmentDrawer.tsx
+// ==========================================
+"use client"
+import { createCreditCardAdjustment } from "@/actions/wallet"
+import { DrawerAlert, DrawerShell, drawerFieldClass, drawerSelectContentClass, drawerSelectItemClass, drawerSelectTriggerClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Plus } from "lucide-react"
+import { useState } from "react"
+export function CreditCardAdjustmentDrawer({ creditCardId }: { creditCardId: number }) {
+const [open, setOpen] = useState(false)
+const [alert, setAlert] = useState<DrawerAlert>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+formData.append("creditCardId", String(creditCardId))
+try {
+await createCreditCardAdjustment(formData)
+setAlert({ type: "success", message: "Ajuste lançado com sucesso!" })
+setOpen(false)
+} catch (error) {
+setAlert({ type: "error", message: "Erro ao lançar ajuste." })
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<DrawerShell
+open={open}
+onClose={() => setOpen(false)}
+title="Lançar Ajuste na Fatura"
+description="Registre estornos, cashbacks ou taxas avulsas."
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Salvar Ajuste"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+trigger={
+<button
+onClick={() => setOpen(true)}
+className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+>
+<Plus size={16} /> Lançar Estorno/Taxa
+</button>
+}
+>
+<div className="md:col-span-2">
+<Select name="type" defaultValue="refund">
+<SelectTrigger className={drawerSelectTriggerClass}>
+<SelectValue placeholder="Tipo de Ajuste" />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass}>
+<SelectItem value="refund" className={drawerSelectItemClass}>Estorno de Compra (Crédito)</SelectItem>
+<SelectItem value="cashback" className={drawerSelectItemClass}>Cashback (Crédito)</SelectItem>
+<SelectItem value="fee" className={drawerSelectItemClass}>Taxa / Anuidade (Débito)</SelectItem>
+</SelectContent>
+</Select>
+</div>
+<Input name="description" placeholder="Descrição (Ex: Estorno Uber)" required className={`md:col-span-2 ${drawerFieldClass}`} />
+<Input name="amount" type="number" step="0.01" placeholder="Valor (R$)" required className={drawerFieldClass} />
+<Input name="date" type="date" required className={drawerFieldClass} />
+</DrawerShell>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/CreditCardDrawer.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/components/Drawers/CreditCardDrawer.tsx (Corrigido)
+// ==========================================
+"use client"
+import { createCreditCard, updateCreditCard } from "@/actions/creditCards"
+import {
+DrawerAlert,
+drawerFieldClass,
+DrawerShell,
+} from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import {
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
+} from "@/components/ui/select"
+import { useDrawer } from "@/contexts/DrawerContext"
+import type { CreditCardDrawerProps } from "@/utils/types"
+import { Pencil, Plus } from "lucide-react"
+import { useState } from "react"
+export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProps) {
+const { activeDrawer, closeDrawer } = useDrawer()
+const [isOpenLocal, setIsOpenLocal] = useState(false)
+const [alert, setAlert] = useState<DrawerAlert>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+// Se for o drawer global de "Adicionar Novo Cartão" ou o estado local de edição
+const isGlobalOpen = !creditCard && activeDrawer === "creditCard"
+const isOpen = isOpenLocal || isGlobalOpen
+const handleClose = () => {
+setIsOpenLocal(false)
+closeDrawer()
+}
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+if (creditCard) {
+formData.append("id", String(creditCard.id))
+await updateCreditCard(formData)
+} else {
+await createCreditCard(formData)
+}
+handleClose()
+setAlert({
+type: "success",
+message: creditCard ? "Cartão atualizado!" : "Cartão criado!",
+})
+onSuccess?.()
+} catch (error) {
+setAlert({
+type: "error",
+message: "Não foi possível salvar o cartão.",
+})
+} finally {
+setIsSubmitting(false)
+}
+}
+// Renderiza um botão de gatilho dependendo se é Edição ou Criação
+const triggerButton = creditCard ? (
+<button
+onClick={() => setIsOpenLocal(true)}
+title="Editar cartão"
+className="inline-flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 p-2 rounded-lg transition-colors"
+>
+<Pencil size={18} />
+<span className="sr-only">Editar</span>
+</button>
+) : (
+<button
+onClick={() => setIsOpenLocal(true)}
+className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+>
+<Plus size={16} />
+Novo Cartão
+</button>
+)
+return (
+<DrawerShell
+open={isOpen}
+onClose={handleClose}
+title={creditCard ? "Editar Cartão" : "Novo Cartão"}
+description="Informe os dados principais do cartão"
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Salvar Cartão"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+trigger={triggerButton}
+>
+<Input
+name="name"
+placeholder="Nome do cartão (ex: Nubank, XP)"
+defaultValue={creditCard?.name}
+required
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<div className="md:col-span-2">
+<Select name="brand" defaultValue={creditCard?.brand ?? ""}>
+<SelectTrigger className={`!h-[52px] ${drawerFieldClass}`}>
+<SelectValue placeholder="Selecione a bandeira" />
+</SelectTrigger>
+<SelectContent>
+<SelectItem value="Mastercard">Mastercard</SelectItem>
+<SelectItem value="Visa">Visa</SelectItem>
+<SelectItem value="Alelo">Alelo</SelectItem>
+<SelectItem value="Caju">Caju</SelectItem>
+</SelectContent>
+</Select>
+</div>
+<Input
+name="lastFourDigits"
+placeholder="4 últimos números (ex: 1234)"
+maxLength={4}
+pattern="\d{4}"
+title="Apenas os 4 últimos dígitos numéricos"
+defaultValue={creditCard?.lastFourDigits ?? ""}
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+</DrawerShell>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/drawer-shell.tsx
+// ==========================================
+'use client';
+import { Button } from '@/components/ui/button';
+import {
+Drawer,
+DrawerContent,
+DrawerDescription,
+DrawerHeader,
+DrawerTitle,
+} from '@/components/ui/drawer';
+import { FloatingAlert } from '@/components/ui/floating-alert';
+import { Loader2 } from 'lucide-react';
+import { ReactNode } from 'react';
+// ─── Classes exportadas — Padronizadas com a nova paleta ────────────
+export const drawerFieldClass =
+'h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 rounded-lg ' +
+'placeholder:text-zinc-500 text-zinc-100 ' +
+'focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+'transition-all duration-200';
+export const drawerSelectTriggerClass =
+'!h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 py-0 rounded-lg ' +
+'text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+'transition-all duration-200 flex items-center [&>span]:truncate ' +
+'data-[placeholder]:text-zinc-500';
+export const drawerSelectContentClass =
+'bg-zinc-950 border-zinc-800 text-zinc-100 shadow-2xl';
+export const drawerSelectItemClass =
+'focus:bg-zinc-800 focus:text-brand-blue transition-colors cursor-pointer rounded-md';
+export type DrawerAlert = {
+type: 'success' | 'error';
+message: string;
+} | null;
+export interface DrawerShellProps {
+open: boolean;
+onClose: () => void;
+trigger?: ReactNode;
+title: ReactNode;
+description?: ReactNode;
+onSubmit: (formData: FormData) => void | Promise<void>;
+formKey?: string | number;
+isSubmitting?: boolean;
+submitLabel?: string;
+submitLabelLoading?: string;
+footerExtra?: ReactNode;
+alert?: DrawerAlert;
+onAlertClose?: () => void;
+swipeDirection?: 'up' | 'down' | 'left' | 'right';
+children: ReactNode;
+}
+export function DrawerShell({
+open,
+onClose,
+trigger,
+title,
+description,
+onSubmit,
+formKey,
+isSubmitting = false,
+submitLabel = 'Salvar',
+submitLabelLoading = 'Salvando...',
+footerExtra,
+alert,
+onAlertClose,
+swipeDirection = 'right',
+children,
+}: DrawerShellProps) {
+return (
+<>
+{trigger}
+<Drawer
+open={open}
+onOpenChange={(isOpen) => {
+if (!isOpen) onClose();
+}}
+swipeDirection={swipeDirection}
+>
+<DrawerContent
+className="
+!p-0 !mt-0 h-[100dvh] flex flex-col
+bg-background text-foreground
+border-t border-zinc-800
+rounded-t-3xl shadow-2xl
+"
+>
+{/* Bloco 1: Header */}
+<DrawerHeader
+className="
+!p-6 !pb-5 space-y-1.5 shrink-0
+border-b border-zinc-800/60 bg-zinc-950/30
+"
+>
+<DrawerTitle className="text-xl font-bold text-foreground tracking-tight">
+{title}
+</DrawerTitle>
+{description && (
+<DrawerDescription className="text-sm text-zinc-400">
+{description}
+</DrawerDescription>
+)}
+</DrawerHeader>
+{/* Bloco 2 + 3: Form */}
+<form
+key={formKey}
+action={onSubmit}
+className="flex flex-col flex-1 min-h-0"
+>
+{/* O corpo do drawer com espaçamento para os inputs */}
+<div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-5 content-start">
+{children}
+</div>
+{/* Rodapé com botão principal */}
+<div
+className="
+p-6 pt-4 space-y-4 shrink-0
+border-t border-zinc-800/60
+bg-zinc-950/50
+"
+>
+{footerExtra}
+<Button
+type="submit"
+disabled={isSubmitting}
+className="
+w-full h-12 font-semibold rounded-lg text-base
+bg-primary text-primary-foreground
+hover:brightness-110 active:scale-[0.99]
+transition-all duration-200 shadow-md
+disabled:opacity-60 disabled:cursor-not-allowed
+flex items-center justify-center gap-2
+"
+>
+{isSubmitting ? (
+<>
+<Loader2 className="h-5 w-5 animate-spin" />
+{submitLabelLoading}
+</>
+) : (
+submitLabel
+)}
+</Button>
+</div>
+</form>
+</DrawerContent>
+</Drawer>
+{alert && onAlertClose && (
+<FloatingAlert
+type={alert.type}
+message={alert.message}
+onClose={onAlertClose}
+/>
+)}
+</>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/DrawerInitializer.tsx
+// ==========================================
+"use client"
+import { useDrawer } from "@/contexts/DrawerContext"
+import { useEffect } from "react"
+export function DrawerInitializer({ drawerOpen }: { drawerOpen?: string }) {
+const { openDrawer } = useDrawer()
+useEffect(() => {
+if (drawerOpen === "income") openDrawer("income")
+else if (drawerOpen === "expense") openDrawer("expense")
+else if (drawerOpen === "purchase") openDrawer("purchase")
+}, [drawerOpen, openDrawer])
+return null
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/ExpenseDrawer.tsx
+// ==========================================
+'use client';
+import { createExpense, updateExpense } from '@/actions/expenses';
+import {
+DrawerAlert,
+drawerFieldClass,
+drawerSelectContentClass,
+drawerSelectItemClass,
+drawerSelectTriggerClass,
+DrawerShell,
+} from '@/components/Drawers/drawer-shell';
+import {
+MonthYearPicker,
+toFirstDayOfMonth,
+} from '@/components/month-year-select';
+import { Input } from '@/components/ui/input';
+import {
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
+} from '@/components/ui/select';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { Repeat } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+const CATEGORY_PLACEHOLDER = '__category_placeholder__';
+const ACCOUNT_PLACEHOLDER = '__account_placeholder__';
+interface ExpenseDrawerProps {
+categories: any[];
+accounts: any[];
+expense?: any;
+onSuccess?: () => void;
+onNew?: () => void;
+}
+function splitYearMonth(date?: string | null) {
+if (!date) return { year: '', month: '' };
+const [y, m] = date.split('-');
+return { year: y ?? '', month: m ?? '' };
+}
+function currentYearMonth() {
+const now = new Date();
+return {
+year: String(now.getFullYear()),
+month: String(now.getMonth() + 1).padStart(2, '0'),
+};
+}
+export function ExpenseDrawer({
+categories,
+accounts,
+expense,
+onSuccess,
+onNew
+}: ExpenseDrawerProps) {
+const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
+const [isRecurring, setIsRecurring] = useState(false);
+const [recurringMonths, setRecurringMonths] = useState(12);
+const [alert, setAlert] = useState<DrawerAlert>(null);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [categoryId, setCategoryId] = useState(
+expense?.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER,
+);
+const [accountId, setAccountId] = useState(
+expense?.accountId ? String(expense.accountId) : ACCOUNT_PLACEHOLDER,
+);
+const initial = expense ? splitYearMonth(expense.date) : currentYearMonth();
+const [dueMonth, setDueMonth] = useState(initial.month);
+const [dueYear, setDueYear] = useState(initial.year);
+const open = activeDrawer === 'expense';
+const categoryItems = useMemo(
+() => [
+{ label: 'Sem categoria', value: CATEGORY_PLACEHOLDER },
+...categories.map((c) => ({ label: c.name, value: String(c.id) })),
+],
+[categories],
+);
+const accountItems = useMemo(
+() => [
+{ label: 'Sem conta vinculada', value: ACCOUNT_PLACEHOLDER },
+...accounts.map((a) => ({ label: a.name, value: String(a.id) })),
+],
+[accounts],
+);
+useEffect(() => {
+if (open) {
+if (expense) {
+const next = splitYearMonth(expense.date);
+setDueMonth(next.month);
+setDueYear(next.year);
+setCategoryId(expense.categoryId ? String(expense.categoryId) : CATEGORY_PLACEHOLDER);
+setAccountId(expense.accountId ? String(expense.accountId) : ACCOUNT_PLACEHOLDER);
+setIsRecurring(false);
+} else {
+setIsRecurring(false);
+setRecurringMonths(12);
+setCategoryId(CATEGORY_PLACEHOLDER);
+setAccountId(ACCOUNT_PLACEHOLDER);
+const now = currentYearMonth();
+setDueMonth(now.month);
+setDueYear(now.year);
+}
+}
+}, [open, expense]);
+const handleSubmit = async (formData: FormData) => {
+formData.set(
+'categoryId',
+categoryId === CATEGORY_PLACEHOLDER ? '' : categoryId,
+);
+formData.set(
+'accountId',
+accountId === ACCOUNT_PLACEHOLDER ? '' : accountId,
+);
+const isoDate = toFirstDayOfMonth(dueYear, dueMonth);
+if (!isoDate) {
+setAlert({ type: 'error', message: 'Selecione o mês e o ano da despesa.' });
+return;
+}
+formData.set('date', isoDate);
+setIsSubmitting(true);
+try {
+if (expense) {
+formData.append('id', String(expense.id));
+await updateExpense(formData);
+} else {
+formData.append('isRecurring', isRecurring ? 'on' : 'off');
+formData.append('recurringMonths', String(recurringMonths));
+await createExpense(formData);
+}
+closeDrawer();
+setAlert({
+type: 'success',
+message: expense
+? 'Despesa atualizada!'
+: isRecurring
+? `Despesa recorrente criada (${recurringMonths} meses)!`
+: 'Despesa criada!',
+});
+onSuccess?.();
+} catch (error) {
+setAlert({ type: 'error', message: 'Não foi possível salvar a despesa.' });
+} finally {
+setIsSubmitting(false);
+}
+};
+const isCategoryPlaceholder = categoryId === CATEGORY_PLACEHOLDER;
+const isAccountPlaceholder = accountId === ACCOUNT_PLACEHOLDER;
+return (
+<DrawerShell
+open={open}
+onClose={closeDrawer}
+formKey={expense?.id ?? 'new'}
+title={expense ? 'Editar Despesa' : 'Nova Despesa'}
+description={
+expense ? 'Atualize os dados da despesa' : 'Preencha os dados da despesa'
+}
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel={expense ? 'Salvar alterações' : 'Criar despesa'}
+alert={alert}
+onAlertClose={() => setAlert(null)}
+>
+{expense && (expense.isRecurring || expense.recurringParentId) && (
+<div className="md:col-span-2 rounded-lg border border-sidebar-ring/40 bg-sidebar-accent/40 px-4 py-3 text-sm text-sidebar-foreground flex items-start gap-2">
+<Repeat className="size-4 mt-0.5 shrink-0" />
+<span>
+Esta despesa faz parte de uma <strong>série recorrente</strong>. As
+alterações serão aplicadas neste mês e nos meses seguintes.
+</span>
+</div>
+)}
+<Input
+name="description"
+placeholder="Descrição"
+defaultValue={expense?.description}
+required
+className={drawerFieldClass}
+/>
+<Input
+name="amount"
+type="number"
+step="0.01"
+placeholder="Valor"
+defaultValue={expense?.amount}
+required
+className={drawerFieldClass}
+/>
+<MonthYearPicker
+month={dueMonth}
+year={dueYear}
+onMonthChange={setDueMonth}
+onYearChange={setDueYear}
+className="md:col-span-2"
+/>
+{/* Seletor de Categoria */}
+<Select
+items={categoryItems}
+value={categoryId}
+onValueChange={(v) => setCategoryId(v ?? CATEGORY_PLACEHOLDER)}
+>
+<SelectTrigger
+className={`${drawerSelectTriggerClass} ${
+isCategoryPlaceholder ? 'text-sidebar-foreground/50' : ''
+}`}
+>
+<SelectValue />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass + ' max-h-72'}>
+<SelectItem
+value={CATEGORY_PLACEHOLDER}
+className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+>
+Sem categoria
+</SelectItem>
+{categories.map((cat) => (
+<SelectItem
+key={cat.id}
+value={String(cat.id)}
+className={drawerSelectItemClass}
+>
+{cat.name}
+</SelectItem>
+))}
+</SelectContent>
+</Select>
+{/* Seletor de Conta Bancária */}
+<Select
+items={accountItems}
+value={accountId}
+onValueChange={(v) => setAccountId(v ?? ACCOUNT_PLACEHOLDER)}
+>
+<SelectTrigger
+className={`${drawerSelectTriggerClass} ${
+isAccountPlaceholder ? 'text-sidebar-foreground/50' : ''
+}`}
+>
+<SelectValue />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass + ' max-h-72'}>
+<SelectItem
+value={ACCOUNT_PLACEHOLDER}
+className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+>
+Sem conta vinculada
+</SelectItem>
+{accounts.map((acc) => (
+<SelectItem
+key={acc.id}
+value={String(acc.id)}
+className={drawerSelectItemClass}
+>
+{acc.name}
+</SelectItem>
+))}
+</SelectContent>
+</Select>
+{!expense && (
+<>
+<label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-sidebar-accent border border-sidebar-border text-sm text-sidebar-foreground cursor-pointer select-none">
+<input
+type="checkbox"
+checked={isRecurring}
+onChange={(e) => setIsRecurring(e.target.checked)}
+className="size-4 rounded border-gray-600 bg-gray-900 accent-emerald-500"
+/>
+Despesa recorrente
+</label>
+{isRecurring && (
+<div className="md:col-span-2 grid grid-cols-1 gap-2">
+<label className="text-sm text-gray-400">
+Repetir por quantos meses?
+</label>
+<div className="flex flex-wrap gap-2">
+{[6, 12, 24, 36].map((n) => (
+<button
+key={n}
+type="button"
+onClick={() => setRecurringMonths(n)}
+className={`h-10 px-4 rounded-lg border text-sm transition-colors ${
+recurringMonths === n
+? 'bg-sidebar-accent border-sidebar-ring text-sidebar-foreground'
+: 'bg-sidebar-accent/40 border-sidebar-border text-sidebar-foreground/70 hover:bg-sidebar-accent/60'
+}`}
+>
+{n}x
+</button>
+))}
+</div>
+<p className="text-xs text-gray-500 mt-1">
+Serão criadas {recurringMonths} despesas idênticas, uma por
+mês. Você poderá editar o valor de cada mês individualmente
+depois.
+</p>
+</div>
+)}
+</>
+)}
+<label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-sidebar-accent border border-sidebar-border text-sm text-sidebar-foreground cursor-pointer select-none">
+<input
+type="checkbox"
+name="paid"
+defaultChecked={expense?.paid ?? false}
+className="size-4 rounded border-sidebar-border bg-sidebar accent-[#FC4C02]"
+/>
+Pago
+</label>
+</DrawerShell>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/GlobalDrawersHost.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/components/Drawers/GlobalDrawersHost.tsx
+// ==========================================
+'use client';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { useRouter } from 'next/navigation';
+import { CategoryDrawer } from './CategoryDrawer';
+import { CreditCardDrawer } from './CreditCardDrawer';
+import { RecurringExpenseDrawer } from './RecurringExpenseDrawer';
+export function GlobalDrawersHost({
+categories,
+accounts,
+}: {
+categories: any[];
+accounts: any[];
+}) {
+const { activeDrawer, closeDrawer } = useDrawer();
+const router = useRouter();
+return (
+<>
+{/* Drawer de Categoria */}
+{activeDrawer === 'category' && (
+<CategoryDrawer
+onSuccess={() => {
+closeDrawer();
+router.refresh();
+}}
+/>
+)}
+{/* Drawer de Cartão de Crédito */}
+{activeDrawer === 'creditCard' && (
+<CreditCardDrawer
+onSuccess={() => {
+closeDrawer();
+router.refresh();
+}}
+/>
+)}
+{/* Drawer de Despesa Recorrente */}
+{activeDrawer === 'recurring' && (
+<RecurringExpenseDrawer
+categories={categories}
+accounts={accounts}
+onSuccess={() => {
+closeDrawer();
+router.refresh();
+}}
+/>
+)}
+</>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/IncomeDrawer.tsx
+// ==========================================
+'use client';
+import { createTransaction } from '@/actions/wallet';
+import {
+DrawerAlert,
+drawerFieldClass,
+DrawerShell,
+} from '@/components/Drawers/drawer-shell';
+import {
+MonthYearPicker,
+toFirstDayOfMonth,
+} from '@/components/month-year-select';
+import { Input } from '@/components/ui/input';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { IncomeDrawerProps } from '@/utils/types';
+import { useEffect, useState } from 'react';
+function currentYearMonth() {
+const now = new Date();
+return {
+year: String(now.getFullYear()),
+month: String(now.getMonth() + 1).padStart(2, '0'),
+};
+}
+export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
+const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
+const [alert, setAlert] = useState<DrawerAlert>(null);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [isRecurring, setIsRecurring] = useState(false);
+const [recurringMonths, setRecurringMonths] = useState(12);
+const initial = currentYearMonth();
+const [dueMonth, setDueMonth] = useState(initial.month);
+const [dueYear, setDueYear] = useState(initial.year);
+const open = activeDrawer === 'income';
+useEffect(() => {
+if (!open) {
+setAlert(null);
+setIsRecurring(false);
+setRecurringMonths(12);
+const next = currentYearMonth();
+setDueMonth(next.month);
+setDueYear(next.year);
+}
+}, [open]);
+const handleSubmit = async (formData: FormData) => {
+const isoDate = toFirstDayOfMonth(dueYear, dueMonth);
+if (!isoDate) {
+setAlert({ type: 'error', message: 'Selecione o mês e o ano.' });
+return;
+}
+formData.set('date', isoDate);
+formData.set('type', 'income');
+formData.set('isRecurring', isRecurring ? 'on' : 'off');
+formData.set('recurringMonths', String(recurringMonths));
+setIsSubmitting(true);
+try {
+await createTransaction(formData);
+closeDrawer();
+setAlert({
+type: 'success',
+message: isRecurring
+? `Receita recorrente criada (${recurringMonths} meses)!`
+: 'Receita criada!',
+});
+onSuccess?.();
+} catch (error) {
+setAlert({
+type: 'error',
+message: 'Não foi possível salvar a receita.',
+});
+} finally {
+setIsSubmitting(false);
+}
+};
+return (
+<DrawerShell
+open={open}
+onClose={closeDrawer}
+title="Nova Receita"
+description="Registre uma entrada de dinheiro"
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Adicionar Receita"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+trigger={
+<button
+type="button"
+onClick={() => openDrawer('income')}
+className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-zinc-700/50 shadow-sm"
+>
++
+</button>
+}
+>
+<Input
+name="description"
+placeholder="Descrição (ex: Salário)"
+required
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<Input
+name="amount"
+type="number"
+step="0.01"
+placeholder="Valor (R$)"
+required
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<div className="md:col-span-2">
+<MonthYearPicker
+month={dueMonth}
+year={dueYear}
+onMonthChange={setDueMonth}
+onYearChange={setDueYear}
+className="w-full"
+/>
+</div>
+<label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-zinc-800/40 border border-zinc-800 text-sm text-zinc-300 cursor-pointer select-none hover:border-zinc-700 transition-colors">
+<input
+type="checkbox"
+checked={isRecurring}
+onChange={(e) => setIsRecurring(e.target.checked)}
+className="size-4 rounded border-zinc-700 bg-zinc-900 checked:bg-emerald-500 checked:border-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+/>
+Receita recorrente
+</label>
+{isRecurring && (
+<div className="md:col-span-2 grid grid-cols-1 gap-2 pt-1">
+<label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+Repetir por quantos meses?
+</label>
+<div className="flex flex-wrap gap-2">
+{[6, 12, 24, 36].map((n) => (
+<button
+key={n}
+type="button"
+onClick={() => setRecurringMonths(n)}
+className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${
+recurringMonths === n
+? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-300'
+: 'bg-zinc-800/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+}`}
+>
+{n}x
+</button>
+))}
+</div>
+<p className="text-xs text-zinc-500 mt-1">
+Serão criadas {recurringMonths} receitas idênticas, uma por mês. Você poderá editar o valor de cada mês individualmente depois.
+</p>
+</div>
+)}
+</DrawerShell>
+);
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/InvestmentTransactionDrawer.tsx
+// ==========================================
+"use client"
+import { createInvestmentTransaction } from "@/actions/investments"
+import {
+Drawer,
+DrawerContent,
+DrawerDescription,
+DrawerHeader,
+DrawerTitle,
+DrawerTrigger,
+} from "@/components/ui/drawer"
+import { FloatingAlert } from "@/components/ui/floating-alert"
+import type { InvestmentTransactionDrawerProps } from "@/utils/types"
+import { useState } from "react"
+export function InvestmentTransactionDrawer({
+assets,
+selectedAssetId,
+onSuccess,
+}: InvestmentTransactionDrawerProps) {
+const [open, setOpen] = useState(false)
+const [floatingAlert, setFloatingAlert] = useState<{
+type: "success" | "error"
+message: string
+} | null>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+await createInvestmentTransaction(formData)
+setOpen(false)
+setFloatingAlert({
+type: "success",
+message: "Transação lançada com sucesso!",
+})
+onSuccess?.()
+} catch (error) {
+setFloatingAlert({
+type: "error",
+message: "Não foi possível lançar a transação.",
+})
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<>
+<Drawer open={open} onOpenChange={setOpen}>
+<DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
++ Lançar Transação
+</DrawerTrigger>
+<DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+<DrawerHeader>
+<DrawerTitle className="text-xl font-semibold text-gray-100">
+Lançar Transação de Investimento
+</DrawerTitle>
+<DrawerDescription className="text-sm text-gray-400 mb-4">
+Informe os dados da transação
+</DrawerDescription>
+</DrawerHeader>
+<form action={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<select
+name="assetId"
+defaultValue={selectedAssetId || ""}
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+<option value="">Selecione o ativo</option>
+{assets.map((asset) => (
+<option key={asset.id} value={asset.id}>
+{asset.name} ({asset.ticker || asset.type})
+</option>
+))}
+</select>
+<select
+name="type"
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+<option value="buy">Compra</option>
+<option value="sell">Venda</option>
+<option value="contribution">Aporte</option>
+<option value="withdrawal">Retirada</option>
+<option value="dividend">Dividendo</option>
+<option value="jcp">JCP</option>
+</select>
+<input
+name="date"
+type="date"
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="quantity"
+type="number"
+step="0.01"
+placeholder="Quantidade (se aplicável)"
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="price"
+type="number"
+step="0.01"
+placeholder="Preço unitário (se aplicável)"
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="amount"
+type="number"
+step="0.01"
+placeholder="Valor total (R$)"
+required
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<input
+name="fees"
+type="number"
+step="0.01"
+placeholder="Taxas (R$)"
+defaultValue="0"
+className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<textarea
+name="notes"
+placeholder="Observações"
+rows={2}
+className="md:col-span-2 bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+/>
+<button
+type="submit"
+disabled={isSubmitting}
+className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+>
+{isSubmitting ? "Salvando..." : "Salvar"}
+</button>
+</form>
+</DrawerContent>
+</Drawer>
+{floatingAlert && (
+<FloatingAlert
+type={floatingAlert.type}
+message={floatingAlert.message}
+onClose={() => setFloatingAlert(null)}
+/>
+)}
+</>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/KanbanTaskDrawer.tsx
+// ==========================================
+"use client"
+import {
+cloneKanbanTask,
+createKanbanTask,
+deleteKanbanTask,
+updateKanbanTask,
+} from "@/actions/kanban"
+import {
+DrawerAlert,
+DrawerShell,
+drawerFieldClass,
+drawerSelectContentClass,
+drawerSelectItemClass,
+drawerSelectTriggerClass,
+} from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import {
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
+} from "@/components/ui/select"
+import { Copy, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { KanbanTaskType } from "../Kanban/KanbanBoard"
+interface KanbanTaskDrawerProps {
+task?: KanbanTaskType
+defaultStatus?: string
+trigger: React.ReactNode
+users: { id: string; name: string | null }[]
+}
+export function KanbanTaskDrawer({ task, defaultStatus = "to_do", trigger, users }: KanbanTaskDrawerProps) {
+const [isOpen, setIsOpen] = useState(false)
+const [alert, setAlert] = useState<DrawerAlert>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+// ==========================================
+// HANDLERS DE AÇÕES
+// ==========================================
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+// TRATAMENTO: Remove assignedToId se for "none" para o banco aceitar como null/empty
+if (formData.get("assignedToId") === "none") {
+formData.delete("assignedToId")
+}
+if (task) {
+formData.append("id", task.id)
+await updateKanbanTask(formData)
+} else {
+if (!formData.get("status")) formData.append("status", defaultStatus)
+await createKanbanTask(formData)
+}
+setAlert({ type: "success", message: task ? "Tarefa atualizada!" : "Tarefa criada!" })
+setIsOpen(false)
+} catch (error) {
+setAlert({ type: "error", message: "Não foi possível salvar a tarefa." })
+} finally {
+setIsSubmitting(false)
+}
+}
+const handleDelete = async () => {
+if (!task || !confirm("Tem certeza que deseja excluir esta tarefa?")) return
+setIsSubmitting(true)
+try {
+await deleteKanbanTask(task.id)
+setIsOpen(false)
+} catch (error) {
+setAlert({ type: "error", message: "Erro ao excluir a tarefa." })
+} finally {
+setIsSubmitting(false)
+}
+}
+const handleClone = async () => {
+if (!task) return
+setIsSubmitting(true)
+try {
+await cloneKanbanTask(task.id)
+setAlert({ type: "success", message: "Tarefa clonada com sucesso!" })
+setIsOpen(false)
+} catch (error) {
+setAlert({ type: "error", message: "Erro ao clonar a tarefa." })
+} finally {
+setIsSubmitting(false)
+}
+}
+// ==========================================
+// RENDERIZAÇÃO
+// ==========================================
+return (
+<DrawerShell
+open={isOpen}
+onClose={() => setIsOpen(false)}
+title={task ? "Editar Tarefa" : "Nova Tarefa"}
+description="Preencha os detalhes do card"
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel={task ? "Salvar Alterações" : "Criar Tarefa"}
+alert={alert}
+onAlertClose={() => setAlert(null)}
+trigger={
+// w-full adicionado aqui para garantir que o card estique na coluna
+<div onClick={() => setIsOpen(true)} className="cursor-pointer flex w-full">
+{trigger}
+</div>
+}
+footerExtra={
+// Só renderiza os botões de ação secundária se for uma edição (task existe)
+task ? (
+<div className="flex items-center gap-2 w-full mb-3">
+<button
+type="button"
+onClick={handleDelete}
+disabled={isSubmitting}
+className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500/20 text-sm font-medium transition-colors disabled:opacity-50"
+>
+<Trash2 size={16} /> Excluir
+</button>
+<button
+type="button"
+onClick={handleClone}
+disabled={isSubmitting}
+className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 text-sm font-medium transition-colors disabled:opacity-50"
+>
+<Copy size={16} /> Clonar
+</button>
+</div>
+) : null
+}
+>
+<Input
+name="title"
+placeholder="Título da tarefa"
+defaultValue={task?.title ?? ""}
+required
+autoFocus
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<div className="md:col-span-2 space-y-1">
+<label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+Descrição
+</label>
+<textarea
+name="description"
+defaultValue={task?.description ?? ""}
+placeholder="Detalhes adicionais (opcional)..."
+className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all min-h-[100px]"
+/>
+</div>
+<div className="space-y-1">
+<label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+Urgência
+</label>
+<Select name="urgency" defaultValue={task?.urgency ?? "medium"}>
+<SelectTrigger className={drawerSelectTriggerClass}>
+<SelectValue placeholder="Nível de urgência" />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass}>
+<SelectItem value="low" className={drawerSelectItemClass}>
+🟢 Baixa
+</SelectItem>
+<SelectItem value="medium" className={drawerSelectItemClass}>
+🟡 Média
+</SelectItem>
+<SelectItem value="high" className={drawerSelectItemClass}>
+🔴 Alta
+</SelectItem>
+</SelectContent>
+</Select>
+</div>
+<div className="space-y-1">
+<label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+Status
+</label>
+<Select name="status" defaultValue={task?.status ?? defaultStatus}>
+<SelectTrigger className={drawerSelectTriggerClass}>
+<SelectValue placeholder="Status atual" />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass}>
+<SelectItem value="to_do" className={drawerSelectItemClass}>
+A Fazer
+</SelectItem>
+<SelectItem value="in_progress" className={drawerSelectItemClass}>
+Resolvendo
+</SelectItem>
+<SelectItem value="pending" className={drawerSelectItemClass}>
+Pendente
+</SelectItem>
+<SelectItem value="canceled" className={drawerSelectItemClass}>
+Cancelado
+</SelectItem>
+<SelectItem value="done" className={drawerSelectItemClass}>
+Resolvido
+</SelectItem>
+</SelectContent>
+</Select>
+</div>
+{/* NOVO CAMPO: Responsável pela tarefa */}
+<div className="space-y-1">
+<label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+Responsável
+</label>
+<Select name="assignedToId" defaultValue={task?.assignedToId ?? "none"}>
+<SelectTrigger className={drawerSelectTriggerClass}>
+<SelectValue placeholder="Quem vai fazer?" />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass}>
+<SelectItem value="none" className={drawerSelectItemClass}>Nenhum</SelectItem>
+{users.map((u) => (
+<SelectItem key={u.id} value={u.id} className={drawerSelectItemClass}>
+{u.name?.split(" ")[0] || "Usuário"}
+</SelectItem>
+))}
+</SelectContent>
+</Select>
+</div>
+</DrawerShell>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/PostDrawer.tsx
+// ==========================================
+// ==========================================
+// Arquivo: src/components/Drawers/PostDrawer.tsx
+// ==========================================
+"use client"
+import { savePost } from "@/actions/blog"
+import { DrawerAlert, DrawerShell, drawerFieldClass } from "@/components/Drawers/drawer-shell"
+import { Input } from "@/components/ui/input"
+import { useState } from "react"
+interface PostDrawerProps {
+open: boolean
+onClose: () => void
+post?: {
+id: string
+title: string
+slug: string
+excerpt?: string | null
+content: string
+published: boolean
+} | null
+onSuccess?: () => void
+}
+export function PostDrawer({ open, onClose, post, onSuccess }: PostDrawerProps) {
+const [alert, setAlert] = useState<DrawerAlert>(null)
+const [isSubmitting, setIsSubmitting] = useState(false)
+const handleSubmit = async (formData: FormData) => {
+setIsSubmitting(true)
+try {
+if (post?.id) {
+formData.append("id", post.id)
+}
+await savePost(formData)
+setAlert({
+type: "success",
+message: post ? "Post atualizado com sucesso!" : "Post criado com sucesso!",
+})
+onSuccess?.()
+onClose()
+} catch (error) {
+setAlert({
+type: "error",
+message: "Não foi possível salvar o post.",
+})
+} finally {
+setIsSubmitting(false)
+}
+}
+return (
+<DrawerShell
+open={open}
+onClose={onClose}
+title={post ? "Editar Post" : "Novo Post"}
+description="Preencha os campos abaixo para gerenciar o conteúdo do blog"
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Salvar Post"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+>
+<Input
+name="title"
+placeholder="Título do Artigo"
+defaultValue={post?.title ?? ""}
+required
+autoFocus
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<Input
+name="slug"
+placeholder="Slug (url-amigavel)"
+defaultValue={post?.slug ?? ""}
+required
+className={`md:col-span-2 ${drawerFieldClass}`}
+/>
+<div className="md:col-span-2 space-y-1">
+<label className="text-xs font-medium text-muted-foreground">Resumo / Excerpt</label>
+<textarea
+name="excerpt"
+defaultValue={post?.excerpt ?? ""}
+placeholder="Breve descrição do post..."
+className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[80px]"
+/>
+</div>
+<div className="md:col-span-2 space-y-1">
+<label className="text-xs font-medium text-muted-foreground">Conteúdo Completo</label>
+<textarea
+name="content"
+defaultValue={post?.content ?? ""}
+placeholder="Escreva o conteúdo do post..."
+className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[150px]"
+required
+/>
+</div>
+<div className="md:col-span-2 flex items-center gap-2 pt-2">
+<input
+type="checkbox"
+name="published"
+value="true"
+defaultChecked={post?.published ?? false}
+className="rounded border-gray-700 bg-gray-800 h-4 w-4"
+/>
+<label className="text-sm font-medium">Publicar imediatamente</label>
+</div>
+</DrawerShell>
+)
+}
+
+// ==========================================
+// Arquivo: src/components/Drawers/PurchaseDrawer.tsx
+// ==========================================
+'use client';
+import {
+DrawerAlert,
+drawerFieldClass,
+drawerSelectContentClass,
+drawerSelectItemClass,
+drawerSelectTriggerClass,
+DrawerShell,
+} from '@/components/Drawers/drawer-shell';
+import {
+MonthYearPicker,
+toFirstDayOfMonth,
+} from '@/components/month-year-select';
+import { Input } from '@/components/ui/input';
+import {
+Select,
+SelectContent,
+SelectItem,
+SelectTrigger,
+SelectValue,
+} from '@/components/ui/select';
+import { useDrawer } from '@/contexts/DrawerContext';
+import { PurchaseDrawerProps } from '@/utils/types';
+import { useEffect, useMemo, useState } from 'react';
+const CARD_PLACEHOLDER = '__card_placeholder__';
+export function PurchaseDrawer({
+creditCards,
+createInstallmentPurchaseAction,
+triggerLabel = '+ Adicionar Compra',
+onSuccess,
+}: PurchaseDrawerProps) {
+const { activeDrawer, openDrawer, closeDrawer } = useDrawer();
+const [alert, setAlert] = useState<DrawerAlert>(null);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [selectedCardId, setSelectedCardId] = useState(CARD_PLACEHOLDER);
+const [dueMonth, setDueMonth] = useState('');
+const [dueYear, setDueYear] = useState('');
+const open = activeDrawer === 'purchase';
+const cardItems = useMemo(
+() => [
+{ label: 'Selecione o cartão', value: CARD_PLACEHOLDER },
+...creditCards.map((c) => ({ label: c.name, value: String(c.id) })),
+],
+[creditCards],
+);
+useEffect(() => {
+if (!open) {
+setSelectedCardId(CARD_PLACEHOLDER);
+setDueMonth('');
+setDueYear('');
+setAlert(null);
+}
+}, [open]);
+const handleSubmit = async (formData: FormData) => {
+if (selectedCardId === CARD_PLACEHOLDER) {
+setAlert({ type: 'error', message: 'Selecione o cartão antes de salvar.' });
+return;
+}
+const isoDate = toFirstDayOfMonth(dueYear, dueMonth);
+if (!isoDate) {
+setAlert({ type: 'error', message: 'Selecione o mês e o ano de vencimento.' });
+return;
+}
+formData.set('firstDueDate', isoDate);
+formData.set('creditCardId', selectedCardId);
+setIsSubmitting(true);
+try {
+await createInstallmentPurchaseAction(formData);
+closeDrawer();
+setAlert({ type: 'success', message: 'Compra adicionada!' });
+onSuccess?.();
+} catch (error) {
+setAlert({
+type: 'error',
+message: 'Não foi possível adicionar a compra. Verifique os dados e tente novamente.',
+});
+} finally {
+setIsSubmitting(false);
+}
+};
+const isCardPlaceholder = selectedCardId === CARD_PLACEHOLDER;
+return (
+<DrawerShell
+open={open}
+onClose={closeDrawer}
+title="Nova Compra no Cartão"
+description="Informe os dados da compra parcelada"
+onSubmit={handleSubmit}
+isSubmitting={isSubmitting}
+submitLabel="Salvar Compra"
+alert={alert}
+onAlertClose={() => setAlert(null)}
+trigger={
+<button
+type="button"
+onClick={() => openDrawer('purchase')}
+className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+>
+{triggerLabel}
+</button>
+}
+>
+<Select
+items={cardItems}
+value={selectedCardId}
+onValueChange={(v) => setSelectedCardId(v ?? CARD_PLACEHOLDER)}
+>
+<SelectTrigger
+className={`${drawerSelectTriggerClass} ${isCardPlaceholder ? 'text-gray-500' : ''}`}
+>
+<SelectValue />
+</SelectTrigger>
+<SelectContent className={drawerSelectContentClass}>
+<SelectItem
+value={CARD_PLACEHOLDER}
+className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+>
+Selecione o cartão
+</SelectItem>
+{creditCards.map((card) => (
+<SelectItem
+key={card.id}
+value={String(card.id)}
+className={drawerSelectItemClass}
+>
+{card.name}
+</SelectItem>
+))}
+</SelectContent>
+</Select>
+<Input name="description" placeholder="Descrição" required className={drawerFieldClass} />
+<Input
+name="totalAmount"
+type="number"
+step="0.01"
+placeholder="Valor total"
+required
+className={drawerFieldClass}
+/>
+<Input
+name="installments"
+type="number"
+min="1"
+placeholder="Nº de parcelas"
+required
+className={drawerFieldClass}
+/>
+<MonthYearPicker
+month={dueMonth}
+year={dueYear}
+onMonthChange={setDueMonth}
+onYearChange={setDueYear}
+className="md:col-span-2"
+startYear={2025}
+/>
+</DrawerShell>
+);
+}

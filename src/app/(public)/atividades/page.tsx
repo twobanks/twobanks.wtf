@@ -1,13 +1,18 @@
-import { fetchWorkoutsPage } from "@/actions/atividades";
+import { fetchRaceWorkouts, fetchWorkoutsPage } from "@/actions/atividades";
 import { AtividadesView, ModalityDataset } from "@/components/AtividadesView";
-import { races } from "@/data/provas";
 import { db } from "@/db";
 import { stravaWorkouts } from "@/db/schema";
 import { inArray, sql } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
-const BIKE_TYPES = ["Ride", "MountainBikeRide", "GravelRide", "VirtualRide", "EBikeRide"];
+const BIKE_TYPES = [
+  "Ride",
+  "MountainBikeRide",
+  "GravelRide",
+  "VirtualRide",
+  "EBikeRide",
+];
 const RUN_TYPES = ["Run", "TrailRun", "VirtualRun"];
 
 async function getModalityDataset(types: string[]): Promise<ModalityDataset> {
@@ -47,11 +52,13 @@ async function getModalityDataset(types: string[]): Promise<ModalityDataset> {
 export default async function AtividadesPage() {
   const currentYear = String(new Date().getFullYear());
 
-  const [bikeData, runData, initialWorkoutsPage] = await Promise.all([
-    getModalityDataset(BIKE_TYPES),
-    getModalityDataset(RUN_TYPES),
-    fetchWorkoutsPage({ tab: "todas", year: currentYear, page: 1 }),
-  ]);
+  const [bikeData, runData, initialWorkoutsPage, initialRaceWorkouts] =
+    await Promise.all([
+      getModalityDataset(BIKE_TYPES),
+      getModalityDataset(RUN_TYPES),
+      fetchWorkoutsPage({ tab: "todas", year: currentYear, page: 1 }),
+      fetchRaceWorkouts({ tab: "todas" }),
+    ]);
 
   const availableYears = Array.from(
     new Set([
@@ -68,7 +75,7 @@ export default async function AtividadesPage() {
       bikeData={bikeData}
       runData={runData}
       initialWorkoutsPage={initialWorkoutsPage}
-      races={races}
+      initialRaceWorkouts={initialRaceWorkouts}
     />
   );
 }
