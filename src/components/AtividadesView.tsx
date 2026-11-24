@@ -13,15 +13,14 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  LayoutGrid,
   List,
   MapPin,
   Mountain,
   Timer,
-  TrendingDown,
-  TrendingUp,
   Trophy,
 } from "lucide-react";
-import { useMemo, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 export type SectionTab = "informacoes" | "atividades" | "provas";
 
@@ -58,10 +57,14 @@ const RUN_TYPE_ICONS: Record<string, string> = {
 
 const BIKE_TYPES = Object.keys(BIKE_TYPE_ICONS);
 
-const MODALITY_OPTIONS: { key: TabType; label: string }[] = [
+const MODALITY_OPTIONS: {
+  key: TabType;
+  label: string;
+  iconSrc?: string;
+}[] = [
   { key: "todas", label: "Todas" },
-  { key: "bike", label: "Bike" },
-  { key: "corrida", label: "Corrida" },
+  { key: "bike", label: "Pedalando", iconSrc: BIKE_TYPE_ICONS.Ride },
+  { key: "corrida", label: "Correndo", iconSrc: RUN_TYPE_ICONS.Running },
 ];
 
 function isBikeType(type: string | null) {
@@ -92,16 +95,20 @@ function getActivityIconSrc(type: string | null) {
 function CustomSvgIcon({
   src,
   className = "size-4",
+  invertInLight = true,
 }: {
   src: string;
   className?: string;
+  invertInLight?: boolean;
 }) {
   return (
     <img
       src={src}
       alt=""
       aria-hidden="true"
-      className={`${className} object-contain brightness-0 invert`}
+      className={`${className} object-contain brightness-0 ${
+        invertInLight ? "invert" : "dark:invert"
+      }`}
     />
   );
 }
@@ -141,222 +148,185 @@ function formatDate(isoOrDate: string) {
   return `${d}/${m}/${y}`;
 }
 
-function computeYearStats(dataset: ModalityDataset, selectedYear: string) {
-  const yearMeters = dataset.metersByYear[selectedYear] ?? 0;
-  const prevYear = String(Number(selectedYear) - 1);
-  const prevYearMeters = dataset.metersByYear[prevYear] ?? 0;
-
-  const yoyChange =
-    prevYearMeters > 0
-      ? ((yearMeters - prevYearMeters) / prevYearMeters) * 100
-      : null;
-
-  return {
-    totalMeters: dataset.totalMeters,
-    maxMeters: dataset.maxMeters,
-    yearMeters,
-    yoyChange,
-  };
-}
-
-function YoYBadge({
-  yoyChange,
-  previousYear,
-}: {
-  yoyChange: number | null;
-  previousYear: string;
-}) {
-  if (yoyChange === null) return null;
-
-  const isPositive = yoyChange > 0;
-  const isNegative = yoyChange < 0;
-
-  return (
-    <span
-      title={`Comparado a ${previousYear}`}
-      className={`inline-flex items-center gap-0.5 text-xs font-semibold tabular-nums ${
-        isPositive
-          ? "text-emerald-600 dark:text-emerald-400"
-          : isNegative
-            ? "text-rose-600 dark:text-rose-400"
-            : "text-zinc-500"
-      }`}
-    >
-      {isPositive && <TrendingUp className="size-3" />}
-      {isNegative && <TrendingDown className="size-3" />}
-      {isPositive ? "+" : ""}
-      {yoyChange.toFixed(1).replace(".", ",")}%
-    </span>
-  );
-}
-
-function ModalityFilter({
-  value,
-  onChange,
-}: {
-  value: TabType;
-  onChange: (next: TabType) => void;
-}) {
-  return (
-    <div
-      role="group"
-      aria-label="Filtrar por modalidade"
-      className="inline-flex p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800"
-    >
-      {MODALITY_OPTIONS.map((opt) => {
-        const isActive = value === opt.key;
-        return (
-          <button
-            key={opt.key}
-            type="button"
-            onClick={() => onChange(opt.key)}
-            className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
-              isActive
-                ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs"
-                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
-            }`}
-          >
-            {opt.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function YearSelector({
+function UnifiedFiltersBar({
+  modality,
+  onModalityChange,
+  showYear,
   years,
-  value,
-  onChange,
+  selectedYear,
+  onYearChange,
 }: {
+  modality: TabType;
+  onModalityChange: (next: TabType) => void;
+  showYear: boolean;
   years: string[];
-  value: string;
-  onChange: (nextYear: string) => void;
+  selectedYear: string;
+  onYearChange: (nextYear: string) => void;
 }) {
   return (
-    <label className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-      <Calendar className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-      <span>Ano:</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="bg-transparent font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none cursor-pointer"
-        aria-label="Selecionar ano"
+    <div className="inline-flex items-center p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+      <div
+        role="group"
+        aria-label="Filtrar por modalidade"
+        className="inline-flex items-center"
       >
-        {years.map((yr) => (
-          <option
-            key={yr}
-            value={yr}
-            className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+        {MODALITY_OPTIONS.map((opt) => {
+          const isActive = modality === opt.key;
+          return (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => onModalityChange(opt.key)}
+              title={opt.label}
+              aria-label={opt.label}
+              aria-pressed={isActive}
+              className={`inline-flex items-center justify-center px-3.5 py-2 rounded-lg transition-colors cursor-pointer ${
+                isActive
+                  ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+              }`}
+            >
+              {opt.iconSrc ? (
+                <CustomSvgIcon
+                  src={opt.iconSrc}
+                  invertInLight={false}
+                  className={`size-4 sm:size-[18px] transition-opacity ${
+                    isActive ? "opacity-100" : "opacity-60 hover:opacity-100"
+                  }`}
+                />
+              ) : (
+                <LayoutGrid
+                  className={`size-4 sm:size-[18px] ${
+                    isActive ? "text-[#6FC5EF]" : ""
+                  }`}
+                />
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {showYear && (
+        <>
+          <div
+            aria-hidden="true"
+            className="h-5 w-px bg-zinc-200 dark:bg-zinc-800 mx-1.5"
+          />
+
+          <label
+            title="Selecionar ano"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-white/60 dark:hover:bg-zinc-800/60 transition-colors cursor-pointer"
           >
-            {yr}
-          </option>
-        ))}
-      </select>
-    </label>
+            <Calendar className="size-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
+            <select
+              value={selectedYear}
+              onChange={(e) => onYearChange(e.target.value)}
+              className="bg-transparent font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none cursor-pointer"
+              aria-label="Selecionar ano"
+            >
+              {years.map((yr) => (
+                <option
+                  key={yr}
+                  value={yr}
+                  className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                >
+                  {yr}
+                </option>
+              ))}
+            </select>
+          </label>
+        </>
+      )}
+    </div>
   );
 }
 
-function CombinedModalityCard({
-  title,
-  icon,
-  selectedYear,
-  stats,
+function ActivityRowItem({
+  href,
+  name,
+  type,
+  startDate,
+  distanceMeters,
+  averageSpeed,
+  movingTime,
+  totalElevationGain,
+  isBike,
+  accent = "orange",
 }: {
-  title: string;
-  icon: React.ReactNode;
-  selectedYear: string;
-  stats: ReturnType<typeof computeYearStats>;
+  href: string;
+  name: string;
+  type: string | null;
+  startDate: string;
+  distanceMeters: number;
+  averageSpeed: string | null;
+  movingTime: number | null;
+  totalElevationGain: number;
+  isBike: boolean;
+  accent?: "orange" | "amber";
 }) {
-  const prevYear = String(Number(selectedYear) - 1);
+  const hoverTitleClass =
+    accent === "amber"
+      ? "group-hover:text-amber-500"
+      : "group-hover:text-orange-500";
+  const hoverArrowClass =
+    accent === "amber"
+      ? "group-hover:text-amber-500"
+      : "group-hover:text-zinc-900 dark:group-hover:text-zinc-100";
 
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden">
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
-        <span className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900 text-white">
-          {icon}
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex items-center justify-between gap-4 px-4 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-white shrink-0">
+          <CustomSvgIcon src={getActivityIconSrc(type)} className="size-4" />
         </span>
-        <h3 className="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-          {title}
-        </h3>
-      </div>
 
-      <div className="grid grid-cols-3 divide-x divide-zinc-100 dark:divide-zinc-800/80">
-        <div className="p-4">
-          <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
-            Total
+        <div className="min-w-0">
+          <p
+            className={`font-medium text-sm text-zinc-900 dark:text-zinc-100 truncate transition-colors ${hoverTitleClass}`}
+          >
+            {name}
           </p>
-          <p className="mt-1 text-lg sm:text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
-            {formatKm(stats.totalMeters)}
-          </p>
-        </div>
-
-        <div className="p-4">
-          <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
-            Em {selectedYear}
-          </p>
-          <div className="mt-1 flex items-baseline gap-2 flex-wrap">
-            <p className="text-lg sm:text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
-              {formatKm(stats.yearMeters)}
-            </p>
-            <YoYBadge yoyChange={stats.yoyChange} previousYear={prevYear} />
-          </div>
-        </div>
-
-        <div className="p-4">
-          <p className="text-[11px] uppercase tracking-wider text-zinc-500 font-medium">
-            Recorde
-          </p>
-          <p className="mt-1 text-lg sm:text-xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
-            {formatKm(stats.maxMeters)}
+          <p className="inline-flex items-center gap-1 text-xs text-zinc-500 mt-0.5">
+            <Calendar className="size-3 text-zinc-400 dark:text-zinc-500" />
+            <span>{formatDate(startDate)}</span>
           </p>
         </div>
       </div>
-    </div>
-  );
-}
 
-function SingleModalityStats({
-  selectedYear,
-  stats,
-}: {
-  selectedYear: string;
-  stats: ReturnType<typeof computeYearStats>;
-}) {
-  const prevYear = String(Number(selectedYear) - 1);
+      <div className="flex items-center gap-3 sm:gap-5 shrink-0 text-xs sm:text-sm tabular-nums">
+        {/* Distância */}
+        <span className="font-semibold text-zinc-900 dark:text-zinc-100 w-18 sm:w-20 text-right">
+          {formatKm(distanceMeters)}
+        </span>
 
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5">
-        <p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">
-          Distância Total
-        </p>
-        <p className="mt-2 text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
-          {formatKm(stats.totalMeters)}
-        </p>
+        {/* Ritmo / Velocidade */}
+        <span className="inline-flex items-center justify-end gap-1 text-zinc-600 dark:text-zinc-300 w-22 sm:w-26">
+          <MapPin className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+          <span>{formatPaceOrSpeed(averageSpeed, isBike)}</span>
+        </span>
+
+        {/* Tempo */}
+        <span className="hidden sm:inline-flex items-center justify-end gap-1 text-zinc-500 w-20">
+          <Timer className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+          <span>{formatDuration(movingTime)}</span>
+        </span>
+
+        {/* Elevação */}
+        <span className="hidden md:inline-flex items-center justify-end gap-1 text-zinc-500 w-20">
+          <Mountain className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+          <span>+{Math.round(totalElevationGain)} m</span>
+        </span>
+
+        <ArrowUpRight
+          className={`size-4 text-zinc-400 dark:text-zinc-500 transition-colors shrink-0 ${hoverArrowClass}`}
+        />
       </div>
-
-      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5">
-        <p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">
-          Em {selectedYear}
-        </p>
-        <div className="mt-2 flex items-baseline gap-2.5 flex-wrap">
-          <p className="text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
-            {formatKm(stats.yearMeters)}
-          </p>
-          <YoYBadge yoyChange={stats.yoyChange} previousYear={prevYear} />
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5">
-        <p className="text-xs uppercase tracking-wider text-zinc-500 font-medium">
-          Maior Distância
-        </p>
-        <p className="mt-2 text-2xl font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
-          {formatKm(stats.maxMeters)}
-        </p>
-      </div>
-    </div>
+    </a>
   );
 }
 
@@ -379,16 +349,6 @@ export function AtividadesView({
   const [isPending, startTransition] = useTransition();
   const [isLoadingRaces, startRaceTransition] = useTransition();
   const workoutsSectionRef = useRef<HTMLElement>(null);
-
-  const bikeStats = useMemo(
-    () => computeYearStats(bikeData, selectedYear),
-    [bikeData, selectedYear]
-  );
-
-  const runStats = useMemo(
-    () => computeYearStats(runData, selectedYear),
-    [runData, selectedYear]
-  );
 
   function loadWorkouts(
     nextModality: TabType,
@@ -473,119 +433,209 @@ export function AtividadesView({
     workoutsPage.totalCount
   );
 
+  // Valores do ano selecionado para a aba Informações
+  const selectedYearBikeMeters = bikeData.metersByYear[selectedYear] ?? 0;
+  const selectedYearRunMeters = runData.metersByYear[selectedYear] ?? 0;
+  const selectedYearTotalMeters =
+    selectedYearBikeMeters + selectedYearRunMeters;
+
   return (
-    <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-      <div className="border-b border-zinc-200 dark:border-zinc-800">
-        <nav
-          aria-label="Seções de atividades"
-          className="flex items-center gap-1 sm:gap-2 overflow-x-auto -mb-px"
-        >
-          {sectionTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeSection === tab.key;
+    <div className="w-full">
+      {/* Barra fixa abaixo do Header */}
+      <div className="sticky top-28 sm:top-36 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-background/95 backdrop-blur-md">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <nav
+            aria-label="Seções de atividades"
+            className="w-full md:w-auto inline-flex items-center p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-x-auto"
+          >
+            {sectionTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeSection === tab.key;
 
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setActiveSection(tab.key)}
-                className={`relative inline-flex items-center gap-2 px-3.5 sm:px-4 py-3 text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-                  isActive
-                    ? "text-zinc-900 dark:text-zinc-100"
-                    : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                }`}
-              >
-                <Icon
-                  className={`size-4 shrink-0 ${
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveSection(tab.key)}
+                  className={`flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     isActive
-                      ? "text-[#6FC5EF]"
-                      : "text-zinc-400 dark:text-zinc-500"
+                      ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs"
+                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
                   }`}
-                />
-                <span>{tab.label}</span>
-
-                {typeof tab.badge === "number" && (
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                >
+                  <Icon
+                    className={`size-4 shrink-0 ${
                       isActive
-                        ? "bg-[#6FC5EF]/15 text-sky-700 dark:text-[#6FC5EF]"
-                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                        ? "text-[#6FC5EF]"
+                        : "text-zinc-400 dark:text-zinc-500"
                     }`}
-                  >
-                    {tab.badge}
-                  </span>
-                )}
-
-                {isActive && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-[#6FC5EF]"
                   />
-                )}
-              </button>
-            );
-          })}
-        </nav>
+                  <span>{tab.label}</span>
+
+                  {typeof tab.badge === "number" && (
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
+                        isActive
+                          ? "bg-[#6FC5EF]/15 text-sky-700 dark:text-[#6FC5EF]"
+                          : "bg-zinc-200/70 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                      }`}
+                    >
+                      {tab.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Filtros unificados no mesmo container */}
+          <div className="flex items-center justify-end">
+            <UnifiedFiltersBar
+              modality={modality}
+              onModalityChange={handleModalityChange}
+              showYear={activeSection !== "provas"}
+              years={availableYears}
+              selectedYear={selectedYear}
+              onYearChange={handleYearChange}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* TAB 1: INFORMAÇÕES */}
-      {activeSection === "informacoes" && (
-        <section className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-              Volume & Recordes
-            </h2>
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+        {/* TAB 1: INFORMAÇÕES (Estilo Editorial + Barra de Proporção) */}
+        {activeSection === "informacoes" && (
+          <section className="space-y-10">
+            {/* Bloco 1: Acumulado Histórico */}
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-[#6FC5EF]">
+                    Distância Total Acumulada
+                  </p>
+                  <p className="mt-1 text-4xl sm:text-5xl font-bold tracking-tight tabular-nums text-zinc-900 dark:text-zinc-100">
+                    {formatKm(bikeData.totalMeters + runData.totalMeters)}
+                  </p>
+                </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
-              <ModalityFilter value={modality} onChange={handleModalityChange} />
-              <YearSelector
-                years={availableYears}
-                value={selectedYear}
-                onChange={handleYearChange}
-              />
+                {/* Recordes inline sem caixa */}
+                <div className="flex items-center gap-6 sm:gap-8 text-sm tabular-nums">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wider text-zinc-500">
+                      Maior pedal
+                    </p>
+                    <p className="mt-0.5 font-bold text-zinc-900 dark:text-zinc-100">
+                      {formatKm(bikeData.maxMeters)}
+                    </p>
+                  </div>
+                  <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800" />
+                  <div>
+                    <p className="text-[11px] uppercase tracking-wider text-zinc-500">
+                      Maior corrida
+                    </p>
+                    <p className="mt-0.5 font-bold text-zinc-900 dark:text-zinc-100">
+                      {formatKm(runData.maxMeters)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Barra de proporção Pedalando vs Correndo */}
+              {(() => {
+                const total = bikeData.totalMeters + runData.totalMeters || 1;
+                const bikePct = (bikeData.totalMeters / total) * 100;
+                const runPct = (runData.totalMeters / total) * 100;
+
+                return (
+                  <div className="space-y-3">
+                    <div className="h-2.5 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden flex gap-0.5">
+                      <div
+                        style={{ width: `${bikePct}%` }}
+                        className="bg-[#6FC5EF] transition-all duration-500"
+                      />
+                      <div
+                        style={{ width: `${runPct}%` }}
+                        className="bg-amber-400 transition-all duration-500"
+                      />
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-between gap-4 text-sm tabular-nums">
+                      <div className="flex items-center gap-2">
+                        <span className="size-2.5 rounded-full bg-[#6FC5EF]" />
+                        <span className="text-zinc-500">Pedalando:</span>
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                          {formatKm(bikeData.totalMeters)}
+                        </span>
+                        <span className="text-xs text-zinc-400">
+                          ({bikePct.toFixed(0)}%)
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="size-2.5 rounded-full bg-amber-400" />
+                        <span className="text-zinc-500">Correndo:</span>
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                          {formatKm(runData.totalMeters)}
+                        </span>
+                        <span className="text-xs text-zinc-400">
+                          ({runPct.toFixed(0)}%)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
-          </div>
 
-          {modality === "todas" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <CombinedModalityCard
-                title="Bike"
-                icon={
-                  <CustomSvgIcon src={BIKE_TYPE_ICONS.Ride} className="size-4" />
-                }
-                selectedYear={selectedYear}
-                stats={bikeStats}
-              />
-              <CombinedModalityCard
-                title="Corrida"
-                icon={
-                  <CustomSvgIcon
-                    src={RUN_TYPE_ICONS.Running}
-                    className="size-4"
-                  />
-                }
-                selectedYear={selectedYear}
-                stats={runStats}
-              />
+            {/* Bloco 2: Resumo do Ano Selecionado (Lista limpa com divisores) */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                Resumo de {selectedYear}
+              </h3>
+
+              <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800">
+                {modality !== "corrida" && (
+                  <div className="py-4 flex items-center justify-between">
+                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                      Pedalando em {selectedYear}
+                    </span>
+                    <span className="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+                      {formatKm(selectedYearBikeMeters)}
+                    </span>
+                  </div>
+                )}
+
+                {modality !== "bike" && (
+                  <div className="py-4 flex items-center justify-between">
+                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                      Correndo em {selectedYear}
+                    </span>
+                    <span className="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+                      {formatKm(selectedYearRunMeters)}
+                    </span>
+                  </div>
+                )}
+
+                {modality === "todas" && (
+                  <div className="py-4 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                      Total em {selectedYear}
+                    </span>
+                    <span className="text-xl font-bold tabular-nums text-[#6FC5EF]">
+                      {formatKm(selectedYearTotalMeters)}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </section>
+        )}
 
-          {modality === "bike" && (
-            <SingleModalityStats selectedYear={selectedYear} stats={bikeStats} />
-          )}
-
-          {modality === "corrida" && (
-            <SingleModalityStats selectedYear={selectedYear} stats={runStats} />
-          )}
-        </section>
-      )}
-
-      {/* TAB 2: ATIVIDADES */}
-      {activeSection === "atividades" && (
-        <section ref={workoutsSectionRef} className="space-y-5 scroll-mt-36">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        {/* TAB 2: ATIVIDADES */}
+        {activeSection === "atividades" && (
+          <section ref={workoutsSectionRef} className="space-y-5 scroll-mt-48">
             <div className="flex items-center gap-2.5">
               <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
                 Treinos de {selectedYear}
@@ -595,129 +645,83 @@ export function AtividadesView({
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2.5">
-              <ModalityFilter value={modality} onChange={handleModalityChange} />
-              <YearSelector
-                years={availableYears}
-                value={selectedYear}
-                onChange={handleYearChange}
-              />
-            </div>
-          </div>
-
-          <div
-            className={`divide-y divide-zinc-200 dark:divide-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden transition-opacity ${
-              isPending ? "opacity-60 pointer-events-none" : "opacity-100"
-            }`}
-          >
-            {workoutsPage.items.length === 0 ? (
-              <p className="p-8 text-center text-sm text-zinc-500">
-                Nenhum treino encontrado em {selectedYear}.
-              </p>
-            ) : (
-              workoutsPage.items.map((workout) => {
-                const bike = isBikeType(workout.type);
-                return (
-                  <a
+            <div
+              className={`divide-y divide-zinc-200 dark:divide-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden transition-opacity ${
+                isPending ? "opacity-60 pointer-events-none" : "opacity-100"
+              }`}
+            >
+              {workoutsPage.items.length === 0 ? (
+                <p className="p-8 text-center text-sm text-zinc-500">
+                  Nenhum treino encontrado em {selectedYear}.
+                </p>
+              ) : (
+                workoutsPage.items.map((workout) => (
+                  <ActivityRowItem
                     key={workout.id}
                     href={`https://www.strava.com/activities/${workout.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center justify-between gap-4 px-4 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-white shrink-0">
-                        <CustomSvgIcon
-                          src={getActivityIconSrc(workout.type)}
-                          className="size-4"
-                        />
-                      </span>
-
-                      <div className="min-w-0">
-                        <p className="font-medium text-sm text-zinc-900 dark:text-zinc-100 truncate group-hover:text-orange-500 transition-colors">
-                          {workout.name}
-                        </p>
-                        <p className="text-xs text-zinc-500">
-                          {formatDate(workout.startDate)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2.5 sm:gap-6 shrink-0 text-xs sm:text-sm tabular-nums text-right">
-                      <span className="font-semibold text-zinc-900 dark:text-zinc-100 w-16 sm:w-20">
-                        {formatKm(Number(workout.distance || 0))}
-                      </span>
-
-                      <span className="text-zinc-600 dark:text-zinc-300 w-20 sm:w-24">
-                        {formatPaceOrSpeed(workout.averageSpeed, bike)}
-                      </span>
-
-                      <span className="hidden sm:inline text-zinc-500 w-16">
-                        {formatDuration(workout.movingTime)}
-                      </span>
-
-                      <span className="hidden md:inline text-zinc-500 w-16">
-                        +{Math.round(Number(workout.totalElevationGain || 0))} m
-                      </span>
-
-                      <ArrowUpRight className="size-4 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors" />
-                    </div>
-                  </a>
-                );
-              })
-            )}
-          </div>
-
-          {workoutsPage.totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 text-xs text-zinc-500">
-              <p className="tabular-nums">
-                Mostrando{" "}
-                <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                  {startItem}–{endItem}
-                </span>{" "}
-                de{" "}
-                <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                  {workoutsPage.totalCount}
-                </span>{" "}
-                treinos
-              </p>
-
-              <div className="inline-flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={workoutsPage.page <= 1 || isPending}
-                  onClick={() => handlePageChange(workoutsPage.page - 1)}
-                  className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-                >
-                  <ChevronLeft className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-                  Anterior
-                </button>
-
-                <span className="px-2 font-medium tabular-nums text-zinc-600 dark:text-zinc-400">
-                  Página {workoutsPage.page} de {workoutsPage.totalPages}
-                </span>
-
-                <button
-                  type="button"
-                  disabled={
-                    workoutsPage.page >= workoutsPage.totalPages || isPending
-                  }
-                  onClick={() => handlePageChange(workoutsPage.page + 1)}
-                  className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
-                >
-                  Próxima
-                  <ChevronRight className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-                </button>
-              </div>
+                    name={workout.name}
+                    type={workout.type}
+                    startDate={workout.startDate}
+                    distanceMeters={Number(workout.distance || 0)}
+                    averageSpeed={workout.averageSpeed}
+                    movingTime={workout.movingTime}
+                    totalElevationGain={Number(workout.totalElevationGain || 0)}
+                    isBike={isBikeType(workout.type)}
+                    accent="orange"
+                  />
+                ))
+              )}
             </div>
-          )}
-        </section>
-      )}
 
-      {/* TAB 3: PROVAS */}
-      {activeSection === "provas" && (
-        <section className="space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            {workoutsPage.totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 text-xs text-zinc-500">
+                <p className="tabular-nums">
+                  Mostrando{" "}
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                    {startItem}–{endItem}
+                  </span>{" "}
+                  de{" "}
+                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                    {workoutsPage.totalCount}
+                  </span>{" "}
+                  treinos
+                </p>
+
+                <div className="inline-flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={workoutsPage.page <= 1 || isPending}
+                    onClick={() => handlePageChange(workoutsPage.page - 1)}
+                    className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="size-3.5 text-zinc-400 dark:text-zinc-500" />
+                    Anterior
+                  </button>
+
+                  <span className="px-2 font-medium tabular-nums text-zinc-600 dark:text-zinc-400">
+                    Página {workoutsPage.page} de {workoutsPage.totalPages}
+                  </span>
+
+                  <button
+                    type="button"
+                    disabled={
+                      workoutsPage.page >= workoutsPage.totalPages || isPending
+                    }
+                    onClick={() => handlePageChange(workoutsPage.page + 1)}
+                    className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                  >
+                    Próxima
+                    <ChevronRight className="size-3.5 text-zinc-400 dark:text-zinc-500" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* TAB 3: PROVAS */}
+        {activeSection === "provas" && (
+          <section className="space-y-5">
             <div className="flex items-center gap-2.5">
               <Trophy className="size-4 text-amber-400" />
               <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
@@ -728,86 +732,36 @@ export function AtividadesView({
               </span>
             </div>
 
-            <ModalityFilter value={modality} onChange={handleModalityChange} />
-          </div>
-
-          {raceWorkouts.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-8 text-center text-sm text-zinc-500">
-              Nenhuma prova encontrada na base de atividades para este filtro.
-            </div>
-          ) : (
             <div
-              className={`grid grid-cols-1 md:grid-cols-2 gap-4 transition-opacity ${
-                isLoadingRaces ? "opacity-60" : "opacity-100"
+              className={`divide-y divide-zinc-200 dark:divide-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden transition-opacity ${
+                isLoadingRaces ? "opacity-60 pointer-events-none" : "opacity-100"
               }`}
             >
-              {raceWorkouts.map((race) => {
-                const isBike = race.modality === "bike";
-                const paceOrSpeed = formatPaceOrSpeed(
-                  race.averageSpeed,
-                  isBike
-                );
-
-                return (
-                  <a
+              {raceWorkouts.length === 0 ? (
+                <p className="p-8 text-center text-sm text-zinc-500">
+                  Nenhuma prova encontrada na base de atividades para este filtro.
+                </p>
+              ) : (
+                raceWorkouts.map((race) => (
+                  <ActivityRowItem
                     key={race.id}
                     href={race.stravaUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-4 hover:border-amber-500/50 transition-all flex flex-col justify-between gap-3"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="space-y-1.5 min-w-0">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border border-zinc-800 bg-zinc-900 text-zinc-200">
-                          <CustomSvgIcon
-                            src={getActivityIconSrc(race.type)}
-                            className="size-3"
-                          />
-                          {isBike ? "Bike" : "Corrida"}
-                          {race.type ? ` • ${race.type}` : ""}
-                        </span>
-                        <h3 className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 group-hover:text-amber-500 transition-colors truncate">
-                          {race.name}
-                        </h3>
-                      </div>
-
-                      <ArrowUpRight className="size-4 text-zinc-400 dark:text-zinc-500 group-hover:text-amber-500 shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-500 tabular-nums">
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-                        {formatDate(race.startDate)}
-                      </span>
-
-                      <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                        {formatKm(race.distanceMeters)}
-                      </span>
-
-                      <span className="inline-flex items-center gap-1">
-                        <Mountain className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-                        +{Math.round(race.totalElevationGain)} m
-                      </span>
-
-                      <span className="inline-flex items-center gap-1">
-                        <Timer className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-                        {formatDuration(race.movingTime)}
-                      </span>
-
-                      {paceOrSpeed !== "--" && (
-                        <span className="inline-flex items-center gap-1">
-                          <MapPin className="size-3.5 text-zinc-400 dark:text-zinc-500" />
-                          {paceOrSpeed}
-                        </span>
-                      )}
-                    </div>
-                  </a>
-                );
-              })}
+                    name={race.name}
+                    type={race.type}
+                    startDate={race.startDate}
+                    distanceMeters={race.distanceMeters}
+                    averageSpeed={race.averageSpeed}
+                    movingTime={race.movingTime}
+                    totalElevationGain={race.totalElevationGain}
+                    isBike={race.modality === "bike"}
+                    accent="amber"
+                  />
+                ))
+              )}
             </div>
-          )}
-        </section>
-      )}
-    </main>
+          </section>
+        )}
+      </main>
+    </div>
   );
 }
