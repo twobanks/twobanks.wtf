@@ -15,7 +15,21 @@ import {
 } from "lucide-react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
+
 import { useEffect, useMemo, useRef, useState } from "react"
+
+const THEME_BLUE = "#5EACCF"
+
+function getDocumentThemeState() {
+  if (typeof document === "undefined") {
+    return { isDark: true, bgColor: "" }
+  }
+  const root = document.documentElement
+  const isDark = root.classList.contains("dark")
+  const bgColor = getComputedStyle(root).getPropertyValue("--background").trim()
+  return { isDark, bgColor }
+}
+
 
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60)
@@ -39,11 +53,12 @@ export default function StravaMap({
   const [isSatellite, setIsSatellite] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [bearing, setBearing] = useState(0)
+  const [isDarkTheme, setIsDarkTheme] = useState(true)
 
-  const stateRef = useRef({ is3D, isSatellite })
+  const stateRef = useRef({ is3D, isSatellite, isDarkTheme })
   useEffect(() => {
-    stateRef.current = { is3D, isSatellite }
-  }, [is3D, isSatellite])
+    stateRef.current = { is3D, isSatellite, isDarkTheme }
+  }, [is3D, isSatellite, isDarkTheme])
 
   const { coordinates, startPoint, endPoint, bounds } = useMemo(() => {
     if (!mapPolyline) return { coordinates: [], startPoint: null, endPoint: null, bounds: null }
@@ -68,8 +83,34 @@ export default function StravaMap({
     }
   }, [mapPolyline])
 
+  const syncMapBackgroundWithTheme = (map: mapboxgl.Map) => {
+    if (stateRef.current.isSatellite) return
+    const { bgColor } = getDocumentThemeState()
+    if (!bgColor) return
+
+    try {
+      const style = map.getStyle()
+      if (!style?.layers) return
+
+      for (const layer of style.layers) {
+        if (layer.type === "background") {
+          map.setPaintProperty(layer.id, "background-color", bgColor)
+        } else if (
+          layer.type === "fill" &&
+          (layer.id === "land" || layer.id === "landcover")
+        ) {
+          map.setPaintProperty(layer.id, "fill-color", bgColor)
+        }
+      }
+    } catch {
+      // ignora enquanto o estilo ainda finaliza carregamento
+    }
+  }
+
   const setupLayers = (map: mapboxgl.Map) => {
     if (!coordinates.length) return
+
+    syncMapBackgroundWithTheme(map)
 
     if (!map.getSource("mapbox-dem")) {
       map.addSource("mapbox-dem", {
@@ -112,9 +153,9 @@ export default function StravaMap({
         source: "route-source",
         layout: { "line-join": "round", "line-cap": "round" },
         paint: {
-          "line-color": "#3b82f6",
+          "line-color": THEME_BLUE,
           "line-width": 5,
-          "line-opacity": 0.95,
+          "line-opacity": 1,
         },
       })
 
@@ -167,13 +208,19 @@ export default function StravaMap({
     if (!containerRef.current || !coordinates.length || !bounds) return
     if (mapRef.current) return
 
+    const initialDark = getDocumentThemeState().isDark
+    setIsDarkTheme(initialDark)
+    stateRef.current.isDarkTheme = initialDark
+
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: "mapbox://styles/mapbox/dark-v11",
+      style: initialDark
+        ? "mapbox://styles/mapbox/dark-v11"
+        : "mapbox://styles/mapbox/light-v11",
       bounds: bounds,
-      fitBoundsOptions: { padding: 60 },
+      fitBoundsOptions: { padding: 65 },
       pitchWithRotate: true,
       dragRotate: true,
       touchZoomRotate: true,
@@ -187,7 +234,29 @@ export default function StravaMap({
     map.on("load", () => setupLayers(map))
     map.on("style.load", () => setupLayers(map))
 
+    const observer = new MutationObserver(() => {
+      const { isDark } = getDocumentThemeState()
+      if (isDark === stateRef.current.isDarkTheme) return
+
+      setIsDarkTheme(isDark)
+      stateRef.current.isDarkTheme = isDark
+
+      if (!stateRef.current.isSatellite && mapRef.current) {
+        mapRef.current.setStyle(
+          isDark
+            ? "mapbox://styles/mapbox/dark-v11"
+            : "mapbox://styles/mapbox/light-v11"
+        )
+      }
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
     return () => {
+      observer.disconnect()
       activePopupRef.current?.remove()
       activeMarkerRef.current?.remove()
       map.remove()
@@ -337,13 +406,13 @@ ${trkpts}
   const handleToggleStyle = () => {
     const map = mapRef.current
     if (!map) return
-
     const nextSat = !isSatellite
     setIsSatellite(nextSat)
+    const baseStyle = stateRef.current.isDarkTheme
+      ? "mapbox://styles/mapbox/dark-v11"
+      : "mapbox://styles/mapbox/light-v11"
     map.setStyle(
-      nextSat
-        ? "mapbox://styles/mapbox/satellite-streets-v12"
-        : "mapbox://styles/mapbox/dark-v11"
+      nextSat ? "mapbox://styles/mapbox/satellite-streets-v12" : baseStyle
     )
   }
 
@@ -369,7 +438,7 @@ ${trkpts}
 
   if (!coordinates.length) {
     return (
-      <div className="h-[420px] w-full flex items-center justify-center bg-surface-1 rounded-2xl border border-border text-subtle-foreground">
+      <div className="h-[460px] w-full flex items-center justify-center bg-surface-1 text-subtle-foreground rounded-2xl">
         Esta atividade não possui dados de mapa.
       </div>
     )
@@ -378,7 +447,7 @@ ${trkpts}
   return (
     <div 
       ref={wrapperRef} 
-      className="h-[420px] w-full rounded-2xl overflow-hidden border border-border shadow-sm relative bg-background"
+      className="h-[460px] w-full overflow-hidden relative bg-background rounded-2xl"
     >
       <style jsx global>{`
         .strava-map-popup .mapboxgl-popup-content {
@@ -391,13 +460,13 @@ ${trkpts}
         }
       `}</style>
 
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-white/80 bg-surface-1 backdrop-blur-md border border-border rounded-xl shadow-lg">
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-surface-1/90 backdrop-blur-md border border-border rounded-xl shadow-lg">
         <button
           type="button"
           onClick={handleToggle3D}
           className={`p-2 rounded-lg transition-colors ${
             is3D 
-              ? "bg-surface-2 text-blue-500" 
+              ? "bg-surface-2 text-[#5EACCF]" 
               : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={is3D ? "Visão 2D" : "Visão 3D"}
@@ -410,10 +479,10 @@ ${trkpts}
           onClick={handleToggleStyle}
           className={`p-2 rounded-lg transition-colors ${
             isSatellite 
-              ? "bg-surface-2 text-blue-500" 
+              ? "bg-surface-2 text-[#5EACCF]" 
               : "text-subtle-foreground hover:bg-surface-2"
           }`}
-          title={isSatellite ? "Modo Vetorial Escuro" : "Modo Satélite"}
+          title={isSatellite ? "Modo Vetorial" : "Modo Satélite"}
         >
           <Layers size={18} />
         </button>
@@ -455,7 +524,7 @@ ${trkpts}
         <button
           type="button"
           onClick={handleDownloadGPX}
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-blue-500 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-[#5EACCF] transition-colors"
           title="Baixar Rota (.gpx)"
         >
           <Download size={18} />

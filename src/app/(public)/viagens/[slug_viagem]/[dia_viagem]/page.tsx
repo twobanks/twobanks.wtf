@@ -1,5 +1,6 @@
 import StravaMap from "@/components/StravaMapLoader"
 import DayPhotoGallery from "@/components/viagens/DayPhotoGallery"
+import { MOCK_PHOTOS } from "@/data/fotografias"
 import {
   formatDatePtBr,
   formatDuration,
@@ -9,6 +10,7 @@ import {
   getDaySafeStreams,
   getEnrichedTripBySlug,
 } from "@/lib/viagens"
+import { TripPhoto } from "@/utils/types/viagens"
 import {
   ArrowLeft,
   ArrowRight,
@@ -56,9 +58,21 @@ export default async function DiaViagemPage({
       ? day.waypoints.join(" → ")
       : `${day.origin} → ${day.destination}`
 
+  // Fotos mockadas como fallback quando day.photos estiver vazio
+  const mockPhotosAsTripPhotos: TripPhoto[] = MOCK_PHOTOS.slice(0, 6).map(
+    (photo) => ({
+      id: photo.id,
+      url: photo.imageUrl,
+      caption: photo.title,
+      location: photo.location.name,
+    })
+  )
+  const displayPhotos =
+    day.photos && day.photos.length > 0 ? day.photos : mockPhotosAsTripPhotos
+
   return (
-    <main className="min-h-screen w-full overflow-x-hidden pt-6 pb-24">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
+    <main className="min-h-screen w-full overflow-x-hidden">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-24 space-y-8">
         {/* Retorno à expedição */}
         <div>
           <Link
@@ -90,10 +104,14 @@ export default async function DiaViagemPage({
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            {day.title}
+            {routeLabel}
           </h1>
 
-          <p className="text-sm font-medium text-[#5EACCF]">{routeLabel}</p>
+          {day.title && (
+            <p className="text-sm font-medium text-muted-foreground">
+              {day.title}
+            </p>
+          )}
 
           {day.summary && (
             <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -181,7 +199,7 @@ export default async function DiaViagemPage({
           )}
         </header>
 
-        {/* Mapa do traçado do dia */}
+        {/* Mapa do traçado do dia - sem borda, alinhado ao container */}
         {activePolyline && (
           <section className="space-y-2">
             <h2 className="text-sm font-mono uppercase tracking-wider text-subtle-foreground">
@@ -189,7 +207,9 @@ export default async function DiaViagemPage({
                 ? "Traçado GPS gravado"
                 : "Traçado planejado"}
             </h2>
-            <StravaMap mapPolyline={activePolyline} streams={streams} />
+            <div className="-mx-4 sm:-mx-6">
+              <StravaMap mapPolyline={activePolyline} streams={streams} />
+            </div>
           </section>
         )}
 
@@ -342,7 +362,7 @@ export default async function DiaViagemPage({
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
             Fotos
           </h2>
-          <DayPhotoGallery photos={day.photos} />
+          <DayPhotoGallery photos={displayPhotos} />
         </section>
 
         {/* Navegação simples entre dias */}

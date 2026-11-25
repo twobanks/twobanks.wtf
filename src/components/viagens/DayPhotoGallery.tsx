@@ -33,11 +33,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
   const activePhoto = selectedIndex !== null ? photos[selectedIndex] : null
 
   return (
-    <section className="space-y-4">
-      <h2 className="text-lg font-bold tracking-tight text-foreground">
-        Registros Fotográficos ({photos.length})
-      </h2>
-
+    <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {photos.map((photo, index) => (
           <button
@@ -138,6 +134,6 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
           </div>
         </div>
       )}
-    </section>
+    </>
   )
 }
