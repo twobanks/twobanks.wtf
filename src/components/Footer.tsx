@@ -3,6 +3,7 @@
 
 import { Bike, LayoutDashboard, Lock } from "lucide-react";
 import Link from "next/link";
+import { ModeToggle } from "./ModeToggle";
 
 const styleFooter = {
   links: 'flex items-center justify-center rounded-xl p-2 text-[#B8DE53] transition-colors hover:bg-surface-2 hover:text-foreground',
@@ -27,6 +28,9 @@ export default function Footer({ logged }: { logged: boolean }) {
           <LayoutDashboard size={20} />
           <span className="sr-only">Carteira</span>
         </Link>
+        <div className={styleFooter.links}>
+          <ModeToggle />
+        </div>
       </div>
     </footer>
   );

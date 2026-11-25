@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { ModeToggle } from "./ModeToggle";
 
 const PUBLIC_NAV_ITEMS = [
   { href: "/sobre", label: "Sobre", icon: User },
@@ -303,6 +304,7 @@ export function PublicFooter({
             </nav>
           )}
 
+          <ModeToggle />
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
