@@ -26,7 +26,7 @@ const STATUS_BADGE: Record<TripStatus, { label: string; className: string }> = {
   },
   completed: {
     label: "Concluída",
-    className: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    className: "bg-success-subtle text-success border-success/30",
   },
 }
 
@@ -36,10 +36,10 @@ export default async function ViagensPage() {
   return (
     <main className="min-h-screen w-full max-w-6xl mx-auto px-4 py-10 space-y-10">
       <header className="space-y-3">
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
           Viagens na Bike
         </h1>
-        <p className="text-zinc-600 dark:text-zinc-400 max-w-4xl text-sm sm:text-base">
+        <p className="text-subtle-foreground max-w-4xl text-sm sm:text-base">
           Roteiros planejados, mapas interativos, telemetria sincronizada do Strava e diários de bordo etapa por etapa.
         </p>
       </header>
@@ -61,7 +61,7 @@ export default async function ViagensPage() {
             <Link
               key={trip.slug}
               href={`/viagens/${trip.slug}`}
-              className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-colors hover:border-[#5EACCF]/60"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface-1 transition-colors hover:border-[#5EACCF]/60"
             >
               <div className="relative h-52 w-full overflow-hidden bg-zinc-950">
                 <TripRoutePreview trip={trip} status={trip.status} />
@@ -72,13 +72,13 @@ export default async function ViagensPage() {
                 >
                   {badge.label}
                 </span>
-                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-zinc-300">
+                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin className="size-3.5 text-[#5EACCF]" />
                     {trip.origin} → {trip.destination}
                   </span>
                   <span className="inline-flex items-center gap-1.5 font-mono">
-                    <Calendar className="size-3.5 text-zinc-400" />
+                    <Calendar className="size-3.5 text-subtle-foreground" />
                     {formatDatePtBr(trip.startDate)}
                   </span>
                 </div>
@@ -86,16 +86,16 @@ export default async function ViagensPage() {
 
               <div className="flex flex-1 flex-col justify-between p-5 space-y-5">
                 <div className="space-y-2">
-                  <h2 className="text-xl font-bold text-zinc-900 dark:text-white group-hover:text-[#5EACCF] transition-colors">
+                  <h2 className="text-xl font-bold text-foreground group-hover:text-[#5EACCF] transition-colors">
                     {trip.title}
                   </h2>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                  <p className="text-sm text-subtle-foreground line-clamp-2">
                     {trip.subtitle}
                   </p>
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                  <div className="flex items-center justify-between text-xs font-mono text-subtle-foreground">
                     <span>{formatKm(displayDistance, 0)}</span>
                     <span className="inline-flex items-center gap-1">
                       <Mountain className="size-3.5" />
@@ -104,7 +104,7 @@ export default async function ViagensPage() {
                     <span>{trip.days.length} etapas</span>
                   </div>
 
-                  <div className="h-1.5 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+                  <div className="h-1.5 w-full rounded-full bg-surface-2 overflow-hidden">
                     <div
                       className="h-full rounded-full bg-[#5EACCF] transition-all"
                       style={{ width: `${trip.progressPercentage}%` }}

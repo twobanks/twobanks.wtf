@@ -85,9 +85,9 @@ export default async function TreinosPage() {
     const execucaoStrava = execucoes.find(ex => stravaToCorosDate(ex.startDate) === treino.date)
 
     return (
-      <div key={treino.id} className={`bg-white dark:bg-zinc-900 border ${isUpcoming ? "border-blue-200 dark:border-blue-900 shadow-md" : "border-zinc-200 dark:border-zinc-800 shadow-sm"} rounded-2xl overflow-hidden transition-shadow flex flex-col`}>
+      <div key={treino.id} className={`bg-surface-1 border ${isUpcoming ? "border-blue-200 dark:border-blue-900 shadow-md" : "border-border shadow-sm"} rounded-2xl overflow-hidden transition-shadow flex flex-col`}>
         {/* CABEÇALHO DA DATA */}
-        <div className={`${isUpcoming ? "bg-blue-50 dark:bg-blue-950/30" : "bg-zinc-100 dark:bg-zinc-950/50"} px-6 py-4 flex justify-between items-center border-b ${isUpcoming ? "border-blue-100 dark:border-blue-900/50" : "border-zinc-200 dark:border-zinc-800"}`}>
+        <div className={`${isUpcoming ? "bg-blue-50 dark:bg-blue-950/30" : "bg-surface-1"} px-6 py-4 flex justify-between items-center border-b ${isUpcoming ? "border-blue-100 dark:border-blue-900/50" : "border-border"}`}>
           <h2 className={`font-bold text-lg capitalize ${isUpcoming ? "text-blue-900 dark:text-blue-100" : ""}`}>
             {formatCorosDate(treino.date)}
           </h2>
@@ -101,10 +101,10 @@ export default async function TreinosPage() {
         </div>
 
         {/* CORPO DO CARD */}
-        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100 dark:divide-zinc-800 flex-1">
+        <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border flex-1">
           {/* LADO PLANO (COROS) */}
-          <div className="p-6 bg-white dark:bg-zinc-900">
-            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2"><span>📋</span> Planejado (Coros)</h3>
+          <div className="p-6 bg-surface-1">
+            <h3 className="text-xs font-bold text-subtle-foreground uppercase tracking-wider mb-4 flex items-center gap-2"><span>📋</span> Planejado (Coros)</h3>
             <h4 className="text-lg font-bold mb-4">{treino.title}</h4>
             {steps.length > 0 ? (
               <ul className="space-y-2">
@@ -114,7 +114,7 @@ export default async function TreinosPage() {
                   const cleanName = rawName.replace(/^\d+\.\s*/, '')
                   
                   return (
-                    <li key={index} className="flex items-center gap-3 text-sm text-zinc-800 dark:text-zinc-200 bg-zinc-50 dark:bg-zinc-800/40 px-3 py-2 rounded-lg border border-zinc-100 dark:border-zinc-800">
+                    <li key={index} className="flex items-center gap-3 text-sm text-foreground bg-surface-2 px-3 py-2 rounded-lg border border-border">
                       <div className="shrink-0">{step?.exerciseType === 1 ? '🧘‍♂️' : step?.exerciseType === 2 ? '⚡' : '🚶‍♂️'}</div>
                       <div className="flex-1 font-medium leading-relaxed">
                         {cleanName || 'Intervalo sem descrição'}
@@ -123,33 +123,33 @@ export default async function TreinosPage() {
                   )
                 })}
               </ul>
-            ) : <p className="text-sm text-zinc-500 italic bg-zinc-50 dark:bg-zinc-800/40 p-3 rounded-lg">Treino livre sugerido.</p>}
+            ) : <p className="text-sm text-subtle-foreground italic bg-surface-2 p-3 rounded-lg">Treino livre sugerido.</p>}
           </div>
 
           {/* LADO REALIDADE (STRAVA) */}
-          <div className="p-6 bg-zinc-50 dark:bg-zinc-950/20">
-            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-[#FC4C02]">🏃</span> Executado (Strava)</h3>
+          <div className="p-6 bg-surface-1">
+            <h3 className="text-xs font-bold text-subtle-foreground uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-[#FC4C02]">🏃</span> Executado (Strava)</h3>
             {execucaoStrava ? (
               <div className="space-y-4">
                 <h4 className="text-lg font-bold">{execucaoStrava.name}</h4>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                    <p className="text-[10px] text-zinc-500 uppercase">Distância</p>
+                  <div className="bg-surface-1 p-3 rounded-lg border border-border">
+                    <p className="text-[10px] text-subtle-foreground uppercase">Distância</p>
                     <p className="font-bold text-lg">{formatDistance(execucaoStrava.distance)}</p>
                   </div>
-                  <div className="bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                    <p className="text-[10px] text-zinc-500 uppercase">BPM Médio</p>
+                  <div className="bg-surface-1 p-3 rounded-lg border border-border">
+                    <p className="text-[10px] text-subtle-foreground uppercase">BPM Médio</p>
                     <p className="font-bold text-lg">{execucaoStrava.averageHeartrate || "--"} <span className="text-xs">❤️</span></p>
                   </div>
                 </div>
-                <Link href={`/atividades/${execucaoStrava.id}`} className="mt-4 block w-full text-center bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-sm font-semibold py-2.5 rounded-lg transition-colors">
+                <Link href={`/atividades/${execucaoStrava.id}`} className="mt-4 block w-full text-center bg-surface-2 hover:bg-surface-3 text-sm font-semibold py-2.5 rounded-lg transition-colors">
                   Ver Análise Profunda
                 </Link>
               </div>
             ) : isUpcoming ? (
-              <div className="flex flex-col items-center justify-center h-full text-zinc-400 text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">⏳</span>Aguardando execução...</div>
+              <div className="flex flex-col items-center justify-center h-full text-subtle-foreground text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">⏳</span>Aguardando execução...</div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-zinc-400 text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">😴</span>Nenhuma atividade registrada neste dia.</div>
+              <div className="flex flex-col items-center justify-center h-full text-subtle-foreground text-sm italic opacity-60 pb-8"><span className="text-3xl mb-2">😴</span>Nenhuma atividade registrada neste dia.</div>
             )}
           </div>
         </div>
@@ -158,50 +158,50 @@ export default async function TreinosPage() {
   }
 
   return (
-    <main className="min-h-screen w-full max-w-6xl bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-100">
+    <main className="min-h-screen w-full max-w-6xl bg-surface-1 text-foreground">
       <div className="mx-auto p-4 mx-auto space-y-12">
         <header className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight mb-4">Dashboard de Treinos</h1>
-          <p className="text-zinc-600 dark:text-zinc-400">Comparativo: Planejado vs Executado</p>
+          <p className="text-muted-foreground">Comparativo: Planejado vs Executado</p>
         </header>
 
         {/* 🟢 NOVO: PAINEL DE ESTATÍSTICAS 2026 */}
-        <section className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <h2 className="text-lg font-bold mb-6 flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-4">
+        <section className="bg-surface-1 rounded-2xl p-6 border border-border shadow-sm">
+          <h2 className="text-lg font-bold mb-6 flex items-center gap-2 border-b border-border pb-4">
             <span>📊</span> Balanço Anual (2026)
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {/* Corrida - Planejado */}
             <div className="space-y-1">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+              <p className="text-[10px] font-bold text-subtle-foreground uppercase tracking-wider flex items-center gap-1">
                 🏃 Corrida <span className="text-blue-500 ml-1">Proposto</span>
               </p>
-              <p className="text-3xl font-extrabold">{planRunKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+              <p className="text-3xl font-extrabold">{planRunKm.toFixed(0)} <span className="text-sm font-normal text-subtle-foreground">km</span></p>
             </div>
             
             {/* Corrida - Executado */}
-            <div className="space-y-1 border-r md:border-r-0 border-zinc-100 dark:border-zinc-800 pr-4">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+            <div className="space-y-1 border-r md:border-r-0 border-border pr-4">
+              <p className="text-[10px] font-bold text-subtle-foreground uppercase tracking-wider flex items-center gap-1">
                 🏃 Corrida <span className="text-[#FC4C02] ml-1">Executado</span>
               </p>
-              <p className="text-3xl font-extrabold">{execRunKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+              <p className="text-3xl font-extrabold">{execRunKm.toFixed(0)} <span className="text-sm font-normal text-subtle-foreground">km</span></p>
             </div>
 
             {/* Bike - Planejado */}
-            <div className="space-y-1 pl-4 md:pl-6 md:border-l border-zinc-100 dark:border-zinc-800">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+            <div className="space-y-1 pl-4 md:pl-6 md:border-l border-border">
+              <p className="text-[10px] font-bold text-subtle-foreground uppercase tracking-wider flex items-center gap-1">
                 🚴 Bike <span className="text-blue-500 ml-1">Proposto</span>
               </p>
-              <p className="text-3xl font-extrabold">{planBikeKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+              <p className="text-3xl font-extrabold">{planBikeKm.toFixed(0)} <span className="text-sm font-normal text-subtle-foreground">km</span></p>
             </div>
             
             {/* Bike - Executado */}
             <div className="space-y-1">
-              <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+              <p className="text-[10px] font-bold text-subtle-foreground uppercase tracking-wider flex items-center gap-1">
                 🚴 Bike <span className="text-[#FC4C02] ml-1">Executado</span>
               </p>
-              <p className="text-3xl font-extrabold">{execBikeKm.toFixed(0)} <span className="text-sm font-normal text-zinc-500">km</span></p>
+              <p className="text-3xl font-extrabold">{execBikeKm.toFixed(0)} <span className="text-sm font-normal text-subtle-foreground">km</span></p>
             </div>
           </div>
           
@@ -209,10 +209,10 @@ export default async function TreinosPage() {
           <div className="mt-8 space-y-4">
             <div>
               <div className="flex justify-between text-xs mb-1 font-medium">
-                <span className="text-zinc-500">Progresso de Corrida</span>
+                <span className="text-subtle-foreground">Progresso de Corrida</span>
                 <span className="text-[#FC4C02]">{planRunKm > 0 ? ((execRunKm / planRunKm) * 100).toFixed(1) : 0}%</span>
               </div>
-              <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 w-full bg-surface-2 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
                   style={{ width: `${Math.min(planRunKm > 0 ? (execRunKm / planRunKm) * 100 : 0, 100)}%` }}
@@ -223,10 +223,10 @@ export default async function TreinosPage() {
             {(planBikeKm > 0 || execBikeKm > 0) && (
               <div>
                 <div className="flex justify-between text-xs mb-1 font-medium">
-                  <span className="text-zinc-500">Progresso de Ciclismo</span>
+                  <span className="text-subtle-foreground">Progresso de Ciclismo</span>
                   <span className="text-[#FC4C02]">{planBikeKm > 0 ? ((execBikeKm / planBikeKm) * 100).toFixed(1) : 0}%</span>
                 </div>
-                <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-2 w-full bg-surface-2 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
                     style={{ width: `${Math.min(planBikeKm > 0 ? (execBikeKm / planBikeKm) * 100 : 0, 100)}%` }}

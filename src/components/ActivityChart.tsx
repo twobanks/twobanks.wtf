@@ -49,15 +49,15 @@ export default function ActivityChart({ streams }: { streams: any }) {
   }, [streams])
 
   if (chartData.length === 0) {
-    return <p className="text-zinc-500">Dados de gráfico não disponíveis.</p>
+    return <p className="text-muted-foreground">Dados de gráfico não disponíveis.</p>
   }
 
   // Tooltip interno customizado
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-zinc-900/95 backdrop-blur-sm text-white p-3 rounded-lg border border-zinc-700 shadow-xl text-xs space-y-1.5 z-50 w-[160px]">
-          <p className="font-bold text-zinc-400 border-b border-zinc-800 pb-1">Tempo: {label}</p>
+        <div className="bg-surface-1/95 backdrop-blur-sm text-white p-3 rounded-lg border border-border shadow-xl text-xs space-y-1.5 z-50 w-[160px]">
+          <p className="font-bold text-subtle-foreground border-b border-border pb-1">Tempo: {label}</p>
           {payload.map((entry: any, index: number) => {
             // Não exibe a linha tracejada no tooltip
             if (entry.dataKey === "paceDashed") return null
@@ -85,7 +85,7 @@ export default function ActivityChart({ streams }: { streams: any }) {
   }
 
   return (
-    <div className="h-72 w-full mt-6 select-none dark:border-zinc-800 rounded-2xl p-4 bg-white dark:bg-zinc-950">
+    <div className="h-72 w-full mt-6 select-none border-border rounded-2xl p-4 bg-surface-1">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={chartData}

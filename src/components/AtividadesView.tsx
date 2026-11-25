@@ -164,7 +164,7 @@ function UnifiedFiltersBar({
   onYearChange: (nextYear: string) => void;
 }) {
   return (
-    <div className="inline-flex items-center p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+    <div className="inline-flex items-center p-1.5 rounded-xl bg-surface-1 border border-border">
       <div
         role="group"
         aria-label="Filtrar por modalidade"
@@ -182,8 +182,8 @@ function UnifiedFiltersBar({
               aria-pressed={isActive}
               className={`inline-flex items-center justify-center px-3.5 py-2 rounded-lg transition-colors cursor-pointer ${
                 isActive
-                  ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs"
-                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                  ? "bg-surface-2 text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {opt.iconSrc ? (
@@ -210,25 +210,25 @@ function UnifiedFiltersBar({
         <>
           <div
             aria-hidden="true"
-            className="h-5 w-px bg-zinc-200 dark:bg-zinc-800 mx-1.5"
+            className="h-5 w-px bg-surface-2 mx-1.5"
           />
 
           <label
             title="Selecionar ano"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-white/60 dark:hover:bg-zinc-800/60 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-subtle-foreground hover:bg-surface-2/60 transition-colors cursor-pointer"
           >
-            <Calendar className="size-4 text-zinc-400 dark:text-zinc-500 shrink-0" />
+            <Calendar className="size-4 text-subtle-foreground shrink-0" />
             <select
               value={selectedYear}
               onChange={(e) => onYearChange(e.target.value)}
-              className="bg-transparent font-semibold text-zinc-900 dark:text-zinc-100 focus:outline-none cursor-pointer"
+              className="bg-transparent font-semibold text-foreground focus:outline-none cursor-pointer"
               aria-label="Selecionar ano"
             >
               {years.map((yr) => (
                 <option
                   key={yr}
                   value={yr}
-                  className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100"
+                  className="bg-surface-1 text-foreground"
                 >
                   {yr}
                 </option>
@@ -266,33 +266,33 @@ function ActivityRowItem({
 }) {
   const hoverTitleClass =
     accent === "amber"
-      ? "group-hover:text-amber-500"
+      ? "group-hover:text-warning"
       : "group-hover:text-orange-500";
   const hoverArrowClass =
     accent === "amber"
-      ? "group-hover:text-amber-500"
-      : "group-hover:text-zinc-900 dark:group-hover:text-zinc-100";
+      ? "group-hover:text-warning"
+      : "group-hover:text-foreground";
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex items-center justify-between gap-4 px-4 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
+      className="group flex items-center justify-between gap-4 px-4 py-3.5 hover:bg-surface-2/60 transition-colors"
     >
       <div className="flex items-center gap-3 min-w-0">
-        <span className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-white shrink-0">
+        <span className="p-2 rounded-xl border border-border bg-surface-1 text-white shrink-0">
           <CustomSvgIcon src={getActivityIconSrc(type)} className="size-4" />
         </span>
 
         <div className="min-w-0">
           <p
-            className={`font-medium text-sm text-zinc-900 dark:text-zinc-100 truncate transition-colors ${hoverTitleClass}`}
+            className={`font-medium text-sm text-foreground truncate transition-colors ${hoverTitleClass}`}
           >
             {name}
           </p>
-          <p className="inline-flex items-center gap-1 text-xs text-zinc-500 mt-0.5">
-            <Calendar className="size-3 text-zinc-400 dark:text-zinc-500" />
+          <p className="inline-flex items-center gap-1 text-xs text-subtle-foreground mt-0.5">
+            <Calendar className="size-3 text-subtle-foreground" />
             <span>{formatDate(startDate)}</span>
           </p>
         </div>
@@ -300,30 +300,30 @@ function ActivityRowItem({
 
       <div className="flex items-center gap-3 sm:gap-5 shrink-0 text-xs sm:text-sm tabular-nums">
         {/* Distância */}
-        <span className="font-semibold text-zinc-900 dark:text-zinc-100 w-18 sm:w-20 text-right">
+        <span className="font-semibold text-foreground w-18 sm:w-20 text-right">
           {formatKm(distanceMeters)}
         </span>
 
         {/* Ritmo / Velocidade */}
-        <span className="inline-flex items-center justify-end gap-1 text-zinc-600 dark:text-zinc-300 w-22 sm:w-26">
-          <MapPin className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+        <span className="inline-flex items-center justify-end gap-1 text-muted-foreground w-22 sm:w-26">
+          <MapPin className="size-3.5 text-subtle-foreground shrink-0" />
           <span>{formatPaceOrSpeed(averageSpeed, isBike)}</span>
         </span>
 
         {/* Tempo */}
-        <span className="hidden sm:inline-flex items-center justify-end gap-1 text-zinc-500 w-20">
-          <Timer className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+        <span className="hidden sm:inline-flex items-center justify-end gap-1 text-subtle-foreground w-20">
+          <Timer className="size-3.5 text-subtle-foreground shrink-0" />
           <span>{formatDuration(movingTime)}</span>
         </span>
 
         {/* Elevação */}
-        <span className="hidden md:inline-flex items-center justify-end gap-1 text-zinc-500 w-20">
-          <Mountain className="size-3.5 text-zinc-400 dark:text-zinc-500 shrink-0" />
+        <span className="hidden md:inline-flex items-center justify-end gap-1 text-subtle-foreground w-20">
+          <Mountain className="size-3.5 text-subtle-foreground shrink-0" />
           <span>+{Math.round(totalElevationGain)} m</span>
         </span>
 
         <ArrowUpRight
-          className={`size-4 text-zinc-400 dark:text-zinc-500 transition-colors shrink-0 ${hoverArrowClass}`}
+          className={`size-4 text-subtle-foreground transition-colors shrink-0 ${hoverArrowClass}`}
         />
       </div>
     </a>
@@ -442,11 +442,11 @@ export function AtividadesView({
   return (
     <div className="w-full">
       {/* Barra fixa abaixo do Header */}
-      <div className="sticky top-28 sm:top-36 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-background/95 backdrop-blur-md">
+      <div className="sticky top-28 sm:top-36 z-30 border-b border-border bg-background/95 backdrop-blur-md">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <nav
             aria-label="Seções de atividades"
-            className="w-full md:w-auto inline-flex items-center p-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-x-auto"
+            className="w-full md:w-auto inline-flex items-center p-1.5 rounded-xl bg-surface-1 border border-border overflow-x-auto"
           >
             {sectionTabs.map((tab) => {
               const Icon = tab.icon;
@@ -461,15 +461,15 @@ export function AtividadesView({
                   onClick={() => setActiveSection(tab.key)}
                   className={`flex-1 md:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     isActive
-                      ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-xs"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200"
+                      ? "bg-surface-2 text-foreground shadow-xs"
+                      : "text-subtle-foreground hover:text-foreground"
                   }`}
                 >
                   <Icon
                     className={`size-4 shrink-0 ${
                       isActive
                         ? "text-[#6FC5EF]"
-                        : "text-zinc-400 dark:text-zinc-500"
+                        : "text-subtle-foreground"
                     }`}
                   />
                   <span>{tab.label}</span>
@@ -479,7 +479,7 @@ export function AtividadesView({
                       className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
                         isActive
                           ? "bg-[#6FC5EF]/15 text-sky-700 dark:text-[#6FC5EF]"
-                          : "bg-zinc-200/70 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400"
+                          : "bg-surface-3 text-muted-foreground"
                       }`}
                     >
                       {tab.badge}
@@ -510,12 +510,12 @@ export function AtividadesView({
           <section className="space-y-10">
             {/* Bloco 1: Acumulado Histórico */}
             <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-6">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-[#6FC5EF]">
                     Distância Total Acumulada
                   </p>
-                  <p className="mt-1 text-4xl sm:text-5xl font-bold tracking-tight tabular-nums text-zinc-900 dark:text-zinc-100">
+                  <p className="mt-1 text-4xl sm:text-5xl font-bold tracking-tight tabular-nums text-foreground">
                     {formatKm(bikeData.totalMeters + runData.totalMeters)}
                   </p>
                 </div>
@@ -523,19 +523,19 @@ export function AtividadesView({
                 {/* Recordes inline sem caixa */}
                 <div className="flex items-center gap-6 sm:gap-8 text-sm tabular-nums">
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-zinc-500">
+                    <p className="text-[11px] uppercase tracking-wider text-subtle-foreground">
                       Maior pedal
                     </p>
-                    <p className="mt-0.5 font-bold text-zinc-900 dark:text-zinc-100">
+                    <p className="mt-0.5 font-bold text-foreground">
                       {formatKm(bikeData.maxMeters)}
                     </p>
                   </div>
-                  <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-800" />
+                  <div className="h-8 w-px bg-surface-2" />
                   <div>
-                    <p className="text-[11px] uppercase tracking-wider text-zinc-500">
+                    <p className="text-[11px] uppercase tracking-wider text-subtle-foreground">
                       Maior corrida
                     </p>
-                    <p className="mt-0.5 font-bold text-zinc-900 dark:text-zinc-100">
+                    <p className="mt-0.5 font-bold text-foreground">
                       {formatKm(runData.maxMeters)}
                     </p>
                   </div>
@@ -550,36 +550,36 @@ export function AtividadesView({
 
                 return (
                   <div className="space-y-3">
-                    <div className="h-2.5 w-full rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden flex gap-0.5">
+                    <div className="h-2.5 w-full rounded-full bg-surface-2 overflow-hidden flex gap-0.5">
                       <div
                         style={{ width: `${bikePct}%` }}
                         className="bg-[#6FC5EF] transition-all duration-500"
                       />
                       <div
                         style={{ width: `${runPct}%` }}
-                        className="bg-amber-400 transition-all duration-500"
+                        className="bg-warning transition-all duration-500"
                       />
                     </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-4 text-sm tabular-nums">
                       <div className="flex items-center gap-2">
                         <span className="size-2.5 rounded-full bg-[#6FC5EF]" />
-                        <span className="text-zinc-500">Pedalando:</span>
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                        <span className="text-subtle-foreground">Pedalando:</span>
+                        <span className="font-bold text-foreground">
                           {formatKm(bikeData.totalMeters)}
                         </span>
-                        <span className="text-xs text-zinc-400">
+                        <span className="text-xs text-subtle-foreground">
                           ({bikePct.toFixed(0)}%)
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className="size-2.5 rounded-full bg-amber-400" />
-                        <span className="text-zinc-500">Correndo:</span>
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                        <span className="size-2.5 rounded-full bg-warning" />
+                        <span className="text-subtle-foreground">Correndo:</span>
+                        <span className="font-bold text-foreground">
                           {formatKm(runData.totalMeters)}
                         </span>
-                        <span className="text-xs text-zinc-400">
+                        <span className="text-xs text-subtle-foreground">
                           ({runPct.toFixed(0)}%)
                         </span>
                       </div>
@@ -591,17 +591,17 @@ export function AtividadesView({
 
             {/* Bloco 2: Resumo do Ano Selecionado (Lista limpa com divisores) */}
             <div className="space-y-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-subtle-foreground">
                 Resumo de {selectedYear}
               </h3>
 
-              <div className="divide-y divide-zinc-200 dark:divide-zinc-800 border-y border-zinc-200 dark:border-zinc-800">
+              <div className="divide-y divide-border border-y border-border">
                 {modality !== "corrida" && (
                   <div className="py-4 flex items-center justify-between">
-                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                    <span className="text-sm font-medium text-subtle-foreground">
                       Pedalando em {selectedYear}
                     </span>
-                    <span className="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+                    <span className="text-lg font-bold tabular-nums text-foreground">
                       {formatKm(selectedYearBikeMeters)}
                     </span>
                   </div>
@@ -609,10 +609,10 @@ export function AtividadesView({
 
                 {modality !== "bike" && (
                   <div className="py-4 flex items-center justify-between">
-                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                    <span className="text-sm font-medium text-subtle-foreground">
                       Correndo em {selectedYear}
                     </span>
-                    <span className="text-lg font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
+                    <span className="text-lg font-bold tabular-nums text-foreground">
                       {formatKm(selectedYearRunMeters)}
                     </span>
                   </div>
@@ -620,7 +620,7 @@ export function AtividadesView({
 
                 {modality === "todas" && (
                   <div className="py-4 flex items-center justify-between">
-                    <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                    <span className="text-sm font-semibold text-foreground">
                       Total em {selectedYear}
                     </span>
                     <span className="text-xl font-bold tabular-nums text-[#6FC5EF]">
@@ -637,21 +637,21 @@ export function AtividadesView({
         {activeSection === "atividades" && (
           <section ref={workoutsSectionRef} className="space-y-5 scroll-mt-48">
             <div className="flex items-center gap-2.5">
-              <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <h2 className="text-base font-bold tracking-tight text-foreground">
                 Treinos de {selectedYear}
               </h2>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 tabular-nums">
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-surface-2 text-subtle-foreground tabular-nums">
                 {workoutsPage.totalCount}
               </span>
             </div>
 
             <div
-              className={`divide-y divide-zinc-200 dark:divide-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden transition-opacity ${
+              className={`divide-y divide-border rounded-2xl border border-border bg-surface-1 overflow-hidden transition-opacity ${
                 isPending ? "opacity-60 pointer-events-none" : "opacity-100"
               }`}
             >
               {workoutsPage.items.length === 0 ? (
-                <p className="p-8 text-center text-sm text-zinc-500">
+                <p className="p-8 text-center text-sm text-subtle-foreground">
                   Nenhum treino encontrado em {selectedYear}.
                 </p>
               ) : (
@@ -674,14 +674,14 @@ export function AtividadesView({
             </div>
 
             {workoutsPage.totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 text-xs text-zinc-500">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1 text-xs text-subtle-foreground">
                 <p className="tabular-nums">
                   Mostrando{" "}
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  <span className="font-semibold text-muted-foreground">
                     {startItem}–{endItem}
                   </span>{" "}
                   de{" "}
-                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                  <span className="font-semibold text-muted-foreground">
                     {workoutsPage.totalCount}
                   </span>{" "}
                   treinos
@@ -692,13 +692,13 @@ export function AtividadesView({
                     type="button"
                     disabled={workoutsPage.page <= 1 || isPending}
                     onClick={() => handlePageChange(workoutsPage.page - 1)}
-                    className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 rounded-xl border border-border bg-surface-1 px-3 py-1.5 font-medium text-muted-foreground hover:bg-surface-2 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
                   >
-                    <ChevronLeft className="size-3.5 text-zinc-400 dark:text-zinc-500" />
+                    <ChevronLeft className="size-3.5 text-subtle-foreground" />
                     Anterior
                   </button>
 
-                  <span className="px-2 font-medium tabular-nums text-zinc-600 dark:text-zinc-400">
+                  <span className="px-2 font-medium tabular-nums text-subtle-foreground">
                     Página {workoutsPage.page} de {workoutsPage.totalPages}
                   </span>
 
@@ -708,10 +708,10 @@ export function AtividadesView({
                       workoutsPage.page >= workoutsPage.totalPages || isPending
                     }
                     onClick={() => handlePageChange(workoutsPage.page + 1)}
-                    className="inline-flex items-center gap-1 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3 py-1.5 font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 rounded-xl border border-border bg-surface-1 px-3 py-1.5 font-medium text-muted-foreground hover:bg-surface-2 disabled:opacity-40 disabled:pointer-events-none transition-colors cursor-pointer"
                   >
                     Próxima
-                    <ChevronRight className="size-3.5 text-zinc-400 dark:text-zinc-500" />
+                    <ChevronRight className="size-3.5 text-subtle-foreground" />
                   </button>
                 </div>
               </div>
@@ -723,22 +723,22 @@ export function AtividadesView({
         {activeSection === "provas" && (
           <section className="space-y-5">
             <div className="flex items-center gap-2.5">
-              <Trophy className="size-4 text-amber-400" />
-              <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <Trophy className="size-4 text-warning" />
+              <h2 className="text-base font-bold tracking-tight text-foreground">
                 Provas Realizadas
               </h2>
-              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 tabular-nums">
+              <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-surface-2 text-subtle-foreground tabular-nums">
                 {raceWorkouts.length}
               </span>
             </div>
 
             <div
-              className={`divide-y divide-zinc-200 dark:divide-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 overflow-hidden transition-opacity ${
+              className={`divide-y divide-border rounded-2xl border border-border bg-surface-1 overflow-hidden transition-opacity ${
                 isLoadingRaces ? "opacity-60 pointer-events-none" : "opacity-100"
               }`}
             >
               {raceWorkouts.length === 0 ? (
-                <p className="p-8 text-center text-sm text-zinc-500">
+                <p className="p-8 text-center text-sm text-subtle-foreground">
                   Nenhuma prova encontrada na base de atividades para este filtro.
                 </p>
               ) : (

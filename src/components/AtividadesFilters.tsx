@@ -51,7 +51,7 @@ export default function AtividadesFilters({
         className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
           hasActiveFilters
             ? "bg-orange-600 text-white hover:bg-orange-700"
-            : "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+            : "bg-surface-1 text-foreground border border-border hover:bg-surface-2"
         }`}
       >
         <svg 
@@ -88,7 +88,7 @@ export default function AtividadesFilters({
           <div className="absolute left-0 top-full mt-2 z-20 w-[400px] md:w-[600px]">
             <form 
               onSubmit={handleSubmit} 
-              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl p-6 space-y-6"
+              className="bg-surface-1 border border-border rounded-2xl shadow-xl p-6 space-y-6"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Filtros</h2>
@@ -96,7 +96,7 @@ export default function AtividadesFilters({
                   <button
                     type="button"
                     onClick={handleClearFilters}
-                    className="text-sm text-[#FC4C02] hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                    className="text-sm text-[#FC4C02] hover:text-foreground"
                   >
                     Limpar filtros
                   </button>
@@ -106,14 +106,14 @@ export default function AtividadesFilters({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Tipo de atividade */}
                 <div className="space-y-1">
-                  <label htmlFor="type" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  <label htmlFor="type" className="block text-sm font-medium text-muted-foreground">
                     Tipo de atividade
                   </label>
                   <select
                     id="type"
                     name="type"
                     defaultValue={activityType === "all" ? "" : activityType}
-                    className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="">Todos</option>
                     {typeOptions.map(type => (
@@ -124,14 +124,14 @@ export default function AtividadesFilters({
 
                 {/* Equipamento */}
                 <div className="space-y-1">
-                  <label htmlFor="gearId" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  <label htmlFor="gearId" className="block text-sm font-medium text-muted-foreground">
                     Equipamento
                   </label>
                   <select
                     id="gearId"
                     name="gearId"
                     defaultValue={gearId || ""}
-                    className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     <option value="">Todos</option>
                     <optgroup label="👟 Tênis">
@@ -149,14 +149,14 @@ export default function AtividadesFilters({
 
                 {/* Ordenação */}
                 <div className="space-y-1">
-                  <label htmlFor="sort" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  <label htmlFor="sort" className="block text-sm font-medium text-muted-foreground">
                     Ordenar por
                   </label>
                   <select
                     id="sort"
                     name="sort"
                     defaultValue={sortValue}
-                    className="w-full bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
                     {SORT_OPTIONS.map(option => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -169,7 +169,7 @@ export default function AtividadesFilters({
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-surface-2 hover:bg-surface-3 transition-colors"
                 >
                   Cancelar
                 </button>

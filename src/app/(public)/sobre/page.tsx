@@ -156,7 +156,7 @@ export default async function SobrePage() {
     <main className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 space-y-12">
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <div className="lg:col-span-8 space-y-6">
-          <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+          <div className="space-y-4 text-foreground leading-relaxed">
             <p>
               Salveeee!! Meu nome é <strong title="o pai!">Thiago</strong>. Nascido em{" "}
               <strong>Brasília de Minas</strong> <span>(norte de minas)</span>, porém, cresci e vivo em{" "}
@@ -192,7 +192,7 @@ export default async function SobrePage() {
 
           {/* Links das Redes Sociais */}
           <div className="pt-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-subtle-foreground mb-3">
               Onde me encontrar
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -204,7 +204,7 @@ export default async function SobrePage() {
                   rel="noopener noreferrer"
                   aria-label={social.name}
                   title={`${social.name} (${social.handle})`}
-                  className="inline-flex items-center justify-center p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/70 text-zinc-600 dark:text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-600 hover:text-zinc-950 dark:hover:text-white hover:-translate-y-0.5 transition-all"
+                  className="inline-flex items-center justify-center p-2.5 rounded-xl border border-border bg-surface-1 text-muted-foreground hover:border-border-hover hover:text-foreground hover:-translate-y-0.5 transition-all"
                 >
                   {social.icon}
                 </Link>
@@ -217,8 +217,8 @@ export default async function SobrePage() {
       {/* Spotify: Ouvindo agora + Álbum recomendado */}
       <section className="space-y-4">
         <div className="flex items-center gap-2">
-          <Headphones className="size-4 text-emerald-500" />
-          <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <Headphones className="size-4 text-success" />
+          <h2 className="text-base font-bold tracking-tight text-foreground">
             Trilha sonora
           </h2>
         </div>
@@ -229,18 +229,18 @@ export default async function SobrePage() {
             href={recommendedAlbum.spotifyUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex flex-col justify-between rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 hover:border-emerald-500/50 transition-all"
+            className="group flex flex-col justify-between rounded-2xl border border-border bg-surface-1 p-5 hover:border-success/50 transition-all"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              <span className="text-xs font-semibold uppercase tracking-wider text-subtle-foreground">
                 Álbum recomendado • {recommendedAlbum.year}
               </span>
-              <ArrowUpRight className="size-4 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
+              <ArrowUpRight className="size-4 text-subtle-foreground group-hover:text-success transition-colors" />
             </div>
 
             <div className="mt-4 flex items-center gap-4">
               {recommendedAlbum.coverUrl ? (
-                <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800">
+                <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-border">
                   <Image
                     src={recommendedAlbum.coverUrl}
                     alt={recommendedAlbum.title}
@@ -250,19 +250,19 @@ export default async function SobrePage() {
                   />
                 </div>
               ) : (
-                <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
-                  <Disc3 className="size-8 text-zinc-400" />
+                <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-2">
+                  <Disc3 className="size-8 text-subtle-foreground" />
                 </div>
               )}
 
               <div className="min-w-0 space-y-1">
-                <h3 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 truncate group-hover:text-emerald-500 transition-colors">
+                <h3 className="text-xl font-bold tracking-tight text-foreground truncate group-hover:text-success transition-colors">
                   {recommendedAlbum.title}
                 </h3>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 truncate">
+                <p className="text-sm text-subtle-foreground truncate">
                   {recommendedAlbum.artist}
                 </p>
-                <p className="text-xs text-zinc-500 truncate">
+                <p className="text-xs text-subtle-foreground truncate">
                   {recommendedAlbum.totalTracks} faixas •{" "}
                   {recommendedAlbum.durationMinutes} min
                 </p>
@@ -274,44 +274,44 @@ export default async function SobrePage() {
 
       {/* Strava: Resumo Anual */}
       <section className="space-y-4">
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-900/50 p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div className="rounded-2xl border border-border bg-surface-1 p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
               Strava • {currentYear}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-zinc-900 dark:text-white">
+              <h2 className="text-lg font-bold text-foreground">
                 Distância percorrida no ano
               </h2>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
                   {stravaStats.totalKm.toLocaleString("pt-BR")}
                 </span>
-                <span className="text-lg font-semibold text-zinc-500 dark:text-zinc-400">
+                <span className="text-lg font-semibold text-subtle-foreground">
                   km 
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-8 pt-4 lg:pt-0 border-t lg:border-t-0 border-zinc-200 dark:border-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-8 pt-4 lg:pt-0 border-t lg:border-t-0 border-border">
             <div className="grid grid-cols-3 gap-6">
               <div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">Correndo</p>
-                <p className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
+                <p className="text-xs text-subtle-foreground">Correndo</p>
+                <p className="text-base sm:text-lg font-bold text-foreground">
                   {stravaStats.runKm.toLocaleString("pt-BR")} km
                 </p>
               </div>
               <div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">Pedalando</p>
-                <p className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
+                <p className="text-xs text-subtle-foreground">Pedalando</p>
+                <p className="text-base sm:text-lg font-bold text-foreground">
                   {stravaStats.rideKm.toLocaleString("pt-BR")} km
                 </p>
               </div>
               <div>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">Durante</p>
-                <p className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
+                <p className="text-xs text-subtle-foreground">Durante</p>
+                <p className="text-base sm:text-lg font-bold text-foreground">
                   {stravaStats.totalHours.toLocaleString("pt-BR")} h
                 </p>
               </div>
@@ -324,13 +324,13 @@ export default async function SobrePage() {
       <section className="space-y-4">
         <div className="flex items-center gap-2">
           <BookOpen className="size-4 text-[#5EACCF]" />
-          <h2 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-base font-bold tracking-tight text-foreground">
             Leituras recentes
           </h2>
         </div>
 
         {recentBooks.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-6 text-sm text-zinc-500">
+          <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-subtle-foreground">
             Nenhum livro concluído cadastrado ainda.
           </div>
         ) : (
@@ -340,19 +340,19 @@ export default async function SobrePage() {
               return (
                 <div
                   key={book.id}
-                  className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 flex flex-col justify-between gap-2"
+                  className="rounded-2xl border border-border bg-surface-1 p-5 flex flex-col justify-between gap-2"
                 >
                   <div>
-                    <h3 className="font-semibold text-base text-zinc-900 dark:text-zinc-100">
+                    <h3 className="font-semibold text-base text-foreground">
                       {book.title}
                     </h3>
-                    <p className="text-sm text-zinc-500 mt-0.5">{book.author}</p>
+                    <p className="text-sm text-subtle-foreground mt-0.5">{book.author}</p>
                   </div>
 
                   {stars && (
                     <span
                       aria-label={`Avaliação: ${book.rating} de 5 estrelas`}
-                      className="text-xs tracking-wider text-amber-400"
+                      className="text-xs tracking-wider text-warning"
                     >
                       {stars}
                     </span>
