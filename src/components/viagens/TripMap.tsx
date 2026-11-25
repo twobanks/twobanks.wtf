@@ -27,6 +27,18 @@ interface TripMapProps {
   pois: TripPoi[]
 }
 
+const THEME_BLUE = "#5EACCF"
+
+function getDocumentThemeState() {
+  if (typeof document === "undefined") {
+    return { isDark: true, bgColor: "" }
+  }
+  const root = document.documentElement
+  const isDark = root.classList.contains("dark")
+  const bgColor = getComputedStyle(root).getPropertyValue("--background").trim()
+  return { isDark, bgColor }
+}
+
 export default function TripMap({
   tripSlug,
   tripTitle,
@@ -45,11 +57,12 @@ export default function TripMap({
   const [isSatellite, setIsSatellite] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [bearing, setBearing] = useState(0)
+  const [isDarkTheme, setIsDarkTheme] = useState(true)
 
-  const stateRef = useRef({ is3D, isSatellite })
+  const stateRef = useRef({ is3D, isSatellite, isDarkTheme })
   useEffect(() => {
-    stateRef.current = { is3D, isSatellite }
-  }, [is3D, isSatellite])
+    stateRef.current = { is3D, isSatellite, isDarkTheme }
+  }, [is3D, isSatellite, isDarkTheme])
 
   const { plannedSegmentsList, completedSegments, bounds } = useMemo(() => {
     const b = new mapboxgl.LngLatBounds()
@@ -110,7 +123,33 @@ export default function TripMap({
     }
   }, [plannedPolyline, plannedCoordinates, plannedSegments, days, pois])
 
+  const syncMapBackgroundWithTheme = (map: mapboxgl.Map) => {
+    if (stateRef.current.isSatellite) return
+    const { bgColor } = getDocumentThemeState()
+    if (!bgColor) return
+
+    try {
+      const style = map.getStyle()
+      if (!style?.layers) return
+
+      for (const layer of style.layers) {
+        if (layer.type === "background") {
+          map.setPaintProperty(layer.id, "background-color", bgColor)
+        } else if (
+          layer.type === "fill" &&
+          (layer.id === "land" || layer.id === "landcover")
+        ) {
+          map.setPaintProperty(layer.id, "fill-color", bgColor)
+        }
+      }
+    } catch {
+      // ignora enquanto o estilo ainda finaliza carregamento
+    }
+  }
+
   const setupLayers = (map: mapboxgl.Map) => {
+    syncMapBackgroundWithTheme(map)
+
     if (!map.getSource("mapbox-dem")) {
       map.addSource("mapbox-dem", {
         type: "raster-dem",
@@ -146,9 +185,9 @@ export default function TripMap({
         source: "planned-route-source",
         layout: { "line-join": "round", "line-cap": "round" },
         paint: {
-          "line-color": "#5EACCF",
+          "line-color": THEME_BLUE,
           "line-width": 4,
-          "line-opacity": 0.8,
+          "line-opacity": completedSegments.length > 0 ? 0.55 : 0.9,
           "line-dasharray": [2, 1.5],
         },
       })
@@ -176,9 +215,9 @@ export default function TripMap({
         source: "completed-routes-source",
         layout: { "line-join": "round", "line-cap": "round" },
         paint: {
-          "line-color": "#FC4C02",
+          "line-color": THEME_BLUE,
           "line-width": 5,
-          "line-opacity": 0.95,
+          "line-opacity": 1,
         },
       })
     }
@@ -189,19 +228,19 @@ export default function TripMap({
     pois.forEach((poi) => {
       const isHighlight = poi.type === "highlight"
       const el = document.createElement("div")
-      el.className = `size-4 rounded-full border-2 border-zinc-950 shadow-lg cursor-pointer transition-transform hover:scale-125 ${
+      el.className = `size-4 rounded-full border-2 border-background shadow-lg cursor-pointer transition-transform hover:scale-125 ${
         isHighlight ? "bg-warning" : "bg-[#5EACCF]"
       }`
       el.title = poi.name
 
       const dayLinkHtml = poi.daySlug
-        ? `<a href="/viagens/${tripSlug}/${poi.daySlug}" style="display: inline-block; margin-top: 6px; color: #5EACCF; font-weight: 600; text-decoration: none;">Abrir etapa correspondente →</a>`
+        ? `<a href="/viagens/${tripSlug}/${poi.daySlug}" style="display: inline-block; margin-top: 6px; color: ${THEME_BLUE}; font-weight: 600; text-decoration: none;">Abrir etapa correspondente →</a>`
         : ""
 
       const popupHtml = `
-        <div style="font-family: sans-serif; font-size: 12px; color: #fff; background: #18181b; padding: 10px 12px; border-radius: 10px; border: 1px solid #3f3f46; max-width: 230px;">
-          <div style="font-weight: 700; color: ${isHighlight ? "#fbbf24" : "#5EACCF"};">${poi.name}</div>
-          ${poi.description ? `<div style="color: #d4d4d8; margin-top: 4px; font-size: 11px; line-height: 1.4;">${poi.description}</div>` : ""}
+        <div style="font-family: sans-serif; font-size: 12px; color: var(--foreground); background: var(--surface-1); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); max-width: 230px; box-shadow: 0 8px 24px rgba(0,0,0,0.18);">
+          <div style="font-weight: 700; color: ${isHighlight ? "var(--warning)" : THEME_BLUE};">${poi.name}</div>
+          ${poi.description ? `<div style="color: var(--muted-foreground); margin-top: 4px; font-size: 11px; line-height: 1.4;">${poi.description}</div>` : ""}
           ${dayLinkHtml}
         </div>
       `
@@ -224,11 +263,17 @@ export default function TripMap({
     if (!containerRef.current || !bounds) return
     if (mapRef.current) return
 
+    const initialDark = getDocumentThemeState().isDark
+    setIsDarkTheme(initialDark)
+    stateRef.current.isDarkTheme = initialDark
+
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: "mapbox://styles/mapbox/dark-v11",
+      style: initialDark
+        ? "mapbox://styles/mapbox/dark-v11"
+        : "mapbox://styles/mapbox/light-v11",
       bounds,
       fitBoundsOptions: { padding: 65 },
       pitchWithRotate: true,
@@ -243,7 +288,29 @@ export default function TripMap({
     map.on("load", () => setupLayers(map))
     map.on("style.load", () => setupLayers(map))
 
+    const observer = new MutationObserver(() => {
+      const { isDark } = getDocumentThemeState()
+      if (isDark === stateRef.current.isDarkTheme) return
+
+      setIsDarkTheme(isDark)
+      stateRef.current.isDarkTheme = isDark
+
+      if (!stateRef.current.isSatellite && mapRef.current) {
+        mapRef.current.setStyle(
+          isDark
+            ? "mapbox://styles/mapbox/dark-v11"
+            : "mapbox://styles/mapbox/light-v11"
+        )
+      }
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
+
     return () => {
+      observer.disconnect()
       markersRef.current.forEach((m) => m.remove())
       map.remove()
       mapRef.current = null
@@ -300,10 +367,11 @@ ${trksegs}
     if (!map) return
     const nextSat = !isSatellite
     setIsSatellite(nextSat)
+    const baseStyle = stateRef.current.isDarkTheme
+      ? "mapbox://styles/mapbox/dark-v11"
+      : "mapbox://styles/mapbox/light-v11"
     map.setStyle(
-      nextSat
-        ? "mapbox://styles/mapbox/satellite-streets-v12"
-        : "mapbox://styles/mapbox/dark-v11"
+      nextSat ? "mapbox://styles/mapbox/satellite-streets-v12" : baseStyle
     )
   }
 
@@ -326,7 +394,7 @@ ${trksegs}
 
   if (!bounds) {
     return (
-      <div className="h-[460px] w-full flex items-center justify-center bg-surface-1 rounded-2xl border border-border text-subtle-foreground">
+      <div className="h-[460px] w-full flex items-center justify-center bg-surface-1 text-subtle-foreground">
         Mapa da rota ainda não cadastrado para esta viagem.
       </div>
     )
@@ -335,7 +403,7 @@ ${trksegs}
   return (
     <div
       ref={wrapperRef}
-      className="h-[460px] w-full rounded-2xl overflow-hidden border border-border shadow-sm relative bg-background"
+      className="h-[460px] w-full overflow-hidden relative bg-background"
     >
       <style jsx global>{`
         .trip-map-popup .mapboxgl-popup-content {
@@ -344,17 +412,17 @@ ${trksegs}
           box-shadow: none !important;
         }
         .trip-map-popup .mapboxgl-popup-tip {
-          border-top-color: #18181b !important;
+          border-top-color: var(--surface-1) !important;
         }
       `}</style>
 
-      <div className="absolute bottom-4 left-4 z-10 flex flex-wrap items-center gap-3 px-3 py-2 bg-surface-1 backdrop-blur-md border border-border rounded-xl text-xs text-muted-foreground">
+      <div className="absolute bottom-4 left-4 z-10 flex flex-wrap items-center gap-3 px-3 py-2 bg-surface-1/90 backdrop-blur-md border border-border rounded-xl text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="w-4 h-0.5 border-t-2 border-dashed border-[#5EACCF]" />
           Trajeto Planejado
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-4 h-1 rounded-full bg-[#FC4C02]" />
+          <span className="w-4 h-1 rounded-full bg-[#5EACCF]" />
           Pedalado (Strava)
         </span>
         <span className="flex items-center gap-1.5">
@@ -363,7 +431,7 @@ ${trksegs}
         </span>
       </div>
 
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-white/80 bg-surface-1 backdrop-blur-md border border-border rounded-xl shadow-lg">
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-surface-1/90 backdrop-blur-md border border-border rounded-xl shadow-lg">
         <button
           type="button"
           onClick={handleToggle3D}
@@ -385,7 +453,7 @@ ${trksegs}
               ? "bg-surface-2 text-[#5EACCF]"
               : "text-subtle-foreground hover:bg-surface-2"
           }`}
-          title={isSatellite ? "Modo Vetorial Escuro" : "Modo Satélite"}
+          title={isSatellite ? "Modo Vetorial" : "Modo Satélite"}
         >
           <Layers size={18} />
         </button>
