@@ -71,7 +71,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
         <div className="flex items-center gap-2">
           <Link
             href={`/admin/carteira/cartoes/${cartao.id}?mes=${mesAnterior.getFullYear()}-${String(mesAnterior.getMonth() + 1).padStart(2, "0")}`}
-            className="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded-lg transition-colors"
+            className="bg-surface-2 hover:bg-surface-3 px-3 py-1 rounded-lg transition-colors"
           >
             ←
           </Link>
@@ -80,7 +80,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
           </span>
           <Link
             href={`/admin/carteira/cartoes/${cartao.id}?mes=${mesSeguinte.getFullYear()}-${String(mesSeguinte.getMonth() + 1).padStart(2, "0")}`}
-            className="bg-zinc-800 hover:bg-zinc-700 px-3 py-1 rounded-lg transition-colors"
+            className="bg-surface-2 hover:bg-surface-3 px-3 py-1 rounded-lg transition-colors"
           >
             →
           </Link>
@@ -89,38 +89,38 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
 
       {/* Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
-          <p className="text-sm text-zinc-400">Total da fatura</p>
-          <p className={`text-2xl font-bold ${isCredit ? 'text-emerald-400' : 'text-zinc-100'}`}>
+        <div className="bg-surface-1 p-4 rounded-xl border border-border">
+          <p className="text-sm text-subtle-foreground">Total da fatura</p>
+          <p className={`text-2xl font-bold ${isCredit ? 'text-success' : 'text-foreground'}`}>
             R$ {Math.abs(total).toFixed(2)} {isCredit && "(Crédito)"}
           </p>
         </div>
-        <div className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
-          <p className="text-sm text-zinc-400">Total pago</p>
-          <p className="text-2xl font-bold text-emerald-400">R$ {pago.toFixed(2)}</p>
+        <div className="bg-surface-1 p-4 rounded-xl border border-border">
+          <p className="text-sm text-subtle-foreground">Total pago</p>
+          <p className="text-2xl font-bold text-success">R$ {pago.toFixed(2)}</p>
         </div>
-        <div className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800">
-          <p className="text-sm text-zinc-400">Status</p>
-          <p className="text-2xl font-bold text-zinc-100">{statusFatura}</p>
+        <div className="bg-surface-1 p-4 rounded-xl border border-border">
+          <p className="text-sm text-subtle-foreground">Status</p>
+          <p className="text-2xl font-bold text-foreground">{statusFatura}</p>
         </div>
       </div>
 
       {/* Opção de Resgate se houver crédito */}
       {isCredit && (
-        <form action={rescueCreditBalance} className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl flex items-center justify-between">
+        <form action={rescueCreditBalance} className="bg-success-subtle border border-success/20 p-4 rounded-xl flex items-center justify-between">
           <div>
-            <p className="font-semibold text-emerald-400">Crédito Disponível</p>
-            <p className="text-sm text-emerald-500/80">Transfira esse saldo para a conta bancária.</p>
+            <p className="font-semibold text-success">Crédito Disponível</p>
+            <p className="text-sm text-success/80">Transfira esse saldo para a conta bancária.</p>
           </div>
           <div className="flex gap-2">
             <input type="hidden" name="creditCardId" value={cartao.id} />
             <input type="hidden" name="amount" value={Math.abs(total)} />
             <input type="hidden" name="month" value={mes} />
-            <select name="accountId" required className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm">
+            <select name="accountId" required className="bg-surface-1 border border-border rounded-lg px-3 py-2 text-sm">
               <option value="">Selecione a conta destino...</option>
               {contas.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <button type="submit" className="bg-emerald-500 text-zinc-950 font-bold px-4 py-2 rounded-lg hover:bg-emerald-400 transition-colors">
+            <button type="submit" className="bg-primary text-primary-foreground font-bold px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
               Resgatar
             </button>
           </div>
@@ -130,28 +130,28 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
       {/* Ajustes / Estornos */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-zinc-200">Ajustes e Estornos</h2>
+          <h2 className="text-xl font-semibold text-foreground">Ajustes e Estornos</h2>
           <CreditCardAdjustmentDrawer creditCardId={cartao.id} />
         </div>
         
         {ajustes.length === 0 ? (
-          <p className="text-zinc-500 text-sm">Nenhum ajuste lançado neste mês.</p>
+          <p className="text-subtle-foreground text-sm">Nenhum ajuste lançado neste mês.</p>
         ) : (
           <div className="space-y-3">
             {ajustes.map((ajuste) => {
               const isRefund = ajuste.type === 'refund' || ajuste.type === 'cashback'
               return (
-                <div key={ajuste.id} className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800 flex items-center justify-between gap-3">
+                <div key={ajuste.id} className="bg-surface-1 p-4 rounded-xl border border-border flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${isRefund ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
+                    <div className={`p-2 rounded-full ${isRefund ? 'bg-success-subtle text-success' : 'bg-destructive/10 text-destructive'}`}>
                       {isRefund ? <ArrowDownRight size={16} /> : <ArrowUpRight size={16} />}
                     </div>
                     <div>
                       <p className="font-medium">{ajuste.description}</p>
-                      <p className="text-xs text-zinc-400">Data: {formatDate(ajuste.date)} • {ajuste.type.toUpperCase()}</p>
+                      <p className="text-xs text-subtle-foreground">Data: {formatDate(ajuste.date)} • {ajuste.type.toUpperCase()}</p>
                     </div>
                   </div>
-                  <span className={`font-semibold ${isRefund ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className={`font-semibold ${isRefund ? 'text-success' : 'text-destructive'}`}>
                     {isRefund ? '-' : '+'} R$ {Number(ajuste.amount).toFixed(2)}
                   </span>
                 </div>
@@ -163,16 +163,16 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
 
       {/* Parcelas Normais */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-zinc-200">Compras e Parcelas</h2>
+        <h2 className="text-xl font-semibold text-foreground">Compras e Parcelas</h2>
         {parcelas.length === 0 ? (
-          <p className="text-zinc-500 text-sm">Nenhuma parcela para este mês.</p>
+          <p className="text-subtle-foreground text-sm">Nenhuma parcela para este mês.</p>
         ) : (
           <div className="space-y-3">
             {parcelas.map((parcela) => (
-              <div key={parcela.id} className="bg-zinc-900/40 p-4 rounded-xl border border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div key={parcela.id} className="bg-surface-1 p-4 rounded-xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex-1">
                   <p className="font-medium">{parcela.purchaseDescription}</p>
-                  <p className="text-sm text-zinc-400">
+                  <p className="text-sm text-subtle-foreground">
                     Parcela {parcela.number}/{parcela.totalInstallments} · Venc: {formatDate(parcela.dueDate)} · {parcela.purchaseCategory}
                   </p>
                 </div>
@@ -182,7 +182,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
                   
                   <form action={deletePurchase}>
                     <input type="hidden" name="purchaseId" value={parcela.purchaseId} />
-                    <button title="Excluir compra inteira" className="text-zinc-500 hover:text-rose-400 p-1.5 rounded-lg transition-colors">
+                    <button title="Excluir compra inteira" className="text-subtle-foreground hover:text-destructive p-1.5 rounded-lg transition-colors">
                       <Trash2 size={16} />
                     </button>
                   </form>

@@ -88,7 +88,7 @@ export function PostForm({ initialData, action, submitLabel }: PostFormProps) {
           name="published"
           value="true"
           defaultChecked={initialData?.published ?? false}
-          className="rounded border-gray-700 bg-gray-800 h-4 w-4"
+          className="rounded border-border bg-surface-2 h-4 w-4"
         />
         <label className="text-sm font-medium">Publicar imediatamente</label>
       </div>

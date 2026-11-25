@@ -33,7 +33,7 @@ export function OptimisticInstallmentButton({ parcelaId, initialPaid }: { parcel
       disabled={isPending}
       onClick={handleClick}
       className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-        paid ? "bg-emerald-500/20 text-emerald-400" : "bg-zinc-800 text-zinc-400 hover:text-white"
+        paid ? "bg-success-subtle text-success" : "bg-surface-2 text-subtle-foreground hover:text-white"
       }`}
     >
       {paid ? "Pago" : "Pendente"}

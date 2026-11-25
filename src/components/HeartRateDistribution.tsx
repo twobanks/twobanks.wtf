@@ -65,7 +65,7 @@ export default function HeartRateDistribution({ streams }: { streams: any }) {
   }, [streams])
 
   if (chartData.length === 0) {
-    return <p className="text-zinc-500 text-sm">Dados de frequência cardíaca não disponíveis.</p>
+    return <p className="text-subtle-foreground text-sm">Dados de frequência cardíaca não disponíveis.</p>
   }
 
   // Acha a barra com maior tempo para pintar de vermelho vibrante
@@ -75,8 +75,8 @@ export default function HeartRateDistribution({ streams }: { streams: any }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-zinc-900 text-white p-3 rounded-lg border border-zinc-700 shadow-xl text-sm">
-          <p className="font-bold text-zinc-300 mb-1">{data.name} bpm</p>
+        <div className="bg-surface-1 text-white p-3 rounded-lg border border-border shadow-xl text-sm">
+          <p className="font-bold text-muted-foreground mb-1">{data.name} bpm</p>
           <p className="text-red-500 font-bold text-lg">{data.displayTime} <span className="text-sm">❤️</span></p>
         </div>
       )

@@ -27,13 +27,13 @@ export default function TripElevationChart({
   const dayMarkers = data.filter((p) => p.dayLabel)
 
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+    <div className="rounded-2xl border border-border bg-surface-1 p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+          <h3 className="text-sm font-semibold text-foreground">
             Perfil Altimétrico da Expedição
           </h3>
-          <p className="text-xs text-zinc-500">
+          <p className="text-xs text-subtle-foreground">
             Elevação (m) × Distância acumulada (km)
           </p>
         </div>

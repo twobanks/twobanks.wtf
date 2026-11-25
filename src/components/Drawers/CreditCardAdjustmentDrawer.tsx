@@ -40,7 +40,7 @@ export function CreditCardAdjustmentDrawer({ creditCardId }: { creditCardId: num
       trigger={
         <button
           onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
         >
           <Plus size={16} /> Lançar Estorno/Taxa
         </button>

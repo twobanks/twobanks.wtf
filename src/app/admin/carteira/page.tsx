@@ -205,7 +205,7 @@ export default async function CarteiraPage({
         />
         
         <Tabs defaultValue="all" className="flex flex-col w-full space-y-5">
-          <Card className="flex flex-row items-center p-2.5 justify-between flex-wrap gap-4 bg-zinc-950/40 border-zinc-800/60 rounded-2xl shadow-sm">
+          <Card className="flex flex-row items-center p-2.5 justify-between flex-wrap gap-4 bg-background/40 border-border rounded-2xl shadow-sm">
             <TabsList className="flex-wrap bg-card/40 p-1 rounded-xl">
               <TabsTrigger 
                 value="all" 
@@ -247,7 +247,7 @@ export default async function CarteiraPage({
           <TabsContent value="all" className="space-y-6 mt-0">
             <div className="grid grid-cols-1 gap-6">
               <section className="space-y-3 min-w-0">
-                <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                <Card className="h-full bg-surface-1 border-border shadow-none overflow-hidden">
                   <div className="p-0 sm:p-2">
                     <TransactionsTable transactions={receitasDoMes} />
                   </div>
@@ -255,7 +255,7 @@ export default async function CarteiraPage({
               </section>
 
               <section className="space-y-3 min-w-0">
-                <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                <Card className="h-full bg-surface-1 border-border shadow-none overflow-hidden">
                   <div className="p-0 sm:p-2">
                     <ExpensesTable expenses={outrasDespesas} />
                   </div>
@@ -265,7 +265,7 @@ export default async function CarteiraPage({
 
             <div className="grid grid-cols-1 gap-6">
               <section className="space-y-3 min-w-0">
-                <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+                <Card className="h-full bg-surface-1 border-border shadow-none overflow-hidden">
                   <div className="p-0 sm:p-2">
                     <ObraTransactionsTable
                       obraCategoryExists={!!obraCategory}
@@ -279,7 +279,7 @@ export default async function CarteiraPage({
             </div>
 
             <section className="space-y-3">
-              <Card className="bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+              <Card className="bg-surface-1 border-border shadow-none overflow-hidden">
                 <div className="p-0 sm:p-2">
                   <CreditCardsSection
                     cartoesComFatura={cartoesComFatura}
@@ -298,7 +298,7 @@ export default async function CarteiraPage({
 
           {/* Aba Receitas */}
           <TabsContent value="receitas" className="mt-0">
-            <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+            <Card className="h-full bg-surface-1 border-border shadow-none overflow-hidden">
               <div className="p-0 sm:p-2">
                 <TransactionsTable transactions={receitasDoMes} />
               </div>
@@ -307,7 +307,7 @@ export default async function CarteiraPage({
 
           {/* Aba Despesas */}
           <TabsContent value="despesas" className="mt-0">
-            <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+            <Card className="h-full bg-surface-1 border-border shadow-none overflow-hidden">
               <div className="p-0 sm:p-2">
                 <ExpensesTable expenses={outrasDespesas} />
               </div>
@@ -316,7 +316,7 @@ export default async function CarteiraPage({
 
           {/* Aba Obra */}
           <TabsContent value="obra" className="mt-0">
-            <Card className="h-full bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+            <Card className="h-full bg-surface-1 border-border shadow-none overflow-hidden">
               <div className="p-0 sm:p-2">
                 <ObraTransactionsTable
                   obraCategoryExists={!!obraCategory}
@@ -330,7 +330,7 @@ export default async function CarteiraPage({
 
           {/* Aba Cartões de Crédito */}
           <TabsContent value="cartoes" className="mt-0">
-            <Card className="bg-zinc-900/40 border-zinc-800/80 shadow-none overflow-hidden">
+            <Card className="bg-surface-1 border-border shadow-none overflow-hidden">
               <div className="p-0 sm:p-2">
                 <CreditCardsSection
                   cartoesComFatura={cartoesComFatura}

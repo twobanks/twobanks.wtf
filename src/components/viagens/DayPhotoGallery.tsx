@@ -34,7 +34,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+      <h2 className="text-lg font-bold tracking-tight text-foreground">
         Registros Fotográficos ({photos.length})
       </h2>
 
@@ -44,7 +44,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
             key={photo.id}
             type="button"
             onClick={() => setSelectedIndex(index)}
-            className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-900 text-left focus:outline-none focus:ring-2 focus:ring-[#5EACCF]"
+            className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-surface-1 text-left focus:outline-none focus:ring-2 focus:ring-[#5EACCF]"
           >
             <img
               src={photo.url}
@@ -60,7 +60,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
                   </p>
                 )}
                 {photo.location && (
-                  <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-zinc-300">
+                  <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
                     <MapPin className="size-3 text-[#5EACCF]" />
                     {photo.location}
                   </span>
@@ -79,7 +79,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
           <button
             type="button"
             onClick={() => setSelectedIndex(null)}
-            className="absolute top-4 right-4 p-2 rounded-full bg-zinc-900/80 text-zinc-300 hover:text-white border border-zinc-800"
+            className="absolute top-4 right-4 p-2 rounded-full bg-surface-1 text-muted-foreground hover:text-white border border-border"
             aria-label="Fechar"
           >
             <X className="size-5" />
@@ -98,7 +98,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
                         : (prev - 1 + photos.length) % photos.length
                   )
                 }}
-                className="absolute left-4 p-2.5 rounded-full bg-zinc-900/80 text-zinc-300 hover:text-white border border-zinc-800"
+                className="absolute left-4 p-2.5 rounded-full bg-surface-1 text-muted-foreground hover:text-white border border-border"
                 aria-label="Anterior"
               >
                 <ChevronLeft className="size-5" />
@@ -112,7 +112,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
                     prev === null ? 0 : (prev + 1) % photos.length
                   )
                 }}
-                className="absolute right-4 p-2.5 rounded-full bg-zinc-900/80 text-zinc-300 hover:text-white border border-zinc-800"
+                className="absolute right-4 p-2.5 rounded-full bg-surface-1 text-muted-foreground hover:text-white border border-border"
                 aria-label="Próxima"
               >
                 <ChevronRight className="size-5" />
@@ -129,10 +129,10 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
               alt={activePhoto.caption || "Foto ampliada"}
               className="max-h-[78vh] w-full object-contain rounded-xl"
             />
-            <div className="flex items-center justify-between text-xs text-zinc-300 px-1">
+            <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
               <span>{activePhoto.caption}</span>
               {activePhoto.location && (
-                <span className="text-zinc-400">{activePhoto.location}</span>
+                <span className="text-subtle-foreground">{activePhoto.location}</span>
               )}
             </div>
           </div>

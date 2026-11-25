@@ -46,8 +46,8 @@ export default async function ListasPage() {
       </div>
 
       {listsWithItems.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-zinc-800 rounded-xl">
-          <p className="text-zinc-500">Nenhuma lista criada ainda.</p>
+        <div className="p-8 text-center border border-dashed border-border rounded-xl">
+          <p className="text-subtle-foreground">Nenhuma lista criada ainda.</p>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

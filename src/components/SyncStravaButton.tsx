@@ -27,14 +27,14 @@ export function SyncStravaButton() {
         type="button"
         onClick={handleSync}
         disabled={isPending}
-        className="inline-flex items-center gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 transition-colors cursor-pointer"
+        className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-1 px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-surface-2 disabled:opacity-50 transition-colors cursor-pointer"
       >
         <RefreshCw className={`size-3.5 text-white ${isPending ? "animate-spin" : ""}`} />
         {isPending ? "Atualizando..." : "Sincronizar Strava"}
       </button>
 
       {status && (
-        <span className="text-xs text-zinc-500 dark:text-zinc-400">{status}</span>
+        <span className="text-xs text-subtle-foreground">{status}</span>
       )}
     </div>
   );

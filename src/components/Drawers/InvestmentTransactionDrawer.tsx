@@ -48,15 +48,15 @@ export function InvestmentTransactionDrawer({
   return (
     <>
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
+        <DrawerTrigger className="inline-flex items-center gap-2 bg-surface-2 hover:bg-black px-4 py-2 rounded-lg transition-colors">
           + Lançar Transação
         </DrawerTrigger>
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+        <DrawerContent className="bg-surface-1 border-t border-border rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
+            <DrawerTitle className="text-xl font-semibold text-foreground">
               Lançar Transação de Investimento
             </DrawerTitle>
-            <DrawerDescription className="text-sm text-gray-400 mb-4">
+            <DrawerDescription className="text-sm text-subtle-foreground mb-4">
               Informe os dados da transação
             </DrawerDescription>
           </DrawerHeader>
@@ -66,7 +66,7 @@ export function InvestmentTransactionDrawer({
               name="assetId"
               defaultValue={selectedAssetId || ""}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Selecione o ativo</option>
               {assets.map((asset) => (
@@ -78,7 +78,7 @@ export function InvestmentTransactionDrawer({
             <select
               name="type"
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="buy">Compra</option>
               <option value="sell">Venda</option>
@@ -91,21 +91,21 @@ export function InvestmentTransactionDrawer({
               name="date"
               type="date"
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               name="quantity"
               type="number"
               step="0.01"
               placeholder="Quantidade (se aplicável)"
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               name="price"
               type="number"
               step="0.01"
               placeholder="Preço unitário (se aplicável)"
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               name="amount"
@@ -113,7 +113,7 @@ export function InvestmentTransactionDrawer({
               step="0.01"
               placeholder="Valor total (R$)"
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               name="fees"
@@ -121,13 +121,13 @@ export function InvestmentTransactionDrawer({
               step="0.01"
               placeholder="Taxas (R$)"
               defaultValue="0"
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <textarea
               name="notes"
               placeholder="Observações"
               rows={2}
-              className="md:col-span-2 bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="md:col-span-2 bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
               type="submit"

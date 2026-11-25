@@ -21,16 +21,16 @@ export function KanbanColumn({ id, title, tasks, users }: KanbanColumnProps) {
   })
 
   // Estilização dinâmica caso um card esteja pairando sobre a coluna
-  const columnBg = isOver ? "bg-zinc-900/60" : "bg-zinc-900/30"
-  const borderStyle = isOver ? "border-brand-blue/50" : "border-zinc-800/80"
+  const columnBg = isOver ? "bg-surface-1" : "bg-surface-1"
+  const borderStyle = isOver ? "border-brand-blue/50" : "border-border"
 
   return (
     <div
       className={`flex flex-col flex-shrink-0 w-80 h-full max-h-full rounded-2xl border ${borderStyle} ${columnBg} transition-colors duration-200 overflow-hidden shadow-sm`}
     >
       {/* Header da Coluna */}
-      <div className="flex items-center justify-between p-4 border-b border-zinc-800/60 bg-zinc-950/20">
-        <h3 className="font-semibold text-sm text-zinc-200 tracking-wide uppercase">
+      <div className="flex items-center justify-between p-4 border-b border-border bg-background/20">
+        <h3 className="font-semibold text-sm text-foreground tracking-wide uppercase">
           {title}
         </h3>
         <div className="flex items-center gap-2">
@@ -40,13 +40,13 @@ export function KanbanColumn({ id, title, tasks, users }: KanbanColumnProps) {
             trigger={
               <button 
                 title="Adicionar tarefa nesta coluna"
-                className="flex items-center justify-center h-6 w-6 rounded-md hover:bg-zinc-800 text-zinc-500 hover:text-zinc-300 transition-colors"
+                className="flex items-center justify-center h-6 w-6 rounded-md hover:bg-surface-2 text-subtle-foreground hover:text-muted-foreground transition-colors"
               >
                 <Plus size={14} />
               </button>
             }
           />
-          <span className="flex items-center justify-center h-6 min-w-6 px-2 rounded-full bg-zinc-800 text-xs font-medium text-zinc-400">
+          <span className="flex items-center justify-center h-6 min-w-6 px-2 rounded-full bg-surface-2 text-xs font-medium text-subtle-foreground">
             {tasks.length}
           </span>
         </div>
@@ -64,8 +64,8 @@ export function KanbanColumn({ id, title, tasks, users }: KanbanColumnProps) {
         </SortableContext>
         
         {tasks.length === 0 && (
-          <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-zinc-800/50 rounded-xl">
-            <span className="text-xs text-zinc-600 font-medium">Solte aqui</span>
+          <div className="h-full w-full flex items-center justify-center border-2 border-dashed border-border rounded-xl">
+            <span className="text-xs text-subtle-foreground font-medium">Solte aqui</span>
           </div>
         )}
       </div>

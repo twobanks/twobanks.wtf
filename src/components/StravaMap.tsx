@@ -369,7 +369,7 @@ ${trkpts}
 
   if (!coordinates.length) {
     return (
-      <div className="h-[420px] w-full flex items-center justify-center bg-zinc-900 rounded-2xl border border-zinc-800 text-zinc-500">
+      <div className="h-[420px] w-full flex items-center justify-center bg-surface-1 rounded-2xl border border-border text-subtle-foreground">
         Esta atividade não possui dados de mapa.
       </div>
     )
@@ -378,7 +378,7 @@ ${trkpts}
   return (
     <div 
       ref={wrapperRef} 
-      className="h-[420px] w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm relative bg-zinc-950"
+      className="h-[420px] w-full rounded-2xl overflow-hidden border border-border shadow-sm relative bg-background"
     >
       <style jsx global>{`
         .strava-map-popup .mapboxgl-popup-content {
@@ -391,14 +391,14 @@ ${trkpts}
         }
       `}</style>
 
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg">
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-white/80 bg-surface-1 backdrop-blur-md border border-border rounded-xl shadow-lg">
         <button
           type="button"
           onClick={handleToggle3D}
           className={`p-2 rounded-lg transition-colors ${
             is3D 
-              ? "bg-zinc-200 dark:bg-zinc-800 text-blue-500" 
-              : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              ? "bg-surface-2 text-blue-500" 
+              : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={is3D ? "Visão 2D" : "Visão 3D"}
         >
@@ -410,8 +410,8 @@ ${trkpts}
           onClick={handleToggleStyle}
           className={`p-2 rounded-lg transition-colors ${
             isSatellite 
-              ? "bg-zinc-200 dark:bg-zinc-800 text-blue-500" 
-              : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              ? "bg-surface-2 text-blue-500" 
+              : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={isSatellite ? "Modo Vetorial Escuro" : "Modo Satélite"}
         >
@@ -421,7 +421,7 @@ ${trkpts}
         <button
           type="button"
           onClick={handleRotate}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title="Girar Mapa 360°"
         >
           <Compass 
@@ -430,12 +430,12 @@ ${trkpts}
           />
         </button>
 
-        <div className="h-[1px] w-full bg-zinc-200 dark:bg-zinc-800 my-0.5" />
+        <div className="h-[1px] w-full bg-surface-2 my-0.5" />
 
         <button
           type="button"
           onClick={handleZoomIn}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title="Aumentar Zoom"
         >
           <Plus size={18} />
@@ -444,18 +444,18 @@ ${trkpts}
         <button
           type="button"
           onClick={handleZoomOut}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title="Diminuir Zoom"
         >
           <Minus size={18} />
         </button>
 
-        <div className="h-[1px] w-full bg-zinc-200 dark:bg-zinc-800 my-0.5" />
+        <div className="h-[1px] w-full bg-surface-2 my-0.5" />
 
         <button
           type="button"
           onClick={handleDownloadGPX}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-blue-500 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-blue-500 transition-colors"
           title="Baixar Rota (.gpx)"
         >
           <Download size={18} />
@@ -464,7 +464,7 @@ ${trkpts}
         <button
           type="button"
           onClick={handleToggleFullscreen}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title={isFullscreen ? "Sair da Tela Cheia" : "Modo Tela Cheia"}
         >
           {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}

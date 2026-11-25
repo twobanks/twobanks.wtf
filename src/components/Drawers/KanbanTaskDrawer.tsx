@@ -130,7 +130,7 @@ const handleSubmit = async (formData: FormData) => {
               type="button"
               onClick={handleClone}
               disabled={isSubmitting}
-              className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg border border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700 text-sm font-medium transition-colors disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 h-10 rounded-lg border border-border bg-surface-2 text-muted-foreground hover:bg-surface-3 text-sm font-medium transition-colors disabled:opacity-50"
             >
               <Copy size={16} /> Clonar
             </button>
@@ -148,19 +148,19 @@ const handleSubmit = async (formData: FormData) => {
       />
 
       <div className="md:col-span-2 space-y-1">
-        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+        <label className="text-xs font-medium text-subtle-foreground uppercase tracking-wider pl-1">
           Descrição
         </label>
         <textarea
           name="description"
           defaultValue={task?.description ?? ""}
           placeholder="Detalhes adicionais (opcional)..."
-          className="w-full rounded-lg border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-500 focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all min-h-[100px]"
+          className="w-full rounded-lg border border-border bg-surface-1 px-4 py-3 text-sm text-foreground placeholder:text-subtle-foreground focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all min-h-[100px]"
         />
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+        <label className="text-xs font-medium text-subtle-foreground uppercase tracking-wider pl-1">
           Urgência
         </label>
         <Select name="urgency" defaultValue={task?.urgency ?? "medium"}>
@@ -182,7 +182,7 @@ const handleSubmit = async (formData: FormData) => {
       </div>
 
       <div className="space-y-1">
-        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+        <label className="text-xs font-medium text-subtle-foreground uppercase tracking-wider pl-1">
           Status
         </label>
         <Select name="status" defaultValue={task?.status ?? defaultStatus}>
@@ -210,7 +210,7 @@ const handleSubmit = async (formData: FormData) => {
       </div>
       {/* NOVO CAMPO: Responsável pela tarefa */}
       <div className="space-y-1">
-        <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider pl-1">
+        <label className="text-xs font-medium text-subtle-foreground uppercase tracking-wider pl-1">
           Responsável
         </label>
         <Select name="assignedToId" defaultValue={task?.assignedToId ?? "none"}>

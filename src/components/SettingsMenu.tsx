@@ -27,7 +27,7 @@ export function SettingsMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-lg p-2 hover:bg-gray-800 transition-colors">
+      <DropdownMenuTrigger className="inline-flex items-center justify-center rounded-lg p-2 hover:bg-surface-2 transition-colors">
         <Settings className="h-5 w-5" />
         <span className="sr-only">Configurações</span>
       </DropdownMenuTrigger>

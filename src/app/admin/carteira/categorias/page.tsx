@@ -37,7 +37,7 @@ export default async function CategoriasPage() {
 
         <div className="grid gap-3">
           {categorias.length === 0 && (
-            <p className="text-gray-500">Nenhuma categoria cadastrada.</p>
+            <p className="text-subtle-foreground">Nenhuma categoria cadastrada.</p>
           )}
           {categorias.map((cat) => (
             <div
@@ -46,7 +46,7 @@ export default async function CategoriasPage() {
             >
               <div>
                 <p className="font-medium">{cat.name}</p>
-                <span className="text-sm text-gray-400">{cat.type}</span>
+                <span className="text-sm text-subtle-foreground">{cat.type}</span>
               </div>
               <div className="flex gap-2">
                 <CategoryDrawer category={cat} />

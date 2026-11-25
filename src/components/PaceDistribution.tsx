@@ -68,7 +68,7 @@ export default function PaceDistribution({ streams }: { streams: any }) {
   }, [streams])
 
   if (chartData.length === 0) {
-    return <p className="text-zinc-500 text-sm">Dados insuficientes para calcular a distribuição.</p>
+    return <p className="text-subtle-foreground text-sm">Dados insuficientes para calcular a distribuição.</p>
   }
 
   const maxTime = Math.max(...chartData.map(d => d.timeSpent))
@@ -77,8 +77,8 @@ export default function PaceDistribution({ streams }: { streams: any }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-zinc-900 text-white p-3 rounded-lg border border-zinc-700 shadow-xl text-sm">
-          <p className="font-bold text-zinc-300 mb-1">{data.name}/km</p>
+        <div className="bg-surface-1 text-white p-3 rounded-lg border border-border shadow-xl text-sm">
+          <p className="font-bold text-muted-foreground mb-1">{data.name}/km</p>
           <p className="text-[#FC4C02] font-bold text-lg">{data.displayTime}</p>
         </div>
       )

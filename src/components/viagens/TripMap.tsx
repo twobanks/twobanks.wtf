@@ -190,7 +190,7 @@ export default function TripMap({
       const isHighlight = poi.type === "highlight"
       const el = document.createElement("div")
       el.className = `size-4 rounded-full border-2 border-zinc-950 shadow-lg cursor-pointer transition-transform hover:scale-125 ${
-        isHighlight ? "bg-amber-400" : "bg-[#5EACCF]"
+        isHighlight ? "bg-warning" : "bg-[#5EACCF]"
       }`
       el.title = poi.name
 
@@ -326,7 +326,7 @@ ${trksegs}
 
   if (!bounds) {
     return (
-      <div className="h-[460px] w-full flex items-center justify-center bg-zinc-900 rounded-2xl border border-zinc-800 text-zinc-500">
+      <div className="h-[460px] w-full flex items-center justify-center bg-surface-1 rounded-2xl border border-border text-subtle-foreground">
         Mapa da rota ainda não cadastrado para esta viagem.
       </div>
     )
@@ -335,7 +335,7 @@ ${trksegs}
   return (
     <div
       ref={wrapperRef}
-      className="h-[460px] w-full rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm relative bg-zinc-950"
+      className="h-[460px] w-full rounded-2xl overflow-hidden border border-border shadow-sm relative bg-background"
     >
       <style jsx global>{`
         .trip-map-popup .mapboxgl-popup-content {
@@ -348,7 +348,7 @@ ${trksegs}
         }
       `}</style>
 
-      <div className="absolute bottom-4 left-4 z-10 flex flex-wrap items-center gap-3 px-3 py-2 bg-zinc-900/85 backdrop-blur-md border border-zinc-800 rounded-xl text-xs text-zinc-300">
+      <div className="absolute bottom-4 left-4 z-10 flex flex-wrap items-center gap-3 px-3 py-2 bg-surface-1 backdrop-blur-md border border-border rounded-xl text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <span className="w-4 h-0.5 border-t-2 border-dashed border-[#5EACCF]" />
           Trajeto Planejado
@@ -358,19 +358,19 @@ ${trksegs}
           Pedalado (Strava)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-full bg-amber-400" />
+          <span className="size-2.5 rounded-full bg-warning" />
           Marco Histórico / Parque
         </span>
       </div>
 
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg">
+      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-white/80 bg-surface-1 backdrop-blur-md border border-border rounded-xl shadow-lg">
         <button
           type="button"
           onClick={handleToggle3D}
           className={`p-2 rounded-lg transition-colors ${
             is3D
-              ? "bg-zinc-200 dark:bg-zinc-800 text-[#5EACCF]"
-              : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              ? "bg-surface-2 text-[#5EACCF]"
+              : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={is3D ? "Visão 2D" : "Visão 3D"}
         >
@@ -382,8 +382,8 @@ ${trksegs}
           onClick={handleToggleStyle}
           className={`p-2 rounded-lg transition-colors ${
             isSatellite
-              ? "bg-zinc-200 dark:bg-zinc-800 text-[#5EACCF]"
-              : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              ? "bg-surface-2 text-[#5EACCF]"
+              : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={isSatellite ? "Modo Vetorial Escuro" : "Modo Satélite"}
         >
@@ -398,7 +398,7 @@ ${trksegs}
               duration: 500,
             })
           }
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title="Girar Mapa"
         >
           <Compass
@@ -410,12 +410,12 @@ ${trksegs}
           />
         </button>
 
-        <div className="h-[1px] w-full bg-zinc-200 dark:bg-zinc-800 my-0.5" />
+        <div className="h-[1px] w-full bg-surface-2 my-0.5" />
 
         <button
           type="button"
           onClick={() => mapRef.current?.zoomIn()}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title="Aumentar Zoom"
         >
           <Plus size={18} />
@@ -424,18 +424,18 @@ ${trksegs}
         <button
           type="button"
           onClick={() => mapRef.current?.zoomOut()}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title="Diminuir Zoom"
         >
           <Minus size={18} />
         </button>
 
-        <div className="h-[1px] w-full bg-zinc-200 dark:bg-zinc-800 my-0.5" />
+        <div className="h-[1px] w-full bg-surface-2 my-0.5" />
 
         <button
           type="button"
           onClick={handleDownloadGPX}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-[#5EACCF] transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-[#5EACCF] transition-colors"
           title="Baixar Trajeto (.gpx)"
         >
           <Download size={18} />
@@ -444,7 +444,7 @@ ${trksegs}
         <button
           type="button"
           onClick={handleToggleFullscreen}
-          className="p-2 rounded-lg text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
           title={isFullscreen ? "Sair da Tela Cheia" : "Tela Cheia"}
         >
           {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}

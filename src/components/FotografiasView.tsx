@@ -124,7 +124,7 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
         type="button"
         onClick={() => setSelectedIndex(index)}
         style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
-        className="group relative block w-full overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-950 text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+        className="group relative block w-full overflow-hidden rounded-2xl border border-border bg-background text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <img
           src={photo.imageUrl}
@@ -144,7 +144,7 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
         {/* Botão de Ampliar */}
         <span
           aria-hidden="true"
-          className="absolute top-3 right-3 p-2 rounded-xl border border-zinc-800/90 bg-zinc-900/85 text-white backdrop-blur-xs opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200"
+          className="absolute top-3 right-3 p-2 rounded-xl border border-border bg-surface-1 text-white backdrop-blur-xs opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200"
         >
           <Maximize2 className="size-3.5 text-white" />
         </span>
@@ -155,18 +155,18 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
             <h2 className="font-semibold text-sm text-white leading-snug line-clamp-2">
               {photo.title}
             </h2>
-            <p className="mt-1 inline-flex items-center gap-1 text-xs text-zinc-300 max-w-full">
+            <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground max-w-full">
               <MapPin className="size-3 text-white shrink-0" />
               <span className="truncate">{photo.location.name}</span>
             </p>
           </div>
 
-          <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/15 text-[11px] text-zinc-300 opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-10 transition-all duration-300">
+          <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/15 text-[11px] text-muted-foreground opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-10 transition-all duration-300">
             <span className="inline-flex items-center gap-1.5 truncate">
               <Camera className="size-3 text-white shrink-0" />
               <span className="truncate">{photo.camera.model}</span>
             </span>
-            <span className="shrink-0 tabular-nums text-zinc-400">
+            <span className="shrink-0 tabular-nums text-subtle-foreground">
               {formatDate(photo.capturedAt)}
             </span>
           </div>
@@ -179,17 +179,17 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
     <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-10">
       {/* Cabeçalho */}
       <header>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           Fotografias
         </h1>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-sm text-subtle-foreground mt-1">
           Registros de trilhas, pedais e paisagens capturados pelo caminho.
         </p>
       </header>
 
       {/* Grade Masonry estilo Pinterest */}
       {orderedPhotos.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-10 text-center text-sm text-zinc-500">
+        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-subtle-foreground">
           Nenhuma fotografia cadastrada ainda.
         </div>
       ) : (
@@ -230,10 +230,10 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl max-h-[92vh] rounded-2xl border border-zinc-800 bg-zinc-900 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_340px] shadow-2xl"
+            className="relative w-full max-w-6xl max-h-[92vh] rounded-2xl border border-border bg-surface-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_340px] shadow-2xl"
           >
             {/* Área da Imagem Ampliada */}
-            <div className="relative bg-zinc-950 flex items-center justify-center min-h-[42vh] sm:min-h-[55vh] lg:min-h-[75vh] max-h-[60vh] lg:max-h-[92vh] p-3 sm:p-6">
+            <div className="relative bg-background flex items-center justify-center min-h-[42vh] sm:min-h-[55vh] lg:min-h-[75vh] max-h-[60vh] lg:max-h-[92vh] p-3 sm:p-6">
               <img
                 src={selectedPhoto.imageUrl}
                 alt={selectedPhoto.title}
@@ -246,7 +246,7 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                     type="button"
                     onClick={handlePrev}
                     aria-label="Foto anterior"
-                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/90 text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-xl border border-border bg-surface-1 text-white hover:bg-surface-2 transition-colors cursor-pointer"
                   >
                     <ChevronLeft className="size-4 text-white" />
                   </button>
@@ -255,27 +255,27 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                     type="button"
                     onClick={handleNext}
                     aria-label="Próxima foto"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-xl border border-zinc-800 bg-zinc-900/90 text-white hover:bg-zinc-800 transition-colors cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-xl border border-border bg-surface-1 text-white hover:bg-surface-2 transition-colors cursor-pointer"
                   >
                     <ChevronRight className="size-4 text-white" />
                   </button>
                 </>
               )}
 
-              <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg border border-zinc-800 bg-zinc-900/90 text-[11px] font-medium text-zinc-300 tabular-nums">
+              <span className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg border border-border bg-surface-1 text-[11px] font-medium text-muted-foreground tabular-nums">
                 {selectedIndex + 1} / {orderedPhotos.length}
               </span>
             </div>
 
             {/* Painel Lateral de Metadados (Câmera + Geolocalização) */}
-            <aside className="border-t lg:border-t-0 lg:border-l border-zinc-800 bg-zinc-900 p-5 sm:p-6 flex flex-col justify-between gap-6 overflow-y-auto max-h-[38vh] lg:max-h-[92vh]">
+            <aside className="border-t lg:border-t-0 lg:border-l border-border bg-surface-1 p-5 sm:p-6 flex flex-col justify-between gap-6 overflow-y-auto max-h-[38vh] lg:max-h-[92vh]">
               <div className="space-y-5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-1.5">
-                    <h2 className="text-lg font-bold tracking-tight text-zinc-100">
+                    <h2 className="text-lg font-bold tracking-tight text-foreground">
                       {selectedPhoto.title}
                     </h2>
-                    <p className="inline-flex items-center gap-1.5 text-xs text-zinc-400">
+                    <p className="inline-flex items-center gap-1.5 text-xs text-subtle-foreground">
                       <Calendar className="size-3.5 text-white" />
                       {formatDate(selectedPhoto.capturedAt)}
                     </p>
@@ -285,35 +285,35 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                     type="button"
                     onClick={handleClose}
                     aria-label="Fechar visualização"
-                    className="p-2 rounded-xl border border-zinc-800 bg-zinc-950 text-white hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+                    className="p-2 rounded-xl border border-border bg-background text-white hover:bg-surface-2 transition-colors cursor-pointer shrink-0"
                   >
                     <X className="size-4 text-white" />
                   </button>
                 </div>
 
                 {selectedPhoto.description && (
-                  <p className="text-xs leading-relaxed text-zinc-400">
+                  <p className="text-xs leading-relaxed text-subtle-foreground">
                     {selectedPhoto.description}
                   </p>
                 )}
 
                 {/* Bloco 1: Câmera & EXIF */}
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4 space-y-3">
+                <div className="rounded-xl border border-border bg-background/60 p-4 space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900">
+                    <span className="p-1.5 rounded-lg border border-border bg-surface-1">
                       <Camera className="size-3.5 text-white" />
                     </span>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       Câmera & EXIF
                     </h3>
                   </div>
 
                   <div className="space-y-1.5 text-xs">
-                    <p className="font-semibold text-zinc-100">
+                    <p className="font-semibold text-foreground">
                       {selectedPhoto.camera.model}
                     </p>
                     {selectedPhoto.camera.lens && (
-                      <p className="inline-flex items-center gap-1.5 text-zinc-400">
+                      <p className="inline-flex items-center gap-1.5 text-subtle-foreground">
                         <Aperture className="size-3.5 text-white shrink-0" />
                         {selectedPhoto.camera.lens}
                       </p>
@@ -324,28 +324,28 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                     selectedPhoto.camera.aperture ||
                     selectedPhoto.camera.shutterSpeed ||
                     selectedPhoto.camera.iso !== undefined) && (
-                    <div className="grid grid-cols-4 gap-2 pt-2.5 border-t border-zinc-800/80 text-center tabular-nums">
+                    <div className="grid grid-cols-4 gap-2 pt-2.5 border-t border-border text-center tabular-nums">
                       <div>
-                        <p className="text-[10px] uppercase text-zinc-500">Focal</p>
-                        <p className="mt-0.5 text-xs font-semibold text-zinc-200">
+                        <p className="text-[10px] uppercase text-subtle-foreground">Focal</p>
+                        <p className="mt-0.5 text-xs font-semibold text-foreground">
                           {selectedPhoto.camera.focalLength ?? "--"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase text-zinc-500">Abertura</p>
-                        <p className="mt-0.5 text-xs font-semibold text-zinc-200">
+                        <p className="text-[10px] uppercase text-subtle-foreground">Abertura</p>
+                        <p className="mt-0.5 text-xs font-semibold text-foreground">
                           {selectedPhoto.camera.aperture ?? "--"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase text-zinc-500">Obturador</p>
-                        <p className="mt-0.5 text-xs font-semibold text-zinc-200">
+                        <p className="text-[10px] uppercase text-subtle-foreground">Obturador</p>
+                        <p className="mt-0.5 text-xs font-semibold text-foreground">
                           {selectedPhoto.camera.shutterSpeed ?? "--"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase text-zinc-500">ISO</p>
-                        <p className="mt-0.5 text-xs font-semibold text-zinc-200">
+                        <p className="text-[10px] uppercase text-subtle-foreground">ISO</p>
+                        <p className="mt-0.5 text-xs font-semibold text-foreground">
                           {selectedPhoto.camera.iso ?? "--"}
                         </p>
                       </div>
@@ -354,23 +354,23 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                 </div>
 
                 {/* Bloco 2: Geolocalização */}
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950/60 p-4 space-y-3">
+                <div className="rounded-xl border border-border bg-background/60 p-4 space-y-3">
                   <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-lg border border-zinc-800 bg-zinc-900">
+                    <span className="p-1.5 rounded-lg border border-border bg-surface-1">
                       <MapPin className="size-3.5 text-white" />
                     </span>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       Geolocalização
                     </h3>
                   </div>
 
                   <div className="space-y-1.5 text-xs">
-                    <p className="font-semibold text-zinc-100">
+                    <p className="font-semibold text-foreground">
                       {selectedPhoto.location.name}
                     </p>
-                    <p className="text-zinc-400">{selectedPhoto.location.region}</p>
+                    <p className="text-subtle-foreground">{selectedPhoto.location.region}</p>
 
-                    <div className="pt-2 flex flex-col gap-1.5 text-zinc-400 tabular-nums">
+                    <div className="pt-2 flex flex-col gap-1.5 text-subtle-foreground tabular-nums">
                       <span className="inline-flex items-center gap-1.5">
                         <Compass className="size-3.5 text-white shrink-0" />
                         {formatCoordinates(
@@ -392,7 +392,7 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                     href={`https://www.google.com/maps?q=${selectedPhoto.location.latitude},${selectedPhoto.location.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-between w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs font-medium text-zinc-200 hover:bg-zinc-800 transition-colors"
+                    className="inline-flex items-center justify-between w-full rounded-lg border border-border bg-surface-1 px-3 py-2 text-xs font-medium text-foreground hover:bg-surface-2 transition-colors"
                   >
                     <span>Ver local no mapa</span>
                     <ArrowUpRight className="size-3.5 text-white" />

@@ -215,13 +215,13 @@ export function PublicFooter({
   );
 
   return (
-    <footer className="fixed bottom-0 inset-x-0 z-40 flex flex-col bg-background border-x border-b border-zinc-200 dark:border-zinc-800">
+    <footer className="fixed bottom-0 inset-x-0 z-40 flex flex-col bg-background border-x border-b border-border">
       {/* Barra inferior: Música ouvindo agora (esquerda) + Menu Polvo (direita) */}
       <div
         className={`w-full h-14 px-3 sm:px-6 flex items-center justify-between gap-3 transition-colors duration-200 ${
           menuOpen
             ? "bg-background text-foreground"
-            : "bg-background text-zinc-700 dark:text-zinc-300"
+            : "bg-background text-muted-foreground"
         }`}
       >
         {/* Canto esquerdo: Música ouvida agora */}
@@ -240,7 +240,7 @@ export function PublicFooter({
               <span className="w-0.5 h-1.5 bg-emerald-500 animate-pulse [animation-delay:300ms]" />
             </span>
           ) : (
-            <Disc3 className="size-4 shrink-0 text-zinc-500 dark:text-zinc-400" />
+            <Disc3 className="size-4 shrink-0 text-subtle-foreground" />
           )}
 
           <div
@@ -253,7 +253,7 @@ export function PublicFooter({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${statusText} (abrir no Spotify)`}
-                className="block transition-colors hover:text-zinc-950 dark:hover:text-white"
+                className="block transition-colors hover:text-foreground"
               >
                 {marqueeContent}
               </Link>
@@ -288,8 +288,8 @@ export function PublicFooter({
                     aria-label={item.label}
                     className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors ${
                       isActive
-                        ? "bg-zinc-200/80 text-zinc-950 dark:bg-zinc-800 dark:text-white"
-                        : "text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100"
+                        ? "bg-surface-2 text-foreground"
+                        : "text-subtle-foreground hover:bg-surface-2/70 hover:text-foreground"
                     }`}
                   >
                     <Icon
@@ -309,7 +309,7 @@ export function PublicFooter({
             aria-expanded={menuOpen}
             aria-controls="footer-navigation-menu"
             aria-label={menuOpen ? "Recolher menu" : "Expandir menu"}
-            className="group inline-flex items-center justify-center p-1.5 rounded-lg transition-colors cursor-pointer text-zinc-700 hover:bg-zinc-200/70 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800/70 dark:hover:text-white"
+            className="group inline-flex items-center justify-center p-1.5 rounded-lg transition-colors cursor-pointer text-muted-foreground hover:bg-surface-2/70 hover:text-foreground"
           >
             <OctopusMenuIcon isOpen={menuOpen} className="h-8 w-auto" />
           </button>

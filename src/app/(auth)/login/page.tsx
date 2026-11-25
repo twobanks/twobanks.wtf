@@ -102,7 +102,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-1 h-full min-h-[calc(100vh-5rem)] w-full bg-[#0a0a0a] overflow-hidden">
-      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 border-r border-gray-800 relative overflow-hidden">
+      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 border-r border-border relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03]">
           <div className="w-[200%] h-[1px] bg-white absolute rotate-0" />
           <div className="w-[200%] h-[1px] bg-white absolute rotate-90" />
@@ -118,11 +118,11 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 relative overflow-y-auto">
-        <div className="w-full max-w-[420px] bg-[#141414] border border-gray-800/60 rounded-[24px] p-8 sm:p-10 shadow-2xl flex flex-col items-center">
+        <div className="w-full max-w-[420px] bg-[#141414] border border-border/60 rounded-[24px] p-8 sm:p-10 shadow-2xl flex flex-col items-center">
           {!user ? (
             <div className="flex flex-col items-center text-center w-full">
-              <div className="w-12 h-12 mb-6 rounded-full bg-gray-900 flex items-center justify-center border border-gray-800">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+              <div className="w-12 h-12 mb-6 rounded-full bg-surface-1 flex items-center justify-center border border-border">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                   <path d="M4 7.00005L10.2 11.65C11.2667 12.45 12.7333 12.45 13.8 11.65L20 7" />
                   <rect x="3" y="5" width="18" height="14" rx="2" />
                 </svg>
@@ -131,7 +131,7 @@ export default function LoginPage() {
               <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
                 Acesse sua conta
               </h2>
-              <p className="text-sm text-gray-400 mb-8">
+              <p className="text-sm text-subtle-foreground mb-8">
                 Insira seu email para continuar
               </p>
 
@@ -144,7 +144,7 @@ export default function LoginPage() {
                     placeholder="hi@company.com"
                     required
                     autoFocus
-                    className="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm text-center"
+                    className="w-full bg-[#1a1a1a] border border-border rounded-xl px-4 py-3.5 text-white placeholder:text-subtle-foreground focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm text-center"
                   />
                 </div>
 
@@ -168,13 +168,13 @@ export default function LoginPage() {
               <img
                 src={user.avatar}
                 alt={user.nome}
-                className="w-12 h-12 mb-6 rounded-full object-cover border border-gray-700 shadow-sm"
+                className="w-12 h-12 mb-6 rounded-full object-cover border border-border shadow-sm"
               />
               
               <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
                 Por favor, verifique seu email
               </h2>
-              <p className="text-sm text-gray-400 mb-8">
+              <p className="text-sm text-subtle-foreground mb-8">
                 Enviamos um código para <span className="font-medium text-white">{user.email}</span>
               </p>
 
@@ -187,8 +187,8 @@ export default function LoginPage() {
                       <div
                         key={index}
                         className={`w-10 h-12 sm:w-12 sm:h-14 flex items-center justify-center rounded-lg text-lg font-medium transition-all
-                          ${isActive && !isLoading ? 'border-2 border-blue-500 bg-[#1a1a1a]' : 'border border-gray-700 bg-transparent'}
-                          ${isFilled ? 'text-white' : 'text-gray-500'}
+                          ${isActive && !isLoading ? 'border-2 border-blue-500 bg-[#1a1a1a]' : 'border border-border bg-transparent'}
+                          ${isFilled ? 'text-white' : 'text-subtle-foreground'}
                           ${isLoading ? 'opacity-50' : 'opacity-100'}
                         `}
                       >
@@ -223,7 +223,7 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <div className="mt-8 text-sm text-gray-400">
+              <div className="mt-8 text-sm text-subtle-foreground">
                 Não recebeu o email?{" "}
                 <button
                   type="button"

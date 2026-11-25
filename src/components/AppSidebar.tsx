@@ -47,10 +47,10 @@ const contentItems = [
 ]
 
 const styleSidebar = {
-  actions: 'transition-all duration-200 text-zinc-400 hover:bg-brand-pink/15 hover:text-brand-pink',
+  actions: 'transition-all duration-200 text-subtle-foreground hover:bg-brand-pink/15 hover:text-brand-pink',
   links: {
     container: 'transition-all duration-200 relative overflow-hidden ',
-    default: 'text-zinc-400 hover:bg-brand-blue/10 hover:text-brand-blue',
+    default: 'text-subtle-foreground hover:bg-brand-blue/10 hover:text-brand-blue',
     hover: 'bg-brand-blue/15 text-brand-blue hover:bg-brand-blue/20 hover:text-brand-blue font-semibold'
   } 
 }

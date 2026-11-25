@@ -67,21 +67,21 @@ export default async function RecorrentesPage() {
 
       <div className="grid gap-4">
         {despesas.length === 0 && (
-          <p className="text-gray-500">Nenhuma despesa recorrente cadastrada.</p>
+          <p className="text-subtle-foreground">Nenhuma despesa recorrente cadastrada.</p>
         )}
         {despesas.map((despesa) => (
           <div
             key={despesa.id}
-            className="bg-gray-900 p-4 rounded-xl border border-gray-800 flex flex-col md:flex-row md:items-center justify-between gap-3"
+            className="bg-surface-1 p-4 rounded-xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-3"
           >
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <p className="font-medium">{despesa.name}</p>
                 {!despesa.active && (
-                  <span className="text-xs bg-gray-800 text-gray-400 px-2 py-0.5 rounded-full">Inativa</span>
+                  <span className="text-xs bg-surface-2 text-subtle-foreground px-2 py-0.5 rounded-full">Inativa</span>
                 )}
               </div>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-subtle-foreground">
                 R$ {Number(despesa.amount).toFixed(2)} · Venc: dia {despesa.dueDay}
                 {despesa.category?.name && ` · ${despesa.category.name}`}
                 {despesa.account?.name && ` · ${despesa.account.name}`}

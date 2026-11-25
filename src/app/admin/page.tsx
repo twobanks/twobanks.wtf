@@ -64,19 +64,19 @@ export default async function AdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Card 1: Saldo Real */}
             <div className="p-4 border rounded-lg bg-white shadow-sm">
-              <h3 className="text-gray-500 text-sm">Saldo Bancário Atual</h3>
-              <p className="text-2xl font-bold text-gray-900">
+              <h3 className="text-subtle-foreground text-sm">Saldo Bancário Atual</h3>
+              <p className="text-2xl font-bold text-foreground">
                 {formatCurrency(summary.bankBalanceCents)}
               </p>
             </div>
 
             {/* Card 2: Compromissos */}
             <div className="p-4 border rounded-lg bg-white shadow-sm">
-              <h3 className="text-gray-500 text-sm">Compromissos do Mês</h3>
+              <h3 className="text-subtle-foreground text-sm">Compromissos do Mês</h3>
               <p className="text-2xl font-bold text-red-600">
                 {formatCurrency(summary.totalPendingObligationsCents)}
               </p>
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-subtle-foreground mt-1">
                 <span>Cartões: {formatCurrency(summary.pendingCardObligationsCents)}</span>
                 <span className="ml-2">Outros: {formatCurrency(summary.pendingExpensesCents)}</span>
               </div>
@@ -84,7 +84,7 @@ export default async function AdminPage() {
 
             {/* Card 3: Previsão */}
             <div className="p-4 border rounded-lg bg-white shadow-sm">
-              <h3 className="text-gray-500 text-sm">Saldo Disponível (Previsto)</h3>
+              <h3 className="text-subtle-foreground text-sm">Saldo Disponível (Previsto)</h3>
               <p className="text-2xl font-bold text-blue-600">
                 {formatCurrency(summary.expectedAvailableBalanceCents)}
               </p>
@@ -125,7 +125,7 @@ export default async function AdminPage() {
               recentTransactions.map((tx) => (
                 <div key={tx.id} className="py-3 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
+                    <div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-success-subtle text-success' : 'bg-destructive/10 text-destructive'}`}>
                       {tx.type === 'income' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownRight className="h-4 w-4" />}
                     </div>
                     <div>
@@ -133,7 +133,7 @@ export default async function AdminPage() {
                       <p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString("pt-BR")}</p>
                     </div>
                   </div>
-                  <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-success' : 'text-destructive'}`}>
                     {Number(tx.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </span>
                 </div>

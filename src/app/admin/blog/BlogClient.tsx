@@ -60,14 +60,14 @@ export function BlogClient({ initialPosts }: BlogClientProps) {
               {initialPosts.map((post) => (
                 <div key={post.id} className="py-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500">
+                    <div className="p-2 rounded-lg bg-warning-subtle text-warning">
                       <FileText className="h-4 w-4" />
                     </div>
                     <div className="space-y-0.5">
                       <p className="font-semibold text-sm">{post.title}</p>
                       <p className="text-xs text-muted-foreground line-clamp-1">
                         {post.excerpt || post.content || "Sem descrição prévia..."} •{" "}
-                        <span className={`font-medium ${post.published ? "text-emerald-500" : "text-amber-500"}`}>
+                        <span className={`font-medium ${post.published ? "text-success" : "text-warning"}`}>
                           {post.published ? "Publicado" : "Rascunho"}
                         </span>
                       </p>

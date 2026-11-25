@@ -77,7 +77,7 @@ export function PublicHeader({ title, accentColor }: PublicHeaderProps) {
               </span>
             )}
 
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 truncate">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground truncate">
               {pageTitle}
             </h1>
           </div>

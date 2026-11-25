@@ -32,9 +32,9 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
 
   const getUrgencyStyles = (urgency: string) => {
     switch (urgency) {
-      case "high": return "bg-rose-500/10 text-rose-400 border-rose-500/20"
-      case "medium": return "bg-amber-500/10 text-amber-400 border-amber-500/20"
-      default: return "bg-zinc-800/50 text-zinc-400 border-zinc-700"
+      case "high": return "bg-destructive/10 text-destructive border-destructive/20"
+      case "medium": return "bg-warning-subtle text-warning border-warning/20"
+      default: return "bg-surface-2 text-subtle-foreground border-border"
     }
   }
 
@@ -60,7 +60,7 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
       <div
         ref={setNodeRef}
         style={style}
-        className="h-28 w-full bg-zinc-800/30 border-2 border-dashed border-brand-blue/40 rounded-xl opacity-50"
+        className="h-28 w-full bg-surface-2 border-2 border-dashed border-brand-blue/40 rounded-xl opacity-50"
       />
     )
   }
@@ -73,16 +73,16 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
         <div
           ref={setNodeRef}
           style={style}
-          className={`group relative w-full flex flex-col gap-3 p-4 bg-zinc-900 border ${
-            isOverlay ? "border-brand-blue shadow-2xl rotate-2 scale-105" : "border-zinc-800/80 shadow-sm"
-          } rounded-xl hover:border-zinc-700 transition-colors cursor-default text-left`}
+          className={`group relative w-full flex flex-col gap-3 p-4 bg-surface-1 border ${
+            isOverlay ? "border-brand-blue shadow-2xl rotate-2 scale-105" : "border-border shadow-sm"
+          } rounded-xl hover:border-border-strong transition-colors cursor-default text-left`}
         >
           {/* Alça de Arraste Invisível (Aparece no Hover) */}
           <div 
             {...attributes} 
             {...listeners}
             onClick={(e) => e.stopPropagation()} // Evita abrir o drawer ao iniciar o drag
-            className="absolute top-2 right-2 p-1.5 text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-zinc-300 hover:bg-zinc-800 rounded-md cursor-grab active:cursor-grabbing transition-all"
+            className="absolute top-2 right-2 p-1.5 text-subtle-foreground opacity-0 group-hover:opacity-100 hover:text-muted-foreground hover:bg-surface-2 rounded-md cursor-grab active:cursor-grabbing transition-all"
           >
             <GripVertical size={16} />
           </div>
@@ -95,19 +95,19 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
 
           {/* Corpo (Título) */}
           <div>
-            <h4 className="text-sm font-semibold text-zinc-100 leading-tight">
+            <h4 className="text-sm font-semibold text-foreground leading-tight">
               {task.title}
             </h4>
             {task.description && (
-              <p className="text-xs text-zinc-500 mt-1.5 line-clamp-2">
+              <p className="text-xs text-subtle-foreground mt-1.5 line-clamp-2">
                 {task.description}
               </p>
             )}
           </div>
 
           {/* Rodapé (Datas, Avatares, Indicadores) */}
-          <div className="flex items-center justify-between mt-1 pt-3 border-t border-zinc-800/50">
-            <div className="flex items-center gap-3 text-zinc-500 text-xs">
+          <div className="flex items-center justify-between mt-1 pt-3 border-t border-border">
+            <div className="flex items-center gap-3 text-subtle-foreground text-xs">
               {task.dueDate && (
                 <div className="flex items-center gap-1.5">
                   <Calendar size={13} />
@@ -119,16 +119,16 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
             {/* Referência Visual: Quem Criou e Quem é Responsável */}
             <div className="flex items-center gap-2">
               <div className="flex flex-col items-end">
-                <span className="text-[9px] text-zinc-600 font-medium leading-none uppercase tracking-wider">Criado por</span>
-                <span className="text-[10px] text-zinc-400 font-medium">{creator?.name?.split(" ")[0] || "Sistema"}</span>
+                <span className="text-[9px] text-subtle-foreground font-medium leading-none uppercase tracking-wider">Criado por</span>
+                <span className="text-[10px] text-subtle-foreground font-medium">{creator?.name?.split(" ")[0] || "Sistema"}</span>
               </div>
               
               {assignee && (
                 <>
-                  <div className="h-4 w-px bg-zinc-800" /> {/* Divisor */}
+                  <div className="h-4 w-px bg-surface-2" /> {/* Divisor */}
                   <div 
                     title={`Responsável: ${assignee.name}`} 
-                    className="h-6 w-6 rounded-full border border-zinc-700 bg-brand-blue/20 flex items-center justify-center text-[10px] font-bold text-brand-blue"
+                    className="h-6 w-6 rounded-full border border-border bg-brand-blue/20 flex items-center justify-center text-[10px] font-bold text-brand-blue"
                   >
                     {getInitials(assignee.name)}
                   </div>

@@ -63,7 +63,7 @@ export default async function ViagensPage() {
               href={`/viagens/${trip.slug}`}
               className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface-1 transition-colors hover:border-[#5EACCF]/60"
             >
-              <div className="relative h-52 w-full overflow-hidden bg-zinc-950">
+              <div className="relative h-52 w-full overflow-hidden bg-background">
                 <TripRoutePreview trip={trip} status={trip.status} />
 
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-zinc-950/20" />

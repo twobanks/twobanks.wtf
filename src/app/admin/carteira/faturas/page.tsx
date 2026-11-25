@@ -114,36 +114,36 @@ export default async function FaturasPage() {
 
   return (
     <div className="space-y-8">
-      {/* Trocado para bg-zinc-900/40 para manter a estética do sidebar */}
-      <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/80 p-1 md:p-4">
+      {/* Trocado para bg-surface-1 para manter a estética do sidebar */}
+      <div className="bg-surface-1 rounded-xl border border-border p-1 md:p-4">
         {faturas.length === 0 ? (
-          <div className="p-8 text-center text-zinc-500">
+          <div className="p-8 text-center text-subtle-foreground">
             Nenhuma fatura encontrada.
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="border-zinc-800/80 hover:bg-transparent">
-                <TableHead className="text-zinc-400">Cartão</TableHead>
-                <TableHead className="text-zinc-400">Mês/Ano</TableHead>
-                <TableHead className="text-right text-zinc-400">Total</TableHead>
-                <TableHead className="text-center text-zinc-400">Status</TableHead>
-                <TableHead className="text-center text-zinc-400">Ação</TableHead>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-subtle-foreground">Cartão</TableHead>
+                <TableHead className="text-subtle-foreground">Mês/Ano</TableHead>
+                <TableHead className="text-right text-subtle-foreground">Total</TableHead>
+                <TableHead className="text-center text-subtle-foreground">Status</TableHead>
+                <TableHead className="text-center text-subtle-foreground">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {faturas.map((fatura) => (
                 <TableRow 
                   key={`${fatura.cartao.id}-${fatura.mes}`}
-                  className="border-zinc-800/80 hover:bg-zinc-800/30 transition-colors"
+                  className="border-border hover:bg-surface-2 transition-colors"
                 >
-                  <TableCell className="font-medium text-zinc-200">
+                  <TableCell className="font-medium text-foreground">
                     {fatura.cartao.name}
                   </TableCell>
-                  <TableCell className="text-zinc-300">
+                  <TableCell className="text-muted-foreground">
                     <span className="capitalize">{formatMes(fatura.mes)}</span>
                   </TableCell>
-                  <TableCell className="text-right font-medium text-zinc-200">
+                  <TableCell className="text-right font-medium text-foreground">
                     {formatCurrency(fatura.total)}
                   </TableCell>
                   <TableCell className="text-center">
@@ -163,7 +163,7 @@ export default async function FaturasPage() {
                       <Link
                         href={`/admin/carteira/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
                         title="Ver detalhes da fatura"
-                        className="inline-flex items-center justify-center p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 rounded-lg transition-colors"
+                        className="inline-flex items-center justify-center p-2 text-subtle-foreground hover:text-foreground hover:bg-surface-2 rounded-lg transition-colors"
                       >
                         <Eye size={18} strokeWidth={1.5} />
                       </Link>

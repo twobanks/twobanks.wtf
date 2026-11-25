@@ -214,7 +214,7 @@ export function TripRoutePreview({ trip, status }: TripRoutePreviewProps) {
   const strokeColor = STATUS_STROKE[status]
 
   return (
-    <div className="relative h-full w-full bg-zinc-950 overflow-hidden select-none">
+    <div className="relative h-full w-full bg-background overflow-hidden select-none">
       {/* Grade cartográfica */}
       <div
         aria-hidden="true"

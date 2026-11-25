@@ -27,14 +27,14 @@ export default function PageSizeSelector({ pageSize, filters }: PageSizeSelector
 
   return (
     <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <label htmlFor="pageSize" className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
+      <label htmlFor="pageSize" className="text-sm text-subtle-foreground whitespace-nowrap">
         Itens:
       </label>
       <select
         id="pageSize"
         name="pageSize"
         defaultValue={pageSize}
-        className="bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+        className="bg-surface-2 border border-border rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
       >
         {PAGE_SIZE_OPTIONS.map(size => (
           <option key={size} value={size}>{size}</option>
@@ -47,7 +47,7 @@ export default function PageSizeSelector({ pageSize, filters }: PageSizeSelector
       ))}
       <button
         type="submit"
-        className="px-3 py-1.5 text-sm font-medium bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md transition-colors"
+        className="px-3 py-1.5 text-sm font-medium bg-surface-2 hover:bg-surface-3 rounded-md transition-colors"
       >
         OK
       </button>
