@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { assets, investmentTransactions } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { ROUTES } from "@/lib/routes"
 import { and, eq, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
@@ -34,7 +35,7 @@ export async function createAsset(formData: FormData) {
     averagePrice: averagePrice ? averagePrice.toFixed(2) : null,
   })
 
-  revalidatePath("/admin/investimentos")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
 }
 
 export async function updateAsset(formData: FormData) {
@@ -69,7 +70,7 @@ export async function updateAsset(formData: FormData) {
     })
     .where(and(eq(assets.id, id), canAccess))
 
-  revalidatePath("/admin/investimentos")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
 }
 
 export async function deleteAsset(formData: FormData) {
@@ -89,7 +90,7 @@ export async function deleteAsset(formData: FormData) {
   await db.delete(assets)
     .where(and(eq(assets.id, id), canAccess))
 
-  revalidatePath("/admin/investimentos")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
 }
 
 export async function createInvestmentTransaction(formData: FormData) {
@@ -155,7 +156,7 @@ export async function createInvestmentTransaction(formData: FormData) {
       )))
   }
 
-  revalidatePath("/admin/investimentos")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
 }
 
 export async function deleteInvestmentTransaction(formData: FormData) {
@@ -175,5 +176,5 @@ export async function deleteInvestmentTransaction(formData: FormData) {
   await db.delete(investmentTransactions)
     .where(and(eq(investmentTransactions.id, id), canAccess))
 
-  revalidatePath("/admin/investimentos")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
 }

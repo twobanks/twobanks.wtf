@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { creditCards, installments, purchases } from "@/db/schema"
 import { and, eq, inArray } from "drizzle-orm"
+import { ROUTES } from "@/lib/routes"
 import { revalidatePath } from "next/cache"
 
 export async function createCreditCard(formData: FormData) {
@@ -30,8 +31,8 @@ export async function createCreditCard(formData: FormData) {
     closingDay: closingDay > 0 ? closingDay : null,
   })
 
-  revalidatePath("/admin/cartoes")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CARTOES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function updateCreditCard(formData: FormData) {
@@ -59,8 +60,8 @@ export async function updateCreditCard(formData: FormData) {
     })
     .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
 
-  revalidatePath("/admin/cartoes")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CARTOES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function deleteCreditCard(formData: FormData) {
@@ -98,7 +99,7 @@ export async function deleteCreditCard(formData: FormData) {
     .delete(creditCards)
     .where(and(eq(creditCards.id, id), eq(creditCards.userId, userId)))
 
-  revalidatePath("/admin/cartoes")
-  revalidatePath("/admin/carteira")
-  revalidatePath("/admin/carteira/faturas")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CARTOES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_FATURAS)
 }

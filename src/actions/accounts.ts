@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { financialAccounts } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { ROUTES } from "@/lib/routes"
 import { and, eq, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
@@ -28,8 +29,8 @@ export async function createAccount(formData: FormData) {
     initialBalance: initialBalance.toFixed(2),
   })
 
-  revalidatePath("/admin/contas")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CONTAS)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function updateAccount(formData: FormData) {
@@ -54,8 +55,8 @@ export async function updateAccount(formData: FormData) {
     .set({ name, type: type as any, initialBalance: initialBalance.toFixed(2) })
     .where(and(eq(financialAccounts.id, id), canAccess))
 
-  revalidatePath("/admin/contas")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CONTAS)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function deleteAccount(formData: FormData) {
@@ -75,6 +76,6 @@ export async function deleteAccount(formData: FormData) {
   await db.delete(financialAccounts)
     .where(and(eq(financialAccounts.id, id), canAccess))
 
-  revalidatePath("/admin/contas")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CONTAS)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }

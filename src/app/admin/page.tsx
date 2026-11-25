@@ -11,6 +11,7 @@ import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { ROUTES } from "@/lib/routes";
 import { getDashboardSummary } from '@/services/balanceService';
 import { formatCurrency } from '@/utils/currency';
 
@@ -98,7 +99,7 @@ export default async function AdminPage() {
           </div>
           <div className="mt-4 flex gap-2">
             <Link
-              href="/admin/carteira"
+              href={ROUTES.ADMIN.CARTEIRA}
               className="text-xs font-semibold bg-primary text-primary-foreground px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
             >
               Acessar Carteira Completa &rarr;
@@ -112,7 +113,7 @@ export default async function AdminPage() {
         <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Últimas Movimentações</h2>
-            <Link href="/admin/carteira" className="text-sm text-primary hover:underline">
+            <Link href={ROUTES.ADMIN.CARTEIRA} className="text-sm text-primary hover:underline">
               Ver todas
             </Link>
           </div>
@@ -149,31 +150,31 @@ export default async function AdminPage() {
             
             <ul className="space-y-1.5 text-sm">
               <li>
-                <Link href="/admin/categorias" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                <Link href={ROUTES.ADMIN.CARTEIRA_CATEGORIAS} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
                   <span>Categorias</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
               <li>
-                <Link href="/admin/contas" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                <Link href={ROUTES.ADMIN.CARTEIRA_CONTAS} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
                   <span>Contas Bancárias</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
               <li>
-                <Link href="/admin/investimentos" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                <Link href={ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
                   <span>Investimentos</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
               <li>
-                <Link href="/admin/blog" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                <Link href={ROUTES.ADMIN.BLOG} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
                   <span>Blog</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>
               </li>
               <li>
-                <Link href="/admin/livros" className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
+                <Link href={ROUTES.ADMIN.LIVROS} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted transition-colors">
                   <span>Livros</span>
                   <span className="text-xs text-muted-foreground">&rarr;</span>
                 </Link>

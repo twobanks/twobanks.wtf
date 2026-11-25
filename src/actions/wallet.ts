@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { creditCardAdjustments, creditCards, financialAccounts, installments, purchases, transactions } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { ROUTES } from "@/lib/routes"
 import { and, eq, gte, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
@@ -236,8 +237,8 @@ export async function deleteTransaction(formData: FormData) {
       .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   }
 
-  revalidatePath('/admin/carteira');
-  revalidatePath('/admin/recorrentes');
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 }
 
 export async function toggleInstallmentPaid(formData: FormData) {
@@ -518,8 +519,8 @@ export async function updateExpense(formData: FormData) {
       .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   }
 
-  revalidatePath('/admin/carteira');
-  revalidatePath('/admin/recorrentes');
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 }
 
 export async function createTransfer(formData: FormData) {

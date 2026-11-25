@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { categories } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { ROUTES } from "@/lib/routes"
 import { and, eq, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
@@ -26,8 +27,8 @@ export async function createCategory(formData: FormData) {
     type,
   })
 
-  revalidatePath("/admin/categorias")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CATEGORIAS)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function updateCategory(formData: FormData) {
@@ -51,8 +52,8 @@ export async function updateCategory(formData: FormData) {
     .set({ name, type })
     .where(and(eq(categories.id, id), canAccess))
 
-  revalidatePath("/admin/categorias")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CATEGORIAS)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function deleteCategory(formData: FormData) {
@@ -72,6 +73,6 @@ export async function deleteCategory(formData: FormData) {
   await db.delete(categories)
     .where(and(eq(categories.id, id), canAccess))
 
-  revalidatePath("/admin/categorias")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_CATEGORIAS)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }

@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
 import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
+import { ROUTES } from "@/lib/routes"
 import { and, eq, gte, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 
@@ -88,8 +89,8 @@ export async function createRecurringExpense(formData: FormData) {
     }
   }
 
-  revalidatePath("/admin/recorrentes")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function updateRecurringExpense(formData: FormData) {
@@ -220,8 +221,8 @@ export async function updateRecurringExpense(formData: FormData) {
     }
   }
 
-  revalidatePath("/admin/recorrentes")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function deleteRecurringExpense(formData: FormData) {
@@ -259,8 +260,8 @@ export async function deleteRecurringExpense(formData: FormData) {
   await db.delete(recurringExpenses)
     .where(and(eq(recurringExpenses.id, id), canAccess))
 
-  revalidatePath("/admin/recorrentes")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }
 
 export async function generateMonthlyRecurring(formData: FormData) {
@@ -325,6 +326,6 @@ export async function generateMonthlyRecurring(formData: FormData) {
     })
   }
 
-  revalidatePath("/admin/recorrentes")
-  revalidatePath("/admin/carteira")
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
+  revalidatePath(ROUTES.ADMIN.CARTEIRA)
 }

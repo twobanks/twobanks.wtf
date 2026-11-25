@@ -5,6 +5,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
 import { and, eq, gte, or } from "drizzle-orm"
+import { ROUTES } from "@/lib/routes"
 import { revalidatePath } from "next/cache"
 
 const DEFAULT_RECURRING_MONTHS = 12;
@@ -105,8 +106,8 @@ export async function createExpense(formData: FormData) {
     }
   }
 
-  revalidatePath('/admin/carteira');
-  revalidatePath('/admin/recorrentes');
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 }
 
 export async function updateExpense(formData: FormData) {
@@ -169,8 +170,8 @@ export async function updateExpense(formData: FormData) {
       .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   }
 
-  revalidatePath('/admin/carteira');
-  revalidatePath('/admin/recorrentes');
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 }
 
 export async function deleteExpenseSeries(seedId: number) {
@@ -189,8 +190,8 @@ export async function deleteExpenseSeries(seedId: number) {
       ),
     );
 
-  revalidatePath('/admin/carteira');
-  revalidatePath('/admin/recorrentes');
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 }
 
 export async function deleteExpense(formData: FormData) {
@@ -239,6 +240,6 @@ export async function deleteExpense(formData: FormData) {
     await db.delete(transactions).where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
   }
 
-  revalidatePath("/admin/carteira");
-  revalidatePath("/admin/recorrentes");
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 }
