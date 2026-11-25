@@ -106,21 +106,6 @@ export const getNowPlaying = cache(async (): Promise<SpotifyTrack> => {
   }
 });
 
-/** @deprecated Prefira `getSpotifyAlbum`, que já retorna `coverUrl` diretamente da API. */
-export async function getSpotifyAlbumCover(spotifyUrl: string): Promise<string | null> {
-  try {
-    const response = await fetch(
-      `https://open.spotify.com/oembed?url=${encodeURIComponent(spotifyUrl)}`,
-      { next: { revalidate: 86400 } }
-    );
-    if (!response.ok) return null;
-    const data = await response.json();
-    return typeof data.thumbnail_url === "string" ? data.thumbnail_url : null;
-  } catch {
-    return null;
-  }
-}
-
 export interface SpotifyAlbumDetails {
   id: string;
   title: string;

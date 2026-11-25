@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ficheiros de contexto temporários
+contexto_parte_*.txt
+contexto_completo.txt
+juntar-codigo.ts
