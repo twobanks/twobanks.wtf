@@ -89,7 +89,7 @@ export async function createTransaction(formData: FormData) {
     });
 
     if (children.length > 0) {
-      await db.insert(transactions).values(children);
+      await db.batch([db.insert(transactions).values(children)]);
     }
   }
 
@@ -167,7 +167,7 @@ export async function createInstallmentPurchase(formData: FormData) {
     })
   }
 
-  await db.insert(installments).values(installmentsData)
+  await db.batch([db.insert(installments).values(installmentsData)])
   revalidatePath("/admin/carteira")
 }
 
@@ -498,25 +498,29 @@ export async function updateExpense(formData: FormData) {
   if (seedId) {
     // 2) Série: atualiza do mês clicado em diante.
     //    NÃO mexe na `date` — os meses ficam fixos para não bagunçar a série.
-    await db
-      .update(transactions)
-      .set(patch)
-      .where(
-        and(
-          eq(transactions.userId, userId),
-          or(
-            eq(transactions.id, seedId),
-            eq(transactions.recurringParentId, seedId),
+    await db.batch([
+      db
+        .update(transactions)
+        .set(patch)
+        .where(
+          and(
+            eq(transactions.userId, userId),
+            or(
+              eq(transactions.id, seedId),
+              eq(transactions.recurringParentId, seedId),
+            ),
+            gte(transactions.date, tx.date),
           ),
-          gte(transactions.date, tx.date),
         ),
-      );
+    ]);
   } else {
     // 3) Avulsa: atualiza tudo, inclusive a data
-    await db
-      .update(transactions)
-      .set({ ...patch, date: date.toISOString().split('T')[0] })
-      .where(and(eq(transactions.id, id), eq(transactions.userId, userId)));
+    await db.batch([
+      db
+        .update(transactions)
+        .set({ ...patch, date: date.toISOString().split('T')[0] })
+        .where(and(eq(transactions.id, id), eq(transactions.userId, userId))),
+    ]);
   }
 
   revalidatePath(ROUTES.ADMIN.CARTEIRA);
@@ -622,9 +626,11 @@ export async function deletePurchase(formData: FormData) {
 
   if (!purchase) throw new Error("Compra não encontrada ou sem permissão")
 
-  // Execução sequencial compatível com o driver HTTP do Neon
-  await db.delete(installments).where(eq(installments.purchaseId, purchaseId))
-  await db.delete(purchases).where(eq(purchases.id, purchaseId))
+  // Execução atômica via db.batch() (driver neon-http)
+  await db.batch([
+    db.delete(installments).where(eq(installments.purchaseId, purchaseId)),
+    db.delete(purchases).where(eq(purchases.id, purchaseId)),
+  ])
 
   revalidatePath("/admin/carteira")
   revalidatePath("/admin/carteira/cartoes")
