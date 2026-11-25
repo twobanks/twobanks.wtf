@@ -36,7 +36,7 @@ interface PublicFooterProps {
 
 function OctopusMenuIcon({
   isOpen,
-  className = "h-8 w-auto",
+  className = "h-11 w-auto",
 }: {
   isOpen: boolean;
   className?: string;
@@ -52,15 +52,16 @@ function OctopusMenuIcon({
         .polvo-geral {
           transform-box: fill-box;
           transform-origin: center;
-          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          animation: polvo-flutuar 2.6s ease-in-out infinite alternate;
         }
 
-        .group:hover .polvo-geral {
-          transform: translateY(-3px) rotate(-5deg);
+        @keyframes polvo-flutuar {
+          0%   { transform: translateY(0px) rotate(2deg); }
+          100% { transform: translateY(-3px) rotate(-4deg); }
         }
 
-        .group:hover .tentaculo {
-          animation: polvo-ondular 0.8s ease-in-out infinite alternate;
+        .tentaculo {
+          animation: polvo-ondular 0.85s ease-in-out infinite alternate;
         }
         .group:hover .t1 { animation-delay: 0s; }
         .group:hover .t2 { animation-delay: -0.15s; }
@@ -78,7 +79,8 @@ function OctopusMenuIcon({
           transition: opacity 0.2s ease;
         }
 
-        .olhos-fechados.aberto {
+        .olhos-fechados.aberto,
+        .group:hover .olhos-fechados {
           opacity: 1;
         }
       `}</style>
@@ -226,7 +228,8 @@ export function PublicFooter({
         }`}
       >
         {/* Canto esquerdo: Música ouvida agora */}
-        <div
+        {currentTrack?.isPlaying && (
+          <div
           className={`items-center gap-2 min-w-0 ${
             menuOpen ? "hidden sm:flex" : "flex"
           }`}
@@ -263,6 +266,7 @@ export function PublicFooter({
             )}
           </div>
         </div>
+        )}
 
         {/* Canto direito: Lista horizontal inline (quando aberta) + Botão Polvo */}
         <div className="flex items-center gap-1 sm:gap-2 ml-auto shrink-0">
@@ -301,10 +305,9 @@ export function PublicFooter({
                   </Link>
                 );
               })}
+              <ModeToggle />
             </nav>
           )}
-
-          <ModeToggle />
           <button
             type="button"
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -313,7 +316,7 @@ export function PublicFooter({
             aria-label={menuOpen ? "Recolher menu" : "Expandir menu"}
             className="group inline-flex items-center justify-center p-1.5 rounded-lg transition-colors cursor-pointer text-muted-foreground hover:bg-surface-2/70 hover:text-foreground"
           >
-            <OctopusMenuIcon isOpen={menuOpen} className="h-8 w-auto" />
+            <OctopusMenuIcon isOpen={menuOpen} className="h-11 w-auto" />
           </button>
         </div>
       </div>

@@ -1,16 +1,4 @@
-import { db } from "@/db";
-import { books } from "@/db/schema";
-import { getNowPlaying, getSpotifyAlbum } from "@/lib/spotify";
-import { getStravaYearlyStats } from "@/lib/strava";
-import { desc, eq } from "drizzle-orm";
-import {
-  ArrowUpRight,
-  BookOpen,
-  Disc3,
-  Headphones
-} from "lucide-react";
-import type { Metadata } from "next";
-import Image from "next/image";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -25,12 +13,6 @@ interface SocialLink {
   handle: string;
   icon: React.ReactNode;
 }
-
-const PROFILE_AVATAR_URL = "https://avatars.githubusercontent.com/u/2577611?v=4";
-
-const RECOMMENDED_ALBUM_ID = "5rcMJNWebtl2r2S18Je1A0?si=lv_VJknYRxCSlFgA078XEA";
-
-// No topo da página:
 
 const SOCIAL_LINKS: SocialLink[] = [
   {
@@ -117,45 +99,11 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
 ];
 
-function getCurrentYearSaoPaulo(): number {
-  const yearStr = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Sao_Paulo",
-    year: "numeric",
-  }).format(new Date());
-  return Number(yearStr);
-}
-
-function formatStars(rating: number | null): string | null {
-  if (!rating || rating < 1) return null;
-  const clamped = Math.min(5, Math.max(1, Math.round(rating)));
-  return "★".repeat(clamped);
-}
-
-export default async function SobrePage() {
-  const currentYear = getCurrentYearSaoPaulo();
-
-  const [currentTrack, recommendedAlbum, stravaStats, recentBooks] =
-    await Promise.all([
-      getNowPlaying(),
-      getSpotifyAlbum(RECOMMENDED_ALBUM_ID),
-      getStravaYearlyStats(undefined, currentYear),
-      db
-        .select({
-          id: books.id,
-          title: books.title,
-          author: books.author,
-          rating: books.rating,
-        })
-        .from(books)
-        .where(eq(books.status, "lido"))
-        .orderBy(desc(books.updatedAt))
-        .limit(4),
-    ]);
-
+export default function SobrePage() {
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 pb-16 space-y-12">
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-        <div className="lg:col-span-8 space-y-6">
+      <section className="w-full">
+        <div className="w-full space-y-6">
           <div className="space-y-4 text-foreground leading-relaxed">
             <p>
               Salveeee!! Meu nome é <strong title="o pai!">Thiago</strong>. Nascido em{" "}
@@ -214,155 +162,6 @@ export default async function SobrePage() {
         </div>
       </section>
 
-      {/* Spotify: Ouvindo agora + Álbum recomendado */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Headphones className="size-4 text-success" />
-          <h2 className="text-base font-bold tracking-tight text-foreground">
-            Trilha sonora
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-          <a
-            href={recommendedAlbum.spotifyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex flex-col justify-between rounded-2xl border border-border bg-surface-1 p-5 hover:border-success/50 transition-all"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-subtle-foreground">
-                Álbum recomendado • {recommendedAlbum.year}
-              </span>
-              <ArrowUpRight className="size-4 text-subtle-foreground group-hover:text-success transition-colors" />
-            </div>
-
-            <div className="mt-4 flex items-center gap-4">
-              {recommendedAlbum.coverUrl ? (
-                <div className="relative size-20 shrink-0 overflow-hidden rounded-xl border border-border">
-                  <Image
-                    src={recommendedAlbum.coverUrl}
-                    alt={recommendedAlbum.title}
-                    fill
-                    sizes="80px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="flex size-20 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-2">
-                  <Disc3 className="size-8 text-subtle-foreground" />
-                </div>
-              )}
-
-              <div className="min-w-0 space-y-1">
-                <h3 className="text-xl font-bold tracking-tight text-foreground truncate group-hover:text-success transition-colors">
-                  {recommendedAlbum.title}
-                </h3>
-                <p className="text-sm text-subtle-foreground truncate">
-                  {recommendedAlbum.artist}
-                </p>
-                <p className="text-xs text-subtle-foreground truncate">
-                  {recommendedAlbum.totalTracks} faixas •{" "}
-                  {recommendedAlbum.durationMinutes} min
-                </p>
-              </div>
-            </div>
-          </a>
-        </div>
-      </section>
-
-      {/* Strava: Resumo Anual */}
-      <section className="space-y-4">
-        <div className="rounded-2xl border border-border bg-surface-1 p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              Strava • {currentYear}
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-foreground">
-                Distância percorrida no ano
-              </h2>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
-                  {stravaStats.totalKm.toLocaleString("pt-BR")}
-                </span>
-                <span className="text-lg font-semibold text-subtle-foreground">
-                  km 
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center gap-6 lg:gap-8 pt-4 lg:pt-0 border-t lg:border-t-0 border-border">
-            <div className="grid grid-cols-3 gap-6">
-              <div>
-                <p className="text-xs text-subtle-foreground">Correndo</p>
-                <p className="text-base sm:text-lg font-bold text-foreground">
-                  {stravaStats.runKm.toLocaleString("pt-BR")} km
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-subtle-foreground">Pedalando</p>
-                <p className="text-base sm:text-lg font-bold text-foreground">
-                  {stravaStats.rideKm.toLocaleString("pt-BR")} km
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-subtle-foreground">Durante</p>
-                <p className="text-base sm:text-lg font-bold text-foreground">
-                  {stravaStats.totalHours.toLocaleString("pt-BR")} h
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Leituras recentes (Banco de dados) */}
-      <section className="space-y-4">
-        <div className="flex items-center gap-2">
-          <BookOpen className="size-4 text-[#5EACCF]" />
-          <h2 className="text-base font-bold tracking-tight text-foreground">
-            Leituras recentes
-          </h2>
-        </div>
-
-        {recentBooks.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border p-6 text-sm text-subtle-foreground">
-            Nenhum livro concluído cadastrado ainda.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {recentBooks.map((book: any) => {
-              const stars = formatStars(book.rating);
-              return (
-                <div
-                  key={book.id}
-                  className="rounded-2xl border border-border bg-surface-1 p-5 flex flex-col justify-between gap-2"
-                >
-                  <div>
-                    <h3 className="font-semibold text-base text-foreground">
-                      {book.title}
-                    </h3>
-                    <p className="text-sm text-subtle-foreground mt-0.5">{book.author}</p>
-                  </div>
-
-                  {stars && (
-                    <span
-                      aria-label={`Avaliação: ${book.rating} de 5 estrelas`}
-                      className="text-xs tracking-wider text-warning"
-                    >
-                      {stars}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-    </main>
+      </main>
   );
 }

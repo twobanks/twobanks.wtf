@@ -48,7 +48,7 @@ async function getSpotifyAccessToken(): Promise<string | null> {
   return data.access_token ?? null;
 }
 
-export const getNowPlaying = unstable_cache(async (): Promise<SpotifyTrack> => {
+export async function getNowPlaying(): Promise<SpotifyTrack> {
   try {
     const accessToken = await getSpotifyAccessToken();
     if (!accessToken) return FALLBACK_TRACK;
@@ -104,7 +104,7 @@ export const getNowPlaying = unstable_cache(async (): Promise<SpotifyTrack> => {
   } catch {
     return FALLBACK_TRACK;
   }
-});
+}
 
 export interface SpotifyAlbumDetails {
   id: string;
