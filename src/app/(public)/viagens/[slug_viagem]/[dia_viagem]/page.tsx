@@ -1,4 +1,4 @@
-import StravaMap from "@/components/StravaMap"
+import StravaMap from "@/components/StravaMapLoader"
 import DayPhotoGallery from "@/components/viagens/DayPhotoGallery"
 import {
   formatDatePtBr,

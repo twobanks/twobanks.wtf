@@ -1,4 +1,6 @@
 // src/app/atividades/utils.tsx
+import Image from "next/image"
+
 import { DEFAULT_PAGE_SIZE } from "@/utils/mocks";
 
 export function formatDistance(metersStr: string | null) {
@@ -59,14 +61,14 @@ export function formatFullDate(isoDate: string) {
 export function getActivityIcon(type: string | null) {
   const size = "w-5 h-5 object-contain dark:brightness-0 dark:invert shrink-0";
   switch(type) {
-    case "Run": return <img src="/icons/trailrun.svg" alt="Run" className={size} />;
-    case "Ride": return <img src="/icons/mtb.svg" alt="Ride" className={size} />;
-    case "Walk": return <img src="/icons/walk.svg" alt="Walk" className={size} />;
-    case 'WeightTraining': return <img src="/icons/weightTraining.svg" alt="Weight Training" className={size} />;
-    case 'Workout': return <img src="/icons/workout.svg" alt="Workout" className={size} />;
-    case 'Yoga': return <img src="/icons/yoga.svg" alt="Yoga" className={size} />;
-    case 'EBikeRide': return <img src="/icons/ride.svg" alt="EBike Ride" className={size} />;
-    default: return <img src="/icons/run.svg" alt="Activity" className={size} />;
+    case "Run": return <Image src="/icons/trailrun.svg" alt="Run" className={size} />;
+    case "Ride": return <Image src="/icons/mtb.svg" alt="Ride" className={size} />;
+    case "Walk": return <Image src="/icons/walk.svg" alt="Walk" className={size} />;
+    case 'WeightTraining': return <Image src="/icons/weightTraining.svg" alt="Weight Training" className={size} />;
+    case 'Workout': return <Image src="/icons/workout.svg" alt="Workout" className={size} />;
+    case 'Yoga': return <Image src="/icons/yoga.svg" alt="Yoga" className={size} />;
+    case 'EBikeRide': return <Image src="/icons/ride.svg" alt="EBike Ride" className={size} />;
+    default: return <Image src="/icons/run.svg" alt="Activity" className={size} />;
   }
 }
 

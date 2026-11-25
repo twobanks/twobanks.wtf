@@ -335,7 +335,7 @@ export default async function SobrePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {recentBooks.map((book) => {
+            {recentBooks.map((book: any) => {
               const stars = formatStars(book.rating);
               return (
                 <div

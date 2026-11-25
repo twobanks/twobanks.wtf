@@ -42,14 +42,21 @@ function sampleArray<T>(items: T[], maxPoints: number): T[] {
   return sampled
 }
 
+const gpxParseCache = new Map<string, ParsedGpxTrack | null>()
+
 export async function parsePublicGpxFile(
   publicRelativePath?: string,
   maxPoints = 500
 ): Promise<ParsedGpxTrack | null> {
   if (!publicRelativePath) return null
 
+  const cleanPath = publicRelativePath.replace(/^\/+/, "")
+
+  // Cache em memória: os GPX de /gpx/sertao são estáticos e só mudam em novo deploy.
+  const cached = gpxParseCache.get(cleanPath)
+  if (cached !== undefined) return cached
+
   try {
-    const cleanPath = publicRelativePath.replace(/^\/+/, "")
     const fullPath = path.join(process.cwd(), "public", cleanPath)
     const xml = await fs.readFile(fullPath, "utf-8")
 
@@ -79,7 +86,10 @@ export async function parsePublicGpxFile(
       })
     }
 
-    if (rawPoints.length === 0) return null
+    if (rawPoints.length === 0) {
+      gpxParseCache.set(cleanPath, null)
+      return null
+    }
 
     let cumulativeMeters = 0
     let totalGain = 0
@@ -116,13 +126,16 @@ export async function parsePublicGpxFile(
         elevationM: Math.round(p.ele),
       }))
 
-    return {
+    const result: ParsedGpxTrack = {
       coordinates,
       encodedPolyline,
       elevationPoints,
       totalDistanceMeters: Math.round(cumulativeMeters),
       totalElevationGain: Math.round(totalGain),
     }
+
+    gpxParseCache.set(cleanPath, result)
+    return result
   } catch {
     return null
   }

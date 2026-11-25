@@ -1,4 +1,4 @@
-import TripMap from "@/components/viagens/TripMap"
+import TripMap from "@/components/viagens/TripMapLoader"
 import {
   formatDatePtBr,
   formatDuration,

@@ -1,4 +1,4 @@
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 
 export interface SpotifyTrack {
   isPlaying: boolean;
@@ -48,7 +48,7 @@ async function getSpotifyAccessToken(): Promise<string | null> {
   return data.access_token ?? null;
 }
 
-export const getNowPlaying = cache(async (): Promise<SpotifyTrack> => {
+export const getNowPlaying = unstable_cache(async (): Promise<SpotifyTrack> => {
   try {
     const accessToken = await getSpotifyAccessToken();
     if (!accessToken) return FALLBACK_TRACK;
