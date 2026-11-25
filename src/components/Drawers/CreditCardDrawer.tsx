@@ -69,7 +69,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
     <button
       onClick={() => setIsOpenLocal(true)}
       title="Editar cartão"
-      className="inline-flex items-center justify-center text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 p-2 rounded-lg transition-colors"
+      className="inline-flex items-center justify-center text-subtle-foreground hover:text-foreground hover:bg-surface-2 p-2 rounded-lg transition-colors"
     >
       <Pencil size={18} />
       <span className="sr-only">Editar</span>
@@ -77,7 +77,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
   ) : (
     <button
       onClick={() => setIsOpenLocal(true)}
-      className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+      className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground text-sm font-medium px-4 py-2 rounded-lg transition-colors"
     >
       <Plus size={16} />
       Novo Cartão

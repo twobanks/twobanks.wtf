@@ -103,7 +103,7 @@ export function PurchaseDrawer({
         <button
           type="button"
           onClick={() => openDrawer('purchase')}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground px-4 py-2 rounded-lg transition-colors"
         >
           {triggerLabel}
         </button>
@@ -115,14 +115,14 @@ export function PurchaseDrawer({
         onValueChange={(v) => setSelectedCardId(v ?? CARD_PLACEHOLDER)}
       >
         <SelectTrigger
-          className={`${drawerSelectTriggerClass} ${isCardPlaceholder ? 'text-gray-500' : ''}`}
+          className={`${drawerSelectTriggerClass} ${isCardPlaceholder ? 'text-subtle-foreground' : ''}`}
         >
           <SelectValue />
         </SelectTrigger>
         <SelectContent className={drawerSelectContentClass}>
           <SelectItem
             value={CARD_PLACEHOLDER}
-            className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+            className="text-subtle-foreground focus:bg-surface-3 focus:text-foreground"
           >
             Selecione o cartão
           </SelectItem>

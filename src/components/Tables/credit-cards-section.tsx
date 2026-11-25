@@ -1,12 +1,14 @@
 'use client';
 
 import { PurchaseDrawer } from "@/components/Drawers/PurchaseDrawer";
+import { EmptyState } from "@/components/patterns";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -73,9 +75,7 @@ export function CreditCardsSection({
       </div>
 
       {cartoesComFatura.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-border rounded-xl bg-card">
-          <p className="text-muted-foreground">Nenhum cartão cadastrado.</p>
-        </div>
+        <EmptyState title="Nenhum cartão cadastrado." />
       ) : (
         <Accordion className="space-y-3">
           {cartoesComFatura.map(({ cartao, parcelas, total, pago }) => {
@@ -112,17 +112,17 @@ export function CreditCardsSection({
                         <p className="text-sm font-medium text-foreground">{formatCurrency(total)}</p>
                       </div>
 
-                      <span
-                        className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide border ${
+                      <Badge
+                        variant={
                           statusFatura === "Fechada"
-                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                            ? "success"
                             : statusFatura === "Aberta"
-                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                            : "bg-muted text-muted-foreground border-border"
-                        }`}
+                            ? "warning"
+                            : "outline"
+                        }
                       >
                         {statusFatura}
-                      </span>
+                      </Badge>
 
                       {payInvoiceAction && statusFatura === "Aberta" && (
                         <span
@@ -140,7 +140,7 @@ export function CreditCardsSection({
                               handlePayInvoice(String(cartao.id));
                             }
                           }}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-success-subtle hover:bg-success-subtle/80 text-success border border-success/20 text-xs font-medium rounded-lg transition-colors hidden md:inline-flex cursor-pointer"
                         >
                           <CheckCircle2 size={14} />
                           Pagar

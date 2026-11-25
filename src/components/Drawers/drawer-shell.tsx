@@ -15,22 +15,22 @@ import { ReactNode } from 'react';
 // ─── Classes exportadas — Padronizadas com a nova paleta ────────────
 
 export const drawerFieldClass =
-  'h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 rounded-lg ' +
-  'placeholder:text-zinc-500 text-zinc-100 ' +
+  'h-12 w-full bg-surface-2 border border-border px-4 rounded-lg ' +
+  'placeholder:text-subtle-foreground text-foreground ' +
   'focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
   'transition-all duration-200';
 
 export const drawerSelectTriggerClass =
-  '!h-12 w-full bg-zinc-900/50 border border-zinc-800 px-4 py-0 rounded-lg ' +
-  'text-zinc-100 focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
+  '!h-12 w-full bg-surface-2 border border-border px-4 py-0 rounded-lg ' +
+  'text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30 focus:border-brand-blue ' +
   'transition-all duration-200 flex items-center [&>span]:truncate ' +
-  'data-[placeholder]:text-zinc-500';
+  'data-[placeholder]:text-subtle-foreground';
 
 export const drawerSelectContentClass =
-  'bg-zinc-950 border-zinc-800 text-zinc-100 shadow-2xl';
+  'bg-surface-1 border-border text-foreground shadow-2xl';
 
 export const drawerSelectItemClass =
-  'focus:bg-zinc-800 focus:text-brand-blue transition-colors cursor-pointer rounded-md';
+  'focus:bg-surface-3 focus:text-foreground transition-colors cursor-pointer rounded-md';
 
 export type DrawerAlert = {
   type: 'success' | 'error';
@@ -87,7 +87,7 @@ export function DrawerShell({
           className="
             !p-0 !mt-0 h-[100dvh] flex flex-col
             bg-background text-foreground
-            border-t border-zinc-800
+            border-t border-border
             rounded-t-3xl shadow-2xl
           "
         >
@@ -95,14 +95,14 @@ export function DrawerShell({
           <DrawerHeader
             className="
               !p-6 !pb-5 space-y-1.5 shrink-0
-              border-b border-zinc-800/60 bg-zinc-950/30
+              border-b border-border bg-surface-1/30
             "
           >
             <DrawerTitle className="text-xl font-bold text-foreground tracking-tight">
               {title}
             </DrawerTitle>
             {description && (
-              <DrawerDescription className="text-sm text-zinc-400">
+              <DrawerDescription className="text-sm text-subtle-foreground">
                 {description}
               </DrawerDescription>
             )}
@@ -123,8 +123,8 @@ export function DrawerShell({
             <div
               className="
                 p-6 pt-4 space-y-4 shrink-0
-                border-t border-zinc-800/60
-                bg-zinc-950/50
+                border-t border-border
+                bg-surface-1/50
               "
             >
               {footerExtra}

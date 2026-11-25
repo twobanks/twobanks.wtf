@@ -50,7 +50,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
         <button
           type="button"
           onClick={handleNew}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-zinc-700/50 shadow-sm"
+          className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-border shadow-sm"
         >
           +
         </button>
@@ -100,17 +100,11 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
                     </TableCell>
                     <TableCell className="text-right">
                       {expense.paid ? (
-                        <Badge
-                          variant="outline"
-                          className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
-                        >
+                        <Badge variant="success">
                           Pago
                         </Badge>
                       ) : (
-                        <Badge
-                          variant="outline"
-                          className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
-                        >
+                        <Badge variant="warning">
                           Pendente
                         </Badge>
                       )}

@@ -49,15 +49,15 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
   return (
     <>
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
+        <DrawerTrigger className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground px-4 py-2 rounded-lg transition-colors">
           {account ? "Editar" : "+ Nova Conta"}
         </DrawerTrigger>
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+        <DrawerContent className="bg-background border-t border-border rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
+            <DrawerTitle className="text-xl font-semibold text-foreground">
               {account ? "Editar Conta" : "Nova Conta"}
             </DrawerTitle>
-            <DrawerDescription className="text-sm text-gray-400 mb-4">
+            <DrawerDescription className="text-sm text-subtle-foreground mb-4">
               {account ? "Atualize os dados da conta" : "Informe os dados da conta"}
             </DrawerDescription>
           </DrawerHeader>
@@ -68,13 +68,13 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
               placeholder="Nome da conta"
               defaultValue={account?.name}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <select
               name="type"
               defaultValue={account?.type}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             >
               <option value="checking">Conta Corrente</option>
               <option value="savings">Poupança</option>
@@ -88,12 +88,12 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
               step="0.01"
               placeholder="Saldo inicial"
               defaultValue={account?.initialBalance ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+              className="bg-primary hover:brightness-110 text-primary-foreground font-medium p-3 rounded-lg transition-all disabled:opacity-50"
             >
               {isSubmitting ? "Salvando..." : "Salvar"}
             </button>

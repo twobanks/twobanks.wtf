@@ -79,7 +79,7 @@ export function TableActions({
         {!isPaid && (
           <DropdownMenuItem 
             onClick={handlePay}
-            className="flex items-center gap-2 text-foreground focus:bg-accent focus:text-emerald-600 dark:focus:text-emerald-400 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+            className="flex items-center gap-2 text-foreground focus:bg-accent focus:text-success cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
           >
             <CheckCircle2 className="h-4 w-4" /> Pagar
           </DropdownMenuItem>
@@ -89,7 +89,7 @@ export function TableActions({
         
         <DropdownMenuItem 
           onClick={handleDelete}
-          className="flex items-center gap-2 text-rose-600 dark:text-rose-400 focus:bg-rose-500/10 focus:text-rose-500 cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
+          className="flex items-center gap-2 text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-lg px-3 py-2 text-sm transition-colors"
         >
           <Trash2 className="h-4 w-4" /> Excluir
         </DropdownMenuItem>

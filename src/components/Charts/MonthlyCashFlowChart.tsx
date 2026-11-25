@@ -34,11 +34,11 @@ interface MonthlyCashFlowChartProps {
 const chartConfig = {
   income: {
     label: "Receitas",
-    color: "#10B981", // verde
+    color: "var(--color-success)",
   },
   expense: {
     label: "Despesas",
-    color: "#EF4444", // vermelho
+    color: "var(--color-destructive)",
   },
 } satisfies ChartConfig;
 
@@ -59,25 +59,25 @@ export function MonthlyCashFlowChart({ data }: MonthlyCashFlowChartProps) {
   }, [timeRange]);
 
   return (
-    <Card className="bg-gray-900 border-gray-800">
+    <Card className="bg-surface-1 border-border">
       <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <CardTitle className="text-xl font-semibold text-gray-100">
+          <CardTitle className="text-xl font-semibold text-foreground">
             Fluxo Mensal
           </CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardDescription className="text-subtle-foreground">
             Receitas vs Despesas – últimos {periodLabel}
           </CardDescription>
         </div>
         <Tabs value={timeRange} onValueChange={setTimeRange} className="w-full sm:w-auto">
-          <TabsList className="bg-gray-800 border border-gray-700">
-            <TabsTrigger value="6m" className="text-gray-200 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+          <TabsList className="bg-surface-2 border border-border">
+            <TabsTrigger value="6m" className="text-subtle-foreground data-[state=active]:bg-surface-3 data-[state=active]:text-foreground">
               6 meses
             </TabsTrigger>
-            <TabsTrigger value="3m" className="text-gray-200 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+            <TabsTrigger value="3m" className="text-subtle-foreground data-[state=active]:bg-surface-3 data-[state=active]:text-foreground">
               3 meses
             </TabsTrigger>
-            <TabsTrigger value="1m" className="text-gray-200 data-[state=active]:bg-gray-700 data-[state=active]:text-white">
+            <TabsTrigger value="1m" className="text-subtle-foreground data-[state=active]:bg-surface-3 data-[state=active]:text-foreground">
               1 mês
             </TabsTrigger>
           </TabsList>
@@ -115,20 +115,20 @@ export function MonthlyCashFlowChart({ data }: MonthlyCashFlowChartProps) {
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} stroke="#374151" />
+            <CartesianGrid vertical={false} stroke="var(--color-border)" />
             <XAxis
               dataKey="month"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
-              stroke="#9CA3AF"
+              stroke="var(--color-subtle-foreground)"
             />
             <YAxis
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              stroke="#9CA3AF"
+              stroke="var(--color-subtle-foreground)"
             />
             <ChartTooltip
               cursor={false}

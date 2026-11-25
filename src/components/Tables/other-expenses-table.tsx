@@ -80,17 +80,11 @@ export function OtherExpensesTable({
                   </TableCell>
                   <TableCell className="text-right">
                     {expense.paid ? (
-                      <Badge
-                        variant="outline"
-                        className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
-                      >
+                      <Badge variant="success">
                         Pago
                       </Badge>
                     ) : (
-                      <Badge
-                        variant="outline"
-                        className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10"
-                      >
+                      <Badge variant="warning">
                         Pendente
                       </Badge>
                     )}

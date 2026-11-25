@@ -2,6 +2,7 @@
 "use client";
 
 import { IncomeDrawer } from "@/components/Drawers/IncomeDrawer";
+import { EmptyState } from "@/components/patterns";
 import {
   Table,
   TableBody,
@@ -49,10 +50,10 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
 
       {/* Estado Vazio (Zero Transações) */}
       {transactions.length === 0 ? (
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-xs p-8 flex flex-col items-center justify-center text-muted-foreground gap-2">
-          <Inbox className="h-10 w-10 opacity-20" />
-          <p className="text-sm font-medium">Nenhuma receita registrada neste período.</p>
-        </div>
+        <EmptyState
+          icon={Inbox}
+          title="Nenhuma receita registrada neste período."
+        />
       ) : (
         <>
           {/* Visualização Tabular - Telas Médias e Grandes (Desktop / Tablet) */}
@@ -80,7 +81,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     <TableCell className="font-medium text-foreground">
                       {transaction.description}
                     </TableCell>
-                    <TableCell className="text-right font-bold text-emerald-600 dark:text-emerald-400">
+                    <TableCell className="text-right font-bold text-success">
                       {formatCurrency(Number(transaction.amount))}
                     </TableCell>
                     <TableCell className="text-right">
@@ -113,7 +114,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                   <span className="font-medium text-foreground text-sm truncate">
                     {transaction.description}
                   </span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                  <span className="font-bold text-success text-sm">
                     {formatCurrency(Number(transaction.amount))}
                   </span>
                 </div>

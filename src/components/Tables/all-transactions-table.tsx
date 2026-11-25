@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -29,7 +30,7 @@ export function ExpensesTable({ expenses, filterCategory }: ExpensesTableProps) 
     : expenses;
 
   if (filtered.length === 0) {
-    return <p className="text-gray-500 p-4">Nenhuma despesa encontrada.</p>;
+    return <p className="text-subtle-foreground p-4">Nenhuma despesa encontrada.</p>;
   }
 
   const formatCurrency = (value: number) =>
@@ -59,14 +60,14 @@ export function ExpensesTable({ expenses, filterCategory }: ExpensesTableProps) 
             {/* <TableCell>{formatDate(e.date)}</TableCell> */}
             <TableCell>{e.category?.name || "Sem categoria"}</TableCell>
             {/* <TableCell>{e.account?.name || "Sem conta"}</TableCell> */}
-            <TableCell className="text-right text-red-400">
+            <TableCell className="text-right text-destructive">
               -{formatCurrency(Number(e.amount))}
             </TableCell>
             <TableCell className="text-right">
               {e.paid ? (
-                <span className="text-green-400">Pago</span>
+                <Badge variant="success">Pago</Badge>
               ) : (
-                <span className="text-yellow-400">Pendente</span>
+                <Badge variant="warning">Pendente</Badge>
               )}
             </TableCell>
             {/* <TableCell className="text-right">

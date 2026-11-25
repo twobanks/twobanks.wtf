@@ -49,15 +49,15 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
   return (
     <>
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors">
+        <DrawerTrigger className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground px-4 py-2 rounded-lg transition-colors">
           {asset ? "Editar" : "+ Ativo"}
         </DrawerTrigger>
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+        <DrawerContent className="bg-background border-t border-border rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
+            <DrawerTitle className="text-xl font-semibold text-foreground">
               {asset ? "Editar Ativo" : "Novo Ativo"}
             </DrawerTitle>
-            <DrawerDescription className="text-sm text-gray-400 mb-4">
+            <DrawerDescription className="text-sm text-subtle-foreground mb-4">
               Informe os dados do ativo
             </DrawerDescription>
           </DrawerHeader>
@@ -68,19 +68,19 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
               placeholder="Nome (ex: Ações XPTO)"
               defaultValue={asset?.name}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <input
               name="ticker"
               placeholder="Código (ex: XPTO3)"
               defaultValue={asset?.ticker ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <select
               name="type"
               defaultValue={asset?.type ?? "stock"}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             >
               <option value="stock">Ação</option>
               <option value="fii">FII</option>
@@ -94,7 +94,7 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
               step="0.01"
               placeholder="Preço atual"
               defaultValue={asset?.currentPrice ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <input
               name="quantity"
@@ -102,7 +102,7 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
               step="0.01"
               placeholder="Quantidade"
               defaultValue={asset?.quantity ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <input
               name="averagePrice"
@@ -110,12 +110,12 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
               step="0.01"
               placeholder="Preço médio"
               defaultValue={asset?.averagePrice ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <button
               type="submit"
               disabled={isSubmitting}
-              className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+              className="md:col-span-2 bg-primary hover:brightness-110 text-primary-foreground font-medium p-3 rounded-lg transition-all disabled:opacity-50"
             >
               {isSubmitting ? "Salvando..." : "Salvar"}
             </button>

@@ -47,7 +47,7 @@ export function ObraTransactionsTable({
 
   const renderAmount = (amount: number) => {
     if (!visible) return <span className="text-foreground">-R$ ••••••</span>;
-    return <span className="text-rose-600 dark:text-rose-400 font-medium">-{formatCurrency(amount)}</span>;
+    return <span className="text-destructive font-medium">-{formatCurrency(amount)}</span>;
   };
 
   const handleEdit = (transaction: any) => {
@@ -97,11 +97,11 @@ export function ObraTransactionsTable({
                   </TableCell>
                   <TableCell className="text-right">
                     {transaction.paid ? (
-                      <Badge variant="outline" className="text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
+                      <Badge variant="success">
                         Pago
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10">
+                      <Badge variant="warning">
                         Pendente
                       </Badge>
                     )}

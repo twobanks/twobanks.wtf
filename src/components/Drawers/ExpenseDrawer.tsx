@@ -226,7 +226,7 @@ export function ExpenseDrawer({
         <SelectContent className={drawerSelectContentClass + ' max-h-72'}>
           <SelectItem
             value={CATEGORY_PLACEHOLDER}
-            className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+            className="text-subtle-foreground focus:bg-surface-3 focus:text-foreground"
           >
             Sem categoria
           </SelectItem>
@@ -258,7 +258,7 @@ export function ExpenseDrawer({
         <SelectContent className={drawerSelectContentClass + ' max-h-72'}>
           <SelectItem
             value={ACCOUNT_PLACEHOLDER}
-            className="text-gray-500 focus:bg-gray-700 focus:text-gray-300"
+            className="text-subtle-foreground focus:bg-surface-3 focus:text-foreground"
           >
             Sem conta vinculada
           </SelectItem>
@@ -281,14 +281,14 @@ export function ExpenseDrawer({
               type="checkbox"
               checked={isRecurring}
               onChange={(e) => setIsRecurring(e.target.checked)}
-              className="size-4 rounded border-gray-600 bg-gray-900 accent-emerald-500"
+              className="size-4 rounded border-border bg-surface-1 accent-success"
             />
             Despesa recorrente
           </label>
 
           {isRecurring && (
             <div className="md:col-span-2 grid grid-cols-1 gap-2">
-              <label className="text-sm text-gray-400">
+              <label className="text-sm text-subtle-foreground">
                 Repetir por quantos meses?
               </label>
               <div className="flex flex-wrap gap-2">
@@ -307,7 +307,7 @@ export function ExpenseDrawer({
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-subtle-foreground mt-1">
                 Serão criadas {recurringMonths} despesas idênticas, uma por
                 mês. Você poderá editar o valor de cada mês individualmente
                 depois.

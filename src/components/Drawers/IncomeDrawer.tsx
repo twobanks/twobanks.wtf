@@ -94,7 +94,7 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         <button
           type="button"
           onClick={() => openDrawer('income')}
-          className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-zinc-700/50 shadow-sm"
+          className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-border shadow-sm"
         >
           +
         </button>
@@ -126,19 +126,19 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         />
       </div>
 
-      <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-zinc-800/40 border border-zinc-800 text-sm text-zinc-300 cursor-pointer select-none hover:border-zinc-700 transition-colors">
+      <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-surface-2 border border-border text-sm text-foreground cursor-pointer select-none hover:border-border transition-colors">
         <input
           type="checkbox"
           checked={isRecurring}
           onChange={(e) => setIsRecurring(e.target.checked)}
-          className="size-4 rounded border-zinc-700 bg-zinc-900 checked:bg-emerald-500 checked:border-emerald-500 focus:ring-0 focus:ring-offset-0 cursor-pointer"
+          className="size-4 rounded border-border bg-surface-1 accent-success focus:ring-0 focus:ring-offset-0 cursor-pointer"
         />
         Receita recorrente
       </label>
 
       {isRecurring && (
         <div className="md:col-span-2 grid grid-cols-1 gap-2 pt-1">
-          <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+          <label className="text-xs font-medium text-subtle-foreground uppercase tracking-wider">
             Repetir por quantos meses?
           </label>
           <div className="flex flex-wrap gap-2">
@@ -149,15 +149,15 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
                 onClick={() => setRecurringMonths(n)}
                 className={`h-9 px-4 rounded-lg border text-sm font-medium transition-colors ${
                   recurringMonths === n
-                    ? 'bg-emerald-500/15 border-emerald-500/60 text-emerald-300'
-                    : 'bg-zinc-800/40 border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                    ? 'bg-success-subtle border-success/60 text-success'
+                    : 'bg-surface-2 border-border text-subtle-foreground hover:border-border hover:text-foreground'
                 }`}
               >
                 {n}x
               </button>
             ))}
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
+          <p className="text-xs text-subtle-foreground mt-1">
             Serão criadas {recurringMonths} receitas idênticas, uma por mês. Você poderá editar o valor de cada mês individualmente depois.
           </p>
         </div>

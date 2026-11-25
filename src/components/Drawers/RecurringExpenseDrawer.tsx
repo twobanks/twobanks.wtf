@@ -68,7 +68,7 @@ export function RecurringExpenseDrawer({
       <button
         type="button"
         onClick={() => openDrawer("recurring")}
-        className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-black px-4 py-2 rounded-lg transition-colors"
+        className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground px-4 py-2 rounded-lg transition-colors"
       >
         {recurringExpense ? "Editar" : "+ Nova Despesa"}
       </button>
@@ -79,12 +79,12 @@ export function RecurringExpenseDrawer({
           if (!isOpen) closeDrawer()
         }}
       >
-        <DrawerContent className="bg-gray-900 border-t border-gray-800 rounded-t-2xl p-6 shadow-xl">
+        <DrawerContent className="bg-background border-t border-border rounded-t-2xl p-6 shadow-xl">
           <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-gray-100">
+            <DrawerTitle className="text-xl font-semibold text-foreground">
               {recurringExpense ? "Editar Despesa Recorrente" : "Nova Despesa Recorrente"}
             </DrawerTitle>
-            <DrawerDescription className="text-sm text-gray-400 mb-4">
+            <DrawerDescription className="text-sm text-subtle-foreground mb-4">
               Informe os dados da despesa fixa
             </DrawerDescription>
           </DrawerHeader>
@@ -95,7 +95,7 @@ export function RecurringExpenseDrawer({
               placeholder="Nome (ex: Aluguel)"
               defaultValue={recurringExpense?.name}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <input
               name="amount"
@@ -104,7 +104,7 @@ export function RecurringExpenseDrawer({
               placeholder="Valor"
               defaultValue={recurringExpense?.amount}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
             <input
               name="dueDay"
@@ -114,7 +114,7 @@ export function RecurringExpenseDrawer({
               placeholder="Dia do vencimento"
               defaultValue={recurringExpense?.dueDay}
               required
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg placeholder-gray-500 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             />
 
             {!recurringExpense && (
@@ -130,7 +130,7 @@ export function RecurringExpenseDrawer({
             <select
               name="categoryId"
               defaultValue={recurringExpense?.categoryId ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             >
               <option value="">Sem categoria</option>
               {categories?.map((cat) => (
@@ -140,7 +140,7 @@ export function RecurringExpenseDrawer({
             <select
               name="accountId"
               defaultValue={recurringExpense?.accountId ?? ""}
-              className="bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
             >
               <option value="">Sem conta</option>
               {accounts?.map((acc) => (
@@ -154,13 +154,13 @@ export function RecurringExpenseDrawer({
               name="active" 
               value="false" 
             />
-            <label className="md:col-span-2 flex items-center gap-2 text-sm text-gray-300">
+            <label className="md:col-span-2 flex items-center gap-2 text-sm text-foreground">
               <input
                 type="checkbox"
                 name="active"
                 value="true"
                 defaultChecked={recurringExpense?.active ?? true}
-                className="rounded border-gray-700 bg-gray-800"
+                className="rounded border-border bg-surface-2"
               />
               Ativa
             </label>
@@ -168,7 +168,7 @@ export function RecurringExpenseDrawer({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="md:col-span-2 bg-blue-600 hover:bg-blue-500 text-white font-medium p-3 rounded-lg transition-colors disabled:opacity-50"
+              className="md:col-span-2 bg-primary hover:brightness-110 text-primary-foreground font-medium p-3 rounded-lg transition-all disabled:opacity-50"
             >
               {isSubmitting ? "Salvando..." : "Salvar"}
             </button>
