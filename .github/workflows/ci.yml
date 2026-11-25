@@ -26,6 +26,9 @@ jobs:
       - name: Verificar tipos TypeScript
         run: yarn tsc --noEmit
 
+      - name: Executar testes (Vitest)
+        run: yarn test
+
       - name: Lint (ESLint)
         run: yarn lint
         continue-on-error: true
