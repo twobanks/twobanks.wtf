@@ -31,4 +31,7 @@ jobs:
         continue-on-error: true
 
       - name: Build de produção (Next.js)
-        run: SKIP_ENV_VALIDATION=1 yarn build
+        run: yarn build
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          RESEND_API_KEY: re_ci_dummy
