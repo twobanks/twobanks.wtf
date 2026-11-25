@@ -7,6 +7,7 @@ import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
 import { ROUTES } from "@/lib/routes"
 import { and, eq, inArray, or } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
+import type { AccountType } from "@/utils/types"
 
 export async function createAccount(formData: FormData) {
   const session = await auth()
@@ -25,7 +26,7 @@ export async function createAccount(formData: FormData) {
     userId,
     householdId,
     name,
-    type: type as any,
+    type: type as AccountType,
     initialBalance: initialBalance.toFixed(2),
   })
 
@@ -52,7 +53,7 @@ export async function updateAccount(formData: FormData) {
   )
 
   await db.update(financialAccounts)
-    .set({ name, type: type as any, initialBalance: initialBalance.toFixed(2) })
+    .set({ name, type: type as AccountType, initialBalance: initialBalance.toFixed(2) })
     .where(and(eq(financialAccounts.id, id), canAccess))
 
   revalidatePath(ROUTES.ADMIN.CARTEIRA_CONTAS)

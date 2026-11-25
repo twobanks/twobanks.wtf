@@ -98,9 +98,9 @@ export function CreditCardsSection({
                         <span className="font-medium text-foreground block">
                           {cartao.name}
                         </span>
-                        {(cartao as any).lastFourDigits && (
+                        {cartao.lastFourDigits && (
                           <span className="text-xs text-muted-foreground font-mono">
-                            •••• {(cartao as any).lastFourDigits}
+                            •••• {cartao.lastFourDigits}
                           </span>
                         )}
                       </div>

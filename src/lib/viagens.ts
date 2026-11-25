@@ -8,6 +8,7 @@ import {
   SanitizedWorkout,
   Trip,
 } from "@/utils/types/viagens"
+import type { StravaStream } from "@/utils/types"
 import { eq, inArray } from "drizzle-orm"
 
 export function formatKm(meters: number, decimals = 1): string {
@@ -258,19 +259,21 @@ export async function getEnrichedTripBySlug(
   return hydrateTrip(trip, workoutsMap, foundGear)
 }
 
-export async function getDaySafeStreams(workoutId: string) {
+export async function getDaySafeStreams(
+  workoutId: string
+): Promise<{ time: StravaStream; heartrate?: StravaStream; velocity_smooth?: StravaStream } | undefined> {
   const rows = await db
     .select({ streamPayload: stravaWorkouts.streamPayload })
     .from(stravaWorkouts)
     .where(eq(stravaWorkouts.id, workoutId))
     .limit(1)
 
-  const raw = rows[0]?.streamPayload as Record<string, any> | null
+  const raw = rows[0]?.streamPayload as Record<string, unknown> | null
   if (!raw) return undefined
 
   return {
-    time: raw.time,
-    heartrate: raw.heartrate,
-    velocity_smooth: raw.velocity_smooth,
+    time: raw.time as StravaStream,
+    heartrate: raw.heartrate as StravaStream | undefined,
+    velocity_smooth: raw.velocity_smooth as StravaStream | undefined,
   }
 }

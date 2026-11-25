@@ -63,7 +63,7 @@ export default async function TreinosPage() {
     const isBike = titleLower.includes('bike') || titleLower.includes('pedal') || titleLower.includes('ciclismo')
     
     let workoutDist = 0
-    const steps = (pw.steps as any[]) || []
+    const steps = (pw.steps as { name: string; exerciseType?: number }[]) || []
     
     // O Regex procura números antes do "km". Ex: "5km", "10.5 km", "4,2km"
     steps.forEach(step => {
@@ -80,8 +80,8 @@ export default async function TreinosPage() {
     else planRunKm += workoutDist // Assume que o padrão é corrida se não tiver "bike" no título
   })
 
-  const renderWorkoutCard = (treino: any, isUpcoming: boolean) => {
-    const steps = (treino.steps as any[]) || []
+  const renderWorkoutCard = (treino: { id: string; date: string; title: string | null; steps: unknown }, isUpcoming: boolean) => {
+    const steps = (treino.steps as { name: string; exerciseType?: number }[]) || []
     const execucaoStrava = execucoes.find(ex => stravaToCorosDate(ex.startDate) === treino.date)
 
     return (

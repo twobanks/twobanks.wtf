@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
-import type { TransactionsTableProps } from "@/utils/types";
+import type { Transaction, TransactionsTableProps } from "@/utils/types";
 import { BanknoteArrowUp, Inbox } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TableActions } from "./table-actions";
@@ -28,7 +28,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
-  const handleEdit = (transaction: any) => {
+  const handleEdit = (transaction: Transaction) => {
     setEditingExpense(transaction);
     openDrawer("expense");
   };
@@ -92,7 +92,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                           onEdit={() => handleEdit(transaction)}
                           isRecurring={
                             !!transaction.recurringParentId ||
-                            (transaction as any).source === "recurring"
+                            transaction.source === "recurring"
                           }
                         />
                       </div>
@@ -126,7 +126,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     onEdit={() => handleEdit(transaction)}
                     isRecurring={
                       !!transaction.recurringParentId ||
-                      (transaction as any).source === "recurring"
+                      transaction.source === "recurring"
                     }
                   />
                 </div>

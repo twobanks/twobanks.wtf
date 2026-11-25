@@ -43,8 +43,33 @@ export async function fetchActivityStreams(activityId: string, token: string) {
   return null
 }
 
+export interface StravaActivity {
+  id: number | string
+  name: string
+  sport_type?: string
+  type?: string
+  distance?: number | null
+  moving_time?: number
+  elapsed_time?: number
+  total_elevation_gain?: number | null
+  average_speed?: number | null
+  max_speed?: number | null
+  has_heartrate?: boolean
+  average_heartrate?: number | null
+  max_heartrate?: number | null
+  average_cadence?: number | null
+  average_watts?: number | null
+  kilojoules?: number | null
+  suffer_score?: number | null
+  gear?: { id: string } | null
+  gear_id?: string | null
+  map?: { summary_polyline: string } | null
+  start_date_local: string
+  timezone?: string | null
+}
+
 export async function upsertActivityRecord(
-  activity: any,
+  activity: StravaActivity,
   token: string,
   options?: { userId?: string; skipStreamsIfExists?: boolean }
 ) {

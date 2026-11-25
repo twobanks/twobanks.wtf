@@ -1,6 +1,15 @@
+export interface StravaStream {
+  data: number[]
+}
+
 export interface StravaMapProps {
   mapPolyline: string | null
-  streams?: any 
+  streams?: Record<string, StravaStream>
+}
+
+export interface ParcelaComDetalhes extends Parcela {
+  purchaseId: number
+  purchaseCategory: string
 }
 
 export interface PageSizeSelectorProps {
@@ -69,8 +78,9 @@ export interface Transaction {
   id: number
   description: string
   amount: string
-  type: CategoryType // agora aceita "transfer"
+  type: CategoryType
   date: string
+  source: string
   categoryId: number | null
   accountId: number | null
   paid: boolean
@@ -81,13 +91,6 @@ export interface Transaction {
 }
 
 
-export interface CreditCard {
-  id: number
-  name: string
-  // outros campos opcionais conforme schema
-  lastFourDigits?: string | null
-}
-
 export interface TransactionDrawerProps {
   categories: Category[]
   accounts: FinancialAccount[]
@@ -97,16 +100,11 @@ export interface TransactionDrawerProps {
   onSuccess?: () => void
 }
 
-export interface PurchaseDrawerProps {
-  categories: Category[]
-  creditCards: CreditCard[]
-  createInstallmentPurchaseAction: (formData: FormData) => Promise<void>
-}
-
 export interface CreditCard {
   id: number
   name: string
   brand?: string | null
+  lastFourDigits?: string | null
   creditLimit?: string | null
   dueDay?: number | null
   closingDay?: number | null
@@ -187,13 +185,6 @@ export interface AssetDrawerProps {
   onSuccess?: () => void;
 }
 
-export interface InvestmentTransactionDrawerProps {
-  assets: Asset[];
-  assetId?: number;
-  transaction?: InvestmentTransaction;
-  onSuccess?: () => void;
-}
-
 export interface ObraTransactionsTableProps {
   obraCategoryExists: boolean
   transactions: Transaction[]
@@ -226,7 +217,7 @@ export interface CreditCardsSectionProps {
     formData: FormData
   ) => Promise<void>
   faturaAno: number
-  accounts?: any[]
+  accounts?: FinancialAccount[]
   faturaMesNum: number
   payInvoiceAction?: (formData: FormData) => Promise<void>;
 }
@@ -271,27 +262,9 @@ export interface TransactionsTableProps {
   transactions: Transaction[]
 }
 
-export interface FinancialAccount {
-  id: number
-  name: string
-  type: "checking" | "savings" | "cash" | "investment" | "other"
-  initialBalance: string | null
-}
-
 export interface AccountDrawerProps {
   account?: FinancialAccount
   onSuccess?: () => void
-}
-
-export interface AssetDrawerProps {
-  asset?: Asset
-  onSuccess?: () => void
-}
-
-export interface Category {
-  id: number
-  name: string
-  type: "expense" | "income" | "transfer"
 }
 
 export interface CategoryDrawerProps {
@@ -299,12 +272,6 @@ export interface CategoryDrawerProps {
   onSuccess?: () => void
 }
 
-export interface CreditCardDrawerProps {
-  creditCard?: CreditCard
-  onSuccess?: () => void
-}
-
-// src/utils/types.ts
 export interface EditableExpense {
   id: number;
   description: string;
