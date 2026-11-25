@@ -3,11 +3,6 @@ export interface StravaMapProps {
   streams?: any 
 }
 
-export interface SvgIconProps {
-  src: string; // Agora isso é uma string pura!
-  className?: string;
-}
-
 export interface PageSizeSelectorProps {
   pageSize: number
   filters: Record<string, string | number | undefined>

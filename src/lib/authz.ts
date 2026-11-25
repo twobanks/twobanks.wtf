@@ -2,6 +2,7 @@ import { db } from "@/db";
 import { auth } from "@/auth";
 import { users } from "@/db/schema";
 import { asc, eq, and, type SQL } from "drizzle-orm";
+import { type AnyPgColumn } from "drizzle-orm/pg-core";
 
 /**
  * Role com privilégios de administrador.
@@ -32,7 +33,7 @@ export async function requireUser() {
 export function getAccessCondition(
   userId: string,
   role: string | null | undefined,
-  ownerColumn: SQL<unknown>
+  ownerColumn: AnyPgColumn<{}>
 ): SQL<unknown> | undefined {
   if (role === ADMIN_ROLE) {
     return undefined; // admin não tem restrição de escopo

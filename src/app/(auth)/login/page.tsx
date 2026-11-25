@@ -4,25 +4,9 @@ import { LogoTwoBanks } from "@/components/twobanks";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-const usuarios = [
-  {
-    email: "twobanks@me.com",
-    nome: "Thiago",
-    avatar: "https://avatars.githubusercontent.com/u/2577611?v=4",
-  },
-  {
-    email: "stephanie.thiagoo@hotmail.com",
-    nome: "Tefa",
-    avatar: "https://snipboard.io/wTqQ0S.jpg",
-  },
-];
-
-const userByEmail = (email: string) =>
-  usuarios.find((user) => user.email.toLowerCase() === email.toLowerCase());
-
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
-  const [user, setUser] = useState<typeof usuarios[0] | null>(null);
+  const [step, setStep] = useState<"email" | "otp">("email");
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +29,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setUser(userByEmail(email) ?? null);
+        setStep("otp");
       } else {
         setMessage(data.error || "Erro ao enviar código.");
       }
@@ -58,13 +42,13 @@ export default function LoginPage() {
 
   // Função isolada de submissão para poder ser chamada automaticamente ou via clique
   const executeSignIn = async (code: string) => {
-    if (!user || isLoading) return;
+    if (isLoading) return;
 
     setIsLoading(true);
     setMessage("");
 
     const result = await signIn("credentials", {
-      identifier: user.email,
+      identifier,
       otp: code,
       redirect: false,
     });
@@ -95,7 +79,7 @@ export default function LoginPage() {
   };
 
   const resetToEmailStep = () => {
-    setUser(null);
+    setStep("email");
     setOtp("");
     setMessage("");
   };
@@ -119,7 +103,7 @@ export default function LoginPage() {
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 relative overflow-y-auto">
         <div className="w-full max-w-[420px] bg-[#141414] border border-border/60 rounded-[24px] p-8 sm:p-10 shadow-2xl flex flex-col items-center">
-          {!user ? (
+          {step === "email" ? (
             <div className="flex flex-col items-center text-center w-full">
               <div className="w-12 h-12 mb-6 rounded-full bg-surface-1 flex items-center justify-center border border-border">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
@@ -165,17 +149,12 @@ export default function LoginPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center text-center w-full">
-              <img
-                src={user.avatar}
-                alt={user.nome}
-                className="w-12 h-12 mb-6 rounded-full object-cover border border-border shadow-sm"
-              />
-              
               <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
                 Por favor, verifique seu email
               </h2>
               <p className="text-sm text-subtle-foreground mb-8">
-                Enviamos um código para <span className="font-medium text-white">{user.email}</span>
+                Enviamos um código para{" "}
+                <span className="font-medium text-white">{identifier}</span>
               </p>
 
               <form onSubmit={handleVerifyOtp} className="w-full flex flex-col items-center">

@@ -18,10 +18,10 @@ import {
   financialAccounts,
   transactions,
 } from "@/db/schema";
-import { getUserHouseholdIds } from "@/lib/household";
+import { getAccessCondition } from "@/lib/authz";
 import { getCreditCardInvoicesSummary } from "@/services/invoiceService";
 import { ensureRecurringExpensesGenerated } from "@/services/recurringService";
-import { and, eq, gte, inArray, lte, or } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
@@ -39,22 +39,12 @@ export default async function CarteiraPage({
   if (!session?.user) redirect("/login");
   const userId = session.user.id;
 
-  const householdIds = await getUserHouseholdIds(userId);
-
-  const accessCondition = (table: any) => {
-    const conditions = [eq(table.userId, userId)];
-    if (householdIds.length > 0) {
-      conditions.push(inArray(table.householdId, householdIds));
-    }
-    return conditions.length > 1 ? or(...conditions) : conditions[0];
-  };
-
   const categorias = await db.query.categories.findMany({
-    where: accessCondition(categories),
+    where: getAccessCondition(userId, session.user.role, categories.userId),
   });
 
   const accounts = await db.query.financialAccounts.findMany({
-    where: accessCondition(financialAccounts),
+    where: getAccessCondition(userId, session.user.role, financialAccounts.userId),
   });
 
   const cartoes = await db.query.creditCards.findMany({
@@ -91,7 +81,7 @@ export default async function CarteiraPage({
   // --- MÊS ATUAL ---
   const allTransactions = await db.query.transactions.findMany({
     where: and(
-      accessCondition(transactions),
+      getAccessCondition(userId, session.user.role, transactions.userId),
       gte(transactions.date, firstDayStr),
       lte(transactions.date, lastDayStr)
     ),
@@ -150,7 +140,7 @@ export default async function CarteiraPage({
   
   const prevAllTransactions = await db.query.transactions.findMany({
     where: and(
-      accessCondition(transactions),
+      getAccessCondition(userId, session.user.role, transactions.userId),
       gte(transactions.date, prevFirstDayStr),
       lte(transactions.date, prevLastDayStr)
     ),
