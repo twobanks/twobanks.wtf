@@ -1,5 +1,6 @@
 "use server"
 
+import { requireUser } from "@/lib/authz"
 import { auth } from "@/auth"
 import { db } from "@/db"
 import { books } from "@/db/schema"
@@ -8,8 +9,12 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
 export async function getBooks() {
+  const session = await requireUser()
+
   try {
-    const data = await db.select().from(books).orderBy(desc(books.createdAt))
+    const data = await db.select().from(books)
+      .where(eq(books.userId, session.id))
+      .orderBy(desc(books.createdAt))
     return data
   } catch (error) {
     return []
@@ -54,25 +59,25 @@ export async function deleteBook(id: string) {
 }
 
 export async function updateBook(formData: FormData) {
-  const session = await auth()
-  
-  if (!session?.user?.id) {
-    throw new Error("Não autorizado")
-  }
+  const session = await requireUser()
 
   const id = formData.get("id") as string
   const title = formData.get("title") as string
   const author = formData.get("author") as string
   const status = formData.get("status") as string
 
-  await db.update(books)
+  const result = await db.update(books)
     .set({ 
       title, 
       author, 
       status,
       updatedAt: new Date(), 
     })
-    .where(eq(books.id, id))
+    .where(and(eq(books.id, id), eq(books.userId, session.id)))
+
+  if ((result.rowCount ?? 0) === 0) {
+    throw new Error("Livro não encontrado ou sem permissão para editar")
+  }
 
   revalidatePath("/livros")
   redirect("/livros")

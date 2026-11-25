@@ -1,6 +1,7 @@
 "use server"
 
 import { auth } from "@/auth";
+import { requireUser } from "@/lib/authz";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
@@ -49,8 +50,7 @@ export async function deletePost(id: string) {
 }
 
 export async function updatePost(formData: FormData) {
-  const session = await auth()
-  if (!session?.user?.id) throw new Error("Não autorizado")
+  const session = await requireUser()
 
   const id = formData.get("id") as string
   const title = formData.get("title") as string
@@ -58,7 +58,7 @@ export async function updatePost(formData: FormData) {
   const excerpt = formData.get("excerpt") as string
   const published = formData.get("published") === "on" 
 
-  await db.update(posts)
+  const result = await db.update(posts)
     .set({
       title,
       content,
@@ -66,7 +66,11 @@ export async function updatePost(formData: FormData) {
       published,
       updatedAt: new Date(),
     })
-    .where(eq(posts.id, id))
+    .where(and(eq(posts.id, id), eq(posts.authorId, session.id)))
+
+  if ((result.rowCount ?? 0) === 0) {
+    throw new Error("Post não encontrado ou sem permissão para editar")
+  }
 
   revalidatePath("/blog")
   revalidatePath("/admin/blog")

@@ -1,8 +1,9 @@
+import { getPublicOwnerId } from "@/lib/authz";
 import { fetchRaceWorkouts, fetchWorkoutsPage } from "@/actions/atividades";
 import { AtividadesView, ModalityDataset } from "@/components/AtividadesView";
 import { db } from "@/db";
 import { stravaWorkouts } from "@/db/schema";
-import { inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ const BIKE_TYPES = [
 ];
 const RUN_TYPES = ["Run", "TrailRun", "VirtualRun"];
 
-async function getModalityDataset(types: string[]): Promise<ModalityDataset> {
+async function getModalityDataset(types: string[], userId: string): Promise<ModalityDataset> {
   const [summaryRow, yearlyRows] = await Promise.all([
     db
       .select({
@@ -23,7 +24,12 @@ async function getModalityDataset(types: string[]): Promise<ModalityDataset> {
         maxMeters: sql<string>`COALESCE(MAX(CAST(${stravaWorkouts.distance} AS DOUBLE PRECISION)), 0)`,
       })
       .from(stravaWorkouts)
-      .where(inArray(stravaWorkouts.type, types))
+      .where(
+        and(
+          inArray(stravaWorkouts.type, types),
+          eq(stravaWorkouts.userId, userId)
+        )
+      )
       .then((rows) => rows[0]),
     db
       .select({
@@ -31,7 +37,12 @@ async function getModalityDataset(types: string[]): Promise<ModalityDataset> {
         meters: sql<string>`COALESCE(SUM(CAST(${stravaWorkouts.distance} AS DOUBLE PRECISION)), 0)`,
       })
       .from(stravaWorkouts)
-      .where(inArray(stravaWorkouts.type, types))
+      .where(
+        and(
+          inArray(stravaWorkouts.type, types),
+          eq(stravaWorkouts.userId, userId)
+        )
+      )
       .groupBy(sql`SUBSTRING(${stravaWorkouts.startDate}, 1, 4)`),
   ]);
 
@@ -50,14 +61,15 @@ async function getModalityDataset(types: string[]): Promise<ModalityDataset> {
 }
 
 export default async function AtividadesPage() {
+  const userId = await getPublicOwnerId();
   const currentYear = String(new Date().getFullYear());
 
   const [bikeData, runData, initialWorkoutsPage, initialRaceWorkouts] =
     await Promise.all([
-      getModalityDataset(BIKE_TYPES),
-      getModalityDataset(RUN_TYPES),
-      fetchWorkoutsPage({ tab: "todas", year: currentYear, page: 1 }),
-      fetchRaceWorkouts({ tab: "todas" }),
+      getModalityDataset(BIKE_TYPES, userId),
+      getModalityDataset(RUN_TYPES, userId),
+      fetchWorkoutsPage({ tab: "todas", year: currentYear, page: 1, userId }),
+      fetchRaceWorkouts({ tab: "todas", userId }),
     ]);
 
   const availableYears = Array.from(

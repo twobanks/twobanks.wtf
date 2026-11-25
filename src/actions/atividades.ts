@@ -1,8 +1,9 @@
 "use server";
 
+import { requireUser } from "@/lib/authz";
 import { db } from "@/db";
 import { stravaWorkouts } from "@/db/schema";
-import { and, desc, inArray, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 export type TabType = "todas" | "bike" | "corrida";
 
@@ -83,10 +84,12 @@ export async function fetchWorkoutsPage({
   tab,
   year,
   page = 1,
+  userId,
 }: {
   tab: TabType;
   year: string;
   page?: number;
+  userId?: string;
 }): Promise<PaginatedWorkoutsResult> {
   const typesFilter =
     tab === "bike"
@@ -97,7 +100,8 @@ export async function fetchWorkoutsPage({
 
   const whereClause = and(
     inArray(stravaWorkouts.type, typesFilter),
-    sql`SUBSTRING(${stravaWorkouts.startDate}, 1, 4) = ${year}`
+    sql`SUBSTRING(${stravaWorkouts.startDate}, 1, 4) = ${year}`,
+    userId ? eq(stravaWorkouts.userId, userId) : undefined
   );
 
   const safePage = Math.max(1, Math.floor(page));
@@ -143,8 +147,10 @@ export async function fetchWorkoutsPage({
 
 export async function fetchRaceWorkouts({
   tab = "todas",
+  userId,
 }: {
   tab?: TabType;
+  userId?: string;
 }): Promise<RaceWorkoutItem[]> {
   const typesFilter =
     tab === "bike"
@@ -167,7 +173,11 @@ export async function fetchRaceWorkouts({
       detailedPayload: stravaWorkouts.detailedPayload,
     })
     .from(stravaWorkouts)
-    .where(inArray(stravaWorkouts.type, typesFilter))
+    .where(
+      userId
+        ? and(inArray(stravaWorkouts.type, typesFilter), eq(stravaWorkouts.userId, userId))
+        : inArray(stravaWorkouts.type, typesFilter)
+    )
     .orderBy(desc(stravaWorkouts.startDate));
 
   return rows

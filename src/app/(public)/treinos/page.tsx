@@ -1,7 +1,8 @@
 // src/app/treinos/page.tsx
+import { getPublicOwnerId } from "@/lib/authz"
 import { db } from "@/db"
 import { plannedWorkouts, stravaWorkouts } from "@/db/schema"
-import { asc, desc, gte, like, lt } from "drizzle-orm"
+import { and, asc, desc, eq, gte, like, lt } from "drizzle-orm"
 import Link from "next/link"
 
 // --- CONVERSORES DE DATA ---
@@ -33,16 +34,17 @@ function formatDistance(meters: string | null) {
 }
 
 export default async function TreinosPage() {
+  const userId = await getPublicOwnerId()
   const todayStr = getTodayCorosStr()
 
-  // 1. Buscas das Listas de Treinos (Passado e Futuro)
-  const upcomingWorkouts = await db.select().from(plannedWorkouts).where(gte(plannedWorkouts.date, todayStr)).orderBy(asc(plannedWorkouts.date)).limit(5)
-  const pastWorkouts = await db.select().from(plannedWorkouts).where(lt(plannedWorkouts.date, todayStr)).orderBy(desc(plannedWorkouts.date)).limit(20)
-  const execucoes = await db.select().from(stravaWorkouts).orderBy(desc(stravaWorkouts.startDate)).limit(50)
+  // 1. Buscas das Listas de Treinos (Passado e Futuro) — escopo do utilizador autenticado
+  const upcomingWorkouts = await db.select().from(plannedWorkouts).where(and(eq(plannedWorkouts.userId, userId), gte(plannedWorkouts.date, todayStr))).orderBy(asc(plannedWorkouts.date)).limit(5)
+  const pastWorkouts = await db.select().from(plannedWorkouts).where(and(eq(plannedWorkouts.userId, userId), lt(plannedWorkouts.date, todayStr))).orderBy(desc(plannedWorkouts.date)).limit(20)
+  const execucoes = await db.select().from(stravaWorkouts).where(eq(stravaWorkouts.userId, userId)).orderBy(desc(stravaWorkouts.startDate)).limit(50)
 
-  // 2. BUSCAS PARA O DASHBOARD ANUAL DE 2026
-  const coros2026 = await db.select().from(plannedWorkouts).where(like(plannedWorkouts.date, '2026%'))
-  const strava2026 = await db.select().from(stravaWorkouts).where(like(stravaWorkouts.startDate, '2026%'))
+  // 2. BUSCAS PARA O DASHBOARD ANUAL DE 2026 — escopo do utilizador autenticado
+  const coros2026 = await db.select().from(plannedWorkouts).where(and(eq(plannedWorkouts.userId, userId), like(plannedWorkouts.date, '2026%')))
+  const strava2026 = await db.select().from(stravaWorkouts).where(and(eq(stravaWorkouts.userId, userId), like(stravaWorkouts.startDate, '2026%')))
 
   // 3. CÁLCULO DAS ESTATÍSTICAS
   let planRunKm = 0, planBikeKm = 0
