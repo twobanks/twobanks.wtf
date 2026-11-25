@@ -1,4 +1,5 @@
 // src/app/layout.tsx
+import "@/env";
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { DrawerProvider } from "@/contexts/DrawerContext";

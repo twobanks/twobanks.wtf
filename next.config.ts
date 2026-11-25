@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["pdf-parse"],
   transpilePackages: ['mapbox-gl', '@mapbox/polyline'],
   devIndicators: false,
   experimental: {
