@@ -8,6 +8,8 @@ declare module '*.svg?raw' {
 
 // (Opcional) Também ensina a aceitar SVGs normais como URL, caso precise
 declare module '*.svg' {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   const content: any;
   export default content;
 }

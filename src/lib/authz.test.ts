@@ -23,6 +23,7 @@ describe("authz", () => {
   describe("requireUser", () => {
     it("should throw when there is no session", async () => {
       const { auth } = await import("@/auth");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       (auth as any).mockResolvedValue(null);
 
       await expect(requireUser()).rejects.toThrow("Não autorizado");
@@ -30,6 +31,7 @@ describe("authz", () => {
 
     it("should throw when session has no user", async () => {
       const { auth } = await import("@/auth");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       (auth as any).mockResolvedValue({});
 
       await expect(requireUser()).rejects.toThrow("Não autorizado");
@@ -38,6 +40,7 @@ describe("authz", () => {
     it("should return the user when authenticated", async () => {
       const { auth } = await import("@/auth");
       const mockUser = { id: "user-1", name: "Test User", role: "User" };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       (auth as any).mockResolvedValue({ user: mockUser });
 
       const result = await requireUser();
@@ -47,21 +50,25 @@ describe("authz", () => {
 
   describe("getAccessCondition", () => {
     it("should return undefined for admin role (no scope restriction)", () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = getAccessCondition("user-1", ADMIN_ROLE, Symbol("ownerColumn") as any);
       expect(result).toBeUndefined();
     });
 
     it("should return eq condition for non-admin role", () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = getAccessCondition("user-1", "User", Symbol("ownerColumn") as any);
       expect(result).toBeDefined();
     });
 
     it("should return eq condition for null role", () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = getAccessCondition("user-1", null, Symbol("ownerColumn") as any);
       expect(result).toBeDefined();
     });
 
     it("should return eq condition for undefined role", () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       const result = getAccessCondition("user-1", undefined, Symbol("ownerColumn") as any);
       expect(result).toBeDefined();
     });

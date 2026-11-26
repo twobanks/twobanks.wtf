@@ -27,10 +27,10 @@ export async function GET(request: Request) {
       message: `Sincronização concluída! ${result.totalActivities} atividades processadas.`,
       ...result,
     })
-  } catch (error) {
-    console.error("Erro fatal na sincronização:", error)
+  } catch (_error) {
+    console.error("Erro fatal na sincronização:", _error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Falha na sincronização" },
+      { error: _error instanceof Error ? _error.message : "Falha na sincronização" },
       { status: 500 }
     )
   }

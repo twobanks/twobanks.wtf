@@ -10,7 +10,7 @@ function formatDateToCoros(date: Date) {
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
         console.log(`✅ Achou ${treinos.length} treinos neste mês!`)
 
         for (const treino of treinos) {
-          let titulo = `Treino de ${treino.exerciseBarChart?.[0]?.name || "Corrida"}`
+          const titulo = `Treino de ${treino.exerciseBarChart?.[0]?.name || "Corrida"}`
           
           await db.insert(plannedWorkouts).values({
             id: treino.id,
@@ -84,8 +84,8 @@ export async function GET(request: Request) {
       currentDate = new Date(chunkEnd)
       currentDate.setDate(currentDate.getDate() + 1)
 
-    } catch (error) {
-      console.error("Erro na requisição da API:", error)
+    } catch (_error) {
+      console.error("Erro na requisição da API:", _error)
       return NextResponse.json({ error: "Falha na sincronização" }, { status: 500 })
     }
   }

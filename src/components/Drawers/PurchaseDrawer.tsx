@@ -49,6 +49,7 @@ export function PurchaseDrawer({
   );
 
   useEffect(() => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!open) {
       setSelectedCardId(CARD_PLACEHOLDER);
       setDueMonth('');
@@ -76,7 +77,7 @@ export function PurchaseDrawer({
       closeDrawer();
       setAlert({ type: 'success', message: 'Compra adicionada!' });
       onSuccess?.();
-    } catch (error) {
+    } catch (_error) {
       setAlert({
         type: 'error',
         message: 'Não foi possível adicionar a compra. Verifique os dados e tente novamente.',

@@ -51,12 +51,12 @@ export async function createExpense(formData: FormData) {
     const recurringMonths = Math.min(Math.max(raw, 1), 60);
 
     const dateStr = parsed.date;
-    const [year, month, day] = dateStr.split("-").map(Number);
+    const [_year, _month, day] = dateStr.split("-").map(Number);
 
-    let dueDay = day;
+    let _dueDay = day;
     if (parsed.isRecurring) {
       const rawDueDay = Number(formData.get("dueDay"));
-      if (rawDueDay >= 1 && rawDueDay <= 31) dueDay = rawDueDay;
+      if (rawDueDay >= 1 && rawDueDay <= 31) _dueDay = rawDueDay;
     }
 
     await createExpenseSvc(user.id, {
@@ -74,10 +74,10 @@ export async function createExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao criar despesa:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar despesa:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível criar a despesa." };
   }
@@ -111,10 +111,10 @@ export async function updateExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao atualizar despesa:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar despesa:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível atualizar a despesa." };
   }
@@ -136,10 +136,10 @@ export async function deleteExpenseSeries(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao excluir série de despesas:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir série de despesas:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível excluir a série de despesas." };
   }
@@ -161,10 +161,10 @@ export async function deleteExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao excluir despesa:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir despesa:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível excluir a despesa." };
   }

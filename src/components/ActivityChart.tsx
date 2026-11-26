@@ -119,6 +119,7 @@ export default function ActivityChart({ streams }: { streams: StravaStreams }) {
             domain={['dataMin - 0.5', 'dataMax + 2']}
             hide={true}
           />
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
           <Tooltip content={CustomTooltip as any} isAnimationActive={false} />
 

@@ -37,6 +37,7 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
   const open = activeDrawer === 'income';
 
   useEffect(() => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!open) {
       setAlert(null);
       setIsRecurring(false);
@@ -69,7 +70,7 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
           : 'Receita criada!',
       });
       onSuccess?.();
-    } catch (error) {
+    } catch (_error) {
       setAlert({
         type: 'error',
         message: 'Não foi possível salvar a receita.',

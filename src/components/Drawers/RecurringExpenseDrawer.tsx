@@ -53,7 +53,7 @@ export function RecurringExpenseDrawer({
         message: recurringExpense ? "Despesa atualizada!" : "Despesa criada!",
       })
       onSuccess?.()
-    } catch (error) {
+    } catch (_error) {
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar a despesa.",

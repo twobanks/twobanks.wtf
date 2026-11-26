@@ -1,5 +1,6 @@
+import { AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
-import { AlertTriangle, Home } from 'lucide-react';
+import { Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/patterns';
 

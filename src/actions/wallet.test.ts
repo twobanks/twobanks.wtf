@@ -40,7 +40,9 @@ import {
 import { revalidatePath } from "next/cache";
 import { createTransaction as createTransactionSvc } from "@/services/walletService";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockRequireUser = requireUser as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockRevalidatePath = revalidatePath as any;
 const baseUser = { id: "user-1", name: "Test User", role: "User" };
 

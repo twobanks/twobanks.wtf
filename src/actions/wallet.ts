@@ -64,10 +64,10 @@ export async function createTransaction(formData: FormData) {
     revalidatePath("/admin");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao criar transação:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar transação:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível criar a transação." };
   }
@@ -110,10 +110,10 @@ export async function createInstallmentPurchase(formData: FormData) {
     revalidatePath("/admin/carteira");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao criar compra parcelada:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar compra parcelada:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return {
       success: false,
@@ -153,10 +153,10 @@ export async function updateTransaction(formData: FormData) {
     revalidatePath("/admin/carteira");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao atualizar transação:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar transação:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível atualizar a transação." };
   }
@@ -182,10 +182,10 @@ export async function deleteTransaction(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao excluir transação:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir transação:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível excluir a transação." };
   }
@@ -213,8 +213,8 @@ export async function toggleInstallmentPaid(formData: FormData) {
     revalidatePath("/admin/carteira/cartoes/[id]", "page");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao alternar parcela paga:", error);
+  } catch (_error) {
+    console.error("Erro ao alternar parcela paga:", _error);
     return { success: false, error: "Não foi possível alternar a parcela." };
   }
 }
@@ -247,8 +247,8 @@ export async function markInvoiceAsPaid(formData: FormData) {
     revalidatePath("/admin");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao marcar fatura como paga:", error);
+  } catch (_error) {
+    console.error("Erro ao marcar fatura como paga:", _error);
     return { success: false, error: "Não foi possível marcar a fatura como paga." };
   }
 }
@@ -272,8 +272,8 @@ export async function markTransactionAsPaid(formData: FormData) {
     revalidatePath("/admin/carteira");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao marcar transação como paga:", error);
+  } catch (_error) {
+    console.error("Erro ao marcar transação como paga:", _error);
     return { success: false, error: "Não foi possível marcar a transação como paga." };
   }
 }
@@ -293,10 +293,10 @@ export async function deleteRecurringSeries(formData: FormData) {
     revalidatePath("/admin/carteira");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao excluir série recorrente:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir série recorrente:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível excluir a série recorrente." };
   }
@@ -340,10 +340,10 @@ export async function updateExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao atualizar despesa da carteira:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar despesa da carteira:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível atualizar a despesa." };
   }
@@ -381,10 +381,10 @@ export async function createTransfer(formData: FormData) {
     revalidatePath("/admin");
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao criar transferência:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar transferência:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível criar a transferência." };
   }
@@ -411,8 +411,8 @@ export async function deletePurchase(formData: FormData) {
     revalidatePath("/admin/carteira/cartoes/[id]", "page");
 
     return;
-  } catch (error) {
-    console.error("Erro ao excluir compra:", error);
+  } catch (_error) {
+    console.error("Erro ao excluir compra:", _error);
     throw new Error("Não foi possível excluir a compra.");
   }
 }
@@ -454,8 +454,8 @@ export async function createCreditCardAdjustment(formData: FormData) {
     revalidatePath("/admin/carteira/faturas");
 
     return;
-  } catch (error) {
-    console.error("Erro ao criar ajuste de cartão:", error);
+  } catch (_error) {
+    console.error("Erro ao criar ajuste de cartão:", _error);
     throw new Error("Não foi possível criar o ajuste de cartão.");
   }
 }
@@ -494,8 +494,8 @@ export async function rescueCreditBalance(formData: FormData) {
     revalidatePath("/admin/carteira/faturas");
 
     return;
-  } catch (error) {
-    console.error("Erro ao resgatar saldo de crédito:", error);
+  } catch (_error) {
+    console.error("Erro ao resgatar saldo de crédito:", _error);
     throw new Error("Não foi possível resgatar o saldo de crédito.");
   }
 }

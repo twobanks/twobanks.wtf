@@ -54,7 +54,7 @@ export function CreditCardDrawer({ creditCard, onSuccess }: CreditCardDrawerProp
         message: creditCard ? "Cartão atualizado!" : "Cartão criado!",
       })
       onSuccess?.()
-    } catch (error) {
+    } catch (_error) {
       setAlert({
         type: "error",
         message: "Não foi possível salvar o cartão.",

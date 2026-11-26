@@ -17,8 +17,8 @@ export async function POST() {
       .where(eq(users.id, session.user.id))
 
     return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Erro ao atualizar presença:", error)
+  } catch (_error) {
+    console.error("Erro ao atualizar presença:", _error)
     return NextResponse.json(
       { error: "Falha ao atualizar presença" },
       { status: 500 },

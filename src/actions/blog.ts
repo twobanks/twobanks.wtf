@@ -38,10 +38,10 @@ export async function savePost(formData: FormData) {
     }
 
     revalidatePath("/admin/blog")
-  } catch (error) {
-    console.error("Erro ao salvar post:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao salvar post:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível salvar o post.");
   }
@@ -56,10 +56,10 @@ export async function deletePost(id: string) {
       .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
 
     revalidatePath("/admin/blog")
-  } catch (error) {
-    console.error("Erro ao excluir post:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir post:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível excluir o post.");
   }
@@ -92,10 +92,10 @@ export async function updatePost(formData: FormData) {
     revalidatePath("/blog")
     revalidatePath("/admin/blog")
     redirect("/admin/blog")
-  } catch (error) {
-    console.error("Erro ao atualizar post:", error);
-    if (error instanceof Error && error.message === "Post não encontrado ou sem permissão para editar") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar post:", _error);
+    if (_error instanceof Error && _error.message === "Post não encontrado ou sem permissão para editar") {
+      throw _error;
     }
     throw new Error("Não foi possível atualizar o post.");
   }

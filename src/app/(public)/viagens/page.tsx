@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { formatDatePtBr, formatKm, getAllEnrichedTrips } from "@/lib/viagens";
+import { formatDatePtBr, getAllEnrichedTrips } from "@/lib/viagens";
 import { ArrowRight, Calendar, MapPin } from "lucide-react";
 import Link from "next/link";
 

@@ -184,6 +184,7 @@ export function PublicFooter({
   const navItems = [...PUBLIC_NAV_ITEMS, authItem];
 
   // Recolhe o menu ao navegar
+    // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);

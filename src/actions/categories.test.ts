@@ -33,12 +33,19 @@ import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household";
 import { createCategory, updateCategory, deleteCategory } from "./categories";
 import { revalidatePath } from "next/cache";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockAuth = auth as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockGetPrimaryHouseholdId = getPrimaryHouseholdId as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockGetUserHouseholdIds = getUserHouseholdIds as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockRevalidatePath = revalidatePath as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockDbInsert = db.insert as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockDbUpdate = db.update as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockDbDelete = db.delete as any;
 
 function formData(entries: Record<string, string>) {

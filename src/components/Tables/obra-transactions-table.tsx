@@ -33,7 +33,7 @@ export function ObraTransactionsTable({
     return (
       <div className="space-y-4">
         <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
-          Obra (Gastos Temporários)
+          Obra (Gastos Tempor00e1rios)
         </h1>
         <p className="text-muted-foreground">
           Crie uma categoria chamada "Obra" para agrupar esses gastos.

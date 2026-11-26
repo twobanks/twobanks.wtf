@@ -312,6 +312,7 @@ export interface InvestmentTransactionDrawerProps {
 }
 
 export interface SummaryCardsProps {
+  _mes: string;
   totalReceitas: number;
   totalDespesas: number;
   saldo: number;

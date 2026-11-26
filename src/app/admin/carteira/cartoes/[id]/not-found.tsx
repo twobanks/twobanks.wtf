@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AlertTriangle, CreditCard, ArrowLeft } from 'lucide-react';
+import { CreditCard, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/patterns';
 

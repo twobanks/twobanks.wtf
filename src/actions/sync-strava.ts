@@ -30,12 +30,12 @@ export async function syncStravaAction(fullSync = false) {
       message,
       syncedCount: result.totalActivities,
     };
-  } catch (error) {
+  } catch (_error) {
     return {
       ok: false,
       message:
-        error instanceof Error
-          ? error.message
+        _error instanceof Error
+          ? _error.message
           : "Erro ao sincronizar com o Strava.",
     };
   }

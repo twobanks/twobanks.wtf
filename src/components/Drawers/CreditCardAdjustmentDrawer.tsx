@@ -19,7 +19,7 @@ export function CreditCardAdjustmentDrawer({ creditCardId }: { creditCardId: num
       await createCreditCardAdjustment(formData)
       setAlert({ type: "success", message: "Ajuste lançado com sucesso!" })
       setOpen(false)
-    } catch (error) {
+    } catch (_error) {
       setAlert({ type: "error", message: "Erro ao lançar ajuste." })
     } finally {
       setIsSubmitting(false)

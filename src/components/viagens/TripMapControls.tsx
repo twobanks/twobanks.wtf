@@ -17,9 +17,9 @@ interface TripMapControlsProps {
   isFullscreen: boolean;
   bearing: number;
   mapRef: React.RefObject<MapboxMap | null>;
-  plannedSegmentsList: [number, number][][];
-  tripSlug: string;
-  tripTitle: string;
+  _plannedSegmentsList: [number, number][][];
+  _tripSlug: string;
+  _tripTitle: string;
   onToggle3D: () => void;
   onToggleStyle: () => void;
   onToggleFullscreen: () => void;
@@ -35,9 +35,9 @@ export function TripMapControls({
   isFullscreen,
   bearing,
   mapRef,
-  plannedSegmentsList,
-  tripSlug,
-  tripTitle,
+  _plannedSegmentsList,
+  _tripSlug,
+  _tripTitle,
   onToggle3D,
   onToggleStyle,
   onToggleFullscreen,

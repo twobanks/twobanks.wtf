@@ -83,8 +83,8 @@ export async function POST(req: Request) {
     await sendOtpEmail(user.email, code);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Erro ao enviar email:", error);
+  } catch (_error) {
+    console.error("Erro ao enviar email:", _error);
     return NextResponse.json({ error: "Falha ao enviar o código." }, { status: 500 });
   }
 }

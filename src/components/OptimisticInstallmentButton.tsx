@@ -20,7 +20,7 @@ export function OptimisticInstallmentButton({ parcelaId, initialPaid }: { parcel
         formData.append("id", String(parcelaId))
         formData.append("paid", String(nextState))
         await toggleInstallmentPaid(formData)
-      } catch (error) {
+      } catch (_error) {
         // Se falhar no servidor, reverte visualmente ou avisa o usuário
         alert("Erro ao atualizar o status da parcela. Tente novamente.")
       }

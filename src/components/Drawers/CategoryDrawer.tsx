@@ -40,7 +40,7 @@ export function CategoryDrawer({ category, onSuccess }: CategoryDrawerProps) {
         message: category ? "Categoria atualizada!" : "Categoria criada!",
       })
       onSuccess?.()
-    } catch (error) {
+    } catch (_error) {
       setAlert({
         type: "error",
         message: "Não foi possível salvar a categoria.",

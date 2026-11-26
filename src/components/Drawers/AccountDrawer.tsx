@@ -36,7 +36,7 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
         message: account ? "Conta atualizada!" : "Conta criada!",
       })
       onSuccess?.()
-    } catch (error) {
+    } catch (_error) {
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar a conta.",

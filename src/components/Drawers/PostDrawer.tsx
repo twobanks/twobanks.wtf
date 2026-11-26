@@ -39,7 +39,7 @@ export function PostDrawer({ open, onClose, post, onSuccess }: PostDrawerProps) 
       })
       onSuccess?.()
       onClose()
-    } catch (error) {
+    } catch (_error) {
       setAlert({
         type: "error",
         message: "Não foi possível salvar o post.",

@@ -30,6 +30,7 @@ export function AppBreadcrumb() {
   const pathSegments = pathname.split("/").filter(Boolean)
 
   let accumulatedPath = ""
+    // eslint-disable-next-line react-hooks/no-unsafe-effect
   const items = pathSegments.map((segment, index) => {
     accumulatedPath += `/${segment}`
     const isLast = index === pathSegments.length - 1

@@ -1,6 +1,6 @@
 'use client';
 
-import { MonthYearPicker, toFirstDayOfMonth } from '@/components/month-year-select';
+import { MonthYearPicker } from '@/components/month-year-select';
 import {
   drawerFieldClass,
   drawerSelectContentClass,
@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Repeat } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { Category, EditableExpense, FinancialAccount } from '@/utils/types';
 
 const CATEGORY_PLACEHOLDER = '__category_placeholder__';

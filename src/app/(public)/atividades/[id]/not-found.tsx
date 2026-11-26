@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { AlertTriangle, Activity, ArrowLeft } from 'lucide-react';
+import { Activity, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/patterns';
 

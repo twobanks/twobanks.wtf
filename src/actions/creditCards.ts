@@ -58,10 +58,10 @@ export async function createCreditCard(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao criar cartão de crédito:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar cartão de crédito:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível criar o cartão de crédito." };
   }
@@ -93,10 +93,10 @@ export async function updateCreditCard(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao atualizar cartão de crédito:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar cartão de crédito:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível atualizar o cartão de crédito." };
   }
@@ -119,8 +119,8 @@ export async function deleteCreditCard(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA_FATURAS);
 
     return;
-  } catch (error) {
-    console.error("Erro ao excluir cartão de crédito:", error);
+  } catch (_error) {
+    console.error("Erro ao excluir cartão de crédito:", _error);
     throw new Error("Não foi possível excluir o cartão de crédito.");
   }
 }

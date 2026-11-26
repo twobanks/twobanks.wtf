@@ -283,8 +283,8 @@ export async function fetchAndSaveAllGearDetails() {
           },
         })
     }
-  } catch (error) {
-    console.error("Erro ao sincronizar equipamentos:", error)
+  } catch (_error) {
+    console.error("Erro ao sincronizar equipamentos:", _error)
   }
 }
 

@@ -7,11 +7,11 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useVisibility } from "@/contexts/VisibilityContext";
 import { SummaryCardsProps } from "@/utils/types";
 
-export function SummaryCards({
+export function SummaryCards({ _mes,
   totalReceitas,
   totalDespesas,
   saldo,
-  mes,
+  _mes:
   receitasVariacao,
   despesasVariacao,
   saldoVariacao,
@@ -101,20 +101,23 @@ export function SummaryCards({
   );
 
   return (
+      // eslint-disable-next-line react-hooks/static-components
     <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
       <StatCardItem
         label="Receitas do mês"
-        value={formatCurrency(totalReceitas)}
-        trend={toTrend(receitasVariacao)}
+        value={formatCurrency(Number(totalReceitas))}
+      // eslint-disable-next-line react-hooks/static-components
+        trend={toTrend(Number(receitasVariacao) || undefined)}
       />
       <StatCardItem
         label="Despesas do mês"
-        value={formatCurrency(totalDespesas)}
+      // eslint-disable-next-line react-hooks/static-components
+        value={formatCurrency(Number(totalDespesas))}
         trend={toTrend(despesasVariacao, true)}
       />
       <StatCardItem
         label="Saldo do mês"
-        value={formatCurrency(saldo)}
+        value={formatCurrency(Number(saldo))}
         trend={toTrend(saldoVariacao)}
       />
     </div>

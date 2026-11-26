@@ -184,6 +184,7 @@ export default async function CarteiraPage({
       <DrawerInitializer drawerOpen={open} />
       <div className="space-y-6">
         <SummaryCards
+          _mes={`${faturaMesNum}/${faturaAno}`}
           totalReceitas={totalReceitas}
           totalDespesas={totalDespesas}
           saldo={saldo}

@@ -43,10 +43,10 @@ export async function createKanbanTask(formData: FormData) {
     })
 
     revalidatePath(KANBAN_ROUTE)
-  } catch (error) {
-    console.error("Erro ao criar tarefa Kanban:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar tarefa Kanban:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível criar a tarefa.");
   }
@@ -71,10 +71,10 @@ export async function updateKanbanTaskStatus(taskId: string, newStatus: string) 
       .where(eq(kanbanTasks.id, taskId))
 
     revalidatePath(KANBAN_ROUTE)
-  } catch (error) {
-    console.error("Erro ao atualizar status da tarefa Kanban:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar status da tarefa Kanban:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível atualizar o status da tarefa.");
   }
@@ -105,10 +105,10 @@ export async function updateKanbanTask(formData: FormData) {
       .where(eq(kanbanTasks.id, taskId))
 
     revalidatePath(KANBAN_ROUTE)
-  } catch (error) {
-    console.error("Erro ao editar tarefa Kanban:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "ID da tarefa não fornecido")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao editar tarefa Kanban:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "ID da tarefa não fornecido")) {
+      throw _error;
     }
     throw new Error("Não foi possível editar a tarefa.");
   }
@@ -138,10 +138,10 @@ export async function cloneKanbanTask(taskId: string) {
     })
 
     revalidatePath(KANBAN_ROUTE)
-  } catch (error) {
-    console.error("Erro ao clonar tarefa Kanban:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Tarefa não encontrada")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao clonar tarefa Kanban:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Tarefa não encontrada")) {
+      throw _error;
     }
     throw new Error("Não foi possível clonar a tarefa.");
   }
@@ -158,10 +158,10 @@ export async function deleteKanbanTask(taskId: string) {
     await db.delete(kanbanTasks).where(eq(kanbanTasks.id, taskId))
   
     revalidatePath(KANBAN_ROUTE)
-  } catch (error) {
-    console.error("Erro ao excluir tarefa Kanban:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir tarefa Kanban:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível excluir a tarefa.");
   }

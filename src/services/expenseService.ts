@@ -3,8 +3,8 @@ import { db } from "@/db";
 import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema";
 import { and, eq, gte, or } from "drizzle-orm";
 
-const DEFAULT_RECURRING_MONTHS = 12;
-const MAX_RECURRING_MONTHS = 60;
+const _DEFAULT_RECURRING_MONTHS = 12;
+const _MAX_RECURRING_MONTHS = 60;
 
 function getFormattedDate(y: number, m: number, d: number): string {
   const lastDayOfTargetMonth = new Date(Date.UTC(y, m, 0)).getUTCDate();

@@ -22,6 +22,7 @@ function formatDuration(totalSeconds: number) {
 }
 
 interface ChartTooltipData {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   active: boolean
   payload: any[]
 }
@@ -99,6 +100,7 @@ export default function HeartRateDistribution({ streams }: { streams: StravaStre
             dataKey="name" 
             tick={{ fontSize: 11, fill: "#71717a" }}
             interval={0}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
           />
           <YAxis hide={true} /> 
           <Tooltip content={CustomTooltip as any} cursor={{ fill: '#3f3f46', opacity: 0.1 }} />

@@ -30,10 +30,10 @@ export async function createCategory(formData: FormData) {
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_CATEGORIAS)
     revalidatePath(ROUTES.ADMIN.CARTEIRA)
-  } catch (error) {
-    console.error("Erro ao criar categoria:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Dados inválidos")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar categoria:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Dados inválidos")) {
+      throw _error;
     }
     throw new Error("Não foi possível criar a categoria.");
   }
@@ -63,10 +63,10 @@ export async function updateCategory(formData: FormData) {
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_CATEGORIAS)
     revalidatePath(ROUTES.ADMIN.CARTEIRA)
-  } catch (error) {
-    console.error("Erro ao atualizar categoria:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Dados inválidos")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar categoria:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Dados inválidos")) {
+      throw _error;
     }
     throw new Error("Não foi possível atualizar a categoria.");
   }
@@ -92,10 +92,10 @@ export async function deleteCategory(formData: FormData) {
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_CATEGORIAS)
     revalidatePath(ROUTES.ADMIN.CARTEIRA)
-  } catch (error) {
-    console.error("Erro ao excluir categoria:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "ID inválido")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir categoria:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "ID inválido")) {
+      throw _error;
     }
     throw new Error("Não foi possível excluir a categoria.");
   }

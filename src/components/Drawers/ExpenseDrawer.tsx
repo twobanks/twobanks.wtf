@@ -18,7 +18,6 @@ interface ExpenseDrawerProps {
   accounts: FinancialAccount[];
   expense?: EditableExpense;
   onSuccess?: () => void;
-  onNew?: () => void;
   createExpense: (formData: FormData) => Promise<ActionResult>;
   updateExpense: (formData: FormData) => Promise<ActionResult>;
 }
@@ -28,7 +27,7 @@ export function ExpenseDrawer({
   accounts,
   expense,
   onSuccess,
-  onNew,
+
   createExpense,
   updateExpense,
 }: ExpenseDrawerProps) {
@@ -89,7 +88,7 @@ export function ExpenseDrawer({
             : 'Despesa criada!',
       });
       onSuccess?.();
-    } catch (error) {
+    } catch (_error) {
       setAlert({ type: 'error', message: 'Não foi possível salvar a despesa.' });
     } finally {
       setIsSubmitting(false);

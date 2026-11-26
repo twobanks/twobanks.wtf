@@ -37,10 +37,10 @@ export async function createAsset(formData: FormData) {
     })
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
-  } catch (error) {
-    console.error("Erro ao criar ativo:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Dados inválidos")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar ativo:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Dados inválidos")) {
+      throw _error;
     }
     throw new Error("Não foi possível criar o ativo.");
   }
@@ -80,10 +80,10 @@ export async function updateAsset(formData: FormData) {
       .where(and(eq(assets.id, id), canAccess))
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
-  } catch (error) {
-    console.error("Erro ao atualizar ativo:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Dados inválidos")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar ativo:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Dados inválidos")) {
+      throw _error;
     }
     throw new Error("Não foi possível atualizar o ativo.");
   }
@@ -108,10 +108,10 @@ export async function deleteAsset(formData: FormData) {
       .where(and(eq(assets.id, id), canAccess))
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
-  } catch (error) {
-    console.error("Erro ao excluir ativo:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "ID inválido")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir ativo:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "ID inválido")) {
+      throw _error;
     }
     throw new Error("Não foi possível excluir o ativo.");
   }
@@ -182,10 +182,10 @@ export async function createInvestmentTransaction(formData: FormData) {
     }
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
-  } catch (error) {
-    console.error("Erro ao criar transação de investimento:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Dados inválidos" || error.message === "Ativo não encontrado ou sem permissão")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar transação de investimento:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Dados inválidos" || _error.message === "Ativo não encontrado ou sem permissão")) {
+      throw _error;
     }
     throw new Error("Não foi possível criar a transação de investimento.");
   }
@@ -210,10 +210,10 @@ export async function deleteInvestmentTransaction(formData: FormData) {
       .where(and(eq(investmentTransactions.id, id), canAccess))
 
     revalidatePath(ROUTES.ADMIN.CARTEIRA_INVESTIMENTOS)
-  } catch (error) {
-    console.error("Erro ao excluir transação de investimento:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "ID inválido")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir transação de investimento:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "ID inválido")) {
+      throw _error;
     }
     throw new Error("Não foi possível excluir a transação de investimento.");
   }

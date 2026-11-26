@@ -45,10 +45,10 @@ export async function createList(formData: FormData) {
     });
 
     revalidatePath("/listas");
-  } catch (error) {
-    console.error("Erro ao criar lista de compras:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar lista de compras:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível criar a lista de compras.");
   }
@@ -71,10 +71,10 @@ export async function updateList(listId: ShoppingList["id"], formData: FormData)
 
     if (result.length === 0) throw new Error("Lista não encontrada");
     revalidatePath("/listas");
-  } catch (error) {
-    console.error("Erro ao atualizar lista de compras:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Lista não encontrada")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar lista de compras:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Lista não encontrada")) {
+      throw _error;
     }
     throw new Error("Não foi possível atualizar a lista de compras.");
   }
@@ -88,10 +88,10 @@ export async function deleteList(listId: ShoppingList["id"]) {
       .delete(shoppingLists)
       .where(and(eq(shoppingLists.id, listId), eq(shoppingLists.userId, userId)));
     revalidatePath("/listas");
-  } catch (error) {
-    console.error("Erro ao excluir lista de compras:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir lista de compras:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível excluir a lista de compras.");
   }
@@ -124,10 +124,10 @@ export async function addItem(listId: ShoppingList["id"], formData: FormData) {
     });
 
     revalidatePath("/listas");
-  } catch (error) {
-    console.error("Erro ao adicionar item à lista:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Lista não encontrada")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao adicionar item à lista:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Lista não encontrada")) {
+      throw _error;
     }
     throw new Error("Não foi possível adicionar o item à lista.");
   }
@@ -154,10 +154,10 @@ export async function toggleItem(itemId: ShoppingItem["id"]) {
       .where(eq(shoppingItems.id, itemId));
 
     revalidatePath("/listas");
-  } catch (error) {
-    console.error("Erro ao alternar item da lista:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Item não encontrado")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao alternar item da lista:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Item não encontrado")) {
+      throw _error;
     }
     throw new Error("Não foi possível alternar o item.");
   }
@@ -179,10 +179,10 @@ export async function deleteItem(itemId: ShoppingItem["id"]) {
 
     await db.delete(shoppingItems).where(eq(shoppingItems.id, itemId));
     revalidatePath("/listas");
-  } catch (error) {
-    console.error("Erro ao excluir item da lista:", error);
-    if (error instanceof Error && (error.message === "Não autorizado" || error.message === "Item não encontrado")) {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir item da lista:", _error);
+    if (_error instanceof Error && (_error.message === "Não autorizado" || _error.message === "Item não encontrado")) {
+      throw _error;
     }
     throw new Error("Não foi possível excluir o item.");
   }

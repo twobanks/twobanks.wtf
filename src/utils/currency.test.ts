@@ -20,6 +20,7 @@ describe("currency utilities", () => {
     });
 
     it("should handle invalid strings", () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
       expect(toCents("abc" as any)).toBe(0);
     });
 

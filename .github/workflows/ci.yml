@@ -31,7 +31,6 @@ jobs:
 
       - name: Lint (ESLint)
         run: yarn lint
-        continue-on-error: true
 
       - name: Build de produção (Next.js)
         run: yarn build

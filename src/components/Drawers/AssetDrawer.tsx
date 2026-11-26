@@ -36,7 +36,7 @@ export function AssetDrawer({ asset, onSuccess }: AssetDrawerProps) {
         message: asset ? "Ativo atualizado!" : "Ativo criado!",
       })
       onSuccess?.()
-    } catch (error) {
+    } catch (_error) {
       setFloatingAlert({
         type: "error",
         message: "Não foi possível salvar o ativo.",

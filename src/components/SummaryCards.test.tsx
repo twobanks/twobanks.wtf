@@ -10,6 +10,7 @@ vi.mock("@/contexts/VisibilityContext", () => ({
 const mockUseVisibility = vi.mocked(useVisibility);
 
 const props = {
+  _mes: "01/2026",
   totalReceitas: 1234.5,
   totalDespesas: 678.9,
   saldo: 555.6,

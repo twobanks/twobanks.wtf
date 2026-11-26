@@ -68,10 +68,10 @@ export async function createRecurringExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
     return { success: true, data: null };
-  } catch (error) {
-    console.error("Erro ao criar despesa recorrente:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao criar despesa recorrente:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     return { success: false, error: "Não foi possível criar a despesa recorrente." };
   }
@@ -105,8 +105,8 @@ export async function updateRecurringExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
     return;
-  } catch (error) {
-    console.error("Erro ao atualizar despesa recorrente:", error);
+  } catch (_error) {
+    console.error("Erro ao atualizar despesa recorrente:", _error);
     throw new Error("Não foi possível atualizar a despesa recorrente.");
   }
 }
@@ -127,8 +127,8 @@ export async function deleteRecurringExpense(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
     return;
-  } catch (error) {
-    console.error("Erro ao excluir despesa recorrente:", error);
+  } catch (_error) {
+    console.error("Erro ao excluir despesa recorrente:", _error);
     throw new Error("Não foi possível excluir a despesa recorrente.");
   }
 }
@@ -151,8 +151,8 @@ export async function generateMonthlyRecurring(formData: FormData) {
     revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
     return;
-  } catch (error) {
-    console.error("Erro ao gerar despesas recorrentes mensais:", error);
+  } catch (_error) {
+    console.error("Erro ao gerar despesas recorrentes mensais:", _error);
     throw new Error("Não foi possível gerar as despesas recorrentes.");
   }
 }

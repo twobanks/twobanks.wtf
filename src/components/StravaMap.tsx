@@ -78,7 +78,7 @@ export default function StravaMap({
         endPoint: coords[coords.length - 1],
         bounds: b,
       }
-    } catch (e) {
+    } catch (_e) {
       return { coordinates: [], startPoint: null, endPoint: null, bounds: null }
     }
   }, [mapPolyline])

@@ -16,7 +16,7 @@ export async function getBooks() {
       .where(eq(books.userId, session.id))
       .orderBy(desc(books.createdAt))
     return data
-  } catch (error) {
+  } catch (_error) {
     return []
   }
 }
@@ -47,10 +47,10 @@ export async function saveBook(formData: FormData) {
     }
 
     revalidatePath("/admin/livros")
-  } catch (error) {
-    console.error("Erro ao salvar livro:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao salvar livro:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível salvar o livro.");
   }
@@ -65,10 +65,10 @@ export async function deleteBook(id: string) {
       .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
 
     revalidatePath("/admin/livros")
-  } catch (error) {
-    console.error("Erro ao excluir livro:", error);
-    if (error instanceof Error && error.message === "Não autorizado") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao excluir livro:", _error);
+    if (_error instanceof Error && _error.message === "Não autorizado") {
+      throw _error;
     }
     throw new Error("Não foi possível excluir o livro.");
   }
@@ -98,10 +98,10 @@ export async function updateBook(formData: FormData) {
 
     revalidatePath("/livros")
     redirect("/livros")
-  } catch (error) {
-    console.error("Erro ao atualizar livro:", error);
-    if (error instanceof Error && error.message === "Livro não encontrado ou sem permissão para editar") {
-      throw error;
+  } catch (_error) {
+    console.error("Erro ao atualizar livro:", _error);
+    if (_error instanceof Error && _error.message === "Livro não encontrado ou sem permissão para editar") {
+      throw _error;
     }
     throw new Error("Não foi possível atualizar o livro.");
   }

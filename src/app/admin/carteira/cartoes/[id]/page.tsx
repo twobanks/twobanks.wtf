@@ -53,7 +53,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
   })
 
   const { cartao, parcelas, ajustes, total, pago, statusFatura } = fatura
-  const totalPendente = total > 0 ? total - pago : 0
+  const _totalPendente = total > 0 ? total - pago : 0
   const isCredit = total < 0
 
   const formatDate = (iso: string) => {

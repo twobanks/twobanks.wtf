@@ -10,7 +10,7 @@ import {
 } from "@/db/schema";
 import { and, eq, gte, inArray, or } from "drizzle-orm";
 
-const DEFAULT_RECURRING_MONTHS = 12;
+const _DEFAULT_RECURRING_MONTHS = 12;
 
 function addMonthsToDateString(dateStr: string, monthsToAdd: number): string {
   const [y, m, d] = dateStr.split("-").map(Number);

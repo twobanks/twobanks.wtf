@@ -33,7 +33,7 @@ export async function requireUser() {
 export function getAccessCondition(
   userId: string,
   role: string | null | undefined,
-  ownerColumn: AnyPgColumn<{}>
+  ownerColumn: AnyPgColumn
 ): SQL<unknown> | undefined {
   if (role === ADMIN_ROLE) {
     return undefined; // admin não tem restrição de escopo

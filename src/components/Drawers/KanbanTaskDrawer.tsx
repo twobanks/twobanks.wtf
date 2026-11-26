@@ -47,7 +47,7 @@ export function KanbanTaskDrawer({
       }
       setAlert({ type: 'success', message: task ? 'Tarefa atualizada!' : 'Tarefa criada!' });
       setIsOpen(false);
-    } catch (error) {
+    } catch (_error) {
       setAlert({ type: 'error', message: 'Não foi possível salvar a tarefa.' });
     } finally {
       setIsSubmitting(false);
@@ -60,7 +60,7 @@ export function KanbanTaskDrawer({
     try {
       await deleteKanbanTask(task.id);
       setIsOpen(false);
-    } catch (error) {
+    } catch (_error) {
       setAlert({ type: 'error', message: 'Erro ao excluir a tarefa.' });
     } finally {
       setIsSubmitting(false);
@@ -74,7 +74,7 @@ export function KanbanTaskDrawer({
       await cloneKanbanTask(task.id);
       setAlert({ type: 'success', message: 'Tarefa clonada com sucesso!' });
       setIsOpen(false);
-    } catch (error) {
+    } catch (_error) {
       setAlert({ type: 'error', message: 'Erro ao clonar a tarefa.' });
     } finally {
       setIsSubmitting(false);

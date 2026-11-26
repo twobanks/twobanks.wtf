@@ -30,7 +30,7 @@ export function BookDrawer({ open, onClose, book, onSuccess }: BookDrawerProps) 
       setAlert({ type: "success", message: book ? "Livro atualizado com sucesso!" : "Livro cadastrado com sucesso!" })
       onSuccess?.()
       onClose()
-    } catch (error) {
+    } catch (_error) {
       setAlert({ type: "error", message: "Erro ao salvar o livro." })
     } finally {
       setIsSubmitting(false)

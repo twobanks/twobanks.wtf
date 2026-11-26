@@ -1,6 +1,5 @@
 "use server";
 
-import { requireUser } from "@/lib/authz";
 import { db } from "@/db";
 import { stravaWorkouts } from "@/db/schema";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";

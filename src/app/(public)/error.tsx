@@ -2,7 +2,6 @@
 
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/patterns';
