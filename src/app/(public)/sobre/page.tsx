@@ -2,9 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Sobre",
+  title: "Sobre — BANKS",
   description:
     "Um pouco sobre quem eu sou, o que ando ouvindo, lendo e acumulando de quilômetros.",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "/sobre",
+    title: "Sobre — BANKS",
+    description:
+      "Um pouco sobre quem eu sou, o que ando ouvindo, lendo e acumulando de quilômetros.",
+    siteName: "BANKS",
+  },
+  twitter: {
+    card: "summary",
+    title: "Sobre — BANKS",
+    description:
+      "Um pouco sobre quem eu sou, o que ando ouvindo, lendo e acumulando de quilômetros.",
+  },
 };
 
 interface SocialLink {

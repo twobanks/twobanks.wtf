@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const isProduction =
+  process.env.NODE_ENV === "production" ||
+  process.env.VERCEL_ENV === "production";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://twobanks.wtf"),
   title: {
@@ -35,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "BANKS",
     images: [
       {
-        url: "/opengraph-image.png", 
+        url: "/opengraph-image.png",
         width: 1200,
         height: 630,
         alt: "BANKS - Onde registro minhas aleatoriedades",
@@ -46,20 +50,33 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "BANKS",
     description: "where i register my randomness 🛸",
-    creator: "@otwobanks", 
+    creator: "@otwobanks",
     images: ["/twitter-image.png"],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  // Em Preview/DEV (branch `banks`) não indexamos; apenas em Produção.
+  robots: isProduction
+    ? {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-video-preview": -1,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+        },
+      }
+    : {
+        index: false,
+        follow: true,
+        googleBot: {
+          index: false,
+          follow: true,
+          "max-video-preview": -1,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+        },
+      },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

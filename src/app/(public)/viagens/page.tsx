@@ -1,6 +1,29 @@
-import { formatDatePtBr, formatKm, getAllEnrichedTrips } from "@/lib/viagens"
-import { ArrowRight, Calendar, MapPin } from "lucide-react"
-import Link from "next/link"
+import type { Metadata } from "next";
+
+import { formatDatePtBr, formatKm, getAllEnrichedTrips } from "@/lib/viagens";
+import { ArrowRight, Calendar, MapPin } from "lucide-react";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Viagens — BANKS",
+  description:
+    "Roteiros de viagem, expedições de ciclismo e diários de bordo registrados ao longo dos anos.",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "/viagens",
+    title: "Viagens — BANKS",
+    description:
+      "Roteiros de viagem, expedições de ciclismo e diários de bordo registrados ao longo dos anos.",
+    siteName: "BANKS",
+  },
+  twitter: {
+    card: "summary",
+    title: "Viagens — BANKS",
+    description:
+      "Roteiros de viagem, expedições de ciclismo e diários de bordo registrados ao longo dos anos.",
+  },
+};
 
 export default async function ViagensPage() {
   const trips = await getAllEnrichedTrips()
