@@ -33,10 +33,10 @@ export function ObraTransactionsTable({
     return (
       <div className="space-y-4">
         <h1 className="text-xl font-semibold leading-10 tracking-tight text-foreground">
-          Obra (Gastos Tempor00e1rios)
+          Obra (Gastos Tempor&aacute;rios)
         </h1>
         <p className="text-muted-foreground">
-          Crie uma categoria chamada "Obra" para agrupar esses gastos.
+          Crie uma categoria chamada &quot;Obra&quot; para agrupar esses gastos.
         </p>
       </div>
     );
@@ -82,7 +82,7 @@ export function ObraTransactionsTable({
         <EmptyState
           icon={HardHat}
           title="Nenhum gasto de obra neste mês."
-          description={'Crie uma categoria chamada "Obra" para agrupar esses gastos.'}
+          description="Crie uma categoria chamada &quot;Obra&quot; para agrupar esses gastos."
           className="mt-6"
         />
       ) : (

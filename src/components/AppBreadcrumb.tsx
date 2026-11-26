@@ -29,18 +29,21 @@ export function AppBreadcrumb() {
   const pathname = usePathname()
   const pathSegments = pathname.split("/").filter(Boolean)
 
-  let accumulatedPath = ""
-    // eslint-disable-next-line react-hooks/no-unsafe-effect
-  const items = pathSegments.map((segment, index) => {
-    accumulatedPath += `/${segment}`
-    const isLast = index === pathSegments.length - 1
-    const label = routeLabels[accumulatedPath] || segment // fallback: capitaliza?
-    return {
-      href: accumulatedPath,
-      label,
-      isLast,
-    }
-  })
+  const items = pathSegments.reduce(
+    (acc, segment, index) => {
+      const accumulatedPath = `${acc.accumulatedPath}/${segment}`
+      const isLast = index === pathSegments.length - 1
+      const label = routeLabels[accumulatedPath] || segment
+      return {
+        ...acc,
+        items: [
+          ...acc.items,
+          { href: accumulatedPath, label, isLast },
+        ],
+      }
+    },
+    { accumulatedPath: "", items: [] as { href: string; label: string; isLast: boolean }[] }
+  ).items
 
   return (
     <Breadcrumb>

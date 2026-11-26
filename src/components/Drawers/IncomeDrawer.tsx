@@ -37,14 +37,15 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
   const open = activeDrawer === 'income';
 
   useEffect(() => {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!open) {
-      setAlert(null);
-      setIsRecurring(false);
-      setRecurringMonths(12);
-      const next = currentYearMonth();
-      setDueMonth(next.month);
-      setDueYear(next.year);
+      setTimeout(() => {
+        setAlert(null);
+        setIsRecurring(false);
+        setRecurringMonths(12);
+        const next = currentYearMonth();
+        setDueMonth(next.month);
+        setDueYear(next.year);
+      }, 0);
     }
   }, [open]);
 
@@ -107,7 +108,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         required
         className={`md:col-span-2 ${drawerFieldClass}`}
       />
-      
       <Input
         name="amount"
         type="number"
@@ -116,7 +116,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         required
         className={`md:col-span-2 ${drawerFieldClass}`}
       />
-
       <div className="md:col-span-2">
         <MonthYearPicker
           month={dueMonth}
@@ -126,7 +125,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
           className="w-full"
         />
       </div>
-
       <label className="md:col-span-2 flex items-center gap-3 h-12 px-4 rounded-lg bg-surface-2 border border-border text-sm text-foreground cursor-pointer select-none hover:border-border transition-colors">
         <input
           type="checkbox"
@@ -136,7 +134,6 @@ export function IncomeDrawer({ onSuccess }: IncomeDrawerProps) {
         />
         Receita recorrente
       </label>
-
       {isRecurring && (
         <div className="md:col-span-2 grid grid-cols-1 gap-2 pt-1">
           <label className="text-xs font-medium text-subtle-foreground uppercase tracking-wider">

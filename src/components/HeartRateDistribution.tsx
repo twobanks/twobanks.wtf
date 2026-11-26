@@ -22,9 +22,8 @@ function formatDuration(totalSeconds: number) {
 }
 
 interface ChartTooltipData {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   active: boolean
-  payload: any[]
+  payload: { payload: { name: string; displayTime: string } }[]
 }
 
 export default function HeartRateDistribution({ streams }: { streams: StravaStreams }) {
@@ -34,19 +33,19 @@ export default function HeartRateDistribution({ streams }: { streams: StravaStre
 
     const timeData = streams.time.data
     const hrData = streams.heartrate.data
-    
+
     // Objeto para guardar os "baldes" (zonas de 10 em 10 bpm)
     const buckets: Record<number, number> = {}
 
     for (let i = 1; i < timeData.length; i++) {
       const hr = hrData[i]
-      
+
       // Ignora leituras falhas (abaixo de 50 bpm no meio da corrida)
-      if (!hr || hr < 50) continue 
+      if (!hr || hr < 50) continue
 
       // Arredonda para a dezena abaixo. Ex: 167 vira 160.
       const bucket = Math.floor(hr / 10) * 10
-      
+
       const deltaTime = timeData[i] - timeData[i - 1]
 
       if (!buckets[bucket]) buckets[bucket] = 0
@@ -61,12 +60,12 @@ export default function HeartRateDistribution({ streams }: { streams: StravaStre
         const timeSpent = buckets[bucketHr]
         return {
           name: `${bucketHr} - ${bucketHr + 9}`, // Ex: "160 - 169"
-          timeSpent: timeSpent, 
-          displayTime: formatDuration(timeSpent) 
+          timeSpent: timeSpent,
+          displayTime: formatDuration(timeSpent)
         }
       })
       // Ignora zonas onde você ficou menos de 10 segundos
-      .filter(item => item.timeSpent > 10) 
+      .filter(item => item.timeSpent > 10)
 
     return data
   }, [streams])
@@ -96,20 +95,20 @@ export default function HeartRateDistribution({ streams }: { streams: StravaStre
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#3f3f46" opacity={0.2} />
-          <XAxis 
-            dataKey="name" 
+          <XAxis
+            dataKey="name"
             tick={{ fontSize: 11, fill: "#71717a" }}
             interval={0}
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
           />
-          <YAxis hide={true} /> 
+          <YAxis hide={true} />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <Tooltip content={CustomTooltip as any} cursor={{ fill: '#3f3f46', opacity: 0.1 }} />
-          
+
           <Bar dataKey="timeSpent" radius={[4, 4, 0, 0]}>
             {chartData.map((entry, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={entry.timeSpent === maxTime ? "#ef4444" : "#fca5a5"} 
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.timeSpent === maxTime ? "#ef4444" : "#fca5a5"}
                 fillOpacity={entry.timeSpent === maxTime ? 1 : 0.6}
               />
             ))}

@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { auth } from "@/auth";
 import { users } from "@/db/schema";
-import { asc, eq, and, type SQL } from "drizzle-orm";
+import { asc, eq, type SQL } from "drizzle-orm";
 import { type AnyPgColumn } from "drizzle-orm/pg-core";
 
 /**

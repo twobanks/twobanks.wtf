@@ -104,26 +104,25 @@ function OctopusMenuIcon({
           c44 -22 71 -73 71 -135 0 -53 -29 -120 -59 -137 -30 -16 -138 -12 -174 6 -64
           33 -77 52 -77 117 0 59 1 61 53 114 51 50 57 53 103 53 27 0 64 -8 83 -18z"
         />
-
-        <clipPath id="polvo-clip-cabeca">
-          <rect x="2800" y="2118" width="1900" height="1100" />
-        </clipPath>
-        <clipPath id="polvo-clip-t1">
-          <polygon points="2800,2122 3360,2122 3336,2044 3120,1400 2800,1400" />
-        </clipPath>
-        <clipPath id="polvo-clip-t2">
-          <polygon points="3360,2122 3560,2122 3541,1723 3470,1000 3120,1400 3336,2044" />
-        </clipPath>
-        <clipPath id="polvo-clip-t3">
-          <polygon points="3560,2122 3900,2122 3882,1764 3860,1000 3470,1000 3541,1723" />
-        </clipPath>
-        <clipPath id="polvo-clip-t4">
-          <polygon points="3900,2122 4160,2122 4150,1829 4300,1250 3860,1000 3882,1764" />
-        </clipPath>
-        <clipPath id="polvo-clip-t5">
-          <polygon points="4160,2122 4600,2122 4600,1250 4300,1250 4150,1829" />
-        </clipPath>
       </defs>
+      <clipPath id="polvo-clip-cabeca">
+        <rect x="2800" y="2118" width="1900" height="1100" />
+      </clipPath>
+      <clipPath id="polvo-clip-t1">
+        <polygon points="2800,2122 3360,2122 3336,2044 3120,1400 2800,1400" />
+      </clipPath>
+      <clipPath id="polvo-clip-t2">
+        <polygon points="3360,2122 3560,2122 3541,1723 3470,1000 3120,1400 3336,2044" />
+      </clipPath>
+      <clipPath id="polvo-clip-t3">
+        <polygon points="3560,2122 3900,2122 3882,1764 3860,1000 3470,1000 3541,1723" />
+      </clipPath>
+      <clipPath id="polvo-clip-t4">
+        <polygon points="3900,2122 4160,2122 4150,1829 4300,1250 3860,1000 3882,1764" />
+      </clipPath>
+      <clipPath id="polvo-clip-t5">
+        <polygon points="4160,2122 4600,2122 4600,1250 4300,1250 4150,1829" />
+      </clipPath>
 
       <g className="polvo-geral">
         <g transform="translate(0,422) scale(0.1,-0.1)" fill="currentColor" stroke="none">
@@ -184,9 +183,8 @@ export function PublicFooter({
   const navItems = [...PUBLIC_NAV_ITEMS, authItem];
 
   // Recolhe o menu ao navegar
-    // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    setMenuOpen(false);
+    setTimeout(() => setMenuOpen(false), 0);
   }, [pathname]);
 
   // Recolhe o menu ao pressionar Escape
@@ -220,7 +218,6 @@ export function PublicFooter({
 
   return (
     <footer className="fixed bottom-0 inset-x-0 z-40 flex flex-col bg-background border-x border-b border-border">
-      {/* Barra inferior: Música ouvindo agora (esquerda) + Menu Polvo (direita) */}
       <div
         className={`w-full h-14 px-3 sm:px-6 flex items-center justify-between gap-3 transition-colors duration-200 ${
           menuOpen
@@ -228,7 +225,6 @@ export function PublicFooter({
             : "bg-background text-muted-foreground"
         }`}
       >
-        {/* Canto esquerdo: Música ouvida agora */}
         {currentTrack?.isPlaying && (
           <div
           className={`items-center gap-2 min-w-0 ${
@@ -269,7 +265,6 @@ export function PublicFooter({
         </div>
         )}
 
-        {/* Canto direito: Lista horizontal inline (quando aberta) + Botão Polvo */}
         <div className="flex items-center gap-1 sm:gap-2 ml-auto shrink-0">
           {menuOpen && (
             <nav

@@ -49,12 +49,13 @@ export function PurchaseDrawer({
   );
 
   useEffect(() => {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!open) {
-      setSelectedCardId(CARD_PLACEHOLDER);
-      setDueMonth('');
-      setDueYear('');
-      setAlert(null);
+      setTimeout(() => {
+        setSelectedCardId(CARD_PLACEHOLDER);
+        setDueMonth('');
+        setDueYear('');
+        setAlert(null);
+      }, 0);
     }
   }, [open]);
 
@@ -138,7 +139,6 @@ export function PurchaseDrawer({
           ))}
         </SelectContent>
       </Select>
-
       <Input name="description" placeholder="Descrição" required className={drawerFieldClass} />
       <Input
         name="totalAmount"
@@ -156,7 +156,6 @@ export function PurchaseDrawer({
         required
         className={drawerFieldClass}
       />
-
       <MonthYearPicker
         month={dueMonth}
         year={dueYear}

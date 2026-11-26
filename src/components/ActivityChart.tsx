@@ -18,9 +18,16 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`
 }
 
+interface RechartsTooltipPayload {
+  dataKey: string
+  value: number | string | null
+  name: string
+  color: string
+}
+
 interface ChartTooltipData {
   active: boolean
-  payload: { dataKey: string; value: number | string | null; name: string; color: string }[]
+  payload: RechartsTooltipPayload[]
   label: string
 }
 
@@ -119,8 +126,8 @@ export default function ActivityChart({ streams }: { streams: StravaStreams }) {
             domain={['dataMin - 0.5', 'dataMax + 2']}
             hide={true}
           />
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <Tooltip content={CustomTooltip as any} isAnimationActive={false} />
 
           {/* Linha do Coração (Vermelha) */}

@@ -2,7 +2,7 @@
 import { db } from "@/db";
 import { creditCardAdjustments, creditCards, purchases } from "@/db/schema";
 import { and, eq, gte, lte } from "drizzle-orm";
-import type { Parcela, ParcelaComDetalhes } from "@/utils/types";
+import type { ParcelaComDetalhes } from "@/utils/types";
 
 export type InvoiceSummary = {
   cartao: typeof creditCards.$inferSelect;

@@ -46,7 +46,7 @@ export function TripMapControls({
   onZoomOut,
   onRotate,
 }: TripMapControlsProps) {
-  const map = mapRef.current;
+  const _map = mapRef.current;
 
   return (
     <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-surface-1/90 backdrop-blur-md border border-border rounded-xl shadow-lg">

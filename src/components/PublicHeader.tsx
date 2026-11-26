@@ -47,7 +47,7 @@ export function PublicHeader({ title, accentColor }: PublicHeaderProps) {
 
   const routeMeta = resolveRouteMeta(pathname);
   const pageTitle = title ?? routeMeta.title;
-  const bubbleColor = accentColor ?? routeMeta.color;
+  const _bubbleColor = accentColor ?? routeMeta.color;
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 w-full bg-background border-b border-border">
