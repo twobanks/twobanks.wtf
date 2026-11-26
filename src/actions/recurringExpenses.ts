@@ -41,95 +41,118 @@ const generateMonthlyRecurringSchema = z.object({
 });
 
 export async function createRecurringExpense(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = recurringExpenseSchema.parse({
-    name: formData.get("name"),
-    amount: formData.get("amount"),
-    dueDay: formData.get("dueDay"),
-    categoryId: formData.get("categoryId"),
-    accountId: formData.get("accountId"),
-    active: formData.get("active") === "on" || formData.get("active") === "true",
-    startMonth: formData.get("startMonth"),
-  });
+    const parsed = recurringExpenseSchema.parse({
+      name: formData.get("name"),
+      amount: formData.get("amount"),
+      dueDay: formData.get("dueDay"),
+      categoryId: formData.get("categoryId"),
+      accountId: formData.get("accountId"),
+      active: formData.get("active") === "on" || formData.get("active") === "true",
+      startMonth: formData.get("startMonth"),
+    });
 
-  await createRecurringExpenseSvc(user.id, {
-    name: parsed.name,
-    amount: parsed.amount,
-    dueDay: parsed.dueDay,
-    categoryId: parsed.categoryId ?? null,
-    accountId: parsed.accountId ?? null,
-    active: parsed.active,
-    startMonth: parsed.startMonth,
-  });
+    await createRecurringExpenseSvc(user.id, {
+      name: parsed.name,
+      amount: parsed.amount,
+      dueDay: parsed.dueDay,
+      categoryId: parsed.categoryId ?? null,
+      accountId: parsed.accountId ?? null,
+      active: parsed.active,
+      startMonth: parsed.startMonth,
+    });
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  return { success: true, data: null };
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Erro ao criar despesa recorrente:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    return { success: false, error: "Não foi possível criar a despesa recorrente." };
+  }
 }
 
 export async function updateRecurringExpense(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = updateRecurringExpenseSchema.parse({
-    id: formData.get("id"),
-    name: formData.get("name"),
-    amount: formData.get("amount"),
-    dueDay: formData.get("dueDay"),
-    categoryId: formData.get("categoryId"),
-    accountId: formData.get("accountId"),
-    active: formData.get("active") === "on" || formData.get("active") === "true",
-  });
+    const parsed = updateRecurringExpenseSchema.parse({
+      id: formData.get("id"),
+      name: formData.get("name"),
+      amount: formData.get("amount"),
+      dueDay: formData.get("dueDay"),
+      categoryId: formData.get("categoryId"),
+      accountId: formData.get("accountId"),
+      active: formData.get("active") === "on" || formData.get("active") === "true",
+    });
 
-  await updateRecurringExpenseSvc(user.id, {
-    id: parsed.id,
-    name: parsed.name,
-    amount: parsed.amount,
-    dueDay: parsed.dueDay,
-    categoryId: parsed.categoryId ?? null,
-    accountId: parsed.accountId ?? null,
-    active: parsed.active,
-  });
+    await updateRecurringExpenseSvc(user.id, {
+      id: parsed.id,
+      name: parsed.name,
+      amount: parsed.amount,
+      dueDay: parsed.dueDay,
+      categoryId: parsed.categoryId ?? null,
+      accountId: parsed.accountId ?? null,
+      active: parsed.active,
+    });
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  return;
+    return;
+  } catch (error) {
+    console.error("Erro ao atualizar despesa recorrente:", error);
+    throw new Error("Não foi possível atualizar a despesa recorrente.");
+  }
 }
 
 export async function deleteRecurringExpense(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = deleteRecurringExpenseSchema.parse({
-    id: formData.get("id"),
-  });
+    const parsed = deleteRecurringExpenseSchema.parse({
+      id: formData.get("id"),
+    });
 
-  await deleteRecurringExpenseSvc(user.id, {
-    id: parsed.id,
-  });
+    await deleteRecurringExpenseSvc(user.id, {
+      id: parsed.id,
+    });
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  return;
+    return;
+  } catch (error) {
+    console.error("Erro ao excluir despesa recorrente:", error);
+    throw new Error("Não foi possível excluir a despesa recorrente.");
+  }
 }
 
 export async function generateMonthlyRecurring(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = generateMonthlyRecurringSchema.parse({
-    year: formData.get("year"),
-    month: formData.get("month"),
-  });
+    const parsed = generateMonthlyRecurringSchema.parse({
+      year: formData.get("year"),
+      month: formData.get("month"),
+    });
 
-  await generateMonthlyRecurringSvc(user.id, {
-    year: parsed.year,
-    month: parsed.month,
-  });
+    await generateMonthlyRecurringSvc(user.id, {
+      year: parsed.year,
+      month: parsed.month,
+    });
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  return;
+    return;
+  } catch (error) {
+    console.error("Erro ao gerar despesas recorrentes mensais:", error);
+    throw new Error("Não foi possível gerar as despesas recorrentes.");
+  }
 }

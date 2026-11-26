@@ -22,63 +22,87 @@ export async function getBooks() {
 }
 
 export async function saveBook(formData: FormData) {
-  const session = await auth()
-  if (!session?.user?.id) redirect("/")
+  try {
+    const session = await auth()
+    if (!session?.user?.id) redirect("/")
 
-  const id = formData.get("id") as string
-  const title = formData.get("title") as string
-  const author = formData.get("author") as string
-  const status = formData.get("status") as string
+    const id = formData.get("id") as string
+    const title = formData.get("title") as string
+    const author = formData.get("author") as string
+    const status = formData.get("status") as string
 
-  if (id) {
-    // Editar
-    await db.update(books)
-      .set({ title, author, status })
-      .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
-  } else {
-    // Criar
-    await db.insert(books).values({
-      title,
-      author,
-      status,
-      userId: session.user.id,
-    })
+    if (id) {
+      // Editar
+      await db.update(books)
+        .set({ title, author, status })
+        .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
+    } else {
+      // Criar
+      await db.insert(books).values({
+        title,
+        author,
+        status,
+        userId: session.user.id,
+      })
+    }
+
+    revalidatePath("/admin/livros")
+  } catch (error) {
+    console.error("Erro ao salvar livro:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    throw new Error("Não foi possível salvar o livro.");
   }
-
-  revalidatePath("/admin/livros")
 }
 
 export async function deleteBook(id: string) {
-  const session = await auth()
-  if (!session?.user?.id) return
+  try {
+    const session = await auth()
+    if (!session?.user?.id) return
 
-  await db.delete(books)
-    .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
+    await db.delete(books)
+      .where(and(eq(books.id, id), eq(books.userId, session.user.id)))
 
-  revalidatePath("/admin/livros")
+    revalidatePath("/admin/livros")
+  } catch (error) {
+    console.error("Erro ao excluir livro:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    throw new Error("Não foi possível excluir o livro.");
+  }
 }
 
 export async function updateBook(formData: FormData) {
-  const session = await requireUser()
+  try {
+    const session = await requireUser()
 
-  const id = formData.get("id") as string
-  const title = formData.get("title") as string
-  const author = formData.get("author") as string
-  const status = formData.get("status") as string
+    const id = formData.get("id") as string
+    const title = formData.get("title") as string
+    const author = formData.get("author") as string
+    const status = formData.get("status") as string
 
-  const result = await db.update(books)
-    .set({ 
-      title, 
-      author, 
-      status,
-      updatedAt: new Date(), 
-    })
-    .where(and(eq(books.id, id), eq(books.userId, session.id)))
+    const result = await db.update(books)
+      .set({ 
+        title, 
+        author, 
+        status,
+        updatedAt: new Date(), 
+      })
+      .where(and(eq(books.id, id), eq(books.userId, session.id)))
 
-  if ((result.rowCount ?? 0) === 0) {
-    throw new Error("Livro não encontrado ou sem permissão para editar")
+    if ((result.rowCount ?? 0) === 0) {
+      throw new Error("Livro não encontrado ou sem permissão para editar")
+    }
+
+    revalidatePath("/livros")
+    redirect("/livros")
+  } catch (error) {
+    console.error("Erro ao atualizar livro:", error);
+    if (error instanceof Error && error.message === "Livro não encontrado ou sem permissão para editar") {
+      throw error;
+    }
+    throw new Error("Não foi possível atualizar o livro.");
   }
-
-  revalidatePath("/livros")
-  redirect("/livros")
 }

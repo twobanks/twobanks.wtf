@@ -33,107 +33,139 @@ const deleteExpenseSchema = z.object({
 });
 
 export async function createExpense(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = expenseSchema.parse({
-    description: formData.get("description"),
-    amount: formData.get("amount"),
-    date: formData.get("date"),
-    categoryId: formData.get("categoryId"),
-    accountId: formData.get("accountId"),
-    paid: formData.get("paid") === "on",
-    isRecurring: formData.get("isRecurring") === "on",
-    recurringMonths: formData.get("recurringMonths"),
-  });
+    const parsed = expenseSchema.parse({
+      description: formData.get("description"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
+      categoryId: formData.get("categoryId"),
+      accountId: formData.get("accountId"),
+      paid: formData.get("paid") === "on",
+      isRecurring: formData.get("isRecurring") === "on",
+      recurringMonths: formData.get("recurringMonths"),
+    });
 
-  const raw = Number(formData.get("recurringMonths") ?? 12);
-  const recurringMonths = Math.min(Math.max(raw, 1), 60);
+    const raw = Number(formData.get("recurringMonths") ?? 12);
+    const recurringMonths = Math.min(Math.max(raw, 1), 60);
 
-  const dateStr = parsed.date;
-  const [year, month, day] = dateStr.split("-").map(Number);
+    const dateStr = parsed.date;
+    const [year, month, day] = dateStr.split("-").map(Number);
 
-  let dueDay = day;
-  if (parsed.isRecurring) {
-    const rawDueDay = Number(formData.get("dueDay"));
-    if (rawDueDay >= 1 && rawDueDay <= 31) dueDay = rawDueDay;
+    let dueDay = day;
+    if (parsed.isRecurring) {
+      const rawDueDay = Number(formData.get("dueDay"));
+      if (rawDueDay >= 1 && rawDueDay <= 31) dueDay = rawDueDay;
+    }
+
+    await createExpenseSvc(user.id, {
+      description: parsed.description,
+      amount: parsed.amount,
+      date: parsed.date,
+      categoryId: parsed.categoryId ?? null,
+      accountId: parsed.accountId ?? null,
+      paid: parsed.paid,
+      isRecurring: parsed.isRecurring,
+      recurringMonths,
+    });
+
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Erro ao criar despesa:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    return { success: false, error: "Não foi possível criar a despesa." };
   }
-
-  await createExpenseSvc(user.id, {
-    description: parsed.description,
-    amount: parsed.amount,
-    date: parsed.date,
-    categoryId: parsed.categoryId ?? null,
-    accountId: parsed.accountId ?? null,
-    paid: parsed.paid,
-    isRecurring: parsed.isRecurring,
-    recurringMonths,
-  });
-
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
-
-  return { success: true, data: null };
 }
 
 export async function updateExpense(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = updateExpenseSchema.parse({
-    id: formData.get("id"),
-    description: formData.get("description"),
-    amount: formData.get("amount"),
-    date: formData.get("date"),
-    categoryId: formData.get("categoryId"),
-    accountId: formData.get("accountId"),
-    paid: formData.get("paid") === "on",
-  });
+    const parsed = updateExpenseSchema.parse({
+      id: formData.get("id"),
+      description: formData.get("description"),
+      amount: formData.get("amount"),
+      date: formData.get("date"),
+      categoryId: formData.get("categoryId"),
+      accountId: formData.get("accountId"),
+      paid: formData.get("paid") === "on",
+    });
 
-  await updateExpenseSvc(user.id, {
-    id: parsed.id,
-    description: parsed.description,
-    amount: parsed.amount,
-    date: parsed.date,
-    categoryId: parsed.categoryId ?? null,
-    accountId: parsed.accountId ?? null,
-    paid: parsed.paid,
-  });
+    await updateExpenseSvc(user.id, {
+      id: parsed.id,
+      description: parsed.description,
+      amount: parsed.amount,
+      date: parsed.date,
+      categoryId: parsed.categoryId ?? null,
+      accountId: parsed.accountId ?? null,
+      paid: parsed.paid,
+    });
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
-  return { success: true, data: null };
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Erro ao atualizar despesa:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    return { success: false, error: "Não foi possível atualizar a despesa." };
+  }
 }
 
 export async function deleteExpenseSeries(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = z.object({
-    seedId: z.coerce.number().int().positive(),
-  }).parse({
-    seedId: formData.get("seedId"),
-  });
+    const parsed = z.object({
+      seedId: z.coerce.number().int().positive(),
+    }).parse({
+      seedId: formData.get("seedId"),
+    });
 
-  await deleteExpenseSeriesSvc(user.id, parsed.seedId);
+    await deleteExpenseSeriesSvc(user.id, parsed.seedId);
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
-  return { success: true, data: null };
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Erro ao excluir série de despesas:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    return { success: false, error: "Não foi possível excluir a série de despesas." };
+  }
 }
 
 export async function deleteExpense(formData: FormData) {
-  const user = await requireUser();
+  try {
+    const user = await requireUser();
 
-  const parsed = deleteExpenseSchema.parse({
-    id: formData.get("id"),
-  });
+    const parsed = deleteExpenseSchema.parse({
+      id: formData.get("id"),
+    });
 
-  await deleteExpenseSvc(user.id, {
-    id: parsed.id,
-  });
+    await deleteExpenseSvc(user.id, {
+      id: parsed.id,
+    });
 
-  revalidatePath(ROUTES.ADMIN.CARTEIRA);
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA);
+    revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
 
-  return { success: true, data: null };
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Erro ao excluir despesa:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    return { success: false, error: "Não foi possível excluir a despesa." };
+  }
 }

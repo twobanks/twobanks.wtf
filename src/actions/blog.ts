@@ -9,70 +9,94 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function savePost(formData: FormData) {
-  const session = await auth()
-  if (!session?.user?.id) redirect("/")
+  try {
+    const session = await auth()
+    if (!session?.user?.id) redirect("/")
 
-  const id = formData.get("id") as string
-  const title = formData.get("title") as string
-  const slug = formData.get("slug") as string
-  const excerpt = formData.get("excerpt") as string
-  const content = formData.get("content") as string
-  const published = formData.get("published") === "true"
+    const id = formData.get("id") as string
+    const title = formData.get("title") as string
+    const slug = formData.get("slug") as string
+    const excerpt = formData.get("excerpt") as string
+    const content = formData.get("content") as string
+    const published = formData.get("published") === "true"
 
-  if (id) {
-    // Editar
-    await db.update(posts)
-      .set({ title, slug, excerpt, content, published, updatedAt: new Date() })
-      .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
-  } else {
-    // Criar
-    await db.insert(posts).values({
-      title,
-      slug,
-      excerpt,
-      content,
-      published,
-      authorId: session.user.id,
-    })
+    if (id) {
+      // Editar
+      await db.update(posts)
+        .set({ title, slug, excerpt, content, published, updatedAt: new Date() })
+        .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+    } else {
+      // Criar
+      await db.insert(posts).values({
+        title,
+        slug,
+        excerpt,
+        content,
+        published,
+        authorId: session.user.id,
+      })
+    }
+
+    revalidatePath("/admin/blog")
+  } catch (error) {
+    console.error("Erro ao salvar post:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    throw new Error("Não foi possível salvar o post.");
   }
-
-  revalidatePath("/admin/blog")
 }
 
 export async function deletePost(id: string) {
-  const session = await auth()
-  if (!session?.user?.id) return
+  try {
+    const session = await auth()
+    if (!session?.user?.id) return
 
-  await db.delete(posts)
-    .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+    await db.delete(posts)
+      .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
 
-  revalidatePath("/admin/blog")
+    revalidatePath("/admin/blog")
+  } catch (error) {
+    console.error("Erro ao excluir post:", error);
+    if (error instanceof Error && error.message === "Não autorizado") {
+      throw error;
+    }
+    throw new Error("Não foi possível excluir o post.");
+  }
 }
 
 export async function updatePost(formData: FormData) {
-  const session = await requireUser()
+  try {
+    const session = await requireUser()
 
-  const id = formData.get("id") as string
-  const title = formData.get("title") as string
-  const content = formData.get("content") as string
-  const excerpt = formData.get("excerpt") as string
-  const published = formData.get("published") === "on" 
+    const id = formData.get("id") as string
+    const title = formData.get("title") as string
+    const content = formData.get("content") as string
+    const excerpt = formData.get("excerpt") as string
+    const published = formData.get("published") === "on" 
 
-  const result = await db.update(posts)
-    .set({
-      title,
-      content,
-      excerpt,
-      published,
-      updatedAt: new Date(),
-    })
-    .where(and(eq(posts.id, id), eq(posts.authorId, session.id)))
+    const result = await db.update(posts)
+      .set({
+        title,
+        content,
+        excerpt,
+        published,
+        updatedAt: new Date(),
+      })
+      .where(and(eq(posts.id, id), eq(posts.authorId, session.id)))
 
-  if ((result.rowCount ?? 0) === 0) {
-    throw new Error("Post não encontrado ou sem permissão para editar")
+    if ((result.rowCount ?? 0) === 0) {
+      throw new Error("Post não encontrado ou sem permissão para editar")
+    }
+
+    revalidatePath("/blog")
+    revalidatePath("/admin/blog")
+    redirect("/admin/blog")
+  } catch (error) {
+    console.error("Erro ao atualizar post:", error);
+    if (error instanceof Error && error.message === "Post não encontrado ou sem permissão para editar") {
+      throw error;
+    }
+    throw new Error("Não foi possível atualizar o post.");
   }
-
-  revalidatePath("/blog")
-  revalidatePath("/admin/blog")
-  redirect("/admin/blog")
 }

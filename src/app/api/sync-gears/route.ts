@@ -6,6 +6,7 @@ export async function GET() {
     await fetchAndSaveAllGearDetails()
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 })
+    console.error("Erro ao sincronizar equipamentos:", error)
+    return NextResponse.json({ error: "Falha ao sincronizar equipamentos" }, { status: 500 })
   }
 }
