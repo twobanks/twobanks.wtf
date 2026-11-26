@@ -1,6 +1,7 @@
 import { deleteStravaActivity, syncSingleStravaActivity } from "@/lib/strava"
 import { revalidatePath } from "next/cache"
 import { after, NextResponse } from "next/server"
+import { env } from "@/env"
 
 interface StravaWebhookEvent {
   object_type: "activity" | "athlete"
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
   if (
     mode === "subscribe" &&
     token &&
-    token === process.env.STRAVA_WEBHOOK_VERIFY_TOKEN
+    token === env.STRAVA_WEBHOOK_VERIFY_TOKEN
   ) {
     return NextResponse.json({ "hub.challenge": challenge }, { status: 200 })
   }

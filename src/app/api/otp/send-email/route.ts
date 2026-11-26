@@ -4,11 +4,12 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { env } from "@/env";
 
 const OTP_EXPIRATION_MINUTES = 5;
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "noreply@twobanks.wtf";
+const resend = new Resend(env.RESEND_API_KEY);
+const FROM_EMAIL = env.RESEND_FROM_EMAIL;
 
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();

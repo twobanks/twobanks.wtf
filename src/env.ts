@@ -1,12 +1,23 @@
 import { z } from "zod";
 
+// ============================================================================
+// Schema de variáveis de ambiente
+// ============================================================================
+
 const envSchema = z.object({
-  // Obrigatórias: a ausência ou um valor inválido impede o build.
+  // ------------------------------------------------------------------
+  // OBRIGATÓRIAS
+  // A ausência ou um valor inválido impede o build (exceto com
+  // SKIP_ENV_VALIDATION=1, ex.: CI).
+  // ------------------------------------------------------------------
   DATABASE_URL: z.string().url("DATABASE_URL deve ser uma URL válida."),
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY é obrigatória."),
 
-  // Opcionais: possuem valor padrão ou são validadas onde são usadas.
-  RESEND_FROM_EMAIL: z.string().optional(),
+  // ------------------------------------------------------------------
+  // OPCIONAIS
+  // Possuem valor padrão ou são validadas no local de uso.
+  // ------------------------------------------------------------------
+  RESEND_FROM_EMAIL: z.string().default("noreply@twobanks.wtf"),
   COROS_AUTH_TOKEN: z.string().optional(),
   STRAVA_WEBHOOK_VERIFY_TOKEN: z.string().optional(),
   NEXT_PUBLIC_MAPBOX_TOKEN: z.string().optional(),
@@ -17,19 +28,21 @@ const envSchema = z.object({
   STRAVA_CLIENT_SECRET: z.string().optional(),
   STRAVA_REFRESH_TOKEN: z.string().optional(),
 
-  // NextAuth (Auth.js v5). Opcionais no schema para não quebrar builds
-  // sem .env; a obrigatoriedade real é aplicada em src/auth.ts em produção.
+  // NextAuth (Auth.js v5). Opcionais no schema base para não quebrar
+  // builds sem .env; a obrigatoriedade em Produção é aplicada em
+  // validateEnv (abaixo) e em src/auth.ts.
   AUTH_SECRET: z.string().optional(),
   NEXTAUTH_SECRET: z.string().optional(),
   AUTH_TRUST_HOST: z.string().optional(),
 
-  // Quando definido como "1" (ex.: CI), pula a validação de obrigatórias.
+  // Escape-hatch: quando definido como "1" (ex.: CI), pula a validação
+  // de obrigatórias.
   SKIP_ENV_VALIDATION: z.string().optional(),
 });
 
 type Env = z.infer<typeof envSchema>;
 
-function validateEnv(input: unknown): Env {
+export function validateEnv(input: unknown): Env {
   // Em ambientes de CI não queremos falhar por falta de segredos reais.
   if ((input as Record<string, string | undefined>)?.SKIP_ENV_VALIDATION === "1") {
     return {} as Env;
@@ -47,7 +60,40 @@ function validateEnv(input: unknown): Env {
     );
   }
 
-  return result.data;
+  const data = result.data;
+
+  // Em Produção, AUTH_SECRET (ou NEXTAUTH_SECRET) torna-se obrigatória.
+  const isProduction =
+    process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+
+  if (isProduction && !data.AUTH_SECRET && !data.NEXTAUTH_SECRET) {
+    throw new Error(
+      "AUTH_SECRET (ou NEXTAUTH_SECRET) é obrigatória em Produção. " +
+        "Defina no painel da Vercel (Preview e Produção).",
+    );
+  }
+
+  return data;
 }
 
 export const env = validateEnv(process.env);
+
+// ============================================================================
+// Helpers de ambiente
+// ============================================================================
+
+export function isProduction(): boolean {
+  return process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+}
+
+export function isPreview(): boolean {
+  return process.env.VERCEL_ENV === "preview";
+}
+
+export function isDevelopment(): boolean {
+  return process.env.NODE_ENV === "development";
+}
+
+export function isVercel(): boolean {
+  return !!process.env.VERCEL_ENV;
+}

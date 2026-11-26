@@ -1,6 +1,7 @@
 import { db } from "@/db"
 import { gear, stravaWorkouts } from "@/db/schema"
 import { desc, eq, sql } from "drizzle-orm"
+import { env } from "@/env"
 
 const DEFAULT_USER_ID = "b3c34ca9-ee8a-489a-aca6-78004baf1cbf"
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
@@ -10,9 +11,9 @@ export async function getStravaToken() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      client_id: process.env.STRAVA_CLIENT_ID,
-      client_secret: process.env.STRAVA_CLIENT_SECRET,
-      refresh_token: process.env.STRAVA_REFRESH_TOKEN,
+      client_id: env.STRAVA_CLIENT_ID,
+      client_secret: env.STRAVA_CLIENT_SECRET,
+      refresh_token: env.STRAVA_REFRESH_TOKEN,
       grant_type: "refresh_token",
     }),
     cache: "no-store",

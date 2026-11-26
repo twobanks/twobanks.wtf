@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { and, desc, eq, gt, isNull } from "drizzle-orm";
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { env } from "./env";
+import { env, isProduction } from "./env";
 
 declare module "next-auth" {
   interface User {
@@ -21,7 +21,7 @@ declare module "next-auth" {
 
 const secret = env.AUTH_SECRET ?? env.NEXTAUTH_SECRET;
 
-if (!secret && process.env.NODE_ENV === "production") {
+if (!secret && isProduction()) {
   throw new Error(
     "AUTH_SECRET (ou NEXTAUTH_SECRET) é obrigatório em produção. " +
       "Defina no painel da Vercel (Preview e Produção) e nunca commite no repositório.",

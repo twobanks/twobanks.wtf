@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { db } from "@/db"
 import { plannedWorkouts } from "@/db/schema"
+import { env } from "@/env"
 import { NextResponse } from "next/server"
 
 function formatDateToCoros(date: Date) {
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
   }
 
-  const token = process.env.COROS_AUTH_TOKEN
+  const token = env.COROS_AUTH_TOKEN
   if (!token) {
     return NextResponse.json({ error: "Token do COROS não configurado no .env" }, { status: 500 })
   }
@@ -85,7 +86,7 @@ export async function GET(request: Request) {
 
     } catch (error) {
       console.error("Erro na requisição da API:", error)
-      return NextResponse.json({ error: "Falha na sincronização", details: error }, { status: 500 })
+      return NextResponse.json({ error: "Falha na sincronização" }, { status: 500 })
     }
   }
 

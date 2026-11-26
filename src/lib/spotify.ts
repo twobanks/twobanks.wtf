@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { env } from "@/env";
 
 export interface SpotifyTrack {
   isPlaying: boolean;
@@ -19,9 +20,9 @@ const FALLBACK_TRACK: SpotifyTrack = {
 };
 
 async function getSpotifyAccessToken(): Promise<string | null> {
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+  const clientId = env.SPOTIFY_CLIENT_ID;
+  const clientSecret = env.SPOTIFY_CLIENT_SECRET;
+  const refreshToken = env.SPOTIFY_REFRESH_TOKEN;
 
   if (!clientId || !clientSecret || !refreshToken) {
     return null;
