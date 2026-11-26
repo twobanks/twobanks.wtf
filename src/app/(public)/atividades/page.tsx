@@ -4,6 +4,26 @@ import { AtividadesView, ModalityDataset } from "@/components/AtividadesView";
 import { db } from "@/db";
 import { stravaWorkouts } from "@/db/schema";
 import { and, eq, inArray, sql } from "drizzle-orm";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Atividades",
+  description:
+    "Histórico de atividades físicas: treinos, provas, distância acumulada por modalidade e ano.",
+  openGraph: {
+    title: "Atividades - BANKS",
+    description:
+      "Acompanhe suas atividades físicas registradas, por modalidade e ano.",
+    type: "website",
+    url: "/atividades",
+  },
+  twitter: {
+    card: "summary",
+    title: "Atividades - BANKS",
+    description:
+      "Acompanhe suas atividades físicas registradas, por modalidade e ano.",
+  },
+};
 
 export const dynamic = "force-dynamic";
 

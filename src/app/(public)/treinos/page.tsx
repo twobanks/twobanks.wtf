@@ -3,7 +3,8 @@ import { getPublicOwnerId } from "@/lib/authz"
 import { db } from "@/db"
 import { plannedWorkouts, stravaWorkouts } from "@/db/schema"
 import { and, asc, desc, eq, gte, like, lt } from "drizzle-orm"
-import Link from "next/link"
+import Link from "next/link";
+import type { Metadata } from "next";
 
 // --- CONVERSORES DE DATA ---
 function formatCorosDate(dateStr: string) {
@@ -32,6 +33,25 @@ function formatDistance(meters: string | null) {
   if (!meters) return "0.00 km"
   return `${(parseFloat(meters) / 1000).toFixed(2)} km`
 }
+
+export const metadata: Metadata = {
+  title: "Treinos",
+  description:
+    "Dashboard de treinos: comparativo entre o planejado (COROS) e o executado (Strava) para corrida e ciclismo.",
+  openGraph: {
+    title: "Treinos - BANKS",
+    description:
+      "Acompanhe seus treinos de corrida e ciclismo: planejado vs executado.",
+    type: "website",
+    url: "/treinos",
+  },
+  twitter: {
+    card: "summary",
+    title: "Treinos - BANKS",
+    description:
+      "Acompanhe seus treinos de corrida e ciclismo: planejado vs executado.",
+  },
+};
 
 export default async function TreinosPage() {
   const userId = await getPublicOwnerId()

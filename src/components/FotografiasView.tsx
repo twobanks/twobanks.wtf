@@ -1,6 +1,7 @@
 "use client";
 
 import { PhotoItem } from "@/data/fotografias";
+import Image from "next/image";
 import {
   Aperture,
   ArrowUpRight,
@@ -126,7 +127,7 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
         style={{ aspectRatio: `${photo.width} / ${photo.height}` }}
         className="group relative block w-full overflow-hidden rounded-2xl border border-border bg-background text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <img
+        <Image
           src={photo.imageUrl}
           alt={photo.title}
           width={photo.width}
@@ -234,9 +235,12 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
           >
             {/* Área da Imagem Ampliada */}
             <div className="relative bg-background flex items-center justify-center min-h-[42vh] sm:min-h-[55vh] lg:min-h-[75vh] max-h-[60vh] lg:max-h-[92vh] p-3 sm:p-6">
-              <img
+              <Image
                 src={selectedPhoto.imageUrl}
                 alt={selectedPhoto.title}
+                width={selectedPhoto.width}
+                height={selectedPhoto.height}
+                loading="eager"
                 className="max-h-full max-w-full object-contain rounded-lg select-none"
               />
 

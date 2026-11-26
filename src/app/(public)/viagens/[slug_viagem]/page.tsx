@@ -2,7 +2,36 @@ import TripMap from "@/components/viagens/TripMapLoader"
 import { formatDatePtBr, formatElevation, formatKm, getEnrichedTripBySlug } from "@/lib/viagens"
 import { ArrowLeft, Sunrise } from "lucide-react"
 import Link from "next/link"
-import { notFound } from "next/navigation"
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug_viagem: string }>
+}): Promise<Metadata> {
+  const { slug_viagem } = await params
+  const trip = await getEnrichedTripBySlug(slug_viagem)
+  if (!trip) return { title: "Viagem não encontrada" }
+  return {
+    title: trip.title,
+    description: trip.subtitle ?? undefined,
+    openGraph: {
+      title: trip.title,
+      description: trip.subtitle ?? undefined,
+      type: "website",
+      url: `/viagens/${trip.slug}`,
+      images: trip.coverImage ? [{ url: trip.coverImage }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: trip.title,
+      description: trip.subtitle ?? undefined,
+      images: trip.coverImage ? [trip.coverImage] : undefined,
+    },
+    alternates: { canonical: `/viagens/${trip.slug}` },
+  }
+}
 
 export default async function ViagemDetalhePage({
   params,

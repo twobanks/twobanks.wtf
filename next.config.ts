@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.spotifycdn.com",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
   },
 };

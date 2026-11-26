@@ -2,6 +2,7 @@
 
 import { TripPhoto } from "@/utils/types/viagens"
 import { ChevronLeft, ChevronRight, MapPin, X } from "lucide-react"
+import Image from "next/image"
 import { useEffect, useState } from "react"
 
 export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
@@ -42,9 +43,11 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
             onClick={() => setSelectedIndex(index)}
             className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-surface-1 text-left focus:outline-none focus:ring-2 focus:ring-brand-blue"
           >
-            <img
+            <Image
               src={photo.url}
               alt={photo.caption || `Foto ${index + 1}`}
+              fill
+              sizes="(max-width: 768px) 100vw, 360px"
               loading="lazy"
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
@@ -117,14 +120,18 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
           )}
 
           <div
-            className="max-w-4xl w-full space-y-3"
+            className="relative max-w-4xl w-full max-h-[78vh] flex flex-col gap-3"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={activePhoto.url}
-              alt={activePhoto.caption || "Foto ampliada"}
-              className="max-h-[78vh] w-full object-contain rounded-xl"
-            />
+            <div className="flex-1 relative min-w-0">
+              <Image
+                src={activePhoto.url}
+                alt={activePhoto.caption || "Foto ampliada"}
+                fill
+                sizes="(max-width: 768px) 100vw, 720px"
+                className="object-contain rounded-xl"
+              />
+            </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
               <span>{activePhoto.caption}</span>
               {activePhoto.location && (

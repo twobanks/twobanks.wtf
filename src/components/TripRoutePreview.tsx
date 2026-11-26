@@ -1,3 +1,5 @@
+import Image from "next/image"
+
 import { EnrichedTrip, TripStatus } from "@/utils/types/viagens"
 
 interface TripRoutePreviewProps {
@@ -195,9 +197,11 @@ export function TripRoutePreview({ trip, status }: TripRoutePreviewProps) {
 
   if (segments.length === 0) {
     return (
-      <img
+      <Image
         src={trip.coverImage}
         alt={trip.title}
+        fill
+        sizes="(max-width: 600px) 600px, 100vw"
         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       />
     )
