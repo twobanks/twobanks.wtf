@@ -1,4 +1,4 @@
 import { Trip } from "@/utils/types/viagens"
-import { grandeSertaoVeredasTrip } from "./grande-sertao-veredas"
+import { nordiminasGrandeSertaoTrip } from "./nordiminas-grande-sertao"
 
-export const trips: Trip[] = [grandeSertaoVeredasTrip]
+export const trips: Trip[] = [nordiminasGrandeSertaoTrip]

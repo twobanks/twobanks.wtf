@@ -1,9 +1,9 @@
 import { Trip } from "@/utils/types/viagens"
 import { grandeSertaoDays } from "./days"
 
-export const grandeSertaoVeredasTrip: Trip = {
-  slug: "grande-sertao-veredas",
-  title: "Expedição Grande Sertão: Veredas",
+export const nordiminasGrandeSertaoTrip: Trip = {
+  slug: "nordiminas-grande-sertao",
+  title: "NÓRDIMINAS - Grande Sertão",
   subtitle:
     "10 dias cruzando o rio, as cavernas do Peruaçu e o Alto Cerrado norte-mineiro pelas trilhas literárias de Guimarães Rosa e Darcy Ribeiro.",
   status: "planned",

@@ -37,6 +37,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/viagens/grande-sertao-veredas",
+        destination: "/viagens/nordiminas-grande-sertao",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
