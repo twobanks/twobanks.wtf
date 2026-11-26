@@ -88,7 +88,7 @@ export async function fetchWorkoutsPage({
   tab: TabType;
   year: string;
   page?: number;
-  userId?: string;
+  userId: string;
 }): Promise<PaginatedWorkoutsResult> {
   const typesFilter =
     tab === "bike"
@@ -97,10 +97,14 @@ export async function fetchWorkoutsPage({
         ? RUN_TYPES
         : [...BIKE_TYPES, ...RUN_TYPES];
 
+  const startOfYear = `${year}-01-01`;
+  const endOfYear = `${Number(year) + 1}-01-01`;
+
   const whereClause = and(
     inArray(stravaWorkouts.type, typesFilter),
-    sql`SUBSTRING(${stravaWorkouts.startDate}, 1, 4) = ${year}`,
-    userId ? eq(stravaWorkouts.userId, userId) : undefined
+    sql`${stravaWorkouts.startDate} >= ${startOfYear}`,
+    sql`${stravaWorkouts.startDate} < ${endOfYear}`,
+    eq(stravaWorkouts.userId, userId)
   );
 
   const safePage = Math.max(1, Math.floor(page));
@@ -149,7 +153,7 @@ export async function fetchRaceWorkouts({
   userId,
 }: {
   tab?: TabType;
-  userId?: string;
+  userId: string;
 }): Promise<RaceWorkoutItem[]> {
   const typesFilter =
     tab === "bike"
@@ -172,11 +176,7 @@ export async function fetchRaceWorkouts({
       detailedPayload: stravaWorkouts.detailedPayload,
     })
     .from(stravaWorkouts)
-    .where(
-      userId
-        ? and(inArray(stravaWorkouts.type, typesFilter), eq(stravaWorkouts.userId, userId))
-        : inArray(stravaWorkouts.type, typesFilter)
-    )
+    .where(and(inArray(stravaWorkouts.type, typesFilter), eq(stravaWorkouts.userId, userId)))
     .orderBy(desc(stravaWorkouts.startDate));
 
   return rows

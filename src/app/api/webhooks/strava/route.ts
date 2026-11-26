@@ -2,6 +2,7 @@ import { deleteStravaActivity, syncSingleStravaActivity } from "@/lib/strava"
 import { revalidatePath } from "next/cache"
 import { after, NextResponse } from "next/server"
 import { env } from "@/env"
+import { z } from "zod"
 
 interface StravaWebhookEvent {
   object_type: "activity" | "athlete"
@@ -11,6 +12,15 @@ interface StravaWebhookEvent {
   subscription_id: number
   event_time: number
 }
+
+const stravaWebhookSchema = z.object({
+  object_type: z.enum(["activity", "athlete"]),
+  object_id: z.number(),
+  aspect_type: z.enum(["create", "update", "delete"]),
+  owner_id: z.number(),
+  subscription_id: z.number(),
+  event_time: z.number(),
+})
 
 // Handshake exigido pelo Strava ao registrar o webhook
 export async function GET(request: Request) {
@@ -33,7 +43,8 @@ export async function GET(request: Request) {
 // Recebimento automático de criação, edição e exclusão
 export async function POST(request: Request) {
   try {
-    const event = (await request.json()) as StravaWebhookEvent
+    const body = await request.json()
+    const event = stravaWebhookSchema.parse(body) as StravaWebhookEvent
 
     if (event.object_type === "activity") {
       const activityId = String(event.object_id)

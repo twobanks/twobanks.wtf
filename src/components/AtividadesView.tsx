@@ -37,6 +37,7 @@ interface AtividadesViewProps {
   runData: ModalityDataset;
   initialWorkoutsPage: PaginatedWorkoutsResult;
   initialRaceWorkouts: RaceWorkoutItem[];
+  userId: string;
 }
 
 const BIKE_TYPE_ICONS: Record<string, string> = {
@@ -337,6 +338,7 @@ export function AtividadesView({
   runData,
   initialWorkoutsPage,
   initialRaceWorkouts,
+  userId,
 }: AtividadesViewProps) {
   const [activeSection, setActiveSection] =
     useState<SectionTab>("informacoes");
@@ -361,6 +363,7 @@ export function AtividadesView({
         tab: nextModality,
         year: nextYear,
         page: nextPage,
+        userId,
       });
       setWorkoutsPage(result);
       if (scroll) {
@@ -374,7 +377,7 @@ export function AtividadesView({
 
   function loadRaces(nextModality: TabType) {
     startRaceTransition(async () => {
-      const results = await fetchRaceWorkouts({ tab: nextModality });
+      const results = await fetchRaceWorkouts({ tab: nextModality, userId });
       setRaceWorkouts(results);
     });
   }

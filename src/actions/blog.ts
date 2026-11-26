@@ -1,6 +1,5 @@
 "use server"
 
-import { auth } from "@/auth";
 import { requireUser } from "@/lib/authz";
 import { db } from "@/db";
 import { posts } from "@/db/schema";
@@ -10,8 +9,7 @@ import { redirect } from "next/navigation";
 
 export async function savePost(formData: FormData) {
   try {
-    const session = await auth()
-    if (!session?.user?.id) redirect("/")
+    const session = await requireUser()
 
     const id = formData.get("id") as string
     const title = formData.get("title") as string
@@ -24,7 +22,7 @@ export async function savePost(formData: FormData) {
       // Editar
       await db.update(posts)
         .set({ title, slug, excerpt, content, published, updatedAt: new Date() })
-        .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+        .where(and(eq(posts.id, id), eq(posts.authorId, session.id)))
     } else {
       // Criar
       await db.insert(posts).values({
@@ -33,35 +31,34 @@ export async function savePost(formData: FormData) {
         excerpt,
         content,
         published,
-        authorId: session.user.id,
+        authorId: session.id,
       })
     }
 
     revalidatePath("/admin/blog")
   } catch (_error) {
-    console.error("Erro ao salvar post:", _error);
+    console.error("Erro ao salvar post:", _error)
     if (_error instanceof Error && _error.message === "Não autorizado") {
-      throw _error;
+      throw _error
     }
-    throw new Error("Não foi possível salvar o post.");
+    throw new Error("Não foi possível salvar o post.")
   }
 }
 
 export async function deletePost(id: string) {
   try {
-    const session = await auth()
-    if (!session?.user?.id) return
+    const session = await requireUser()
 
     await db.delete(posts)
-      .where(and(eq(posts.id, id), eq(posts.authorId, session.user.id)))
+      .where(and(eq(posts.id, id), eq(posts.authorId, session.id)))
 
     revalidatePath("/admin/blog")
   } catch (_error) {
-    console.error("Erro ao excluir post:", _error);
+    console.error("Erro ao excluir post:", _error)
     if (_error instanceof Error && _error.message === "Não autorizado") {
-      throw _error;
+      throw _error
     }
-    throw new Error("Não foi possível excluir o post.");
+    throw new Error("Não foi possível excluir o post.")
   }
 }
 

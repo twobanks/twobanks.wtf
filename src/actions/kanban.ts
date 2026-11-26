@@ -65,6 +65,16 @@ export async function updateKanbanTaskStatus(taskId: string, newStatus: string) 
     const statusParser = z.enum(["to_do", "in_progress", "pending", "canceled", "done"])
     const parsedStatus = statusParser.parse(newStatus)
 
+    // Garante que a tarefa existe e pertence ao utilizador da sessão
+    const [existing] = await db
+      .select({ id: kanbanTasks.id, createdById: kanbanTasks.createdById })
+      .from(kanbanTasks)
+      .where(eq(kanbanTasks.id, taskId))
+      .limit(1)
+    if (!existing) throw new Error("Tarefa não encontrada")
+    if (existing.createdById !== session.user.id)
+      throw new Error("Não autorizado")
+
     // Atualização atômica direta no Neon
     await db.update(kanbanTasks)
       .set({ status: parsedStatus })
@@ -100,6 +110,16 @@ export async function updateKanbanTask(formData: FormData) {
       assignedToId: formData.get("assignedToId"),
     })
 
+    // Garante que a tarefa existe e pertence ao utilizador da sessão
+    const [existing] = await db
+      .select({ id: kanbanTasks.id, createdById: kanbanTasks.createdById })
+      .from(kanbanTasks)
+      .where(eq(kanbanTasks.id, taskId))
+      .limit(1)
+    if (!existing) throw new Error("Tarefa não encontrada")
+    if (existing.createdById !== session.user.id)
+      throw new Error("Não autorizado")
+
     await db.update(kanbanTasks)
       .set(parsedData)
       .where(eq(kanbanTasks.id, taskId))
@@ -126,6 +146,8 @@ export async function cloneKanbanTask(taskId: string) {
     const [taskToClone] = await db.select().from(kanbanTasks).where(eq(kanbanTasks.id, taskId))
   
     if (!taskToClone) throw new Error("Tarefa não encontrada")
+    if (taskToClone.createdById !== session.user.id)
+      throw new Error("Não autorizado")
 
     await db.insert(kanbanTasks).values({
       title: `${taskToClone.title} (Cópia)`,
@@ -154,6 +176,15 @@ export async function deleteKanbanTask(taskId: string) {
   try {
     const session = await auth()
     if (!session?.user?.id) throw new Error("Não autorizado")
+
+    const [existing] = await db
+      .select({ id: kanbanTasks.id, createdById: kanbanTasks.createdById })
+      .from(kanbanTasks)
+      .where(eq(kanbanTasks.id, taskId))
+      .limit(1)
+    if (!existing) throw new Error("Tarefa não encontrada")
+    if (existing.createdById !== session.user.id)
+      throw new Error("Não autorizado")
 
     await db.delete(kanbanTasks).where(eq(kanbanTasks.id, taskId))
   

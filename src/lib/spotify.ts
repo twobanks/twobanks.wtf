@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { fetchWithRetry } from "@/lib/http";
 
 export interface SpotifyTrack {
   isPlaying: boolean;
@@ -29,20 +30,29 @@ async function getSpotifyAccessToken(): Promise<string | null> {
 
   const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-  const response = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basicAuth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
+  const response = await fetchWithRetry(
+    "https://accounts.spotify.com/api/token",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${basicAuth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      }),
+      cache: "no-store",
     },
-    body: new URLSearchParams({
-      grant_type: "refresh_token",
-      refresh_token: refreshToken,
-    }),
-    cache: "no-store",
-  });
+    [429, 500, 502, 503, 504]
+  );
 
-  if (!response.ok) return null;
+  if (!response.ok) {
+    console.warn(
+      `Spotify token endpoint retornou ${response.status} ao renovar refresh_token`
+    );
+    return null;
+  }
 
   const data = await response.json();
   return data.access_token ?? null;
@@ -53,12 +63,13 @@ export async function getNowPlaying(): Promise<SpotifyTrack> {
     const accessToken = await getSpotifyAccessToken();
     if (!accessToken) return FALLBACK_TRACK;
 
-    const nowPlayingRes = await fetch(
+    const nowPlayingRes = await fetchWithRetry(
       "https://api.spotify.com/v1/me/player/currently-playing",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         cache: "no-store",
-      }
+      },
+      [429, 500, 502, 503, 504]
     );
 
     if (nowPlayingRes.status === 200) {
@@ -76,12 +87,13 @@ export async function getNowPlaying(): Promise<SpotifyTrack> {
       }
     }
 
-    const recentRes = await fetch(
+    const recentRes = await fetchWithRetry(
       "https://api.spotify.com/v1/me/player/recently-played?limit=1",
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         cache: "no-store",
-      }
+      },
+      [429, 500, 502, 503, 504]
     );
 
     if (recentRes.ok) {
@@ -157,13 +169,19 @@ export async function getSpotifyAlbum(
     const accessToken = await getSpotifyAccessToken();
     if (!accessToken) return { ...FALLBACK_ALBUM, id: cleanId };
 
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://api.spotify.com/v1/albums/${cleanId}?market=BR`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         next: { revalidate: 86400 },
-      }
+      },
+      [429, 500, 502, 503, 504]
     );
+
+    if (response.status === 401) {
+      console.warn("Spotify access_token expirado ou inválido ao buscar álbum");
+      return { ...FALLBACK_ALBUM, id: cleanId };
+    }
 
     if (!response.ok) return { ...FALLBACK_ALBUM, id: cleanId };
 

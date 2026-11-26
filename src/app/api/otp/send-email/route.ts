@@ -1,12 +1,13 @@
 import { db } from "@/db";
 import { otpCodes, users } from "@/db/schema";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { and, eq, gt, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { env } from "@/env";
 
 const OTP_EXPIRATION_MINUTES = 5;
+const OTP_COOLDOWN_SECONDS = 60; // rate-limit: 1 código por e-mail por minuto
 
 const resend = new Resend(env.RESEND_API_KEY);
 const FROM_EMAIL = env.RESEND_FROM_EMAIL;
@@ -16,7 +17,11 @@ function generateOtp(): string {
 }
 
 async function sendOtpEmail(to: string, code: string): Promise<void> {
-  await resend.emails.send({
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    await resend.emails.send({
     from: FROM_EMAIL,
     to,
     subject: "Seu código de acesso twobanks",
@@ -48,7 +53,10 @@ async function sendOtpEmail(to: string, code: string): Promise<void> {
         </div>
       </div>
     `,
-  });
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function POST(req: Request) {
@@ -70,17 +78,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true });
     }
 
+    // Rate-limit: impede email bombing (1 código por e-mail por minuto)
+    const [recent] = await db
+      .select({ id: otpCodes.id })
+      .from(otpCodes)
+      .where(
+        and(
+          eq(otpCodes.userId, user.id),
+          gt(otpCodes.createdAt, new Date(Date.now() - OTP_COOLDOWN_SECONDS * 1000)),
+          isNull(otpCodes.consumedAt)
+        )
+      )
+      .limit(1);
+
+    if (recent) {
+      return NextResponse.json(
+        { error: "Aguarde antes de solicitar um novo código." },
+        { status: 429 }
+      );
+    }
+
     const code = generateOtp();
     const codeHash = await bcrypt.hash(code, 10);
     const expiresAt = new Date(Date.now() + OTP_EXPIRATION_MINUTES * 60 * 1000);
+
+    // Envia o e-mail primeiro; só grava o OTP se o envio ocorrer com sucesso.
+    // Se o Resend falhar, nenhum código fica gravado (usuário não fica trancado).
+    await sendOtpEmail(user.email, code);
 
     await db.insert(otpCodes).values({
       userId: user.id,
       codeHash,
       expiresAt,
     });
-
-    await sendOtpEmail(user.email, code);
 
     return NextResponse.json({ success: true });
   } catch (_error) {

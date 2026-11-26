@@ -3,9 +3,10 @@ import { db } from "@/db"
 import { plannedWorkouts } from "@/db/schema"
 import { env } from "@/env"
 import { NextResponse } from "next/server"
+import { fetchWithRetry } from "@/lib/http"
 
 function formatDateToCoros(date: Date) {
-  return date.toISOString().slice(0, 10).replace(/-/g, '')
+  return date.toISOString().slice(0, 10).replace(/-/g, "")
 }
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
@@ -37,23 +38,45 @@ export async function GET(_request: Request) {
     console.log(`📡 Buscando treinos COROS de ${startStr} a ${endStr}...`)
 
     try {
-      const response = await fetch(
+      // Timeout de execução por chunk (evita travar a função serverless)
+      const ctrl = new AbortController()
+      const timeout = setTimeout(() => ctrl.abort(), 20000)
+
+      const response = await fetchWithRetry(
         `https://teamapi.coros.com/training/schedule/query?startDate=${startStr}&endDate=${endStr}&supportRestExercise=1`,
         {
           headers: {
-            "Cookie": `CPL-coros-token=${token};`, 
-            "accesstoken": token, 
+            "Cookie": `CPL-coros-token=${token};`,
+            "accesstoken": token,
             "Content-Type": "application/json",
             "Accept": "application/json, text/plain, */*",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" 
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
           },
-        }
+          signal: ctrl.signal,
+        },
+        [429, 500, 502, 503, 504]
       )
+
+      clearTimeout(timeout)
+
+      // Valida status HTTP antes de interpretar o corpo
+      if (!response.ok) {
+        console.error(`❌ COROS retornou ${response.status} para ${startStr} a ${endStr}`)
+        // Continua para o próximo chunk em vez de abortar toda a sincronização
+        currentDate = new Date(chunkEnd)
+        currentDate.setDate(currentDate.getDate() + 1)
+        await delay(1000)
+        continue
+      }
 
       const json = await response.json()
 
       if (json.result !== "0000") {
-         console.error(`❌ COROS recusou. Resposta:`, json)
+        console.error(`❌ COROS recusou. Resposta:`, json)
+        currentDate = new Date(chunkEnd)
+        currentDate.setDate(currentDate.getDate() + 1)
+        await delay(1000)
+        continue
       }
 
       if (json.data && json.data.entities && json.data.entities.length > 0) {
@@ -62,7 +85,7 @@ export async function GET(_request: Request) {
 
         for (const treino of treinos) {
           const titulo = `Treino de ${treino.exerciseBarChart?.[0]?.name || "Corrida"}`
-          
+
           await db.insert(plannedWorkouts).values({
             id: treino.id,
             date: treino.happenDay.toString(),
@@ -72,7 +95,7 @@ export async function GET(_request: Request) {
             rawPayload: treino,
             userId: session.user.id,
           }).onConflictDoNothing()
-          
+
           totalImportados++
         }
       } else {
@@ -86,12 +109,15 @@ export async function GET(_request: Request) {
 
     } catch (_error) {
       console.error("Erro na requisição da API:", _error)
-      return NextResponse.json({ error: "Falha na sincronização" }, { status: 500 })
+      // Não aborta todo o job por um único chunk; avança para o próximo
+      currentDate = new Date(chunkEnd)
+      currentDate.setDate(currentDate.getDate() + 1)
+      await delay(1000)
     }
   }
 
-  return NextResponse.json({ 
-    success: true, 
-    message: `A importação terminou! ${totalImportados} treinos foram salvos no seu banco de dados Neon.` 
+  return NextResponse.json({
+    success: true,
+    message: `A importação terminou! ${totalImportados} treinos foram salvos no seu banco de dados Neon.`
   })
 }

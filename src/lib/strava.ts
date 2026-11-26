@@ -2,22 +2,34 @@ import { db } from "@/db"
 import { gear, stravaWorkouts } from "@/db/schema"
 import { desc, eq, sql } from "drizzle-orm"
 import { env } from "@/env"
+import { fetchWithRetry } from "@/lib/http"
 
 const DEFAULT_USER_ID = "b3c34ca9-ee8a-489a-aca6-78004baf1cbf"
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
 export async function getStravaToken() {
-  const tokenResponse = await fetch("https://www.strava.com/oauth/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      client_id: env.STRAVA_CLIENT_ID,
-      client_secret: env.STRAVA_CLIENT_SECRET,
-      refresh_token: env.STRAVA_REFRESH_TOKEN,
-      grant_type: "refresh_token",
-    }),
-    cache: "no-store",
-  })
+  const tokenResponse = await fetchWithRetry(
+    "https://www.strava.com/oauth/token",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        client_id: env.STRAVA_CLIENT_ID,
+        client_secret: env.STRAVA_CLIENT_SECRET,
+        refresh_token: env.STRAVA_REFRESH_TOKEN,
+        grant_type: "refresh_token",
+      }),
+      cache: "no-store",
+    },
+    [429, 500, 502, 503, 504]
+  )
+
+  if (!tokenResponse.ok) {
+    const body = await tokenResponse.text().catch(() => "")
+    throw new Error(
+      `Strava token endpoint falhou (${tokenResponse.status}): ${body}`
+    )
+  }
 
   const tokenData = await tokenResponse.json()
   if (!tokenData.access_token) {
@@ -28,16 +40,21 @@ export async function getStravaToken() {
 
 export async function fetchActivityStreams(activityId: string, token: string) {
   try {
-    const streamsResponse = await fetch(
+    const streamsResponse = await fetchWithRetry(
       `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=time,heartrate,velocity_smooth,latlng,altitude,distance&key_by_type=true`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }
+      },
+      [429, 500, 502, 503, 504]
     )
-    if (streamsResponse.ok) {
-      return await streamsResponse.json()
+    if (!streamsResponse.ok) {
+      console.warn(
+        `Aviso: Streams do Strava retornaram ${streamsResponse.status} para ${activityId}`
+      )
+      return null
     }
+    return await streamsResponse.json()
   } catch (err) {
     console.warn(`Aviso: Não foi possível baixar streams para ${activityId}:`, err)
   }
@@ -72,10 +89,13 @@ export interface StravaActivity {
 export async function upsertActivityRecord(
   activity: StravaActivity,
   token: string,
-  options?: { userId?: string; skipStreamsIfExists?: boolean }
+  options?: { userId: string; skipStreamsIfExists?: boolean }
 ) {
   const activityId = activity.id.toString()
-  const userId = options?.userId ?? DEFAULT_USER_ID
+  const userId = options?.userId
+  if (!userId) {
+    throw new Error("userId é obrigatório para gravar atividade do Strava")
+  }
 
   const [existing] = await db
     .select({
@@ -141,8 +161,10 @@ export async function upsertActivityRecord(
 export async function syncStravaBatch(options?: {
   fullSync?: boolean
   userId?: string
+  signal?: AbortSignal
 }) {
   const token = await getStravaToken()
+  const userId = options?.userId ?? DEFAULT_USER_ID
   const endDate = Math.floor(Date.now() / 1000)
   let startDate = 1356998400 // 2013-01-01 (para fullSync)
 
@@ -167,12 +189,14 @@ export async function syncStravaBatch(options?: {
   let page = 1
 
   while (true) {
-    const activitiesResponse = await fetch(
+    const activitiesResponse = await fetchWithRetry(
       `https://www.strava.com/api/v3/athlete/activities?after=${startDate}&before=${endDate}&page=${page}&per_page=100`,
       {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
-      }
+        signal: options?.signal,
+      },
+      [429, 500, 502, 503, 504]
     )
 
     if (!activitiesResponse.ok) {
@@ -185,7 +209,7 @@ export async function syncStravaBatch(options?: {
 
     for (const activity of activities) {
       await upsertActivityRecord(activity, token, {
-        userId: options?.userId,
+        userId,
         skipStreamsIfExists: true,
       })
       totalSincronizados++
@@ -207,13 +231,15 @@ export async function syncStravaBatch(options?: {
 
 export async function syncSingleStravaActivity(activityId: string) {
   const token = await getStravaToken()
+  const userId = DEFAULT_USER_ID
 
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `https://www.strava.com/api/v3/activities/${activityId}`,
     {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
-    }
+    },
+    [429, 500, 502, 503, 504]
   )
 
   if (response.status === 404) {
@@ -228,6 +254,7 @@ export async function syncSingleStravaActivity(activityId: string) {
 
   const detailedActivity = await response.json()
   await upsertActivityRecord(detailedActivity, token, {
+    userId,
     skipStreamsIfExists: false,
   })
   await fetchAndSaveAllGearDetails()
@@ -247,10 +274,14 @@ export async function fetchAndSaveAllGearDetails() {
 
     for (const { gearId } of distinctGearIds) {
       if (!gearId) continue
-      const response = await fetch(`https://www.strava.com/api/v3/gear/${gearId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        cache: "no-store",
-      })
+      const response = await fetchWithRetry(
+        `https://www.strava.com/api/v3/gear/${gearId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: "no-store",
+        },
+        [429, 500, 502, 503, 504]
+      )
       if (!response.ok) continue
 
       const gearData = await response.json()
@@ -314,7 +345,7 @@ function getCurrentYearSaoPaulo(): number {
 }
 
 export async function getStravaYearlyStats(
-  userId: string = DEFAULT_USER_ID,
+  userId: string,
   year: number = getCurrentYearSaoPaulo()
 ): Promise<StravaYearlyStats> {
   const rows = await db
@@ -326,7 +357,7 @@ export async function getStravaYearlyStats(
     })
     .from(stravaWorkouts)
     .where(
-      sql`${stravaWorkouts.userId} = ${userId} AND LEFT(${stravaWorkouts.startDate}, 4) = ${String(year)}`
+      sql`${stravaWorkouts.userId} = ${userId} AND ${stravaWorkouts.startDate} >= ${String(year)}-01-01 AND ${stravaWorkouts.startDate} < ${String(year + 1)}-01-01`
     )
     .groupBy(stravaWorkouts.type);
 

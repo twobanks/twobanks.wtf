@@ -108,6 +108,7 @@ export default async function AtividadesPage() {
       runData={runData}
       initialWorkoutsPage={initialWorkoutsPage}
       initialRaceWorkouts={initialRaceWorkouts}
+      userId={userId}
     />
   );
 }

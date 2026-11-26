@@ -3,7 +3,7 @@ import { syncStravaBatch } from "@/lib/strava"
 import { revalidatePath } from "next/cache"
 import { NextResponse } from "next/server"
 
-export async function GET(request: Request) {
+export async function POST(request: Request) {
   const session = await auth()
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
@@ -13,10 +13,17 @@ export async function GET(request: Request) {
     const url = new URL(request.url)
     const fullSync = url.searchParams.get("full") === "true"
 
+    // Timeout de execução alinhado ao limite da função serverless (ex.: 25s)
+    const ctrl = new AbortController()
+    const timeout = setTimeout(() => ctrl.abort(), 25000)
+
     const result = await syncStravaBatch({
       fullSync,
       userId: session.user.id,
+      signal: ctrl.signal,
     })
+
+    clearTimeout(timeout)
 
     revalidatePath("/atividades")
     revalidatePath("/treinos")
