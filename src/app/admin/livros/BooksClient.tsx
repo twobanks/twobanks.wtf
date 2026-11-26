@@ -9,20 +9,27 @@ import { TableActions } from "@/components/Tables/table-actions"
 import { BookOpen, Plus } from "lucide-react"
 import { useState } from "react"
 
+interface Book {
+  id: string
+  title: string
+  author: string
+  status: string
+}
+
 interface BooksClientProps {
-  initialBooks: any[]
+  initialBooks: Book[]
 }
 
 export function BooksClient({ initialBooks }: BooksClientProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedBook, setSelectedBook] = useState<any | null>(null)
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null)
 
   const handleOpenCreate = () => {
     setSelectedBook(null)
     setIsOpen(true)
   }
 
-  const handleOpenEdit = (book: any) => {
+  const handleOpenEdit = (book: Book) => {
     setSelectedBook(book)
     setIsOpen(true)
   }

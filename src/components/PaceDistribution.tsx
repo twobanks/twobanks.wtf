@@ -9,8 +9,9 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts"
+import { StravaStreams } from "@/utils/types"
 
 function formatPaceLabel(seconds: number) {
   const m = Math.floor(seconds / 60)
@@ -25,7 +26,12 @@ function formatDuration(totalSeconds: number) {
   return `${m}m ${s}s`
 }
 
-export default function PaceDistribution({ streams }: { streams: any }) {
+interface ChartTooltipData {
+  active: boolean
+  payload: any[]
+}
+
+export default function PaceDistribution({ streams }: { streams: StravaStreams }) {
   const chartData = useMemo(() => {
     if (!streams || !streams.time || !streams.velocity_smooth) return []
 
@@ -73,7 +79,7 @@ export default function PaceDistribution({ streams }: { streams: any }) {
 
   const maxTime = Math.max(...chartData.map(d => d.timeSpent))
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: ChartTooltipData) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
@@ -97,7 +103,7 @@ export default function PaceDistribution({ streams }: { streams: any }) {
             interval={0}
           />
           <YAxis hide={true} /> 
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: '#3f3f46', opacity: 0.1 }} />
+          <Tooltip content={CustomTooltip as any} cursor={{ fill: '#3f3f46', opacity: 0.1 }} />
           
           <Bar dataKey="timeSpent" radius={[4, 4, 0, 0]}>
             {chartData.map((entry, index) => (

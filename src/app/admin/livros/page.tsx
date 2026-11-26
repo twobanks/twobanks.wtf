@@ -5,7 +5,7 @@ import { auth } from "@/auth"
 import { db } from "@/db"
 import { books } from "@/db/schema"
 import { getUserHouseholdIds } from "@/lib/household"
-import { eq, or } from "drizzle-orm"
+import { AnyColumn, eq, or } from "drizzle-orm"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
 import { BooksClient } from "./BooksClient"
@@ -23,7 +23,7 @@ export default async function AdminLivrosPage() {
   const userId = session.user.id
   const householdIds = await getUserHouseholdIds(userId)
 
-  const accessCondition = (tableColumn: any) => {
+  const accessCondition = (tableColumn: AnyColumn) => {
     const conditions = [eq(tableColumn, userId)]
     return conditions.length > 1 ? or(...conditions) : conditions[0]
   }

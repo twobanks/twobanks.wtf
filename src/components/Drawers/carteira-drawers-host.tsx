@@ -4,13 +4,14 @@ import { createExpense, updateExpense } from '@/actions/expenses';
 import { useDrawer } from '@/contexts/DrawerContext';
 import { useRouter } from 'next/navigation';
 import { ExpenseDrawer } from './ExpenseDrawer';
+import type { Category, FinancialAccount } from '@/utils/types';
 
 export function CarteiraDrawersHost({
   categories,
   accounts,
 }: {
-  categories: any[];
-  accounts: any[];
+  categories: Category[];
+  accounts: FinancialAccount[];
 }) {
   const router = useRouter();
   const { editingExpense, setEditingExpense } = useDrawer();

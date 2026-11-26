@@ -8,8 +8,9 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts"
+import { StravaStreams } from "@/utils/types"
 
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60)
@@ -17,7 +18,13 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`
 }
 
-export default function ActivityChart({ streams }: { streams: any }) {
+interface ChartTooltipData {
+  active: boolean
+  payload: { dataKey: string; value: number | string | null; name: string; color: string }[]
+  label: string
+}
+
+export default function ActivityChart({ streams }: { streams: StravaStreams }) {
   // Mapeamento dos dados com downsample
   const chartData = useMemo(() => {
     if (!streams || !streams.time || !streams.time.data) return []
@@ -52,18 +59,17 @@ export default function ActivityChart({ streams }: { streams: any }) {
     return <p className="text-muted-foreground">Dados de gráfico não disponíveis.</p>
   }
 
-  // Tooltip interno customizado
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  const CustomTooltip = ({ active, payload, label }: ChartTooltipData) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-surface-1/95 backdrop-blur-sm text-white p-3 rounded-lg border border-border shadow-xl text-xs space-y-1.5 z-50 w-[160px]">
           <p className="font-bold text-subtle-foreground border-b border-border pb-1">Tempo: {label}</p>
-          {payload.map((entry: any, index: number) => {
+          {payload.map((entry, index: number) => {
             // Não exibe a linha tracejada no tooltip
             if (entry.dataKey === "paceDashed") return null
             if (entry.value === null || entry.value === undefined) return null
 
-            let val = entry.value
+            let val: string | number = entry.value as number
             if (entry.dataKey === "pace") {
               const m = Math.floor(val)
               const s = Math.round((val - m) * 60)
@@ -114,10 +120,7 @@ export default function ActivityChart({ streams }: { streams: any }) {
             hide={true}
           />
 
-          <Tooltip 
-            content={<CustomTooltip />} 
-            isAnimationActive={false}
-          />
+          <Tooltip content={CustomTooltip as any} isAnimationActive={false} />
 
           {/* Linha do Coração (Vermelha) */}
           <Line

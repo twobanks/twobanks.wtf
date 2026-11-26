@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
-import { eq, inArray, or } from "drizzle-orm";
+import { AnyColumn, eq, inArray, or } from "drizzle-orm";
 import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -28,7 +28,7 @@ export default async function AdminPage() {
   // Pegamos o primeiro ID do grupo doméstico para o serviço, se existir
   const householdId = householdIds.length > 0 ? householdIds[0] : null;
 
-  const accessCondition = (table: any) => {
+  const accessCondition = (table: { userId: AnyColumn; householdId: AnyColumn }) => {
     const conditions = [eq(table.userId, userId)];
     if (householdIds.length > 0) {
       conditions.push(inArray(table.householdId, householdIds));

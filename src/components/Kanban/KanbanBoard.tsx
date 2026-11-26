@@ -36,7 +36,7 @@ const COLUMNS = [
 
 interface KanbanBoardProps {
   initialTasks: KanbanTaskType[]
-  users: any[] // Adicionado
+  users: { id: string; name: string | null }[]
 }
 
 export function KanbanBoard({ initialTasks, users }: KanbanBoardProps) {

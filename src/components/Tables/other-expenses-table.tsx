@@ -12,7 +12,7 @@ import {
 import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
 import { EmptyState } from "@/components/patterns";
-import type { OtherExpensesTableProps } from "@/utils/types";
+import type { OtherExpensesTableProps, Transaction } from "@/utils/types";
 import { BanknoteArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createExpense, updateExpense } from "@/actions/expenses";
@@ -33,7 +33,7 @@ export function OtherExpensesTable({
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
-  const handleEdit = (transaction: any) => {
+  const handleEdit = (transaction: Transaction) => {
     setEditingExpense(transaction);
     openDrawer('expense');
   };

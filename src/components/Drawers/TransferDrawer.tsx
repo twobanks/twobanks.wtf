@@ -35,10 +35,11 @@ export function TransferDrawer({ accounts, triggerLabel = "Transferir" }: { acco
       await createTransfer(formData)
       setOpen(false)
       setAlert({ type: "success", message: "Transferência realizada com sucesso!" })
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao realizar transferência. Verifique os dados.";
       setAlert({
         type: "error",
-        message: error?.message || "Erro ao realizar transferência. Verifique os dados.",
+        message,
       })
     } finally {
       setLoading(false)

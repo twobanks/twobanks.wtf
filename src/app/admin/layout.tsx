@@ -12,7 +12,7 @@ import { VisibilityProvider } from "@/contexts/VisibilityContext"
 import { db } from "@/db"
 import { categories, financialAccounts } from "@/db/schema"
 import { getUserHouseholdIds } from "@/lib/household"
-import { eq, inArray, or } from "drizzle-orm"
+import { AnyColumn, eq, inArray, or } from "drizzle-orm"
 import { redirect } from "next/navigation"
 
 export default async function AdminLayout({
@@ -28,7 +28,7 @@ export default async function AdminLayout({
   const userId = session.user.id
   const householdIds = await getUserHouseholdIds(userId)
 
-  const accessCondition = (table: any) => {
+  const accessCondition = (table: { userId: AnyColumn; householdId: AnyColumn }) => {
     const conditions = [eq(table.userId, userId)];
     if (householdIds.length > 0) {
       conditions.push(inArray(table.householdId, householdIds));

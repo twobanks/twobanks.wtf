@@ -9,13 +9,14 @@ import { useRouter } from 'next/navigation';
 import { CategoryDrawer } from './CategoryDrawer';
 import { CreditCardDrawer } from './CreditCardDrawer';
 import { RecurringExpenseDrawer } from './RecurringExpenseDrawer';
+import type { Category, FinancialAccount } from '@/utils/types';
 
 export function GlobalDrawersHost({
   categories,
   accounts,
 }: {
-  categories: any[];
-  accounts: any[];
+  categories: Category[];
+  accounts: FinancialAccount[];
 }) {
   const { activeDrawer, closeDrawer } = useDrawer();
   const router = useRouter();

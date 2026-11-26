@@ -1,4 +1,5 @@
 'use client';
+import type { EditableExpense } from '@/utils/types';
 
 import {
   createContext,
@@ -15,15 +16,15 @@ interface DrawerContextValue {
   activeDrawer: DrawerKeyProps;
   openDrawer: (key: DrawerKeyProps) => void;
   closeDrawer: () => void;
-  editingExpense: any | null;
-  setEditingExpense: (expense: any | null) => void;
+  editingExpense: EditableExpense | null;
+  setEditingExpense: (expense: EditableExpense | null) => void;
 }
 
 const DrawerContext = createContext<DrawerContextValue | null>(null);
 
 export function DrawerProvider({ children }: { children: ReactNode }) {
   const [activeDrawer, setActiveDrawer] = useState<DrawerKeyProps>(null);
-  const [editingExpense, setEditingExpense] = useState<any | null>(null);
+  const [editingExpense, setEditingExpense] = useState<EditableExpense | null>(null);
 
   const openDrawer = useCallback((key: DrawerKeyProps) => {
     setActiveDrawer(key);

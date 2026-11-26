@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
-import type { ObraTransactionsTableProps } from "@/utils/types";
+import type { ObraTransactionsTableProps, Transaction } from "@/utils/types";
 import { HardHat } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { EmptyState } from "@/components/patterns";
@@ -52,7 +52,8 @@ export function ObraTransactionsTable({
     return <span className="text-destructive font-medium">-{formatCurrency(amount)}</span>;
   };
 
-  const handleEdit = (transaction: any) => {
+
+  const handleEdit = (transaction: Transaction) => {
     setEditingExpense(transaction);
     openDrawer('expense');
   };

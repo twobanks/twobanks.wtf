@@ -89,7 +89,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
                       {expense.description}
                     </TableCell>
                     <TableCell className="text-right text-foreground font-medium">
-                      {formatCurrency(expense.amount)}
+                      {formatCurrency(Number(expense.amount))}
                     </TableCell>
                     <TableCell className="text-center">
                       {isRecurring ? (

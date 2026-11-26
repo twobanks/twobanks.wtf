@@ -17,14 +17,15 @@ import {
 } from '@/components/ui/select';
 import { Repeat } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import type { Category, EditableExpense, FinancialAccount } from '@/utils/types';
 
 const CATEGORY_PLACEHOLDER = '__category_placeholder__';
 const ACCOUNT_PLACEHOLDER = '__account_placeholder__';
 
 interface ExpenseFormProps {
-  categories: any[];
-  accounts: any[];
-  expense?: any;
+  categories: Category[];
+  accounts: FinancialAccount[];
+  expense?: EditableExpense;
   categoryId: string;
   setCategoryId: (value: string) => void;
   accountId: string;

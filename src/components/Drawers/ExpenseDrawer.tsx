@@ -7,16 +7,16 @@ import {
 } from '@/components/Drawers/drawer-shell';
 import { useDrawer } from '@/contexts/DrawerContext';
 import { useState } from 'react';
-import type { ActionResult } from '@/utils/types';
+import type { ActionResult, Category, EditableExpense, FinancialAccount } from '@/utils/types';
 import { ExpenseForm } from './ExpenseForm';
 
 const CATEGORY_PLACEHOLDER = '__category_placeholder__';
 const ACCOUNT_PLACEHOLDER = '__account_placeholder__';
 
 interface ExpenseDrawerProps {
-  categories: any[];
-  accounts: any[];
-  expense?: any;
+  categories: Category[];
+  accounts: FinancialAccount[];
+  expense?: EditableExpense;
   onSuccess?: () => void;
   onNew?: () => void;
   createExpense: (formData: FormData) => Promise<ActionResult>;

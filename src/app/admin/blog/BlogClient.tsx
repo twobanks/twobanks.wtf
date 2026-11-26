@@ -9,20 +9,29 @@ import { TableActions } from "@/components/Tables/table-actions"
 import { FileText, Plus } from "lucide-react"
 import { useState } from "react"
 
+interface Post {
+  id: string
+  slug: string
+  title: string
+  excerpt?: string | null
+  content: string
+  published: boolean
+}
+
 interface BlogClientProps {
-  initialPosts: any[]
+  initialPosts: Post[]
 }
 
 export function BlogClient({ initialPosts }: BlogClientProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedPost, setSelectedPost] = useState<any | null>(null)
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null)
 
   const handleOpenCreate = () => {
     setSelectedPost(null)
     setIsOpen(true)
   }
 
-  const handleOpenEdit = (post: any) => {
+  const handleOpenEdit = (post: Post) => {
     setSelectedPost(post)
     setIsOpen(true)
   }

@@ -13,11 +13,11 @@ import { CheckCircle2, MoreHorizontalIcon, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export interface TableActionsProps {
-  id: number;
+  id: string | number;
   isPaid: boolean;
   isRecurring?: boolean;
   onEdit?: () => void;
-  onDelete?: (id: number) => void | Promise<void>;
+  onDelete?: (id: string | number) => void | Promise<void>;
 }
 
 export function TableActions({

@@ -17,7 +17,7 @@ interface KanbanColumnProps {
   id: string
   title: string
   tasks: KanbanTaskType[]
-  users: any[]
+  users: { id: string; name: string | null }[]
 }
 
 export function KanbanColumn({ id, title, tasks, users }: KanbanColumnProps) {

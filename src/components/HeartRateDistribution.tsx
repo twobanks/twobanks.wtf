@@ -9,8 +9,9 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts"
+import { StravaStreams } from "@/utils/types"
 
 // Converte o tempo total na zona para minutos e segundos
 function formatDuration(totalSeconds: number) {
@@ -20,7 +21,12 @@ function formatDuration(totalSeconds: number) {
   return `${m}m ${s}s`
 }
 
-export default function HeartRateDistribution({ streams }: { streams: any }) {
+interface ChartTooltipData {
+  active: boolean
+  payload: any[]
+}
+
+export default function HeartRateDistribution({ streams }: { streams: StravaStreams }) {
   const chartData = useMemo(() => {
     // Se o treino não tiver dados de coração (ex: treino sem fita/relógio), cancela
     if (!streams || !streams.time || !streams.heartrate) return []
@@ -71,7 +77,7 @@ export default function HeartRateDistribution({ streams }: { streams: any }) {
   // Acha a barra com maior tempo para pintar de vermelho vibrante
   const maxTime = Math.max(...chartData.map(d => d.timeSpent))
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: ChartTooltipData) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
@@ -95,7 +101,7 @@ export default function HeartRateDistribution({ streams }: { streams: any }) {
             interval={0}
           />
           <YAxis hide={true} /> 
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: '#3f3f46', opacity: 0.1 }} />
+          <Tooltip content={CustomTooltip as any} cursor={{ fill: '#3f3f46', opacity: 0.1 }} />
           
           <Bar dataKey="timeSpent" radius={[4, 4, 0, 0]}>
             {chartData.map((entry, index) => (

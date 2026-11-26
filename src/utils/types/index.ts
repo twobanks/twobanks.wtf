@@ -4,6 +4,13 @@ export interface StravaStream {
   data: number[]
 }
 
+export interface StravaStreams {
+  time: StravaStream
+  heartrate?: StravaStream
+  velocity_smooth?: StravaStream
+  [key: string]: StravaStream | undefined
+}
+
 export interface StravaMapProps {
   mapPolyline: string | null
   streams?: Record<string, StravaStream>
@@ -141,7 +148,7 @@ export interface CreditCardDrawerProps {
 export interface RecurringExpense {
   id: number;
   name: string;
-  amount: string;
+  amount: string | number;
   categoryId: number | null;
   accountId: number | null;
   dueDay: number;
@@ -176,7 +183,7 @@ export interface InvestmentTransaction {
   date: string;
   quantity?: string | null;
   price?: string | null;
-  amount: string;
+  amount: string | number;
   fees?: string | null;
   notes?: string | null;
   asset?: Asset | null;
@@ -277,7 +284,7 @@ export interface CategoryDrawerProps {
 export interface EditableExpense {
   id: number;
   description: string;
-  amount: number;
+  amount: string | number;
   paid: boolean;
   date?: string;
   categoryId?: number | null;   // ← adiciona undefined
@@ -317,7 +324,7 @@ export interface SummaryCardsProps {
 export type UnifiedExpense = {
   id: number;
   description: string;
-  amount: number;
+  amount: string | number;
   paid: boolean;
   isRecurring: boolean;
   recurringParentId: number | null;
