@@ -4,6 +4,12 @@ import { useDroppable } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { Plus } from "lucide-react"
 import { KanbanTaskDrawer } from "../Drawers/KanbanTaskDrawer"
+import {
+  createKanbanTask,
+  updateKanbanTask,
+  deleteKanbanTask,
+  cloneKanbanTask,
+} from "@/actions/kanban";
 import { KanbanTaskType } from "./KanbanBoard"
 import { KanbanCard } from "./KanbanCard"
 
@@ -37,6 +43,10 @@ export function KanbanColumn({ id, title, tasks, users }: KanbanColumnProps) {
           <KanbanTaskDrawer
             defaultStatus={id} // Já abre o form com o status dessa coluna selecionado
             users={users}
+            createKanbanTask={createKanbanTask}
+            updateKanbanTask={updateKanbanTask}
+            deleteKanbanTask={deleteKanbanTask}
+            cloneKanbanTask={cloneKanbanTask}
             trigger={
               <button 
                 title="Adicionar tarefa nesta coluna"

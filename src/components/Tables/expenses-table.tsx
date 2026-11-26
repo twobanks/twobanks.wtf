@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table';
 import { useDrawer } from '@/contexts/DrawerContext';
 import { useVisibility } from '@/contexts/VisibilityContext';
+import { EmptyState } from '@/components/patterns';
 import { UnifiedExpense } from '@/utils/types';
 import { BanknoteArrowDown, Repeat } from 'lucide-react';
 import { TableActions } from './table-actions';
@@ -56,8 +57,16 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
         </button>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
-        <Table>
+      {expenses.length === 0 ? (
+        <EmptyState
+          icon={BanknoteArrowDown}
+          title="Nenhuma despesa encontrada."
+          description="Comece adicionando sua primeira despesa."
+          className="mt-6"
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
+          <Table>
           <TableHeader className="bg-muted/50">
             <TableRow className="border-border hover:bg-transparent">
               <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
@@ -68,13 +77,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {expenses.length === 0 ? (
-              <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                  Nenhuma despesa encontrada.
-                </TableCell>
-              </TableRow>
-            ) : (
+            {expenses.length === 0 ? null : (
               expenses.map((expense) => {
                 const isRecurring =
                   Boolean(expense.isRecurring) ||
@@ -124,6 +127,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
           </TableBody>
         </Table>
       </div>
+      )}
     </div>
   );
 }

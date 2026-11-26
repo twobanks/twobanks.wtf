@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/patterns";
 import {
   Table,
   TableBody,
@@ -7,6 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+import { BanknoteArrowDown } from "lucide-react";
 
 interface Expense {
   id: number;
@@ -29,10 +32,6 @@ export function ExpensesTable({ expenses, filterCategory }: ExpensesTableProps) 
     ? expenses.filter((e) => e.category?.name === filterCategory)
     : expenses;
 
-  if (filtered.length === 0) {
-    return <p className="text-subtle-foreground p-4">Nenhuma despesa encontrada.</p>;
-  }
-
   const formatCurrency = (value: number) =>
     value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const formatDate = (iso: string) => {
@@ -41,43 +40,54 @@ export function ExpensesTable({ expenses, filterCategory }: ExpensesTableProps) 
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Descrição</TableHead>
-          {/* <TableHead>Data</TableHead> */}
-          <TableHead>Categoria</TableHead>
-          {/* <TableHead>Conta</TableHead> */}
-          <TableHead className="text-right">Valor</TableHead>
-          <TableHead className="text-right">Status</TableHead>
-          {/* <TableHead className="text-right">Recorrente</TableHead> */}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filtered.map((e) => (
-          <TableRow key={e.id}>
-            <TableCell>{e.description}</TableCell>
-            {/* <TableCell>{formatDate(e.date)}</TableCell> */}
-            <TableCell>{e.category?.name || "Sem categoria"}</TableCell>
-            {/* <TableCell>{e.account?.name || "Sem conta"}</TableCell> */}
-            <TableCell className="text-right text-destructive">
-              -{formatCurrency(Number(e.amount))}
-            </TableCell>
-            <TableCell className="text-right">
-              {e.paid ? (
-                <Badge variant="success">Pago</Badge>
-              ) : (
-                <Badge variant="warning">Pendente</Badge>
-              )}
-            </TableCell>
-            {/* <TableCell className="text-right">
-              {e.source === "recurring" && (
-                <Badge variant="secondary">Recorrente</Badge>
-              )}
-            </TableCell> */}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="w-full">
+      {filtered.length === 0 ? (
+        <EmptyState
+          icon={BanknoteArrowDown}
+          title="Nenhuma despesa encontrada."
+          description="Comece adicionando sua primeira despesa."
+          className="p-4"
+        />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Descrição</TableHead>
+              {/* <TableHead>Data</TableHead> */}
+              <TableHead>Categoria</TableHead>
+              {/* <TableHead>Conta</TableHead> */}
+              <TableHead className="text-right">Valor</TableHead>
+              <TableHead className="text-right">Status</TableHead>
+              {/* <TableHead className="text-right">Recorrente</TableHead> */}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((e) => (
+              <TableRow key={e.id}>
+                <TableCell>{e.description}</TableCell>
+                {/* <TableCell>{formatDate(e.date)}</TableCell> */}
+                <TableCell>{e.category?.name || "Sem categoria"}</TableCell>
+                {/* <TableCell>{e.account?.name || "Sem conta"}</TableCell> */}
+                <TableCell className="text-right text-destructive">
+                  -{formatCurrency(Number(e.amount))}
+                </TableCell>
+                <TableCell className="text-right">
+                  {e.paid ? (
+                    <Badge variant="success">Pago</Badge>
+                  ) : (
+                    <Badge variant="warning">Pendente</Badge>
+                  )}
+                </TableCell>
+                {/* <TableCell className="text-right">
+                  {e.source === "recurring" && (
+                    <Badge variant="secondary">Recorrente</Badge>
+                  )}
+                </TableCell> */}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </div>
   );
 }

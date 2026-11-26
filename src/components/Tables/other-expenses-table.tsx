@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/table";
 import { useDrawer } from "@/contexts/DrawerContext";
 import { useVisibility } from "@/contexts/VisibilityContext";
+import { EmptyState } from "@/components/patterns";
 import type { OtherExpensesTableProps } from "@/utils/types";
 import { BanknoteArrowDown } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { createExpense, updateExpense } from "@/actions/expenses";
 import { ExpenseDrawer } from "../Drawers/ExpenseDrawer";
 import { TableActions } from "./table-actions";
 
@@ -48,29 +50,32 @@ export function OtherExpensesTable({
         <ExpenseDrawer
           categories={categories}
           accounts={accounts}
+          createExpense={createExpense}
+          updateExpense={updateExpense}
           onSuccess={() => router.refresh()}
         />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow className="border-border hover:bg-transparent">
-              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {expenses.length === 0 ? (
-              <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                  Nenhuma despesa encontrada.
-                </TableCell>
+      {expenses.length === 0 ? (
+        <EmptyState
+          icon={BanknoteArrowDown}
+          title="Nenhuma despesa encontrada."
+          description="Comece adicionando sua primeira despesa."
+          className="mt-6"
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+                <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+                <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+                <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
               </TableRow>
-            ) : (
-              expenses.map((expense) => (
+            </TableHeader>
+            <TableBody>
+              {expenses.map((expense) => (
                 <TableRow key={expense.id} className="border-border hover:bg-muted/40 transition-colors">
                   <TableCell className="font-medium text-foreground">
                     {expense.description}
@@ -93,11 +98,11 @@ export function OtherExpensesTable({
                     <TableActions id={expense.id} isPaid={expense.paid} onEdit={() => handleEdit(expense)} />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              ))}
           </TableBody>
         </Table>
       </div>
+      )}
     </div>
   );
 }

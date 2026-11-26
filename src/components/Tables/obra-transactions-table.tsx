@@ -14,6 +14,8 @@ import { useVisibility } from "@/contexts/VisibilityContext";
 import type { ObraTransactionsTableProps } from "@/utils/types";
 import { HardHat } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { EmptyState } from "@/components/patterns";
+import { createExpense, updateExpense } from "@/actions/expenses";
 import { ExpenseDrawer } from "../Drawers/ExpenseDrawer";
 import { TableActions } from "./table-actions";
 
@@ -66,11 +68,25 @@ export function ObraTransactionsTable({
             Construção
           </h1>
         </div>
-        <ExpenseDrawer categories={categories} accounts={accounts} onSuccess={() => router.refresh()} />
+        <ExpenseDrawer
+          categories={categories}
+          accounts={accounts}
+          createExpense={createExpense}
+          updateExpense={updateExpense}
+          onSuccess={() => router.refresh()}
+        />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
-        <Table>
+      {transactions.length === 0 ? (
+        <EmptyState
+          icon={HardHat}
+          title="Nenhum gasto de obra neste mês."
+          description={'Crie uma categoria chamada "Obra" para agrupar esses gastos.'}
+          className="mt-6"
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
+          <Table>
           <TableHeader className="bg-muted/50">
             <TableRow className="border-border hover:bg-transparent">
               <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
@@ -80,13 +96,7 @@ export function ObraTransactionsTable({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.length === 0 ? (
-              <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                  Nenhum gasto de obra neste mês.
-                </TableCell>
-              </TableRow>
-            ) : (
+            {transactions.length === 0 ? null : (
               transactions.map((transaction) => (
                 <TableRow key={transaction.id} className="border-border hover:bg-muted/40 transition-colors">
                   <TableCell className="font-medium text-foreground">
@@ -119,6 +129,7 @@ export function ObraTransactionsTable({
           </TableBody>
         </Table>
       </div>
+      )}
     </div>
   );
 }

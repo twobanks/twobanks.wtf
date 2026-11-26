@@ -1,7 +1,9 @@
 'use client';
 
+import { createExpense, updateExpense } from "@/actions/expenses";
 import { ExpenseDrawer } from "@/components/Drawers/ExpenseDrawer";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/patterns";
 import {
   Table,
   TableBody,
@@ -39,28 +41,35 @@ export function RecurringExpensesTable({
           </h1>
         </div>
 
-        <ExpenseDrawer categories={categories} accounts={accounts} onSuccess={() => router.refresh()} />
+        <ExpenseDrawer
+          categories={categories}
+          accounts={accounts}
+          createExpense={createExpense}
+          updateExpense={updateExpense}
+          onSuccess={() => router.refresh()}
+        />
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
-        <Table>
-          <TableHeader className="bg-muted/50">
-            <TableRow className="border-border hover:bg-transparent">
-              <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
-              <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {logs.length === 0 ? (
-              <TableRow className="hover:bg-transparent border-0">
-                <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                  Nenhuma despesa recorrente encontrada.
-                </TableCell>
+      {logs.length === 0 ? (
+        <EmptyState
+          icon={Landmark}
+          title="Nenhuma despesa recorrente encontrada."
+          description="As despesas recorrentes serão geradas automaticamente."
+          className="mt-6"
+        />
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs mt-6">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-muted-foreground font-semibold">Descrição</TableHead>
+                <TableHead className="text-right text-muted-foreground font-semibold">Valor</TableHead>
+                <TableHead className="text-right text-muted-foreground font-semibold">Status</TableHead>
+                <TableHead className="text-right text-muted-foreground font-semibold">Ações</TableHead>
               </TableRow>
-            ) : (
-              logs.map((log) => (
+            </TableHeader>
+            <TableBody>
+              {logs.map((log) => (
                 <TableRow key={log.id} className="border-border hover:bg-muted/40 transition-colors">
                   <TableCell className="font-medium text-foreground">
                     {log.recurringExpense.name}
@@ -83,11 +92,11 @@ export function RecurringExpensesTable({
                     <TableActions id={log.transaction.id} isPaid={log.transaction.paid} />
                   </TableCell>
                 </TableRow>
-              ))
-            )}
+              ))}
           </TableBody>
         </Table>
       </div>
+      )}
     </div>
   );
 }

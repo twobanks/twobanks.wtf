@@ -4,6 +4,12 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Calendar, GripVertical } from "lucide-react"
 import { KanbanTaskDrawer } from "../Drawers/KanbanTaskDrawer"
+import {
+  createKanbanTask,
+  updateKanbanTask,
+  deleteKanbanTask,
+  cloneKanbanTask,
+} from "@/actions/kanban";
 import { KanbanTaskType } from "./KanbanBoard"
 
 interface KanbanCardProps {
@@ -69,6 +75,10 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
     <KanbanTaskDrawer
       task={task}
       users={users}
+      createKanbanTask={createKanbanTask}
+      updateKanbanTask={updateKanbanTask}
+      deleteKanbanTask={deleteKanbanTask}
+      cloneKanbanTask={cloneKanbanTask}
       trigger={
         <div
           ref={setNodeRef}

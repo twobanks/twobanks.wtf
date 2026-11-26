@@ -1,5 +1,6 @@
 'use client';
 
+import { createExpense, updateExpense } from '@/actions/expenses';
 import { useDrawer } from '@/contexts/DrawerContext';
 import { useRouter } from 'next/navigation';
 import { ExpenseDrawer } from './ExpenseDrawer';
@@ -19,6 +20,8 @@ export function CarteiraDrawersHost({
       categories={categories}
       accounts={accounts}
       expense={editingExpense ?? undefined}
+      createExpense={createExpense}
+      updateExpense={updateExpense}
       onSuccess={() => {
         setEditingExpense(null);
         router.refresh();

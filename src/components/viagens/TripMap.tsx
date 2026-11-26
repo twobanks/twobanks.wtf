@@ -2,20 +2,11 @@
 
 import { EnrichedTripDay, TripPoi } from "@/utils/types/viagens"
 import polyline from "@mapbox/polyline"
-import {
-  Compass,
-  Download,
-  Layers,
-  Map as MapIcon,
-  Maximize,
-  Minimize,
-  Minus,
-  Mountain,
-  Plus,
-} from "lucide-react"
 import mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { TripMapControls } from "./TripMapControls"
+import { TripMapLegend } from "./TripMapLegend"
 
 interface TripMapProps {
   tripSlug: string
@@ -416,109 +407,30 @@ ${trksegs}
         }
       `}</style>
 
-      <div className="absolute bottom-4 left-4 z-10 flex flex-wrap items-center gap-3 px-3 py-2 bg-surface-1/90 backdrop-blur-md border border-border rounded-xl text-xs text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <span className="w-4 h-0.5 border-t-2 border-dashed border-[#5EACCF]" />
-          Trajeto Planejado
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-4 h-1 rounded-full bg-[#5EACCF]" />
-          Pedalado (Strava)
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="size-2.5 rounded-full bg-warning" />
-          Marco Histórico / Parque
-        </span>
-      </div>
+      <TripMapLegend />
 
-      <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 p-1 bg-surface-1/90 backdrop-blur-md border border-border rounded-xl shadow-lg">
-        <button
-          type="button"
-          onClick={handleToggle3D}
-          className={`p-2 rounded-lg transition-colors ${
-            is3D
-              ? "bg-surface-2 text-[#5EACCF]"
-              : "text-subtle-foreground hover:bg-surface-2"
-          }`}
-          title={is3D ? "Visão 2D" : "Visão 3D"}
-        >
-          {is3D ? <MapIcon size={18} /> : <Mountain size={18} />}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleToggleStyle}
-          className={`p-2 rounded-lg transition-colors ${
-            isSatellite
-              ? "bg-surface-2 text-[#5EACCF]"
-              : "text-subtle-foreground hover:bg-surface-2"
-          }`}
-          title={isSatellite ? "Modo Vetorial" : "Modo Satélite"}
-        >
-          <Layers size={18} />
-        </button>
-
-        <button
-          type="button"
-          onClick={() =>
-            mapRef.current?.easeTo({
-              bearing: (mapRef.current.getBearing() + 45) % 360,
-              duration: 500,
-            })
-          }
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
-          title="Girar Mapa"
-        >
-          <Compass
-            size={18}
-            style={{
-              transform: `rotate(${-bearing}deg)`,
-              transition: "transform 0.2s linear",
-            }}
-          />
-        </button>
-
-        <div className="h-[1px] w-full bg-surface-2 my-0.5" />
-
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomIn()}
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
-          title="Aumentar Zoom"
-        >
-          <Plus size={18} />
-        </button>
-
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomOut()}
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
-          title="Diminuir Zoom"
-        >
-          <Minus size={18} />
-        </button>
-
-        <div className="h-[1px] w-full bg-surface-2 my-0.5" />
-
-        <button
-          type="button"
-          onClick={handleDownloadGPX}
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-[#5EACCF] transition-colors"
-          title="Baixar Trajeto (.gpx)"
-        >
-          <Download size={18} />
-        </button>
-
-        <button
-          type="button"
-          onClick={handleToggleFullscreen}
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 transition-colors"
-          title={isFullscreen ? "Sair da Tela Cheia" : "Tela Cheia"}
-        >
-          {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
-        </button>
-      </div>
-
+      <TripMapControls
+        is3D={is3D}
+        isSatellite={isSatellite}
+        isFullscreen={isFullscreen}
+        bearing={bearing}
+        mapRef={mapRef}
+        plannedSegmentsList={plannedSegmentsList}
+        tripSlug={tripSlug}
+        tripTitle={tripTitle}
+        onToggle3D={handleToggle3D}
+        onToggleStyle={handleToggleStyle}
+        onToggleFullscreen={handleToggleFullscreen}
+        onDownloadGPX={handleDownloadGPX}
+        onZoomIn={() => mapRef.current?.zoomIn()}
+        onZoomOut={() => mapRef.current?.zoomOut()}
+        onRotate={() =>
+          mapRef.current?.easeTo({
+            bearing: (mapRef.current?.getBearing() ?? 0) + 45,
+            duration: 500,
+          })
+        }
+      />
       <div ref={containerRef} className="w-full h-full" />
     </div>
   )
