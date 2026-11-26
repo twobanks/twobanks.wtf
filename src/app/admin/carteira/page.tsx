@@ -39,18 +39,6 @@ export default async function CarteiraPage({
   if (!session?.user) redirect("/login");
   const userId = session.user.id;
 
-  const categorias = await db.query.categories.findMany({
-    where: getAccessCondition(userId, session.user.role, categories.userId),
-  });
-
-  const accounts = await db.query.financialAccounts.findMany({
-    where: getAccessCondition(userId, session.user.role, financialAccounts.userId),
-  });
-
-  const cartoes = await db.query.creditCards.findMany({
-    where: eq(creditCards.userId, userId),
-  });
-
   const now = new Date();
   let faturaAno = now.getFullYear();
   let faturaMesNum = now.getMonth() + 1;
@@ -63,8 +51,7 @@ export default async function CarteiraPage({
     }
   }
   await ensureRecurringExpensesGenerated(userId, faturaAno, faturaMesNum);
-  
-  // Datas do mês atual
+
   const firstDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-01`;
   const lastDayNum = new Date(Date.UTC(faturaAno, faturaMesNum, 0)).getUTCDate();
   const lastDayStr = `${faturaAno}-${String(faturaMesNum).padStart(2, "0")}-${String(lastDayNum).padStart(2, "0")}`;
@@ -78,16 +65,49 @@ export default async function CarteiraPage({
   const prev = getPreviousMonth(faturaAno, faturaMesNum);
   const prevPrev = getPreviousMonth(prev.year, prev.month);
 
+  const prevPrimeiroDia = new Date(prev.year, prev.month - 1, 1);
+  const prevUltimoDia = new Date(prev.year, prev.month, 0);
+  const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
+  const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
+
+  // Carrega categorias, contas e cartões em paralelo (sem dependências entre si)
+  const [categorias, accounts, cartoes] = await Promise.all([
+    db.query.categories.findMany({
+      where: getAccessCondition(userId, session.user.role, categories.userId),
+    }),
+    db.query.financialAccounts.findMany({
+      where: getAccessCondition(userId, session.user.role, financialAccounts.userId),
+    }),
+    db.query.creditCards.findMany({
+      where: eq(creditCards.userId, userId),
+    }),
+  ]);
+
   // --- MÊS ATUAL ---
-  const allTransactions = await db.query.transactions.findMany({
-    where: and(
-      getAccessCondition(userId, session.user.role, transactions.userId),
-      gte(transactions.date, firstDayStr),
-      lte(transactions.date, lastDayStr)
-    ),
-    with: { category: true, account: true },
-    orderBy: (t, { desc }) => [desc(t.date)],
-  });
+  // Carrega transações do mês atual, mês anterior e resumos de faturas em paralelo
+  const [allTransactions, prevAllTransactions, cartoesComFatura, prevCartoesSummary, prevPrevCartoesSummary] =
+    await Promise.all([
+      db.query.transactions.findMany({
+        where: and(
+          getAccessCondition(userId, session.user.role, transactions.userId),
+          gte(transactions.date, firstDayStr),
+          lte(transactions.date, lastDayStr)
+        ),
+        with: { category: true, account: true },
+        orderBy: (t, { desc }) => [desc(t.date)],
+      }),
+      db.query.transactions.findMany({
+        where: and(
+          getAccessCondition(userId, session.user.role, transactions.userId),
+          gte(transactions.date, prevFirstDayStr),
+          lte(transactions.date, prevLastDayStr)
+        ),
+        with: { category: true, account: true },
+      }),
+      getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum),
+      getCreditCardInvoicesSummary(userId, prev.year, prev.month),
+      getCreditCardInvoicesSummary(userId, prevPrev.year, prevPrev.month),
+    ]);
 
   const receitasDoMes = allTransactions.filter((t) => t.type === "income");
 
@@ -114,11 +134,6 @@ export default async function CarteiraPage({
     date: t.date,
   }));
 
-  // ABA CARTÕES: Mostra o fluxo de compras do mês selecionado (O que entrará para pagar no futuro)
-  const cartoesComFatura = await getCreditCardInvoicesSummary(userId, faturaAno, faturaMesNum);
-
-  // DESPESAS DE CARTÃO: Busca a fatura do MÊS ANTERIOR (Ex: Em Outubro, pagamos Setembro)
-  const prevCartoesSummary = await getCreditCardInvoicesSummary(userId, prev.year, prev.month);
   const totalFaturaAnterior = prevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
 
   const totalReceitas = receitasDoMes.reduce((sum, t) => sum + Number(t.amount), 0);
@@ -131,21 +146,6 @@ export default async function CarteiraPage({
     
   const saldo = totalReceitas - totalDespesas;
 
-
-  // --- MÊS ANTERIOR (Para Cálculo de Variação) ---
-  const prevPrimeiroDia = new Date(prev.year, prev.month - 1, 1);
-  const prevUltimoDia = new Date(prev.year, prev.month, 0);
-  const prevFirstDayStr = prevPrimeiroDia.toISOString().split("T")[0];
-  const prevLastDayStr = prevUltimoDia.toISOString().split("T")[0];
-  
-  const prevAllTransactions = await db.query.transactions.findMany({
-    where: and(
-      getAccessCondition(userId, session.user.role, transactions.userId),
-      gte(transactions.date, prevFirstDayStr),
-      lte(transactions.date, prevLastDayStr)
-    ),
-    with: { category: true, account: true },
-  });
 
   const prevReceitas = prevAllTransactions.filter((t) => t.type === "income");
   
@@ -160,7 +160,6 @@ export default async function CarteiraPage({
   );
 
   // Para calcular a variação, pegamos a fatura de DOIS meses atrás (Ex: Em Setembro, paga-se Agosto)
-  const prevPrevCartoesSummary = await getCreditCardInvoicesSummary(userId, prevPrev.year, prevPrev.month);
   const totalFaturaRetrasada = prevPrevCartoesSummary.reduce((sum, c) => sum + c.total, 0);
 
   const prevTotalReceitas = prevReceitas.reduce((sum, t) => sum + Number(t.amount), 0);

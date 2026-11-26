@@ -1,3 +1,5 @@
+export type ActionResult = { success: boolean; error?: string; data?: unknown };
+
 export interface StravaStream {
   data: number[]
 }
@@ -51,7 +53,7 @@ export interface PurchaseDrawerProps {
   categories: Category[];
   creditCards: CreditCard[];
   initialOpen?: boolean;
-  createInstallmentPurchaseAction: (formData: FormData) => Promise<void>;
+  createInstallmentPurchaseAction: (formData: FormData) => Promise<ActionResult>;
   initialCreditCardId?: number;   // ← novo
   triggerLabel?: string;      
   onSuccess?: () => void;
@@ -94,7 +96,7 @@ export interface Transaction {
 export interface TransactionDrawerProps {
   categories: Category[]
   accounts: FinancialAccount[]
-  createTransactionAction?: (formData: FormData) => Promise<void>
+  createTransactionAction?: (formData: FormData) => Promise<ActionResult>
   initialOpen?: boolean
   transaction?: Transaction
   onSuccess?: () => void
@@ -215,11 +217,11 @@ export interface CreditCardsSectionProps {
   cartoes: CreditCard[]
   createInstallmentPurchaseAction: (
     formData: FormData
-  ) => Promise<void>
+  ) => Promise<ActionResult>
   faturaAno: number
   accounts?: FinancialAccount[]
   faturaMesNum: number
-  payInvoiceAction?: (formData: FormData) => Promise<void>;
+  payInvoiceAction?: (formData: FormData) => Promise<ActionResult>;
 }
 
 export interface OtherExpensesTableProps {

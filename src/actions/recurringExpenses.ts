@@ -1,331 +1,135 @@
 "use server"
 
-import { auth } from "@/auth"
-import { db } from "@/db"
-import { recurringExpenses, recurringPaymentLogs, transactions } from "@/db/schema"
-import { getPrimaryHouseholdId, getUserHouseholdIds } from "@/lib/household"
-import { ROUTES } from "@/lib/routes"
-import { and, eq, gte, inArray, or } from "drizzle-orm"
-import { revalidatePath } from "next/cache"
+import { z } from "zod";
+import { requireUser } from "@/lib/authz";
+import {
+  createRecurringExpense as createRecurringExpenseSvc,
+  updateRecurringExpense as updateRecurringExpenseSvc,
+  deleteRecurringExpense as deleteRecurringExpenseSvc,
+  generateMonthlyRecurring as generateMonthlyRecurringSvc,
+} from "@/services/recurringExpenseService";
+import { revalidatePath } from "next/cache";
+import { ROUTES } from "@/lib/routes";
 
-const REPLICATION_MONTHS = 12
+const recurringExpenseSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  amount: z.coerce.number().positive("Valor deve ser positivo"),
+  dueDay: z.coerce.number().int().min(1).max(31, "Dia de vencimento inválido"),
+  categoryId: z.coerce.number().int().positive().optional().nullable(),
+  accountId: z.coerce.number().int().positive().optional().nullable(),
+  active: z.boolean().default(true),
+  startMonth: z.string().regex(/^\d{4}-\d{2}$/, "Mês de início inválido (YYYY-MM)"),
+});
+
+const updateRecurringExpenseSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  name: z.string().min(1, "Nome é obrigatório"),
+  amount: z.coerce.number().positive("Valor deve ser positivo"),
+  dueDay: z.coerce.number().int().min(1).max(31, "Dia de vencimento inválido"),
+  categoryId: z.coerce.number().int().positive().optional().nullable(),
+  accountId: z.coerce.number().int().positive().optional().nullable(),
+  active: z.boolean(),
+});
+
+const deleteRecurringExpenseSchema = z.object({
+  id: z.coerce.number().int().positive(),
+});
+
+const generateMonthlyRecurringSchema = z.object({
+  year: z.coerce.number().int().min(2000).max(2100),
+  month: z.coerce.number().int().min(1).max(12),
+});
 
 export async function createRecurringExpense(formData: FormData) {
-  const session = await auth()
-  if (!session?.user) throw new Error("Não autorizado")
-  const userId = session.user.id
+  const user = await requireUser();
 
-  const name = String(formData.get("name") ?? "").trim()
-  const amount = Number(formData.get("amount"))
-  const dueDay = Number(formData.get("dueDay"))
-  const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
-  const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
-  const active = formData.get("active") === "on" || formData.get("active") === "true"
-  const startMonth = String(formData.get("startMonth") ?? "").trim()
+  const parsed = recurringExpenseSchema.parse({
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    dueDay: formData.get("dueDay"),
+    categoryId: formData.get("categoryId"),
+    accountId: formData.get("accountId"),
+    active: formData.get("active") === "on" || formData.get("active") === "true",
+    startMonth: formData.get("startMonth"),
+  });
 
-  if (!name) throw new Error("Nome é obrigatório")
-  if (isNaN(amount) || amount <= 0) throw new Error("Valor inválido")
-  if (isNaN(dueDay) || dueDay < 1 || dueDay > 31) throw new Error("Dia de vencimento inválido")
-  if (!startMonth) throw new Error("Mês de início é obrigatório")
+  await createRecurringExpenseSvc(user.id, {
+    name: parsed.name,
+    amount: parsed.amount,
+    dueDay: parsed.dueDay,
+    categoryId: parsed.categoryId ?? null,
+    accountId: parsed.accountId ?? null,
+    active: parsed.active,
+    startMonth: parsed.startMonth,
+  });
 
-  const [startYear, startMonthNum] = startMonth.split("-").map(Number)
-  if (!startYear || !startMonthNum || startMonthNum < 1 || startMonthNum > 12) {
-    throw new Error("Mês de início inválido")
-  }
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  const householdId = await getPrimaryHouseholdId(userId)
-
-  const [novaDespesa] = await db.insert(recurringExpenses).values({
-    userId,
-    householdId,
-    name,
-    amount: amount.toFixed(2),
-    dueDay,
-    categoryId,
-    accountId,
-    active,
-  }).returning()
-
-  if (active) {
-    for (let i = 0; i < REPLICATION_MONTHS; i++) {
-      const targetDate = new Date(startYear, startMonthNum - 1 + i, 1)
-      const targetYear = targetDate.getFullYear()
-      const targetMonth = targetDate.getMonth() + 1
-      const monthStr = `${targetYear}-${String(targetMonth).padStart(2, "0")}`
-
-      const [existente] = await db.select()
-        .from(recurringPaymentLogs)
-        .where(and(
-          eq(recurringPaymentLogs.recurringExpenseId, novaDespesa.id),
-          eq(recurringPaymentLogs.month, monthStr)
-        ))
-        .limit(1)
-
-      if (existente) continue
-
-      let dueDate = new Date(targetYear, targetMonth - 1, dueDay)
-      if (dueDate.getMonth() !== targetMonth - 1) {
-        dueDate = new Date(targetYear, targetMonth, 0)
-      }
-
-      const [transaction] = await db.insert(transactions).values({
-        userId,
-        householdId,
-        description: name,
-        amount: amount.toFixed(2),
-        type: "expense",
-        date: dueDate.toISOString().split("T")[0],
-        source: "recurring",
-        categoryId,
-        accountId,
-        paid: false,
-      }).returning()
-
-      await db.insert(recurringPaymentLogs).values({
-        recurringExpenseId: novaDespesa.id,
-        month: monthStr,
-        transactionId: transaction.id,
-      })
-    }
-  }
-
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
-  revalidatePath(ROUTES.ADMIN.CARTEIRA)
+  return { success: true, data: null };
 }
 
 export async function updateRecurringExpense(formData: FormData) {
-  const session = await auth()
-  if (!session?.user) throw new Error("Não autorizado")
-  const userId = session.user.id
+  const user = await requireUser();
 
-  const id = Number(formData.get("id"))
-  const name = String(formData.get("name"))
-  const amount = Number(formData.get("amount"))
-  const dueDay = Number(formData.get("dueDay"))
-  const categoryId = formData.get("categoryId") ? Number(formData.get("categoryId")) : null
-  const accountId = formData.get("accountId") ? Number(formData.get("accountId")) : null
-  const active = formData.get("active") === "on" || formData.get("active") === "true"
+  const parsed = updateRecurringExpenseSchema.parse({
+    id: formData.get("id"),
+    name: formData.get("name"),
+    amount: formData.get("amount"),
+    dueDay: formData.get("dueDay"),
+    categoryId: formData.get("categoryId"),
+    accountId: formData.get("accountId"),
+    active: formData.get("active") === "on" || formData.get("active") === "true",
+  });
 
-  if (!id || !name || isNaN(amount) || !dueDay) throw new Error("Dados inválidos")
+  await updateRecurringExpenseSvc(user.id, {
+    id: parsed.id,
+    name: parsed.name,
+    amount: parsed.amount,
+    dueDay: parsed.dueDay,
+    categoryId: parsed.categoryId ?? null,
+    accountId: parsed.accountId ?? null,
+    active: parsed.active,
+  });
 
-  const householdIds = await getUserHouseholdIds(userId)
-  const canAccess = or(
-    eq(recurringExpenses.userId, userId),
-    householdIds.length > 0 ? inArray(recurringExpenses.householdId, householdIds) : undefined
-  )
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  // Busca a despesa atual para verificar o status anterior
-  const [despesaAtual] = await db.select()
-    .from(recurringExpenses)
-    .where(and(eq(recurringExpenses.id, id), canAccess))
-    .limit(1)
-
-  if (!despesaAtual) throw new Error("Despesa não encontrada")
-
-  // Atualiza a despesa recorrente
-  await db.update(recurringExpenses)
-    .set({ name, amount: amount.toFixed(2), dueDay, categoryId, accountId, active })
-    .where(and(eq(recurringExpenses.id, id), canAccess))
-
-  const now = new Date()
-  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
-
-  // Se a despesa foi desativada, remove logs futuros
-  if (despesaAtual.active && !active) {
-    const logsFuturos = await db.query.recurringPaymentLogs.findMany({
-      where: and(
-        eq(recurringPaymentLogs.recurringExpenseId, id),
-        gte(recurringPaymentLogs.month, currentMonthStr)
-      ),
-      with: { transaction: true }
-    })
-
-    for (const log of logsFuturos) {
-      if (log.transaction) {
-        await db.delete(transactions).where(eq(transactions.id, log.transactionId))
-      }
-      await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, log.id))
-    }
-  }
-  // Se a despesa foi ativada, gera logs futuros a partir do mês atual
-  else if (!despesaAtual.active && active) {
-    for (let i = 0; i < REPLICATION_MONTHS; i++) {
-      const targetDate = new Date(now.getFullYear(), now.getMonth() + i, 1)
-      const targetYear = targetDate.getFullYear()
-      const targetMonth = targetDate.getMonth() + 1
-      const monthStr = `${targetYear}-${String(targetMonth).padStart(2, "0")}`
-
-      const [existente] = await db.select()
-        .from(recurringPaymentLogs)
-        .where(and(
-          eq(recurringPaymentLogs.recurringExpenseId, id),
-          eq(recurringPaymentLogs.month, monthStr)
-        ))
-        .limit(1)
-
-      if (existente) continue
-
-      let dueDate = new Date(targetYear, targetMonth - 1, dueDay)
-      if (dueDate.getMonth() !== targetMonth - 1) {
-        dueDate = new Date(targetYear, targetMonth, 0)
-      }
-
-      const [transaction] = await db.insert(transactions).values({
-        userId,
-        householdId: despesaAtual.householdId,
-        description: name,
-        amount: amount.toFixed(2),
-        type: "expense",
-        date: dueDate.toISOString().split("T")[0],
-        source: "recurring",
-        categoryId,
-        accountId,
-        paid: false,
-      }).returning()
-
-      await db.insert(recurringPaymentLogs).values({
-        recurringExpenseId: id,
-        month: monthStr,
-        transactionId: transaction.id,
-      })
-    }
-  }
-  // Se o status não mudou, apenas atualiza os logs futuros existentes
-  else {
-    const logsFuturos = await db.query.recurringPaymentLogs.findMany({
-      where: and(
-        eq(recurringPaymentLogs.recurringExpenseId, id),
-        gte(recurringPaymentLogs.month, currentMonthStr)
-      ),
-      with: { transaction: true }
-    })
-
-    for (const log of logsFuturos) {
-      if (!log.transaction) continue
-
-      const [year, month] = log.month.split("-").map(Number)
-      let dueDate = new Date(year, month - 1, dueDay)
-      if (dueDate.getMonth() !== month - 1) {
-        dueDate = new Date(year, month, 0)
-      }
-
-      await db.update(transactions)
-        .set({
-          description: name,
-          amount: amount.toFixed(2),
-          date: dueDate.toISOString().split("T")[0],
-          categoryId,
-          accountId,
-        })
-        .where(eq(transactions.id, log.transactionId))
-    }
-  }
-
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
-  revalidatePath(ROUTES.ADMIN.CARTEIRA)
+  return;
 }
 
 export async function deleteRecurringExpense(formData: FormData) {
-  const session = await auth()
-  if (!session?.user) throw new Error("Não autorizado")
-  const userId = session.user.id
+  const user = await requireUser();
 
-  const id = Number(formData.get("id"))
-  if (!id) throw new Error("ID inválido")
+  const parsed = deleteRecurringExpenseSchema.parse({
+    id: formData.get("id"),
+  });
 
-  const householdIds = await getUserHouseholdIds(userId)
-  const canAccess = or(
-    eq(recurringExpenses.userId, userId),
-    householdIds.length > 0 ? inArray(recurringExpenses.householdId, householdIds) : undefined
-  )
+  await deleteRecurringExpenseSvc(user.id, {
+    id: parsed.id,
+  });
 
-  const now = new Date()
-  const currentMonthStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  const logsFuturos = await db.query.recurringPaymentLogs.findMany({
-    where: and(
-      eq(recurringPaymentLogs.recurringExpenseId, id),
-      gte(recurringPaymentLogs.month, currentMonthStr)
-    ),
-    with: { transaction: true }
-  })
-
-  for (const log of logsFuturos) {
-    if (log.transaction) {
-      await db.delete(transactions).where(eq(transactions.id, log.transactionId))
-    }
-    await db.delete(recurringPaymentLogs).where(eq(recurringPaymentLogs.id, log.id))
-  }
-
-  await db.delete(recurringExpenses)
-    .where(and(eq(recurringExpenses.id, id), canAccess))
-
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
-  revalidatePath(ROUTES.ADMIN.CARTEIRA)
+  return;
 }
 
 export async function generateMonthlyRecurring(formData: FormData) {
-  const session = await auth()
-  if (!session?.user) throw new Error("Não autorizado")
-  const userId = session.user.id
+  const user = await requireUser();
 
-  const now = new Date()
-  const year = Number(formData.get("year") || now.getFullYear())
-  const month = Number(formData.get("month") || now.getMonth() + 1)
+  const parsed = generateMonthlyRecurringSchema.parse({
+    year: formData.get("year"),
+    month: formData.get("month"),
+  });
 
-  if (isNaN(year) || isNaN(month) || month < 1 || month > 12) throw new Error("Mês inválido")
-  const monthStr = `${year}-${String(month).padStart(2, "0")}`
+  await generateMonthlyRecurringSvc(user.id, {
+    year: parsed.year,
+    month: parsed.month,
+  });
 
-  const householdIds = await getUserHouseholdIds(userId)
-  const acesso = or(
-    eq(recurringExpenses.userId, userId),
-    householdIds.length > 0 ? inArray(recurringExpenses.householdId, householdIds) : undefined
-  )
+  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES);
+  revalidatePath(ROUTES.ADMIN.CARTEIRA);
 
-  const despesas = await db.query.recurringExpenses.findMany({
-    where: and(
-      acesso,
-      eq(recurringExpenses.active, true)
-    ),
-    with: { category: true, account: true },
-  })
-
-  for (const despesa of despesas) {
-    const [logExistente] = await db.select()
-      .from(recurringPaymentLogs)
-      .where(and(
-        eq(recurringPaymentLogs.recurringExpenseId, despesa.id),
-        eq(recurringPaymentLogs.month, monthStr)
-      ))
-      .limit(1)
-
-    if (logExistente) continue
-
-    let dueDate = new Date(year, month - 1, despesa.dueDay)
-    if (dueDate.getMonth() !== month - 1) {
-      dueDate = new Date(year, month, 0)
-    }
-
-    const [transaction] = await db.insert(transactions).values({
-      userId,
-      householdId: despesa.householdId,
-      description: despesa.name,
-      amount: despesa.amount,
-      type: "expense",
-      date: dueDate.toISOString().split("T")[0],
-      source: "recurring",
-      categoryId: despesa.categoryId,
-      accountId: despesa.accountId,
-      paid: false,
-    }).returning()
-
-    await db.insert(recurringPaymentLogs).values({
-      recurringExpenseId: despesa.id,
-      month: monthStr,
-      transactionId: transaction.id,
-    })
-  }
-
-  revalidatePath(ROUTES.ADMIN.CARTEIRA_RECORRENTES)
-  revalidatePath(ROUTES.ADMIN.CARTEIRA)
+  return;
 }
