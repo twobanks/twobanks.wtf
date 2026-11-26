@@ -10,6 +10,9 @@ jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
@@ -39,3 +42,4 @@ jobs:
           RESEND_API_KEY: re_ci_dummy
           AUTH_SECRET: ci-dummy-secret-do-not-use
           AUTH_TRUST_HOST: "1"
+          SKIP_ENV_VALIDATION: "1"

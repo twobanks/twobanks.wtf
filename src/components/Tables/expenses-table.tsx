@@ -51,6 +51,7 @@ export function ExpensesTable({ expenses }: { expenses: UnifiedExpense[] }) {
         <button
           type="button"
           onClick={handleNew}
+          aria-label="Nova despesa"
           className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground text-sm font-medium px-3.5 py-2 rounded-lg transition-colors border border-border shadow-sm"
         >
           +

@@ -5,8 +5,11 @@ import { db } from "@/db";
 import type { ShoppingListWithItems } from "@/db/schema";
 import { shoppingItems, shoppingLists } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { ShoppingBasket } from "lucide-react";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { EmptyState } from "@/components/patterns";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -46,9 +49,15 @@ export default async function ListasPage() {
       </div>
 
       {listsWithItems.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-border rounded-xl">
-          <p className="text-subtle-foreground">Nenhuma lista criada ainda.</p>
-        </div>
+        <EmptyState
+          icon={ShoppingBasket}
+          title="Nenhuma lista criada ainda."
+          description="Crie sua primeira lista de compras para começar."
+          action={
+            <Button>Criar Lista</Button>
+          }
+          className="mt-6"
+        />
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {listsWithItems.map((list) => (

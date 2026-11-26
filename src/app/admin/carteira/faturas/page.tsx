@@ -10,10 +10,11 @@ import {
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { Eye } from "lucide-react"; // Importamos o ícone Eye
+import { Eye, FileText } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { EmptyState } from "@/components/patterns";
 
 export const metadata: Metadata = {
   title: "Faturas",
@@ -117,9 +118,12 @@ export default async function FaturasPage() {
       {/* Trocado para bg-surface-1 para manter a estética do sidebar */}
       <div className="bg-surface-1 rounded-xl border border-border p-1 md:p-4">
         {faturas.length === 0 ? (
-          <div className="p-8 text-center text-subtle-foreground">
-            Nenhuma fatura encontrada.
-          </div>
+          <EmptyState
+            icon={FileText}
+            title="Nenhuma fatura encontrada."
+            description="Suas faturas de cartão de crédito aparecerão aqui."
+            className="mt-6"
+          />
         ) : (
           <Table>
             <TableHeader>

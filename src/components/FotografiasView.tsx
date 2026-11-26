@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { EmptyState } from "@/components/patterns";
 
 interface FotografiasViewProps {
   photos: PhotoItem[];
@@ -190,9 +191,12 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
 
       {/* Grade Masonry estilo Pinterest */}
       {orderedPhotos.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-subtle-foreground">
-          Nenhuma fotografia cadastrada ainda.
-        </div>
+        <EmptyState
+          icon={Camera}
+          title="Nenhuma fotografia cadastrada ainda."
+          description="Suas imagens de trilhas, pedais e paisagens aparecerão aqui."
+          className="mt-6"
+        />
       ) : (
         <section aria-label="Galeria de fotografias">
           {/* Mobile: 1 coluna */}

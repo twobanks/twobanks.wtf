@@ -6,6 +6,18 @@ export const ROUTES = {
   ROOT: "/",
   LOGIN: "/login",
 
+  PUBLIC: {
+    ROOT: "/",
+    SOBRE: "/sobre",
+    ATIVIDADES: "/atividades",
+    ATIVIDADE: (id: string | number) => `/atividades/${id}`,
+    TREINOS: "/treinos",
+    FOTOS: "/fotos",
+    VIAGENS: "/viagens",
+    VIAGEM: (slug: string) => `/viagens/${slug}`,
+    VIAGEM_DIA: (slug: string, dia: string) => `/viagens/${slug}/${dia}`,
+  },
+
   ADMIN: {
     ROOT: "/admin",
     CARTEIRA: "/admin/carteira",

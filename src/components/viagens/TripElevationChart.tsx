@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts"
 
-import { formatKm } from "@/lib/viagens"
+import { formatKm } from "@/lib/utils"
 
 export type ElevationPoint = {
   distanceKm: number

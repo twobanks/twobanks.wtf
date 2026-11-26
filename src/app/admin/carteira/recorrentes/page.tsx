@@ -5,8 +5,11 @@ import { db } from "@/db";
 import { categories, financialAccounts, recurringExpenses } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { eq, inArray, or } from "drizzle-orm";
+import { Repeat } from "lucide-react";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { EmptyState } from "@/components/patterns";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Recorrentes",
@@ -66,40 +69,49 @@ export default async function RecorrentesPage() {
       </div>
 
       <div className="grid gap-4">
-        {despesas.length === 0 && (
-          <p className="text-subtle-foreground">Nenhuma despesa recorrente cadastrada.</p>
-        )}
-        {despesas.map((despesa) => (
-          <div
-            key={despesa.id}
-            className="bg-surface-1 p-4 rounded-xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-3"
-          >
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <p className="font-medium">{despesa.name}</p>
-                {!despesa.active && (
-                  <span className="text-xs bg-surface-2 text-subtle-foreground px-2 py-0.5 rounded-full">Inativa</span>
-                )}
+        {despesas.length === 0 ? (
+          <EmptyState
+            icon={Repeat}
+            title="Nenhuma despesa recorrente cadastrada."
+            description="Adicione sua primeira despesa recorrente para começar."
+            action={
+              <Button>Adicionar Despesa Recorrente</Button>
+            }
+            className="mt-6"
+          />
+        ) : (
+          despesas.map((despesa) => (
+            <div
+              key={despesa.id}
+              className="bg-surface-1 p-4 rounded-xl border border-border flex flex-col md:flex-row md:items-center justify-between gap-3"
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="font-medium">{despesa.name}</p>
+                  {!despesa.active && (
+                    <span className="text-xs bg-surface-2 text-subtle-foreground px-2 py-0.5 rounded-full">Inativa</span>
+                  )}
+                </div>
+                <p className="text-sm text-subtle-foreground">
+                  R$ {Number(despesa.amount).toFixed(2)} · Venc: dia {despesa.dueDay}
+                  {despesa.category?.name && ` · ${despesa.category.name}`}
+                  {despesa.account?.name && ` · ${despesa.account.name}`}
+                </p>
               </div>
-              <p className="text-sm text-subtle-foreground">
-                R$ {Number(despesa.amount).toFixed(2)} · Venc: dia {despesa.dueDay}
-                {despesa.category?.name && ` · ${despesa.category.name}`}
-                {despesa.account?.name && ` · ${despesa.account.name}`}
-              </p>
+              <div className="flex gap-2">
+                <RecurringExpenseDrawer
+                  recurringExpense={despesa}
+                  categories={categorias}
+                  accounts={contas}
+                />
+                <form action={deleteRecurringExpense}>
+                  <input type="hidden" name="id" value={despesa.id} />
+                  <button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
+                </form>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <RecurringExpenseDrawer
-                recurringExpense={despesa}
-                categories={categorias}
-                accounts={contas}
-              />
-              <form action={deleteRecurringExpense}>
-                <input type="hidden" name="id" value={despesa.id} />
-                <button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
-              </form>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import TripMap from "@/components/viagens/TripMapLoader"
-import { formatDatePtBr, formatElevation, formatKm, getEnrichedTripBySlug } from "@/lib/viagens"
+import TripElevationChart from "@/components/viagens/TripElevationChart"
+import { formatDatePtBr, formatElevation, getEnrichedTripBySlug } from "@/lib/viagens"
+import { formatKm } from "@/lib/utils"
 import { ArrowLeft, Sunrise } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation";
@@ -21,13 +23,24 @@ export async function generateMetadata({
       description: trip.subtitle ?? undefined,
       type: "website",
       url: `/viagens/${trip.slug}`,
-      images: trip.coverImage ? [{ url: trip.coverImage }] : undefined,
+      images: trip.coverImage
+        ? [
+            {
+              url: trip.coverImage,
+              width: 1200,
+              height: 630,
+              alt: trip.title,
+            },
+          ]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: trip.title,
       description: trip.subtitle ?? undefined,
-      images: trip.coverImage ? [trip.coverImage] : undefined,
+      images: trip.coverImage
+        ? [{ url: trip.coverImage, alt: trip.title }]
+        : undefined,
     },
     alternates: { canonical: `/viagens/${trip.slug}` },
   }
@@ -78,6 +91,12 @@ export default async function ViagemDetalhePage({
           pois={trip.pois}
         />
       </section>
+
+      {trip.elevationProfile && trip.elevationProfile.length > 0 && (
+        <section className="max-w-5xl mx-auto px-4 sm:px-6">
+          <TripElevationChart points={trip.elevationProfile} />
+        </section>
+      )}
 
       <section className="max-w-5xl mx-auto px-4 sm:px-6 space-y-4">
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">

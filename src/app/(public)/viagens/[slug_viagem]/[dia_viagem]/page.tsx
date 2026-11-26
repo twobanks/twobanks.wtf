@@ -1,16 +1,13 @@
 import StravaMap from "@/components/StravaMapLoader"
 import DayPhotoGallery from "@/components/viagens/DayPhotoGallery"
-import { MOCK_PHOTOS } from "@/data/fotografias"
 import {
   formatDatePtBr,
   formatDuration,
   formatElevation,
-  formatKm,
   formatSpeedKmh,
   getDaySafeStreams,
   getEnrichedTripBySlug,
 } from "@/lib/viagens"
-import { TripPhoto } from "@/utils/types/viagens"
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,7 +17,51 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import type { Metadata } from "next"
 import ReactMarkdown from "react-markdown"
+import { formatKm } from "@/lib/utils"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug_viagem: string; dia_viagem: string }>
+}): Promise<Metadata> {
+  const { slug_viagem, dia_viagem } = await params
+  const trip = await getEnrichedTripBySlug(slug_viagem)
+  if (!trip) return { title: "Etapa não encontrada" }
+
+  const day = trip.days.find((d) => d.slug === dia_viagem)
+
+  return {
+    title: day ? `${day.title} — Dia ${day.dayNumber}` : "Etapa da viagem",
+    description: day?.summary ?? trip.subtitle ?? undefined,
+    openGraph: {
+      title: day ? `${day.title} — Dia ${day.dayNumber}` : "Etapa da viagem",
+      description: day?.summary ?? trip.subtitle ?? undefined,
+      type: "website",
+      url: `/viagens/${trip.slug}/${day?.slug ?? ""}`,
+      images: trip.coverImage
+        ? [
+            {
+              url: trip.coverImage,
+              width: 1200,
+              height: 630,
+              alt: trip.title,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: day ? `${day.title} — Dia ${day.dayNumber}` : "Etapa da viagem",
+      description: day?.summary ?? trip.subtitle ?? undefined,
+      images: trip.coverImage
+        ? [{ url: trip.coverImage, alt: trip.title }]
+        : undefined,
+    },
+    alternates: { canonical: `/viagens/${trip.slug}/${day?.slug ?? ""}` },
+  }
+}
 
 export default async function DiaViagemPage({
   params,
@@ -58,17 +99,7 @@ export default async function DiaViagemPage({
       ? day.waypoints.join(" → ")
       : `${day.origin} → ${day.destination}`
 
-  // Fotos mockadas como fallback quando day.photos estiver vazio
-  const mockPhotosAsTripPhotos: TripPhoto[] = MOCK_PHOTOS.slice(0, 6).map(
-    (photo) => ({
-      id: photo.id,
-      url: photo.imageUrl,
-      caption: photo.title,
-      location: photo.location.name,
-    })
-  )
-  const displayPhotos =
-    day.photos && day.photos.length > 0 ? day.photos : mockPhotosAsTripPhotos
+  const displayPhotos = day.photos ?? []
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden">

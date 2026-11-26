@@ -14,6 +14,7 @@ interface RouteMeta {
 const ROUTE_META: Record<string, RouteMeta> = {
   "/sobre": { title: "sobre", color: "#ED6998" },
   "/atividades": { title: "atividades", color: "#6FC5EF" },
+  "/treinos": { title: "treinos", color: "#10B981" },
   "/viagens": { title: "viagens", color: "#f5b114" },
   "/fotos": { title: "fotos", color: "#EEE400" },
   "/login": { title: "login" },

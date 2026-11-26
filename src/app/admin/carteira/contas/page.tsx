@@ -5,8 +5,11 @@ import { db } from "@/db"
 import { financialAccounts } from "@/db/schema"
 import { getUserHouseholdIds } from "@/lib/household"
 import { eq, inArray, or } from "drizzle-orm"
+import { Landmark } from "lucide-react"
 import { Metadata } from "next"
 import { redirect } from "next/navigation"
+import { EmptyState } from "@/components/patterns"
+import { Button } from "@/components/ui/button"
 
 export const metadata: Metadata = {
   title: "Contas",
@@ -36,28 +39,37 @@ export default async function ContasPage() {
         </div>
 
         <div className="grid gap-3">
-          {contas.length === 0 && (
-            <p className="text-subtle-foreground">Nenhuma conta cadastrada.</p>
+          {contas.length === 0 ? (
+            <EmptyState
+              icon={Landmark}
+              title="Nenhuma conta cadastrada."
+              description="Adicione sua primeira conta bancária para começar."
+              action={
+                <Button>Adicionar Conta</Button>
+              }
+              className="mt-6"
+            />
+          ) : (
+            contas.map((acc) => (
+              <div
+                key={acc.id}
+                className="bg-surface-1 p-4 rounded-xl border border-border flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium">{acc.name}</p>
+                  <span className="text-sm text-subtle-foreground">{acc.type}</span>
+                  <span className="text-sm text-subtle-foreground ml-2">Saldo: R$ {acc.initialBalance}</span>
+                </div>
+                <div className="flex gap-2">
+                  <AccountDrawer account={acc} />
+                  <form action={deleteAccount}>
+                    <input type="hidden" name="id" value={acc.id} />
+                    <button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
+                  </form>
+                </div>
+              </div>
+            ))
           )}
-          {contas.map((acc) => (
-            <div
-              key={acc.id}
-              className="bg-surface-1 p-4 rounded-xl border border-border flex justify-between items-center"
-            >
-              <div>
-                <p className="font-medium">{acc.name}</p>
-                <span className="text-sm text-subtle-foreground">{acc.type}</span>
-                <span className="text-sm text-subtle-foreground ml-2">Saldo: R$ {acc.initialBalance}</span>
-              </div>
-              <div className="flex gap-2">
-                <AccountDrawer account={acc} />
-                <form action={deleteAccount}>
-                  <input type="hidden" name="id" value={acc.id} />
-                  <button className="text-red-400 hover:text-red-300 px-2 py-1">Excluir</button>
-                </form>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </main>

@@ -7,13 +7,15 @@ import { db } from "@/db";
 import { transactions } from "@/db/schema";
 import { getUserHouseholdIds } from "@/lib/household";
 import { AnyColumn, eq, inArray, or } from "drizzle-orm";
-import { ArrowDownRight, ArrowUpRight, TrendingUp } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Inbox, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { ROUTES } from "@/lib/routes";
 import { getDashboardSummary } from '@/services/balanceService';
 import { formatCurrency } from '@/utils/currency';
+import { EmptyState } from "@/components/patterns";
+import { Button } from "@/components/ui/button";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -120,7 +122,19 @@ export default async function AdminPage() {
 
           <div className="divide-y divide-border">
             {recentTransactions.length === 0 ? (
-              <p className="py-4 text-sm text-muted-foreground text-center">Nenhuma transação recente encontrada.</p>
+              <EmptyState
+                icon={Inbox}
+                title="Nenhuma transação recente encontrada."
+                description="Suas movimentações financeiras aparecerão aqui."
+                action={
+                  <Link href={ROUTES.ADMIN.CARTEIRA} className="w-full sm:w-auto">
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      Acessar Carteira
+                    </Button>
+                  </Link>
+                }
+                className="mt-6"
+              />
             ) : (
               recentTransactions.map((tx) => (
                 <div key={tx.id} className="py-3 flex items-center justify-between">

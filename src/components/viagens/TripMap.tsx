@@ -415,9 +415,6 @@ ${trksegs}
         isFullscreen={isFullscreen}
         bearing={bearing}
         mapRef={mapRef}
-        _plannedSegmentsList={plannedSegmentsList}
-        _tripSlug={tripSlug}
-        _tripTitle={tripTitle}
         onToggle3D={handleToggle3D}
         onToggleStyle={handleToggleStyle}
         onToggleFullscreen={handleToggleFullscreen}

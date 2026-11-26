@@ -11,10 +11,6 @@ import {
 import type { StravaStream } from "@/utils/types"
 import { eq, inArray } from "drizzle-orm"
 
-export function formatKm(meters: number, decimals = 1): string {
-  return `${(meters / 1000).toFixed(decimals).replace(".", ",")} km`
-}
-
 export function formatElevation(meters: number): string {
   return `${Math.round(meters).toLocaleString("pt-BR")} m`
 }

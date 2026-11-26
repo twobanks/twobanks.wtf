@@ -205,7 +205,6 @@ export const grandeSertaoDays: TripDay[] = [
       "Primeiro dia de imersão sem bike no Parque Nacional Cavernas do Peruaçu, explorando sítios rupestres monumentais.",
     plannedDistanceMeters: 0,
     plannedElevationGain: 0,
-    plannedGpxFile: "/gpx/sertao/VEREDAS - DIA 4.gpx",
     sunAndMoon: {
       sunrise: "05:34",
       sunset: "18:42",
@@ -300,7 +299,6 @@ export const grandeSertaoDays: TripDay[] = [
       "Deslocamento curto de 10,5 km concluindo a chegada à histórica Contendas para reencontro familiar.",
     plannedDistanceMeters: 10500,
     plannedElevationGain: 105,
-    plannedGpxFile: "/gpx/sertao/VEREDAS - DIA 4.gpx",
     sunAndMoon: {
       sunrise: "05:36",
       sunset: "18:43",
@@ -325,7 +323,6 @@ export const grandeSertaoDays: TripDay[] = [
       "Dia livre para convívio familiar, recuperação muscular, revisão mecânica e prospecção de materiais de embalagem.",
     plannedDistanceMeters: 0,
     plannedElevationGain: 0,
-    plannedGpxFile: "/gpx/sertao/VEREDAS - DIA 5.gpx",
     sunAndMoon: {
       sunrise: "05:37",
       sunset: "18:43",
@@ -353,7 +350,6 @@ export const grandeSertaoDays: TripDay[] = [
       "56 km pelo platô árido e pedregoso do Alto Cerrado chegando a Coração de Jesus na véspera da Festa de São Sebastião.",
     plannedDistanceMeters: 56000,
     plannedElevationGain: 978,
-    plannedGpxFile: "/gpx/sertao/VEREDAS - DIA 6.gpx",
     externalRoutes: {
       stravaUrl: "#",
     },
@@ -385,7 +381,6 @@ export const grandeSertaoDays: TripDay[] = [
       "Etapa final de 66 km cruzando a fronteira da obra rosiana até Montes Claros no dia de São Sebastião / Oxóssi.",
     plannedDistanceMeters: 66000,
     plannedElevationGain: 1187,
-    plannedGpxFile: "/gpx/sertao/VEREDAS - DIA 10.gpx",
     externalRoutes: {
       stravaUrl: "#",
     },

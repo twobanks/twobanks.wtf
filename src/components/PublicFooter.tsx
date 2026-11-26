@@ -17,6 +17,7 @@ import { ModeToggle } from "./ModeToggle";
 const PUBLIC_NAV_ITEMS = [
   { href: "/sobre", label: "Sobre", icon: User },
   { href: "/atividades", label: "Atividades", icon: Activity },
+  { href: "/treinos", label: "Treinos", icon: Activity },
   { href: "/viagens", label: "Viagens", icon: Compass },
   { href: "/fotos", label: "Fotos", icon: Camera },
 ];
