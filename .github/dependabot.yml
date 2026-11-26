@@ -5,13 +5,30 @@ updates:
 
   # Manter dependências do GitHub Actions
   - package-ecosystem: "github-actions"
-    # Workflow files stored in the default location of `.github/workflows`. (You don't need to specify `/.github/workflows` for `directory`. You can use `directory: "/"`.)
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ["*"]
 
-  # Manter dependências do npm
+  # Manter dependências do npm (produção)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      production-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
