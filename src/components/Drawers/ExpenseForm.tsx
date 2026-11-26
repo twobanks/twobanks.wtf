@@ -281,7 +281,7 @@ export function ExpenseForm({
           type="checkbox"
           name="paid"
           defaultChecked={expense?.paid ?? false}
-          className="size-4 rounded border-sidebar-border bg-sidebar accent-[#FC4C02]"
+          className="size-4 rounded border-sidebar-border bg-sidebar accent-brand-blue"
           disabled={isSubmitting}
         />
         Pago

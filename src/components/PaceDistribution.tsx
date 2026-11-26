@@ -77,9 +77,9 @@ export default function PaceDistribution({ streams }: { streams: any }) {
     if (active && payload && payload.length) {
       const data = payload[0].payload
       return (
-        <div className="bg-surface-1 text-white p-3 rounded-lg border border-border shadow-xl text-sm">
+        <div className="bg-surface-1 text-foreground p-3 rounded-lg border border-border shadow-xl text-sm">
           <p className="font-bold text-muted-foreground mb-1">{data.name}/km</p>
-          <p className="text-[#FC4C02] font-bold text-lg">{data.displayTime}</p>
+          <p className="text-accent-foreground font-bold text-lg">{data.displayTime}</p>
         </div>
       )
     }

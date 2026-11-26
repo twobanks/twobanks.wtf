@@ -128,7 +128,7 @@ export default async function TreinosPage() {
 
           {/* LADO REALIDADE (STRAVA) */}
           <div className="p-6 bg-surface-1">
-            <h3 className="text-xs font-bold text-subtle-foreground uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-[#FC4C02]">🏃</span> Executado (Strava)</h3>
+            <h3 className="text-xs font-bold text-subtle-foreground uppercase tracking-wider mb-4 flex items-center gap-2"><span className="text-accent-foreground">🏃</span> Executado (Strava)</h3>
             {execucaoStrava ? (
               <div className="space-y-4">
                 <h4 className="text-lg font-bold">{execucaoStrava.name}</h4>
@@ -183,7 +183,7 @@ export default async function TreinosPage() {
             {/* Corrida - Executado */}
             <div className="space-y-1 border-r md:border-r-0 border-border pr-4">
               <p className="text-[10px] font-bold text-subtle-foreground uppercase tracking-wider flex items-center gap-1">
-                🏃 Corrida <span className="text-[#FC4C02] ml-1">Executado</span>
+                🏃 Corrida <span className="text-accent-foreground ml-1">Executado</span>
               </p>
               <p className="text-3xl font-extrabold">{execRunKm.toFixed(0)} <span className="text-sm font-normal text-subtle-foreground">km</span></p>
             </div>
@@ -199,7 +199,7 @@ export default async function TreinosPage() {
             {/* Bike - Executado */}
             <div className="space-y-1">
               <p className="text-[10px] font-bold text-subtle-foreground uppercase tracking-wider flex items-center gap-1">
-                🚴 Bike <span className="text-[#FC4C02] ml-1">Executado</span>
+                🚴 Bike <span className="text-accent-foreground ml-1">Executado</span>
               </p>
               <p className="text-3xl font-extrabold">{execBikeKm.toFixed(0)} <span className="text-sm font-normal text-subtle-foreground">km</span></p>
             </div>
@@ -210,11 +210,11 @@ export default async function TreinosPage() {
             <div>
               <div className="flex justify-between text-xs mb-1 font-medium">
                 <span className="text-subtle-foreground">Progresso de Corrida</span>
-                <span className="text-[#FC4C02]">{planRunKm > 0 ? ((execRunKm / planRunKm) * 100).toFixed(1) : 0}%</span>
+                <span className="text-accent-foreground">{planRunKm > 0 ? ((execRunKm / planRunKm) * 100).toFixed(1) : 0}%</span>
               </div>
               <div className="h-2 w-full bg-surface-2 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
+                  className="h-full bg-accent rounded-full transition-all duration-1000"
                   style={{ width: `${Math.min(planRunKm > 0 ? (execRunKm / planRunKm) * 100 : 0, 100)}%` }}
                 />
               </div>
@@ -224,11 +224,11 @@ export default async function TreinosPage() {
               <div>
                 <div className="flex justify-between text-xs mb-1 font-medium">
                   <span className="text-subtle-foreground">Progresso de Ciclismo</span>
-                  <span className="text-[#FC4C02]">{planBikeKm > 0 ? ((execBikeKm / planBikeKm) * 100).toFixed(1) : 0}%</span>
+                  <span className="text-accent-foreground">{planBikeKm > 0 ? ((execBikeKm / planBikeKm) * 100).toFixed(1) : 0}%</span>
                 </div>
                 <div className="h-2 w-full bg-surface-2 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-[#FC4C02] rounded-full transition-all duration-1000"
+                    className="h-full bg-accent rounded-full transition-all duration-1000"
                     style={{ width: `${Math.min(planBikeKm > 0 ? (execBikeKm / planBikeKm) * 100 : 0, 100)}%` }}
                   />
                 </div>

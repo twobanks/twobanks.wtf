@@ -84,7 +84,7 @@ export function KanbanCard({ task, isOverlay = false, users }: KanbanCardProps) 
           ref={setNodeRef}
           style={style}
           className={`group relative w-full flex flex-col gap-3 p-4 bg-surface-1 border ${
-            isOverlay ? "border-brand-blue shadow-2xl rotate-2 scale-105" : "border-border shadow-sm"
+            isOverlay ? "border-brand-blue shadow-md rotate-2 scale-105" : "border-border shadow-sm"
           } rounded-xl hover:border-border-strong transition-colors cursor-default text-left`}
         >
           {/* Alça de Arraste Invisível (Aparece no Hover) */}

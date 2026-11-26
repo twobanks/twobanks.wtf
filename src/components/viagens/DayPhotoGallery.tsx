@@ -40,7 +40,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
             key={photo.id}
             type="button"
             onClick={() => setSelectedIndex(index)}
-            className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-surface-1 text-left focus:outline-none focus:ring-2 focus:ring-[#5EACCF]"
+            className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-surface-1 text-left focus:outline-none focus:ring-2 focus:ring-brand-blue"
           >
             <img
               src={photo.url}
@@ -57,7 +57,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
                 )}
                 {photo.location && (
                   <span className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                    <MapPin className="size-3 text-[#5EACCF]" />
+                    <MapPin className="size-3 text-brand-blue" />
                     {photo.location}
                   </span>
                 )}

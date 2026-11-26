@@ -178,7 +178,7 @@ export default async function DiaViagemPage({
                     href={day.externalRoutes.stravaUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[#5EACCF] hover:underline font-medium"
+                    className="inline-flex items-center gap-1 text-brand-blue hover:underline font-medium"
                   >
                     Rota no Strava
                     <ExternalLink className="size-3" />
@@ -300,7 +300,7 @@ export default async function DiaViagemPage({
                   </div>
                   <Link
                     href={`/atividades/${w.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5EACCF] hover:underline shrink-0"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-blue hover:underline shrink-0"
                   >
                     Ver atividade
                     <ExternalLink className="size-3.5" />
@@ -372,7 +372,7 @@ export default async function DiaViagemPage({
               href={`/viagens/${trip.slug}/${prevDay.slug}`}
               className="inline-flex items-center gap-2 text-subtle-foreground hover:text-foreground transition-colors"
             >
-              <ArrowLeft className="size-4 text-[#5EACCF]" />
+              <ArrowLeft className="size-4 text-brand-blue" />
               <span>
                 Dia {String(prevDay.dayNumber).padStart(2, "0")} •{" "}
                 {prevDay.destination}
@@ -391,12 +391,12 @@ export default async function DiaViagemPage({
                 Dia {String(nextDay.dayNumber).padStart(2, "0")} •{" "}
                 {nextDay.destination}
               </span>
-              <ArrowRight className="size-4 text-[#5EACCF]" />
+              <ArrowRight className="size-4 text-brand-blue" />
             </Link>
           ) : (
             <Link
               href={`/viagens/${trip.slug}`}
-              className="inline-flex items-center gap-2 text-[#5EACCF] hover:underline ml-auto"
+              className="inline-flex items-center gap-2 text-brand-blue hover:underline ml-auto"
             >
               <span>Voltar para {trip.title}</span>
               <ArrowRight className="size-4" />

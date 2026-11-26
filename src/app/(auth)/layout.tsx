@@ -13,7 +13,7 @@ export default async function AuthLayout({
   }
 
   return (
-    <div className="w-full bg-[#0a0a0a] text-white overflow-hidden">
+    <div className="w-full bg-background text-foreground overflow-hidden">
       {children}
     </div>
   )

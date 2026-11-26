@@ -230,7 +230,7 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl max-h-[92vh] rounded-2xl border border-border bg-surface-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_340px] shadow-2xl"
+            className="relative w-full max-w-6xl max-h-[92vh] rounded-2xl border border-border bg-surface-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_340px] shadow-sm"
           >
             {/* Área da Imagem Ampliada */}
             <div className="relative bg-background flex items-center justify-center min-h-[42vh] sm:min-h-[55vh] lg:min-h-[75vh] max-h-[60vh] lg:max-h-[92vh] p-3 sm:p-6">

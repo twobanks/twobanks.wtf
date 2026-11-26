@@ -220,7 +220,7 @@ export default function TripMap({
       const isHighlight = poi.type === "highlight"
       const el = document.createElement("div")
       el.className = `size-4 rounded-full border-2 border-background shadow-lg cursor-pointer transition-transform hover:scale-125 ${
-        isHighlight ? "bg-warning" : "bg-[#5EACCF]"
+        isHighlight ? "bg-warning" : "bg-brand-blue"
       }`
       el.title = poi.name
 

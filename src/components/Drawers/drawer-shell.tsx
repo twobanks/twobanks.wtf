@@ -27,7 +27,7 @@ export const drawerSelectTriggerClass =
   'data-[placeholder]:text-subtle-foreground';
 
 export const drawerSelectContentClass =
-  'bg-surface-1 border-border text-foreground shadow-2xl';
+  'bg-surface-1 border-border text-foreground shadow-sm';
 
 export const drawerSelectItemClass =
   'focus:bg-surface-3 focus:text-foreground transition-colors cursor-pointer rounded-md';
@@ -88,7 +88,7 @@ export function DrawerShell({
             !p-0 !mt-0 h-[100dvh] flex flex-col
             bg-background text-foreground
             border-t border-border
-            rounded-t-3xl shadow-2xl
+            rounded-t-2xl shadow-sm
           "
         >
           {/* Bloco 1: Header */}

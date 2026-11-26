@@ -50,7 +50,7 @@ export default function AtividadesFilters({
         onClick={() => setIsOpen(!isOpen)}
         className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors ${
           hasActiveFilters
-            ? "bg-orange-600 text-white hover:bg-orange-700"
+            ? "bg-accent text-accent-foreground hover:bg-accent/90"
             : "bg-surface-1 text-foreground border border-border hover:bg-surface-2"
         }`}
       >
@@ -69,7 +69,7 @@ export default function AtividadesFilters({
         </svg>
         FILTROS
         {hasActiveFilters && (
-          <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-white text-orange-600 rounded-full">
+          <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold bg-background text-accent-foreground rounded-full">
             !
           </span>
         )}
@@ -96,7 +96,7 @@ export default function AtividadesFilters({
                   <button
                     type="button"
                     onClick={handleClearFilters}
-                    className="text-sm text-[#FC4C02] hover:text-foreground"
+                    className="text-sm text-accent-foreground hover:text-foreground"
                   >
                     Limpar filtros
                   </button>
@@ -113,7 +113,7 @@ export default function AtividadesFilters({
                     id="type"
                     name="type"
                     defaultValue={activityType === "all" ? "" : activityType}
-                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Todos</option>
                     {typeOptions.map(type => (
@@ -131,7 +131,7 @@ export default function AtividadesFilters({
                     id="gearId"
                     name="gearId"
                     defaultValue={gearId || ""}
-                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     <option value="">Todos</option>
                     <optgroup label="👟 Tênis">
@@ -156,7 +156,7 @@ export default function AtividadesFilters({
                     id="sort"
                     name="sort"
                     defaultValue={sortValue}
-                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-surface-2 border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     {SORT_OPTIONS.map(option => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -175,7 +175,7 @@ export default function AtividadesFilters({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-[#FC4C02] hover:bg-orange-700 text-white transition-colors"
+                  className="px-4 py-2 text-sm font-semibold rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 transition-colors"
                 >
                   Aplicar Filtros
                 </button>

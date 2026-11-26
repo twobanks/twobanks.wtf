@@ -197,7 +197,7 @@ function UnifiedFiltersBar({
               ) : (
                 <LayoutGrid
                   className={`size-4 sm:size-[18px] ${
-                    isActive ? "text-[#6FC5EF]" : ""
+                    isActive ? "text-brand-blue" : ""
                   }`}
                 />
               )}
@@ -468,7 +468,7 @@ export function AtividadesView({
                   <Icon
                     className={`size-4 shrink-0 ${
                       isActive
-                        ? "text-[#6FC5EF]"
+                        ? "text-brand-blue"
                         : "text-subtle-foreground"
                     }`}
                   />
@@ -478,7 +478,7 @@ export function AtividadesView({
                     <span
                       className={`px-2 py-0.5 rounded-full text-[11px] font-semibold tabular-nums ${
                         isActive
-                          ? "bg-[#6FC5EF]/15 text-sky-700 dark:text-[#6FC5EF]"
+                          ? "bg-brand-blue/[0.15] text-brand-blue"
                           : "bg-surface-3 text-muted-foreground"
                       }`}
                     >
@@ -512,7 +512,7 @@ export function AtividadesView({
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-sky-700 dark:text-[#6FC5EF]">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-brand-blue">
                     Distância Total Acumulada
                   </p>
                   <p className="mt-1 text-4xl sm:text-5xl font-bold tracking-tight tabular-nums text-foreground">
@@ -553,7 +553,7 @@ export function AtividadesView({
                     <div className="h-2.5 w-full rounded-full bg-surface-2 overflow-hidden flex gap-0.5">
                       <div
                         style={{ width: `${bikePct}%` }}
-                        className="bg-[#6FC5EF] transition-all duration-500"
+                        className="bg-brand-blue transition-all duration-500"
                       />
                       <div
                         style={{ width: `${runPct}%` }}
@@ -563,7 +563,7 @@ export function AtividadesView({
 
                     <div className="flex flex-wrap items-center justify-between gap-4 text-sm tabular-nums">
                       <div className="flex items-center gap-2">
-                        <span className="size-2.5 rounded-full bg-[#6FC5EF]" />
+                        <span className="size-2.5 rounded-full bg-brand-blue" />
                         <span className="text-subtle-foreground">Pedalando:</span>
                         <span className="font-bold text-foreground">
                           {formatKm(bikeData.totalMeters)}
@@ -623,7 +623,7 @@ export function AtividadesView({
                     <span className="text-sm font-semibold text-foreground">
                       Total em {selectedYear}
                     </span>
-                    <span className="text-xl font-bold tabular-nums text-[#6FC5EF]">
+                    <span className="text-xl font-bold tabular-nums text-brand-blue">
                       {formatKm(selectedYearTotalMeters)}
                     </span>
                   </div>

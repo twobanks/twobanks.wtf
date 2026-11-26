@@ -80,7 +80,7 @@ export function IndigenousPattern({
                 y2="1.8"
                 stroke="currentColor"
                 strokeWidth="2.4"
-                className="text-zinc-900 dark:bg-zinc-500"
+                className="text-foreground"
               />
               <line
                 x1="0"
@@ -89,7 +89,7 @@ export function IndigenousPattern({
                 y2="18.2"
                 stroke="currentColor"
                 strokeWidth="2.4"
-                className="text-zinc-900 dark:bg-zinc-900"
+                className="text-foreground"
               />
 
               {/* Losango duplo central */}
@@ -99,12 +99,12 @@ export function IndigenousPattern({
                 stroke="currentColor"
                 strokeWidth="2.4"
                 strokeLinejoin="miter"
-                className="text-zinc-600 dark:text-zinc-500"
+                className="text-muted-foreground"
               />
               <polygon
                 points="22,6.8 26.8,10 22,13.2 17.2,10"
                 fill="currentColor"
-                className="text-[#F5B114]"
+                className="text-brand-yellow"
               />
 
               {/* Divisores verticais duplos entre módulos */}
@@ -115,7 +115,7 @@ export function IndigenousPattern({
                 y2="16"
                 stroke="currentColor"
                 strokeWidth="1.8"
-                className="text-zinc-600 dark:text-zinc-600"
+                className="text-muted-foreground"
               />
               <line
                 x1="40.5"
@@ -124,7 +124,7 @@ export function IndigenousPattern({
                 y2="16"
                 stroke="currentColor"
                 strokeWidth="1.8"
-                className="text-zinc-600 dark:text-zinc-600"
+                className="text-muted-foreground"
               />
             </g>
           </pattern>

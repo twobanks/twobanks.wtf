@@ -466,7 +466,7 @@ ${trkpts}
           onClick={handleToggle3D}
           className={`p-2 rounded-lg transition-colors ${
             is3D 
-              ? "bg-surface-2 text-[#5EACCF]" 
+              ? "bg-surface-2 text-brand-blue" 
               : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={is3D ? "Visão 2D" : "Visão 3D"}
@@ -479,7 +479,7 @@ ${trkpts}
           onClick={handleToggleStyle}
           className={`p-2 rounded-lg transition-colors ${
             isSatellite 
-              ? "bg-surface-2 text-[#5EACCF]" 
+              ? "bg-surface-2 text-brand-blue" 
               : "text-subtle-foreground hover:bg-surface-2"
           }`}
           title={isSatellite ? "Modo Vetorial" : "Modo Satélite"}
@@ -524,7 +524,7 @@ ${trkpts}
         <button
           type="button"
           onClick={handleDownloadGPX}
-          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-[#5EACCF] transition-colors"
+          className="p-2 rounded-lg text-subtle-foreground hover:bg-surface-2 hover:text-brand-blue transition-colors"
           title="Baixar Rota (.gpx)"
         >
           <Download size={18} />

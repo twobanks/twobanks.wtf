@@ -15,7 +15,7 @@ export default async function ViagensPage() {
             className="group flex items-center justify-between gap-4 px-6 py-5 hover:bg-surface-2/60"
           >
             <div className="min-w-0 space-y-1">
-              <h2 className="text-lg font-bold text-foreground group-hover:text-[#5EACCF]">
+              <h2 className="text-lg font-bold text-foreground group-hover:text-brand-blue">
                 {trip.title}
               </h2>
               <div className="flex flex-wrap items-center gap-3 text-xs text-subtle-foreground">
@@ -29,7 +29,7 @@ export default async function ViagensPage() {
                 </span>
               </div>
             </div>
-            <ArrowRight className="size-4 text-subtle-foreground group-hover:text-[#5EACCF]" />
+            <ArrowRight className="size-4 text-subtle-foreground group-hover:text-brand-blue" />
           </Link>
         ))}
       </div>

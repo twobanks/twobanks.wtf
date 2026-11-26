@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ModeToggle } from "./ModeToggle";
 
 const styleFooter = {
-  links: 'flex items-center justify-center rounded-xl p-2 text-[#B8DE53] transition-colors hover:bg-surface-2 hover:text-foreground',
+  links: 'flex items-center justify-center rounded-xl p-2 text-success transition-colors hover:bg-surface-2 hover:text-foreground',
   container: 'flex h-16 w-full items-center justify-end px-6 gap-6 bg-background'
 }
 

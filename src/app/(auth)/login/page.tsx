@@ -85,24 +85,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-1 h-full min-h-[calc(100vh-5rem)] w-full bg-[#0a0a0a] overflow-hidden">
+    <div className="flex flex-1 h-full min-h-[calc(100vh-5rem)] w-full bg-background overflow-hidden">
       <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 border-r border-border relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-[0.03]">
-          <div className="w-[200%] h-[1px] bg-white absolute rotate-0" />
-          <div className="w-[200%] h-[1px] bg-white absolute rotate-90" />
-          <div className="w-[200%] h-[1px] bg-white absolute rotate-45" />
-          <div className="w-[200%] h-[1px] bg-white absolute -rotate-45" />
+          <div className="w-[200%] h-[1px] bg-foreground/[0.03] absolute rotate-0" />
+          <div className="w-[200%] h-[1px] bg-foreground/[0.03] absolute rotate-90" />
+          <div className="w-[200%] h-[1px] bg-foreground/[0.03] absolute rotate-45" />
+          <div className="w-[200%] h-[1px] bg-foreground/[0.03] absolute -rotate-45" />
         </div>
 
         <div className="z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <div className="relative w-62 md:w-[200px] lg:w-[400px] flex items-center justify-center">
-            <LogoTwoBanks className="w-full h-auto text-[#5bb4d8] transition-colors duration-300 ease-in-out" />
+            <LogoTwoBanks className="w-full h-auto text-brand-blue transition-colors duration-300 ease-in-out" />
           </div>
         </div>
       </div>
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 relative overflow-y-auto">
-        <div className="w-full max-w-[420px] bg-[#141414] border border-border/60 rounded-[24px] p-8 sm:p-10 shadow-2xl flex flex-col items-center">
+        <div className="w-full max-w-[420px] bg-card border border-border/60 rounded-2xl p-8 sm:p-10 shadow-sm flex flex-col items-center">
           {step === "email" ? (
             <div className="flex flex-col items-center text-center w-full">
               <div className="w-12 h-12 mb-6 rounded-full bg-surface-1 flex items-center justify-center border border-border">
@@ -112,7 +112,7 @@ export default function LoginPage() {
                 </svg>
               </div>
               
-              <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                 Acesse sua conta
               </h2>
               <p className="text-sm text-subtle-foreground mb-8">
@@ -128,33 +128,33 @@ export default function LoginPage() {
                     placeholder="hi@company.com"
                     required
                     autoFocus
-                    className="w-full bg-[#1a1a1a] border border-border rounded-xl px-4 py-3.5 text-white placeholder:text-subtle-foreground focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm text-center"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-subtle-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all text-sm text-center"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-[#1b73e8] hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl text-sm transition-colors"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium py-3.5 rounded-xl text-sm transition-colors"
                 >
                   {isLoading ? "Enviando..." : "Continuar"}
                 </button>
               </form>
 
               {message && (
-                <div className="text-sm text-red-400 mt-6">
+                <div className="text-sm text-destructive mt-6">
                   {message}
                 </div>
               )}
             </div>
           ) : (
             <div className="flex flex-col items-center text-center w-full">
-              <h2 className="text-xl md:text-2xl font-semibold text-white mb-2">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                 Por favor, verifique seu email
               </h2>
               <p className="text-sm text-subtle-foreground mb-8">
                 Enviamos um código para{" "}
-                <span className="font-medium text-white">{identifier}</span>
+                <span className="font-medium text-foreground">{identifier}</span>
               </p>
 
               <form onSubmit={handleVerifyOtp} className="w-full flex flex-col items-center">
@@ -166,8 +166,8 @@ export default function LoginPage() {
                       <div
                         key={index}
                         className={`w-10 h-12 sm:w-12 sm:h-14 flex items-center justify-center rounded-lg text-lg font-medium transition-all
-                          ${isActive && !isLoading ? 'border-2 border-blue-500 bg-[#1a1a1a]' : 'border border-border bg-transparent'}
-                          ${isFilled ? 'text-white' : 'text-subtle-foreground'}
+                          ${isActive && !isLoading ? 'border-2 border-ring bg-background' : 'border border-border bg-transparent'}
+                          ${isFilled ? 'text-foreground' : 'text-subtle-foreground'}
                           ${isLoading ? 'opacity-50' : 'opacity-100'}
                         `}
                       >
@@ -190,14 +190,14 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isLoading || otp.length !== 6}
-                  className="w-full bg-[#1b73e8] hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3.5 rounded-xl text-sm transition-colors"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed font-medium py-3.5 rounded-xl text-sm transition-colors"
                 >
                   {isLoading ? "Verificando..." : "Verificar"}
                 </button>
               </form>
 
               {message && (
-                <div className="text-sm text-red-400 mt-4">
+                <div className="text-sm text-destructive mt-4">
                   {message}
                 </div>
               )}
@@ -208,7 +208,7 @@ export default function LoginPage() {
                   type="button"
                   onClick={resetToEmailStep}
                   disabled={isLoading}
-                  className="text-white font-medium hover:underline transition-all disabled:opacity-50"
+                  className="text-foreground font-medium hover:underline transition-all disabled:opacity-50"
                 >
                   Reenviar
                 </button>
