@@ -38,3 +38,5 @@ jobs:
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
           RESEND_API_KEY: re_ci_dummy
+          AUTH_SECRET: ci-dummy-secret-do-not-use
+          AUTH_TRUST_HOST: "1"

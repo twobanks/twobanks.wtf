@@ -17,6 +17,12 @@ const envSchema = z.object({
   STRAVA_CLIENT_SECRET: z.string().optional(),
   STRAVA_REFRESH_TOKEN: z.string().optional(),
 
+  // NextAuth (Auth.js v5). Opcionais no schema para não quebrar builds
+  // sem .env; a obrigatoriedade real é aplicada em src/auth.ts em produção.
+  AUTH_SECRET: z.string().optional(),
+  NEXTAUTH_SECRET: z.string().optional(),
+  AUTH_TRUST_HOST: z.string().optional(),
+
   // Quando definido como "1" (ex.: CI), pula a validação de obrigatórias.
   SKIP_ENV_VALIDATION: z.string().optional(),
 });
