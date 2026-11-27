@@ -136,7 +136,11 @@ export async function parsePublicGpxFile(
 
     gpxParseCache.set(cleanPath, result)
     return result
-  } catch {
+  } catch (_error) {
+    console.warn(
+      `[parsePublicGpxFile] Falha ao ler GPX "${publicRelativePath}":`,
+      _error,
+    )
     return null
   }
 }

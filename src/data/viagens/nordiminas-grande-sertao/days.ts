@@ -268,6 +268,7 @@ export const grandeSertaoDays: TripDay[] = [
       "Retomada do pedal deixando o vale do São Francisco e encarando a maior altimetria acumulada da viagem (+1.545 m).",
     plannedDistanceMeters: 99700,
     plannedElevationGain: 1545,
+    plannedGpxFile: "/gpx/sertao/VEREDAS - DIA 6.gpx",
     externalRoutes: {
       stravaUrl: "#",
     },
@@ -286,6 +287,7 @@ export const grandeSertaoDays: TripDay[] = [
     photos: [],
   },
   {
+    // TODO: adicionar GPX (arquivo VEREDAS - DIA 7.gpx ainda não disponível)
     slug: "dia-07",
     dayNumber: 7,
     phaseId: "fase-3",
@@ -337,6 +339,7 @@ export const grandeSertaoDays: TripDay[] = [
     photos: [],
   },
   {
+    // TODO: adicionar GPX (arquivo VEREDAS - DIA 9.gpx ainda não disponível)
     slug: "dia-09",
     dayNumber: 9,
     phaseId: "fase-3",
@@ -368,6 +371,7 @@ export const grandeSertaoDays: TripDay[] = [
     photos: [],
   },
   {
+    // TODO: adicionar GPX (arquivo VEREDAS - DIA 10.gpx ainda não disponível)
     slug: "dia-10",
     dayNumber: 10,
     phaseId: "fase-3",

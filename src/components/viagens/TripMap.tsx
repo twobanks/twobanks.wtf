@@ -250,15 +250,23 @@ export default function TripMap({
     })
   }
 
+  const mapUnavailable = !process.env.NEXT_PUBLIC_MAPBOX_TOKEN && !!bounds
+
+  if (mapUnavailable) {
+    console.warn(
+      "[TripMap] NEXT_PUBLIC_MAPBOX_TOKEN não definido. Mapa indisponível.",
+    )
+  }
+
   useEffect(() => {
     if (!containerRef.current || !bounds) return
     if (mapRef.current) return
+    if (!process.env.NEXT_PUBLIC_MAPBOX_TOKEN) return
 
     const initialDark = getDocumentThemeState().isDark
-    setIsDarkTheme(initialDark)
     stateRef.current.isDarkTheme = initialDark
 
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ""
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
     const map = new mapboxgl.Map({
       container: containerRef.current,
@@ -382,6 +390,14 @@ ${trksegs}
     document.addEventListener("fullscreenchange", onFSChange)
     return () => document.removeEventListener("fullscreenchange", onFSChange)
   }, [])
+
+  if (mapUnavailable) {
+    return (
+      <div className="h-[460px] w-full flex items-center justify-center bg-surface-1 text-subtle-foreground rounded-2xl border border-border">
+        Mapa indisponível: defina a variável <code>NEXT_PUBLIC_MAPBOX_TOKEN</code> no seu <code>.env.local</code> para exibir o trajeto.
+      </div>
+    )
+  }
 
   if (!bounds) {
     return (
