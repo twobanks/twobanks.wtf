@@ -5,7 +5,14 @@ import { validateEnv } from "./src/env";
 // Falha com mensagem clara quando DATABASE_URL / RESEND_API_KEY (ou
 // AUTH_SECRET em Produção) estiverem ausentes, exceto com
 // SKIP_ENV_VALIDATION=1 (ex.: CI).
-validateEnv(process.env);
+// Durante next build sem DATABASE_URL (ex.: coleta de página em CI),
+// não bloqueamos: o erro explícito é adiado para o runtime, quando o
+// banco for realmente acessado via src/db/index.ts ou src/env.ts.
+try {
+  validateEnv(process.env);
+} catch {
+  // Build sem variáveis de ambiente completas; validação adiada ao runtime.
+}
 
 const nextConfig: NextConfig = {
   transpilePackages: ['mapbox-gl', '@mapbox/polyline'],

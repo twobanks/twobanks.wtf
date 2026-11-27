@@ -4,13 +4,21 @@ import bcrypt from "bcryptjs";
 import { and, eq, gt, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import { env } from "@/env";
+
 
 const OTP_EXPIRATION_MINUTES = 5;
 const OTP_COOLDOWN_SECONDS = 60; // rate-limit: 1 código por e-mail por minuto
 
-const resend = new Resend(env.RESEND_API_KEY);
-const FROM_EMAIL = env.RESEND_FROM_EMAIL;
+let resendInstance: InstanceType<typeof Resend> | null = null;
+
+function getResend() {
+  if (!resendInstance) {
+    resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendInstance;
+}
+
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "noreply@twobanks.wtf";
 
 function generateOtp(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -21,7 +29,7 @@ async function sendOtpEmail(to: string, code: string): Promise<void> {
   const timeout = setTimeout(() => controller.abort(), 15000);
 
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
     from: FROM_EMAIL,
     to,
     subject: "Seu código de acesso twobanks",

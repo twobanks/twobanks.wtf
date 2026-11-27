@@ -76,7 +76,52 @@ export function validateEnv(input: unknown): Env {
   return data;
 }
 
-export const env = validateEnv(process.env);
+let _cachedEnv: Env | null = null;
+
+function loadEnv(): Env {
+  if (_cachedEnv) return _cachedEnv;
+  const input = process.env;
+
+  // Durante next build (NEXT_PHASE inclui "build"), não validar variáveis
+  // obrigatórias para não quebrar a coleta de página. O erro explícito
+  // ocorre no runtime ao usar db/env (veja src/db/index.ts e src/auth.ts).
+  if (process.env.NEXT_PHASE?.includes("build")) {
+    _cachedEnv = {} as Env;
+    return _cachedEnv;
+  }
+
+  if (input.SKIP_ENV_VALIDATION === "1") {
+    _cachedEnv = {} as Env;
+    return _cachedEnv;
+  }
+  const result = envSchema.safeParse(input);
+  if (!result.success) {
+    console.error(
+      "❌ Variáveis de ambiente inválidas ou ausentes:",
+      result.error.issues,
+    );
+    throw new Error(
+      "Falha na validação das variáveis de ambiente. Verifique o ficheiro .env.example.",
+    );
+  }
+  const data = result.data;
+  const isProduction =
+    process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
+  if (isProduction && !data.AUTH_SECRET && !data.NEXTAUTH_SECRET) {
+    throw new Error(
+      "AUTH_SECRET (ou NEXTAUTH_SECRET) é obrigatória em Produção. " +
+        "Defina no painel da Vercel (Preview e Produção).",
+    );
+  }
+  _cachedEnv = data;
+  return data;
+}
+
+export const env = new Proxy({} as Env, {
+  get(_, prop: string) {
+    return loadEnv()[prop as keyof Env];
+  },
+});
 
 // ============================================================================
 // Helpers de ambiente
