@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/two.svg" alt="Logo do Projeto" width="350" />
+  <img src="./src/app/favicon.ico" alt="Logo do Projeto" width="350" />
 </p>
 
 ## 📂 Estrutura do Projeto
@@ -19,8 +19,10 @@
 ├── tsconfig.json
 ├── public/
 │   ├── icons/
-│   └── two.svg
+│   └── favicon.ico
 └── src/
+    ├── app/
+    │   └── favicon.ico  (servido pelo Next.js App Router; cópia única em src/app/)
     ├── actions/        # Server Actions (carteira, blog, kanban, investimentos, etc.)
     ├── app/            # App Router (rotas agrupadas: (auth), (public), admin, api)
     ├── auth.ts         # Configurações do Auth.js (NextAuth)
@@ -109,3 +111,53 @@ O comando `git clean -fxd` remove arquivos ignorados pelo git, incluindo `.env.l
 ### Produção / Preview (Vercel)
 
 Defina as variáveis reais nos painéis da Vercel (Projeto → Settings → Environment Variables), separadamente para Preview (branch `banks`) e Produção. Nunca commite valores reais.
+
+---
+
+## 🚀 Checklist de Release (pré-go-live v1)
+
+Antes de criar a branch `production` e apontá-la na Vercel, confirme todos os itens abaixo:
+
+### Variáveis de ambiente de produção
+No painel da Vercel (Projeto → Settings → Environment Variables, ambiente **Production**), confirme que estão definidas:
+
+- [ ] `DATABASE_URL` — URL do PostgreSQL (Neon)
+- [ ] `RESEND_API_KEY` — chave da Resend para e-mails transacionais
+- [ ] `AUTH_SECRET` — segredo do NextAuth v5 (`openssl rand -base64 32`). **Obrigatório em Produção.**
+- [ ] `NEXTAUTH_SECRET` — fallback de compatibilidade (opcional)
+- [ ] `AUTH_TRUST_HOST=1` — necessário atrás do proxy da Vercel
+- [ ] `NEXT_PUBLIC_MAPBOX_TOKEN` — token do Mapbox (se usado em rotas públicas)
+- [ ] Variáveis opcionais conforme uso: `COROS_AUTH_TOKEN`, `STRAVA_*`, `SPOTIFY_*`
+
+### Ausência de rotas legadas
+Confirme zero links órfãos para rotas removidas:
+
+- [ ] Nenhuma referência a `/treinos` como rota/navegação/link
+- [ ] Nenhuma referência a `/atividades/[id]` como rota/navegação/link
+- [ ] `src/app/sitemap.ts` lista apenas rotas existentes
+- [ ] `src/lib/routes.ts` não contém `TREINOS` nem `ATIVIDADE` no mapa de rotas
+
+### Build de produção limpo
+Rode localmente sem `SKIP_ENV_VALIDATION`:
+
+```sh
+yarn env:check       # confirma .env.local presente
+yarn tsc --noEmit    # TypeScript sem erros
+yarn lint            # ESLint sem erros
+yarn test            # todos os testes passando
+yarn build           # build de produção bem-sucedido
+```
+
+### Criação da branch `production`
+```sh
+# A partir da branch banks (devidamente validada acima)
+git checkout banks
+git pull origin banks
+git checkout -b production
+git push origin production
+```
+
+Em seguida, no painel da Vercel:
+1. Vá em **Settings → Domains** e configure o domínio de produção.
+2. Vá em **Settings → Git** e defina a branch de produção como `production`.
+3. Faça o deploy e verifique que o site carrega corretamente em produção.
