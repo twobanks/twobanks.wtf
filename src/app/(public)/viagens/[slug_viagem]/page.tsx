@@ -1,8 +1,9 @@
 import TripMap from "@/components/viagens/TripMapLoader"
 import TripElevationChart from "@/components/viagens/TripElevationChart"
+import { EmptyState } from "@/components/patterns"
 import { formatDatePtBr, formatElevation, getEnrichedTripBySlug } from "@/lib/viagens"
 import { formatKm } from "@/lib/utils"
-import { ArrowLeft, Sunrise } from "lucide-react"
+import { ArrowLeft, Calendar, Sunrise } from "lucide-react"
 import Link from "next/link"
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -79,6 +80,16 @@ export default async function ViagemDetalhePage({
         </header>
       </div>
 
+      {trip.days.length === 0 ? (
+        <EmptyState
+          icon={Calendar}
+          title="Nenhuma etapa registrada nesta viagem."
+          description="O roteiro de dias desta expedição ainda não foi cadastrado."
+          className="min-h-[340px] flex flex-col items-center justify-center w-full"
+        />
+      ) : (
+        <>
+
       {/* Mapa alinhado ao container e sem bordas */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6">
         <TripMap
@@ -152,6 +163,8 @@ export default async function ViagemDetalhePage({
           })}
         </div>
       </section>
+      </>
+      )}
     </main>
   )
 }

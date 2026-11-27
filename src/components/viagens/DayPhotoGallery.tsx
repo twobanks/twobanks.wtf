@@ -41,6 +41,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
             key={photo.id}
             type="button"
             onClick={() => setSelectedIndex(index)}
+            aria-label={photo.caption ? `Foto: ${photo.caption}` : `Foto ${index + 1}`}
             className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-surface-1 text-left focus:outline-none focus:ring-2 focus:ring-brand-blue"
           >
             <Image

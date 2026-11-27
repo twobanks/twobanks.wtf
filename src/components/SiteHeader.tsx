@@ -18,7 +18,7 @@ export function SiteHeader() {
       <div className="ml-auto flex items-center gap-2 px-4">
         <button
           onClick={toggleVisible}
-          title={visible ? "Ocultar valores" : "Mostrar valores"}
+          aria-label={visible ? "Ocultar valores" : "Mostrar valores"}
           className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-surface-2 transition-colors"
         >
           {visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -27,7 +27,7 @@ export function SiteHeader() {
         <form action={deslogar}>
           <button
             type="submit"
-            title="Sair"
+            aria-label="Sair"
             className="flex w-full items-center gap-2 rounded-md px-3 py-2  hover:bg-surface-2 transition-colors"
           >
             <SquareArrowRightExit className="h-5 w-5" />
