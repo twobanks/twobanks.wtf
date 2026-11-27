@@ -18,6 +18,7 @@ import {
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { EmptyState } from "@/components/patterns";
+import { formatCurrencyDecimal, formatDateBr } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -63,13 +64,6 @@ export default async function InvestimentosPage() {
   const rentabilidade = totalInvestido > 0 ? ((totalPatrimonio - totalInvestido) / totalInvestido) * 100 : 0;
   const isPositivo = rentabilidade >= 0;
 
-  const formatCurrency = (valor: number) =>
-    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-  const formatDate = (dateString: string) => {
-    const [y, m, d] = dateString.split("-");
-    return `${d}/${m}/${y}`;
-  };
 
   return (
     <div className="space-y-8">
@@ -86,7 +80,7 @@ export default async function InvestimentosPage() {
             <Wallet size={18} />
             <p className="text-sm font-medium">Patrimônio total</p>
           </div>
-          <p className="text-2xl font-bold text-foreground">{formatCurrency(totalPatrimonio)}</p>
+          <p className="text-2xl font-bold text-foreground">{formatCurrencyDecimal(totalPatrimonio)}</p>
         </div>
 
         <div className="bg-surface-1 p-5 rounded-xl border border-border flex flex-col gap-2">
@@ -94,7 +88,7 @@ export default async function InvestimentosPage() {
             <PieChart size={18} />
             <p className="text-sm font-medium">Total investido</p>
           </div>
-          <p className="text-2xl font-bold text-foreground">{formatCurrency(totalInvestido)}</p>
+          <p className="text-2xl font-bold text-foreground">{formatCurrencyDecimal(totalInvestido)}</p>
         </div>
 
         <div className="bg-surface-1 p-5 rounded-xl border border-border flex flex-col gap-2">
@@ -147,13 +141,13 @@ export default async function InvestimentosPage() {
                         <span>
                           Qtd: <strong className="text-muted-foreground font-medium">{ativo.quantity || "-"}</strong>
                         </span>
-                        <span>PM: {formatCurrency(Number(ativo.averagePrice || 0))}</span>
+                        <span>PM: {formatCurrencyDecimal(Number(ativo.averagePrice || 0))}</span>
                       </div>
                       <div className="text-sm text-subtle-foreground mt-1">
                         Preço atual:{" "}
-                        <span className="text-muted-foreground">{formatCurrency(precoAtual)}</span>{" "}
+                        <span className="text-muted-foreground">{formatCurrencyDecimal(precoAtual)}</span>{" "}
                         <span className="mx-1">•</span>
-                        Total: <span className="text-muted-foreground font-medium">{formatCurrency(total)}</span>
+                        Total: <span className="text-muted-foreground font-medium">{formatCurrencyDecimal(total)}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -212,12 +206,12 @@ export default async function InvestimentosPage() {
                       </span>
                     </p>
                     <div className="text-sm text-subtle-foreground mt-1 flex flex-wrap gap-x-4 gap-y-1">
-                      <span>{formatDate(transacao.date)}</span>
+                      <span>{formatDateBr(transacao.date)}</span>
                       <span>
-                        Valor: <strong className="text-muted-foreground font-medium">{formatCurrency(Number(transacao.amount))}</strong>
+                        Valor: <strong className="text-muted-foreground font-medium">{formatCurrencyDecimal(Number(transacao.amount))}</strong>
                       </span>
                       {transacao.quantity && <span>Qtd: {transacao.quantity}</span>}
-                      {transacao.price && <span>Preço: {formatCurrency(Number(transacao.price))}</span>}
+                      {transacao.price && <span>Preço: {formatCurrencyDecimal(Number(transacao.price))}</span>}
                     </div>
                   </div>
                   <div className="flex items-center">

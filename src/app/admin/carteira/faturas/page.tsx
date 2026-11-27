@@ -1,20 +1,12 @@
 import { auth } from "@/auth";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { db } from "@/db";
 import { creditCards, purchases } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { Eye, FileText } from "lucide-react";
 import { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { FileText } from "lucide-react";
 import { EmptyState } from "@/components/patterns";
+import { formatCurrencyDecimal } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Faturas",
@@ -101,84 +93,49 @@ export default async function FaturasPage() {
     return a.mes.localeCompare(b.mes);
   });
 
-  const formatCurrency = (valor: number) =>
-    valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-  // Nova formatação para "agosto|26"
-  const formatMes = (mes: string) => {
-    const [y, m] = mes.split("-").map(Number);
-    const date = new Date(y, m - 1, 1);
-    const nomeMes = date.toLocaleDateString("pt-BR", { month: "long" });
-    const anoCurto = date.toLocaleDateString("pt-BR", { year: "2-digit" });
-    return `${nomeMes}|${anoCurto}`;
-  };
-
   return (
     <div className="space-y-8">
-      {/* Trocado para bg-surface-1 para manter a estética do sidebar */}
-      <div className="bg-surface-1 rounded-xl border border-border p-1 md:p-4">
-        {faturas.length === 0 ? (
-          <EmptyState
-            icon={FileText}
-            title="Nenhuma fatura encontrada."
-            description="Suas faturas de cartão de crédito aparecerão aqui."
-            className="mt-6"
-          />
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="text-subtle-foreground">Cartão</TableHead>
-                <TableHead className="text-subtle-foreground">Mês/Ano</TableHead>
-                <TableHead className="text-right text-subtle-foreground">Total</TableHead>
-                <TableHead className="text-center text-subtle-foreground">Status</TableHead>
-                <TableHead className="text-center text-subtle-foreground">Ação</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {faturas.map((fatura) => (
-                <TableRow 
-                  key={`${fatura.cartao.id}-${fatura.mes}`}
-                  className="border-border hover:bg-surface-2 transition-colors"
-                >
-                  <TableCell className="font-medium text-foreground">
-                    {fatura.cartao.name}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    <span className="capitalize">{formatMes(fatura.mes)}</span>
-                  </TableCell>
-                  <TableCell className="text-right font-medium text-foreground">
-                    {formatCurrency(fatura.total)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    {/* Badges modernizadas com borda e transparência */}
-                    <span
-                      className={`inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[11px] font-medium tracking-wide  border ${
-                        fatura.status === "Fechada"
-                          ? "bg-brand-blue/10 text-brand-blue border-brand-blue/20" /* Azul da marca para algo OK/Fechado */
-                          : "bg-brand-yellow/10 text-brand-yellow border-brand-yellow/20" /* Amarelo elétrico para Aberto */
-                      }`}
-                    >
-                      {fatura.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <div className="flex justify-center">
-                      <Link
-                        href={`/admin/carteira/cartoes/${fatura.cartao.id}?mes=${fatura.mes}`}
-                        title="Ver detalhes da fatura"
-                        className="inline-flex items-center justify-center p-2 text-subtle-foreground hover:text-foreground hover:bg-surface-2 rounded-lg transition-colors"
-                      >
-                        <Eye size={18} strokeWidth={1.5} />
-                      </Link>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-foreground">Faturas</h1>
       </div>
+
+      {faturas.length === 0 ? (
+        <EmptyState
+          icon={FileText}
+          title="Nenhuma fatura cadastrada."
+          description="Suas faturas aparecerão aqui assim que houver compras com parcelamento."
+          className="mt-6"
+        />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {faturas.map((fatura) => (
+            <div
+              key={`${fatura.cartao.id}|${fatura.mes}`}
+              className="bg-surface-1 p-5 rounded-xl border border-border flex flex-col gap-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-foreground">
+                    {fatura.cartao.name} • {fatura.mes}
+                  </p>
+                  <span className="text-xs text-subtle-foreground">
+                    {fatura.status}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-bold text-foreground">
+                    {formatCurrencyDecimal(fatura.total)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Pago: {formatCurrencyDecimal(fatura.pago)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+

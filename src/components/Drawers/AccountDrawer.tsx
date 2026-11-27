@@ -1,16 +1,8 @@
 "use client"
 
 import { createAccount, updateAccount } from "@/actions/accounts"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer"
-import { FloatingAlert } from "@/components/ui/floating-alert"
 import { AccountDrawerProps } from "@/utils/types"
+import { DrawerShell } from "./drawer-shell"
 import { useState } from "react"
 
 export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
@@ -33,7 +25,7 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
       setOpen(false)
       setFloatingAlert({
         type: "success",
-        message: account ? "Conta atualizada!" : "Conta criada!",
+        message: (account ? "Conta atualizada!" : "Conta criada!"),
       })
       onSuccess?.()
     } catch (_error) {
@@ -48,66 +40,56 @@ export function AccountDrawer({ account, onSuccess }: AccountDrawerProps) {
 
   return (
     <>
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground px-4 py-2 rounded-lg transition-colors">
-          {account ? "Editar" : "+ Nova Conta"}
-        </DrawerTrigger>
-        <DrawerContent className="bg-background border-t border-border rounded-t-2xl p-6 shadow-xl">
-          <DrawerHeader>
-            <DrawerTitle className="text-xl font-semibold text-foreground">
-              {account ? "Editar Conta" : "Nova Conta"}
-            </DrawerTitle>
-            <DrawerDescription className="text-sm text-subtle-foreground mb-4">
-              {account ? "Atualize os dados da conta" : "Informe os dados da conta"}
-            </DrawerDescription>
-          </DrawerHeader>
-
-          <form action={handleSubmit} className="grid grid-cols-1 gap-4">
-            <input
-              name="name"
-              placeholder="Nome da conta"
-              defaultValue={account?.name}
-              required
-              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
-            />
-            <select
-              name="type"
-              defaultValue={account?.type}
-              required
-              className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
-            >
-              <option value="checking">Conta Corrente</option>
-              <option value="savings">Poupança</option>
-              <option value="cash">Dinheiro</option>
-              <option value="investment">Investimento</option>
-              <option value="other">Outro</option>
-            </select>
-            <input
-              name="initialBalance"
-              type="number"
-              step="0.01"
-              placeholder="Saldo inicial"
-              defaultValue={account?.initialBalance ?? ""}
-              className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
-            />
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-primary hover:brightness-110 text-primary-foreground font-medium p-3 rounded-lg transition-all disabled:opacity-50"
-            >
-              {isSubmitting ? "Salvando..." : "Salvar"}
-            </button>
-          </form>
-        </DrawerContent>
-      </Drawer>
-
-      {floatingAlert && (
-        <FloatingAlert
-          type={floatingAlert.type}
-          message={floatingAlert.message}
-          onClose={() => setFloatingAlert(null)}
+      <DrawerShell
+        open={open}
+        onClose={() => setOpen(false)}
+        title={account ? "Editar Conta" : "Nova Conta"}
+        description={
+          account ? "Atualize os dados da conta" : "Informe os dados da conta"
+        }
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        submitLabel="Salvar"
+        submitLabelLoading="Salvando..."
+        alert={floatingAlert}
+        onAlertClose={() => setFloatingAlert(null)}
+      >
+        <input
+          name="name"
+          placeholder="Nome da conta"
+          defaultValue={account?.name}
+          required
+          className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
         />
-      )}
+        <select
+          name="type"
+          defaultValue={account?.type}
+          required
+          className="bg-surface-2 border border-border p-3 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
+        >
+          <option value="checking">Conta Corrente</option>
+          <option value="savings">Poupança</option>
+          <option value="cash">Dinheiro</option>
+          <option value="investment">Investimento</option>
+          <option value="other">Outro</option>
+        </select>
+        <input
+          name="initialBalance"
+          type="number"
+          step="0.01"
+          placeholder="Saldo inicial"
+          defaultValue={account?.initialBalance ?? ""}
+          className="bg-surface-2 border border-border p-3 rounded-lg placeholder:text-subtle-foreground text-foreground focus:outline-none focus:ring-2 focus:ring-brand-blue/30"
+        />
+      </DrawerShell>
+
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-2 bg-surface-2 hover:bg-surface-3 text-foreground px-4 py-2 rounded-lg transition-colors"
+      >
+        {account ? "Editar" : "+ Nova Conta"}
+      </button>
     </>
   )
 }
