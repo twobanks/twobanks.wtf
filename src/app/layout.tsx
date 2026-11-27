@@ -26,6 +26,10 @@ export const metadata: Metadata = {
     template: "%s — BANKS",
     default: "BANKS",
   },
+  icons: {
+    icon: [{ url: "/favicon.ico" }],
+    apple: [{ url: "/favicon.ico" }],
+  },
   description: "where i register my randomness 🛸",
   keywords: ["desenvolvimento", "tecnologia", "portfólio", "blog", "randomness"],
   authors: [{ name: "Thiago Gonçalves Soares" }],

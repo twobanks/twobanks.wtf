@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { LogoTwoBanks } from "@/components/twobanks";
 
 export const metadata: Metadata = {
-  title: "BANKS",
+  title: { absolute: "BANKS" },
   description:
     "Portfólio pessoal de Thiago Gonçalves Soares: desenvolvimento, tecnologia, trilhas, ciclismo, corridas e viagens.",
   openGraph: {
