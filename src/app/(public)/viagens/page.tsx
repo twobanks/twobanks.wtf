@@ -7,21 +7,21 @@ import { EmptyState } from "@/components/patterns";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Viagens — BANKS",
+  title: "Viagens",
   description:
     "Roteiros de viagem, expedições de ciclismo e diários de bordo registrados ao longo dos anos.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: "/viagens",
-    title: "Viagens — BANKS",
+    title: "Viagens",
     description:
       "Roteiros de viagem, expedições de ciclismo e diários de bordo registrados ao longo dos anos.",
     siteName: "BANKS",
   },
   twitter: {
     card: "summary",
-    title: "Viagens — BANKS",
+    title: "Viagens",
     description:
       "Roteiros de viagem, expedições de ciclismo e diários de bordo registrados ao longo dos anos.",
   },

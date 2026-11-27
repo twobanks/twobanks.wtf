@@ -23,7 +23,7 @@ const isProduction =
 export const metadata: Metadata = {
   metadataBase: new URL("https://twobanks.wtf"),
   title: {
-    template: "BANKS | %s",
+    template: "%s — BANKS",
     default: "BANKS",
   },
   description: "where i register my randomness 🛸",

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description:
     "Histórico de atividades físicas: treinos, provas, distância acumulada por modalidade e ano.",
   openGraph: {
-    title: "Atividades - BANKS",
+    title: "Atividades",
     description:
       "Acompanhe suas atividades físicas registradas, por modalidade e ano.",
     type: "website",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Atividades - BANKS",
+    title: "Atividades",
     description:
       "Acompanhe suas atividades físicas registradas, por modalidade e ano.",
   },
