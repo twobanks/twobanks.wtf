@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./src/app/favicon.ico" alt="Logo do Projeto" width="350" />
+  <img src="./public/favicon.ico" alt="Logo do Projeto" width="350" />
 </p>
 
 ## 📂 Estrutura do Projeto
@@ -22,7 +22,6 @@
 │   └── favicon.ico
 └── src/
     ├── app/
-    │   └── favicon.ico  (servido pelo Next.js App Router; cópia única em src/app/)
     ├── actions/        # Server Actions (carteira, blog, kanban, investimentos, etc.)
     ├── app/            # App Router (rotas agrupadas: (auth), (public), admin, api)
     ├── auth.ts         # Configurações do Auth.js (NextAuth)

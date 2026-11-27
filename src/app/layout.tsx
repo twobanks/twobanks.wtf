@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     default: "BANKS",
   },
   icons: {
-    icon: [{ url: "/favicon.ico" }],
+    icon: [{ url: "/favicon.ico" }, { url: "/two.svg", type: "image/svg+xml" }],
     apple: [{ url: "/favicon.ico" }],
   },
   description: "where i register my randomness 🛸",
