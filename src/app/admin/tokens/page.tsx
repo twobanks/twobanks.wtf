@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { Palette, Layers, Shield, Layout, Type, Square, Circle } from "lucide-react";
+import { Palette, Layers, Shield, Layout, Type, Square } from "lucide-react";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -85,7 +85,8 @@ const FONT_WEIGHTS = [
 type Token = { name: string; css: string; value: string; usage: string };
 
 function TokenRow({ token }: { token: Token }) {
-  const isColor = token.css.startsWith("--color-");
+  const cssVar = token.css ?? "";
+  const isColor = typeof cssVar === "string" && cssVar.startsWith("--color-");
   return (
     <div className="flex items-center gap-4 px-4 py-3 border-b border-border-subtle last:border-0 text-sm">
       <div className="w-20 shrink-0 font-mono text-xs text-subtle-foreground break-all">
@@ -96,7 +97,7 @@ function TokenRow({ token }: { token: Token }) {
           <div className="flex items-center gap-2">
             <div
               className="h-8 w-8 rounded-lg border border-border shadow-sm"
-              style={{ backgroundColor: `var(${token.css})` }}
+              style={{ backgroundColor: `var(${cssVar})` }}
             />
             <span className="font-mono text-xs text-foreground">{token.value}</span>
           </div>
@@ -104,7 +105,7 @@ function TokenRow({ token }: { token: Token }) {
           <div className="flex items-center gap-2">
             <div
               className="h-8 w-8 rounded-lg border border-border shadow-sm"
-              style={{ borderRadius: `var(${token.css})` }}
+              style={{ borderRadius: cssVar ? `var(${cssVar})` : "0" }}
             />
             <span className="font-mono text-xs text-foreground">{token.value}</span>
           </div>
@@ -112,7 +113,7 @@ function TokenRow({ token }: { token: Token }) {
         <span className="text-xs text-muted-foreground">{token.usage}</span>
       </div>
       <div className="w-20 shrink-0 font-mono text-xs text-subtle-foreground">
-        {token.css}
+        {cssVar}
       </div>
     </div>
   );
@@ -220,12 +221,6 @@ export default async function TokensPage() {
           icon={Type}
           description="Famílias carregadas em `src/app/layout.tsx` via `next/font/google` (Geist Sans / Geist Mono)."
           tokens={FONT_FAMILIES as unknown as readonly Token[]}
-        />
-        <TokenSection
-          title="Pesos de Fonte"
-          icon={Circle}
-          description="Escala de `font-weight` utilizada nos componentes de UI e tipografia."
-          tokens={FONT_WEIGHTS as unknown as readonly Token[]}
         />
       </div>
 
