@@ -67,7 +67,7 @@ export default async function AdminPage() {
             {/* Card 1: Saldo Real */}
             <div className="p-4 border rounded-lg bg-white shadow-sm">
               <h3 className="text-subtle-foreground text-sm">Saldo Bancário Atual</h3>
-              <p className="text-2xl font-bold text-foreground">
+              <p className="text-2xl font-bold text-foreground tabular-nums">
                 {formatCurrency(summary.bankBalanceCents)}
               </p>
             </div>
@@ -75,7 +75,7 @@ export default async function AdminPage() {
             {/* Card 2: Compromissos */}
             <div className="p-4 border rounded-lg bg-white shadow-sm">
               <h3 className="text-subtle-foreground text-sm">Compromissos do Mês</h3>
-              <p className="text-2xl font-bold text-red-600">
+              <p className="text-2xl font-bold text-red-600 tabular-nums">
                 {formatCurrency(summary.totalPendingObligationsCents)}
               </p>
               <div className="text-xs text-subtle-foreground mt-1">
@@ -87,7 +87,7 @@ export default async function AdminPage() {
             {/* Card 3: Previsão */}
             <div className="p-4 border rounded-lg bg-white shadow-sm">
               <h3 className="text-subtle-foreground text-sm">Saldo Disponível (Previsto)</h3>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-2xl font-bold text-blue-600 tabular-nums">
                 {formatCurrency(summary.expectedAvailableBalanceCents)}
               </p>
             </div>

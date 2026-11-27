@@ -246,7 +246,7 @@ export default async function DiaViagemPage({
 
         {/* Relato / Diário de bordo e contexto editorial */}
         <section className="space-y-4">
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
             Relato do dia
           </h2>
 
@@ -278,7 +278,7 @@ export default async function DiaViagemPage({
           day.workouts.length > 0 ||
           (day.highlights && day.highlights.length > 0)) && (
           <section className="space-y-3">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
               Detalhes da etapa
             </h2>
 
@@ -348,7 +348,7 @@ export default async function DiaViagemPage({
         {day.accommodations && day.accommodations.length > 0 && (
           <section className="space-y-3">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+              <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
                 Hospedagem em {day.accommodationCity || day.destination}
               </h2>
               {day.accommodationNote && (
@@ -392,7 +392,7 @@ export default async function DiaViagemPage({
 
         {/* Galeria de fotos */}
         <section className="space-y-3">
-          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
             Fotos
           </h2>
           <DayPhotoGallery photos={displayPhotos} />

@@ -640,7 +640,7 @@ export function AtividadesView({
         {activeSection === "atividades" && (
           <section ref={workoutsSectionRef} className="space-y-5 scroll-mt-48">
             <div className="flex items-center gap-2.5">
-              <h2 className="text-base font-bold tracking-tight text-foreground">
+              <h2 className="text-base font-semibold tracking-tight text-foreground">
                 Treinos de {selectedYear}
               </h2>
               <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-surface-2 text-subtle-foreground tabular-nums">
@@ -727,7 +727,7 @@ export function AtividadesView({
           <section className="space-y-5">
             <div className="flex items-center gap-2.5">
               <Trophy className="size-4 text-warning" />
-              <h2 className="text-base font-bold tracking-tight text-foreground">
+              <h2 className="text-base font-semibold tracking-tight text-foreground">
                 Provas Realizadas
               </h2>
               <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-surface-2 text-subtle-foreground tabular-nums">

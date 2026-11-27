@@ -60,9 +60,9 @@ const RADIUS_TOKENS = [
 ] as const;
 
 const FONT_FAMILIES = [
-  { name: "sans (Geist)", css: "--font-sans", value: "var(--font-geist-sans)", sample: "AaBbCc — Fonte sem serifas (corpo)" },
+  { name: "sans (Inter)", css: "--font-sans", value: "var(--font-inter)", sample: "AaBbCc — Fonte sem serifas (corpo)" },
   { name: "mono (Geist)", css: "--font-mono", value: "var(--font-geist-mono)", sample: "AaBbCc — Fonte monoespaçada (código)" },
-  { name: "heading (Geist Sans)", css: "--font-heading", value: "var(--font-geist-sans)", sample: "AaBbCc — Títulos e cabeçalhos" },
+  { name: "heading (Inter)", css: "--font-heading", value: "var(--font-inter)", sample: "AaBbCc — Títulos e cabeçalhos" },
 ] as const;
 
 const TYPE_SCALE = [
@@ -219,7 +219,7 @@ export default async function TokensPage() {
         <TokenSection
           title="Famílias de Fonte"
           icon={Type}
-          description="Famílias carregadas em `src/app/layout.tsx` via `next/font/google` (Geist Sans / Geist Mono)."
+          description="Famílias carregadas em `src/app/layout.tsx` via `next/font/google` (Inter / Geist Mono)."
           tokens={FONT_FAMILIES as unknown as readonly Token[]}
         />
       </div>
@@ -267,7 +267,7 @@ export default async function TokensPage() {
       <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3 pt-4 border-t border-border-subtle text-xs text-muted-foreground">
         <span>Tokens definidos em `src/app/globals.css` (`@theme inline` + `:root` / `.dark`).</span>
         <span>·</span>
-        <span>Fontes configuradas em `src/app/layout.tsx` (`Geist`, `Geist_Mono`).</span>
+        <span>Fontes configuradas em `src/app/layout.tsx` (`Inter`, `Geist_Mono`).</span>
         <span>·</span>
         <Link href={ROUTES.ADMIN.ROOT} className="hover:underline">
           Voltar ao painel
