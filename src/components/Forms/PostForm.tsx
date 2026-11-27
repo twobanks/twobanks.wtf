@@ -67,7 +67,7 @@ export function PostForm({ initialData, action, submitLabel }: PostFormProps) {
           name="excerpt"
           defaultValue={initialData?.excerpt ?? ""}
           placeholder="Breve resumo do post..."
-          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[80px]"
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-base sm:text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[80px]"
         />
       </div>
 
@@ -77,7 +77,7 @@ export function PostForm({ initialData, action, submitLabel }: PostFormProps) {
           name="content"
           defaultValue={initialData?.content ?? ""}
           placeholder="Escreva o conteúdo do post..."
-          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[160px]"
+          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-base sm:text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring min-h-[160px]"
           required
         />
       </div>

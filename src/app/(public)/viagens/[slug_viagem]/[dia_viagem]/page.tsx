@@ -102,7 +102,7 @@ export default async function DiaViagemPage({
   const displayPhotos = day.photos ?? []
 
   return (
-    <main className="min-h-screen w-full overflow-x-hidden">
+    <main className="min-h-screen w-full overflow-x-hidden [overflow-wrap:break_word]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 pb-24 space-y-8">
         {/* Retorno à expedição */}
         <div>
@@ -251,7 +251,7 @@ export default async function DiaViagemPage({
           </h2>
 
           {day.logbookMarkdown ? (
-            <div className="prose prose-zinc dark:prose-invert max-w-none text-muted-foreground">
+            <div className="prose prose-zinc dark:prose-invert text-muted-foreground">
               <ReactMarkdown>{day.logbookMarkdown}</ReactMarkdown>
             </div>
           ) : (

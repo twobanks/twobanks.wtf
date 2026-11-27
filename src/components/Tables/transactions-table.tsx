@@ -81,7 +81,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                     <TableCell className="font-medium text-foreground">
                       {transaction.description}
                     </TableCell>
-                    <TableCell className="text-right font-bold text-success">
+                    <TableCell className="text-right font-bold text-success tabular-nums">
                       {formatCurrency(Number(transaction.amount))}
                     </TableCell>
                     <TableCell className="text-right">
@@ -111,7 +111,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
                 className="p-4 rounded-2xl border border-border bg-card shadow-xs flex items-center justify-between gap-3"
               >
                 <div className="flex flex-col gap-1 min-w-0">
-                  <span className="font-medium text-foreground text-sm truncate">
+                  <span className="font-medium text-foreground text-sm" title={transaction.description}>
                     {transaction.description}
                   </span>
                   <span className="font-bold text-success text-sm">

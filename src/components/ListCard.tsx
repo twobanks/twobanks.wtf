@@ -25,13 +25,13 @@ export function ListCard({ list }: { list: ShoppingListWithItems }) {
               name="name"
               defaultValue={list.name}
               required
-              className="w-full h-9 bg-surface-2 border border-border rounded-lg px-3 text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
+              className="w-full h-9 bg-surface-2 border border-border rounded-lg px-3 text-base sm:text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
             />
             <div className="flex gap-2">
               <select
                 name="type"
                 defaultValue={list.type}
-                className="flex-1 h-9 bg-surface-2 border border-border rounded-lg px-3 text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring appearance-none"
+                className="flex-1 h-9 bg-surface-2 border border-border rounded-lg px-3 text-base sm:text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring appearance-none"
               >
                 <option value="supermercado">Supermercado</option>
                 <option value="varejao">Varejão</option>
@@ -127,7 +127,7 @@ export function ListCard({ list }: { list: ShoppingListWithItems }) {
               placeholder="Novo item"
               required
               autoFocus
-              className="flex-1 min-w-[120px] h-9 bg-surface-2 border border-border rounded-lg px-3 text-sm text-foreground placeholder:text-subtle-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
+              className="flex-1 min-w-[120px] h-9 bg-surface-2 border border-border rounded-lg px-3 text-base sm:text-sm text-foreground placeholder:text-subtle-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
             />
             <input
               name="quantity"
@@ -135,12 +135,12 @@ export function ListCard({ list }: { list: ShoppingListWithItems }) {
               min="1"
               defaultValue="1"
               placeholder="Qtd"
-              className="w-16 h-9 bg-surface-2 border border-border rounded-lg px-2 text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
+              className="w-16 h-9 bg-surface-2 border border-border rounded-lg px-2 text-base sm:text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
             />
             <input
               name="unit"
               placeholder="Un (opcional)"
-              className="w-24 h-9 bg-surface-2 border border-border rounded-lg px-2 text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
+              className="w-24 h-9 bg-surface-2 border border-border rounded-lg px-2 text-base sm:text-sm text-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring"
             />
             <div className="flex gap-1 w-full mt-1">
               <button

@@ -154,19 +154,19 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
         {/* Rodapé do Pin: Título, Local e Câmera */}
         <div className="absolute inset-x-0 bottom-0 p-4 space-y-2">
           <div>
-            <h2 className="font-semibold text-sm text-white leading-snug line-clamp-2">
+            <h2 className="font-semibold text-sm text-white leading-snug">
               {photo.title}
             </h2>
             <p className="mt-1 inline-flex items-center gap-1 text-xs text-muted-foreground max-w-full">
               <MapPin className="size-3 text-white shrink-0" />
-              <span className="truncate">{photo.location.name}</span>
+              <span className="truncate" title={photo.location.name}>{photo.location.name}</span>
             </p>
           </div>
 
           <div className="flex items-center justify-between gap-2 pt-2 border-t border-white/15 text-[11px] text-muted-foreground opacity-0 max-h-0 overflow-hidden group-hover:opacity-100 group-hover:max-h-10 transition-all duration-300">
             <span className="inline-flex items-center gap-1.5 truncate">
               <Camera className="size-3 text-white shrink-0" />
-              <span className="truncate">{photo.camera.model}</span>
+              <span className="truncate" title={photo.camera.model}>{photo.camera.model}</span>
             </span>
             <span className="shrink-0 tabular-nums text-subtle-foreground">
               {formatDate(photo.capturedAt)}
@@ -336,25 +336,25 @@ export function FotografiasView({ photos }: FotografiasViewProps) {
                       <div>
                         <p className="text-[10px] uppercase text-subtle-foreground">Focal</p>
                         <p className="mt-0.5 text-xs font-semibold text-foreground">
-                          {selectedPhoto.camera.focalLength ?? "--"}
+                          {selectedPhoto.camera.focalLength ?? "—"}
                         </p>
                       </div>
                       <div>
                         <p className="text-[10px] uppercase text-subtle-foreground">Abertura</p>
                         <p className="mt-0.5 text-xs font-semibold text-foreground">
-                          {selectedPhoto.camera.aperture ?? "--"}
+                          {selectedPhoto.camera.aperture ?? "—"}
                         </p>
                       </div>
                       <div>
                         <p className="text-[10px] uppercase text-subtle-foreground">Obturador</p>
                         <p className="mt-0.5 text-xs font-semibold text-foreground">
-                          {selectedPhoto.camera.shutterSpeed ?? "--"}
+                          {selectedPhoto.camera.shutterSpeed ?? "—"}
                         </p>
                       </div>
                       <div>
                         <p className="text-[10px] uppercase text-subtle-foreground">ISO</p>
                         <p className="mt-0.5 text-xs font-semibold text-foreground">
-                          {selectedPhoto.camera.iso ?? "--"}
+                          {selectedPhoto.camera.iso ?? "—"}
                         </p>
                       </div>
                     </div>

@@ -146,7 +146,7 @@ export default async function ViagemDetalhePage({
                       </span>
                     </>
                   ) : (
-                    <span className="text-subtle-foreground line-clamp-1">
+                    <span className="text-subtle-foreground">
                       {day.summary || day.attractions?.join(", ") || "Dia sem pedal"}
                     </span>
                   )}

@@ -116,7 +116,7 @@ export default async function FaturaPage({ params, searchParams }: PageProps) {
             <input type="hidden" name="creditCardId" value={cartao.id} />
             <input type="hidden" name="amount" value={Math.abs(total)} />
             <input type="hidden" name="month" value={mes} />
-            <select name="accountId" required className="bg-surface-1 border border-border rounded-lg px-3 py-2 text-sm">
+            <select name="accountId" required className="bg-surface-1 border border-border rounded-lg px-3 py-2 text-base sm:text-sm">
               <option value="">Selecione a conta destino...</option>
               {contas.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>

@@ -74,8 +74,8 @@ export function BlogClient({ initialPosts }: BlogClientProps) {
                     </div>
                     <div className="space-y-0.5">
                       <p className="font-semibold text-sm">{post.title}</p>
-                      <p className="text-xs text-muted-foreground line-clamp-1">
-                        {post.excerpt || post.content || "Sem descrição prévia..."} •{" "}
+                      <p className="text-xs text-muted-foreground">
+                        {post.excerpt || post.content || "Sem descrição prévia…"} •{" "}
                         <span className={`font-medium ${post.published ? "text-success" : "text-warning"}`}>
                           {post.published ? "Publicado" : "Rascunho"}
                         </span>

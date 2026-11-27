@@ -69,7 +69,7 @@ export function TransferDrawer({ accounts, triggerLabel = "Transferir" }: { acco
                 name="sourceAccountId"
                 required
                 defaultValue=""
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-base sm:text-sm text-foreground"
               >
                 <option value="" disabled className="text-muted-foreground">Selecione a conta de origem</option>
                 {accounts.map((acc) => (
@@ -85,7 +85,7 @@ export function TransferDrawer({ accounts, triggerLabel = "Transferir" }: { acco
                 name="destinationAccountId"
                 required
                 defaultValue=""
-                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground"
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-base sm:text-sm text-foreground"
               >
                 <option value="" disabled className="text-muted-foreground">Selecione a conta de destino</option>
                 {accounts.map((acc) => (

@@ -49,7 +49,7 @@ export function KanbanTaskForm({
           name="description"
           defaultValue={task?.description ?? ''}
           placeholder="Detalhes adicionais (opcional)..."
-          className="w-full rounded-lg border border-border bg-surface-1 px-4 py-3 text-sm text-foreground placeholder:text-subtle-foreground focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all min-h-[100px]"
+          className="w-full rounded-lg border border-border bg-surface-1 px-4 py-3 text-base sm:text-sm text-foreground placeholder:text-subtle-foreground focus:border-brand-blue focus:outline-none focus:ring-2 focus:ring-brand-blue/30 transition-all min-h-[100px]"
           disabled={isSubmitting}
         />
       </div>

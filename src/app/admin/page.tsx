@@ -144,10 +144,10 @@ export default async function AdminPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium">{tx.description || "Transação sem descrição"}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString("pt-BR")}</p>
+                      <p className="text-xs text-muted-foreground tabular-nums">{new Date(tx.date).toLocaleDateString("pt-BR")}</p>
                     </div>
                   </div>
-                  <span className={`text-sm font-semibold ${tx.type === 'income' ? 'text-success' : 'text-destructive'}`}>
+                  <span className={`text-sm font-semibold tabular-nums ${tx.type === 'income' ? 'text-success' : 'text-destructive'}`}>
                     {Number(tx.amount).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </span>
                 </div>

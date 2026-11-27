@@ -55,7 +55,7 @@ export default function DayPhotoGallery({ photos }: { photos: TripPhoto[] }) {
             {(photo.caption || photo.location) && (
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3.5">
                 {photo.caption && (
-                  <p className="text-xs font-medium text-white line-clamp-2">
+                  <p className="text-xs font-medium text-white">
                     {photo.caption}
                   </p>
                 )}

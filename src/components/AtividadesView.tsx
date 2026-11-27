@@ -122,7 +122,7 @@ function formatKm(meters: number) {
 }
 
 function formatDuration(seconds: number | null) {
-  if (!seconds || seconds <= 0) return "--";
+  if (!seconds || seconds <= 0) return "—";
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   return h > 0 ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}min`;

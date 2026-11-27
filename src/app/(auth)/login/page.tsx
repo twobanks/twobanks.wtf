@@ -128,7 +128,7 @@ export default function LoginPage() {
                     placeholder="hi@company.com"
                     required
                     autoFocus
-                    className="w-full bg-background border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-subtle-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all text-sm text-center"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3.5 text-foreground placeholder:text-subtle-foreground focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring transition-all text-base sm:text-sm text-center"
                   />
                 </div>
 
