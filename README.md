@@ -61,3 +61,51 @@
 
 - **Comunicações & APIs**
   - **Resend:** Provedor oficial para disparo rápido de e-mails transacionais (envio de códigos OTP).
+
+## 🔐 Variáveis de ambiente
+
+O projeto usa `.env.local` para variáveis locais de desenvolvimento. Este ficheiro é **gitignorado** (não é versionado) e nunca deve ser commitado.
+
+### Setup inicial
+
+Copie o exemplo e preencha com valores reais (chaves, tokens e segredos):
+
+```sh
+cp .env.example .env.local
+```
+
+Edite `.env.local` com as credenciais de cada ambiente. Nunca suba valores reais ao repositório.
+
+### Variáveis obrigatórias
+
+- `DATABASE_URL` — URL do PostgreSQL (Neon ou local).
+- `RESEND_API_KEY` — chave da Resend para e-mails transacionais.
+- `AUTH_SECRET` — segredo do NextAuth v5 (`openssl rand -base64 32`). Obrigatório em Produção.
+
+O ficheiro `.env.example` lista todas as chaves (obrigatórias e opcionais) e serve como referência.
+
+### Sanity-check
+
+Antes de rodar o dev/build local, verifique se o `.env.local` existe:
+
+```sh
+yarn env:check
+```
+
+Se o ficheiro estiver ausente, o script avisa e aponta para `cp .env.example .env.local`. **Ele nunca sobrescreve nem apaga um `.env.local` existente.**
+
+### Recuperação se perder o `.env.local`
+
+Como `.env.local` não é versionado, o git **não consegue restaurá-lo** se for apagado. Refaça a partir do `.env.example`:
+
+```sh
+cp .env.example .env.local
+```
+
+### ⚠️ Cuidado com `git clean -fxd`
+
+O comando `git clean -fxd` remove arquivos ignorados pelo git, incluindo `.env.local`. Evite executá-lo na raiz do projeto sem antes fazer backup do `.env.local`.
+
+### Produção / Preview (Vercel)
+
+Defina as variáveis reais nos painéis da Vercel (Projeto → Settings → Environment Variables), separadamente para Preview (branch `banks`) e Produção. Nunca commite valores reais.
