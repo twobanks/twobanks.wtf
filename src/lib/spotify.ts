@@ -25,6 +25,9 @@ async function getSpotifyAccessToken(): Promise<string | null> {
   const refreshToken = env.SPOTIFY_REFRESH_TOKEN;
 
   if (!clientId || !clientSecret || !refreshToken) {
+    console.warn(
+      "Spotify: credenciais ausentes (SPOTIFY_CLIENT_ID / SPOTIFY_CLIENT_SECRET / SPOTIFY_REFRESH_TOKEN). Defina no painel da Vercel (Preview/Produção)."
+    );
     return null;
   }
 
@@ -48,8 +51,9 @@ async function getSpotifyAccessToken(): Promise<string | null> {
   );
 
   if (!response.ok) {
+    const bodyText = await response.text().catch(() => "");
     console.warn(
-      `Spotify token endpoint retornou ${response.status} ao renovar refresh_token`
+      `Spotify token endpoint retornou ${response.status} ao renovar refresh_token. Corpo: ${bodyText.slice(0, 200)}`
     );
     return null;
   }
@@ -75,14 +79,33 @@ export async function getNowPlaying(): Promise<SpotifyTrack> {
     if (nowPlayingRes.status === 200) {
       const data = await nowPlayingRes.json();
 
-      if (data?.item && data.currently_playing_type === "track") {
+      if (
+        data?.item &&
+        (data.currently_playing_type === "track" ||
+          data.currently_playing_type === "episode")
+      ) {
+        const item = data.item as Record<string, unknown>;
+        const isTrack = data.currently_playing_type === "track";
         return {
           isPlaying: Boolean(data.is_playing),
-          title: data.item.name,
-          artist: data.item.artists.map((a: { name: string }) => a.name).join(", "),
-          album: data.item.album.name,
-          albumImageUrl: data.item.album.images?.[0]?.url ?? null,
-          songUrl: data.item.external_urls.spotify,
+          title: (item.name as string) ?? "",
+          artist: isTrack
+            ? (item.artists as { name: string }[] | undefined)
+                ?.map((a) => a.name)
+                .join(", ") ?? ""
+            : (item.show as { publisher?: string } | undefined)?.publisher ??
+              "",
+          album: isTrack
+            ? (item.album as { name?: string } | undefined)?.name ?? ""
+            : (item.show as { name?: string } | undefined)?.name ?? "",
+          albumImageUrl: isTrack
+            ? (item.album as { images?: { url?: string }[] } | undefined)
+                ?.images?.[0]?.url ?? null
+            : (item.images as { url?: string }[] | undefined)?.[0]?.url ??
+              null,
+          songUrl:
+            (item.external_urls as { spotify?: string } | undefined)?.spotify ??
+            "",
         };
       }
     }
@@ -113,7 +136,8 @@ export async function getNowPlaying(): Promise<SpotifyTrack> {
     }
 
     return FALLBACK_TRACK;
-  } catch {
+  } catch (err) {
+    console.warn("Spotify getNowPlaying falhou:", err);
     return FALLBACK_TRACK;
   }
 }
