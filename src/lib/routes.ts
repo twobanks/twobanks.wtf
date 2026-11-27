@@ -35,6 +35,7 @@ export const ROUTES = {
     LIVROS_NOVO: "/admin/livros/novo",
     TAREFAS: "/admin/tarefas",
     CONTRATOS: "/admin/contratos",
+    TOKENS: "/admin/tokens",
   },
 } as const;
 

@@ -27,6 +27,7 @@ const routeLabels: Record<string, string> = {
   "/atividades": "Atividades",
   "/viagens": "Viagens",
   "/fotos": "Fotos",
+  "/admin/tokens": "Design Tokens",
 }
 
 export function AppBreadcrumb() {
