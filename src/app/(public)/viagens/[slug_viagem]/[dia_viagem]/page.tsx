@@ -329,13 +329,15 @@ export default async function DiaViagemPage({
                       {w.name}
                     </span>
                   </div>
-                  <Link
-                    href={`/atividades/${w.id}`}
+                  <a
+                    href={`https://www.strava.com/activities/${w.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-blue hover:underline shrink-0"
                   >
                     Ver atividade
                     <ExternalLink className="size-3.5" />
-                  </Link>
+                  </a>
                 </div>
               ))}
             </div>

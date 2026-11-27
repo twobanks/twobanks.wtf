@@ -61,7 +61,6 @@ export async function POST(request: Request) {
           }
 
           revalidatePath("/atividades")
-          revalidatePath("/treinos")
           revalidatePath("/viagens")
         } catch (err) {
           console.error(`Erro no webhook Strava (${activityId}):`, err)

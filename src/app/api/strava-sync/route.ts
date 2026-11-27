@@ -26,7 +26,6 @@ export async function POST(request: Request) {
     clearTimeout(timeout)
 
     revalidatePath("/atividades")
-    revalidatePath("/treinos")
     revalidatePath("/viagens")
 
     return NextResponse.json({

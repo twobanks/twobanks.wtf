@@ -10,8 +10,6 @@ export const ROUTES = {
     ROOT: "/",
     SOBRE: "/sobre",
     ATIVIDADES: "/atividades",
-    ATIVIDADE: (id: string | number) => `/atividades/${id}`,
-    TREINOS: "/treinos",
     FOTOS: "/fotos",
     VIAGENS: "/viagens",
     VIAGEM: (slug: string) => `/viagens/${slug}`,

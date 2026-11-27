@@ -17,7 +17,6 @@ export async function syncStravaAction(fullSync = false) {
     });
 
     revalidatePath("/atividades");
-    revalidatePath("/treinos");
     revalidatePath("/viagens");
 
     const message =

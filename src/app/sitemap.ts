@@ -8,7 +8,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/sobre",
     "/fotos",
     "/atividades",
-    "/treinos",
     "/viagens",
     "/login",
   ].map((route) => ({
